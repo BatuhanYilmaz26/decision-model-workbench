@@ -91,7 +91,7 @@ Model and benchmark references are dated **9–12 October 2026**; the [runtime a
 | [docker/](docker/README.md) | CPU services and the separate Vega/semantic model image |
 | [scripts/](scripts/README.md) | Training helpers, research capture and repository checks |
 | [tests/](tests/README.md) | Behavioral tests and provider contract fixtures |
-| [.github/](.github/README.md) | Automated checks for pushes and pull requests |
+| [.github/](.github/CI.md) | Automated checks for pushes and pull requests |
 
 Read [the architecture](docs/architecture.md) for the component flow and [contributing](CONTRIBUTING.md) for development and documentation standards.
 

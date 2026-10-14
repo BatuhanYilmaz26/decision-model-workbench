@@ -64,6 +64,13 @@ else:
         )
 files = {p for p in files if p.is_file()}
 documents = sorted(p for p in files if p.suffix == ".md")
+for path in files:
+    if path.parent == root / ".github" and (
+        path.name.lower() == "readme" or path.name.lower().startswith("readme.")
+    ):
+        errors.append(
+            f"{path.relative_to(root)}: a .github README would replace the root landing page; use CI.md"
+        )
 document_text = {path: path.read_text(encoding="utf-8-sig") for path in documents}
 
 

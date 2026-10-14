@@ -10,6 +10,8 @@ Write for someone who has not read a development conversation. Explain the purpo
 
 Add each guide to its folder's README and keep every public Markdown page reachable from the root README. Include return navigation to the relevant index and project overview. Link to existing headings when directing readers to a specific step. The repository checker refuses missing files/headings, unreachable pages and omitted entries in the guide, provider and research indexes.
 
+Keep the CI index at [.github/CI.md](.github/CI.md). A README in `.github/` takes precedence over the root README on GitHub, so use a different filename there to preserve the project landing page. [GitHub README selection](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes)
+
 Start a guide with the reader's task and expected result. Place version requirements beside installation or configuration steps, and dates beside claims that can change. Describe limitations as supported behavior, missing functionality or checks the reader must perform. Keep development chronology and execution reports out of walkthroughs. Use the compatibility guide for experimental adapter status and test scope; retain those limits when simplifying the prose.
 
 Cite primary sources next to claims about model behavior, APIs, licenses and benchmarks. Record review dates for prices, rankings and moving interfaces. Benchmark comparisons must identify the model/code revision, draw, denominator, scoring method, hardware, latency boundary and cost basis. Distinguish reported results from independently reproduced measurements, and zero-shot results from fitted results.
