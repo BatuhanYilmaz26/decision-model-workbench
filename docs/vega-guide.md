@@ -15,7 +15,7 @@ Use the following pinned vegaml 0.8.0 execution profile:
 | Engine/adapter repository | `nandakishorm/vega-08b-public-intents` at `42ac8d4fa9efb61f96e53d80962cf28f6dfe667e` |
 | 0.8B backbone | `Qwen/Qwen3.5-0.8B` at `2fc06364715b967f1860aea9cf38778875588b17` |
 
-See [dated source hashes](../research/vega-sources-2026-10-12.json). Lock Torch/Transformers/tokenizer dependencies too. The engine revision and backbone revision are separate identities. A small engine or adapter file does not contain the complete frozen language model. Inspect code, weights and backbone licenses independently for the selected distribution.
+See [dated source hashes](../research/provenance/vega-sources-2026-10-12.json). Lock Torch/Transformers/tokenizer dependencies too. The engine revision and backbone revision are separate identities. A small engine or adapter file does not contain the complete frozen language model. Inspect code, weights and backbone licenses independently for the selected distribution.
 
 The installed 0.8.0 loader accepts a local checkpoint and forwards an explicit local backbone. Prefer prepared ordinary directories with only reviewed configuration, tokenizer and safetensors assets for an offline serving profile. The source's Hub fetch allowlist excludes downloaded Python and pickle checkpoints. [Pinned Hub loader](https://github.com/NandhaKishorM/vegaml/blob/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/vegaml/hub.py), [pinned public entrypoint](https://github.com/NandhaKishorM/vegaml/blob/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/vegaml/__init__.py)
 

@@ -82,4 +82,4 @@ Back up and stop all API/browser/worker services before upgrading. Schema **7** 
 
 The Compose API accepts `DMT_BACKUP_MONITOR_PROFILE`. Mount the public-only monitoring directory read-only so atomic host file replacement remains visible. Run the backup operator separately with approved private mounts. Both processes need matching workspace paths for the binding; configure policies inside the intended namespace. Qualify the complete container/supervisor setup before relying on its alerts.
 
-[Primary source metadata](../research/backup-monitor-sources-2026-10-14.json) records the signing interfaces used here.
+[Primary source metadata](../research/provenance/backup-monitor-sources-2026-10-14.json) records the signing interfaces used here.

@@ -1,6 +1,6 @@
 # Decision-model research refresh — 12 October 2026
 
-Compare the decision API contracts and Vega results published by **12 October 2026**. This update supplements the [10 October comparison](decision-model-expansion-2026-10-10.md); the [source metadata](expansion-sources-2026-10-12.json) identifies dated URLs and capture hashes.
+Compare the decision API contracts and Vega results published by **12 October 2026**. This update supplements the [10 October comparison](decision-model-expansion-2026-10-10.md); the [source metadata](provenance/expansion-sources-2026-10-12.json) identifies dated URLs and capture hashes.
 
 ## Sources and findings
 
@@ -37,7 +37,7 @@ The card's adapted typed-decisions results are another study. Adapted, selected 
 
 ## Independent counterevidence
 
-Both versioned artifacts remain byte-identical to the 10 October capture. The [19-row extract and method record](benchmark-expansion-method-2026-10-10.json) remain authoritative for those versions. Selected Capability scores and estimated USD/1,000 decisions:
+Both versioned artifacts remain byte-identical to the 10 October capture. The [19-row extract and method record](provenance/benchmark-expansion-method-2026-10-10.json) remain authoritative for those versions. Selected Capability scores and estimated USD/1,000 decisions:
 
 | Version | System | Capability | Estimated cost |
 |---|---|---:|---:|

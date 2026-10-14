@@ -37,7 +37,7 @@ The release endpoint supports CPU baseline, native Laya, the pinned Unsloth prof
 
 An owner can create a new project with **Policy successor of** pointing to an existing project. Supply and confirm the successor schema/policy. Its policy version increments, and its data, jobs and releases have a separate scope; the earlier project/model remains available. Data is not silently copied. If previous test outcomes informed the new policy or gates, reserve fresh independent gold for the new study.
 
-The local store upgrades schemas v1, v2 and v3 to v4 in one transaction on startup. Existing dataset hashes and pinned snapshots are preserved; old full-row JSON is converted to normalized roots. New reviews store a single changed record; appends add compact membership manifests. Historical membership and hashes remain pinned. Use the [operator recovery commands](recovery-guide.md) for a schema-3/4 consistent backup before changes; earlier schema recovery needs a compatible version-specific procedure. A legacy training run without frozen criteria cannot be newly activated; retrain under approved criteria in a successor project. An already active version is preserved by migration.
+The local store upgrades supported older schemas to schema 7 in a transaction on startup. Existing dataset hashes and pinned snapshots are preserved; old full-row JSON is converted to normalized roots. New reviews store a single changed record; appends add compact membership manifests. Historical membership and hashes remain pinned. Back up before an upgrade using the [operator recovery commands](recovery-guide.md); that guide lists the supported backup schema versions and recovery constraints. A legacy training run without frozen criteria cannot be newly activated; retrain under approved criteria in a successor project. An already active version is preserved by migration.
 
 Dataset lists return compact metadata. `GET /v1/projects/{project}/datasets/{dataset}/rows?limit=50&offset=0` returns a bounded page; the maximum is 200. Historical versions are readable, and only the latest collection revision accepts another review or append. Downloads reconstruct and integrity-check the immutable version.
 
@@ -56,10 +56,13 @@ $env:DMT_WORKER_PYTHON = (Resolve-Path .venv-models/Scripts/python.exe).Path
 $env:DMT_MODEL_PYTHON = $env:DMT_WORKER_PYTHON
 $env:DMT_MODEL_CACHE = Join-Path (Get-Location) "data/model-cache/hub"
 $env:HF_HOME = Join-Path (Get-Location) "data/model-cache"
+$env:UNSLOTH_COMPILE_LOCATION = Join-Path (Get-Location) "data/model-cache/unsloth_compiled_cache"
 .venv/Scripts/domain-platform.exe run --keys-file data/operator-keys.json
 ```
 
 The API and browser stay in the lightweight platform environment. `DMT_MODEL_PYTHON` falls back to `DMT_WORKER_PYTHON`, then the API interpreter. Run `domain-worker` directly in the model environment if starting services separately; use the same `DMT_HOME`.
+
+Unsloth generates optimized trainer modules when its runtime is imported. Its default `unsloth_compiled_cache` location is relative to the process's working directory, so imports from the repository root can create that folder beside the source. These are generated library files and are excluded from Git. The setting above directs future generation into the private model cache; set it before importing Unsloth or launching the model services. You do not need to edit or commit those generated modules. [Upstream cache setting](https://github.com/unslothai/unsloth-zoo/blob/main/unsloth_zoo/compiler.py)
 
 Each job needs a Hub model ID, an exact 40-character revision, bounded training settings and a prepared snapshot. The worker runs the adapter in a child process with a four-hour ceiling, stores private logs and registers the completed export. Use the pinned profile for frozen-encoder Laya or Unsloth encoder LoRA. Check memory, export/reload and inference on your GPU before changing the encoder, backbone or precision. Optimizer resume is not supported.
 

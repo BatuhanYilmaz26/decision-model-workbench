@@ -4,7 +4,7 @@ Choose the dependency profile for your operating system and training backend bef
 
 Use compatible, validated versions. A working pinned profile does not need an upgrade merely because a newer release exists. Change it when an applicable fix, required feature or provider deprecation justifies the change, and verify the resulting behavior before replacing the accepted environment.
 
-The version and API comparisons below are dated **14 October 2026**. Refer to the linked upstream resources when upgrading; the [source metadata](../research/runtime-sources-2026-10-14.json) records the corresponding retrieval dates and hashes. Benchmark tables retain their own dates and model versions.
+The version and API comparisons below are dated **14 October 2026**. Refer to the linked upstream resources when upgrading; the [source metadata](../research/provenance/runtime-sources-2026-10-14.json) records the corresponding retrieval dates and hashes. Benchmark tables retain their own dates and model versions.
 
 ## Cloud training interfaces
 

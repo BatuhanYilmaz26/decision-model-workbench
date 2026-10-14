@@ -15,7 +15,7 @@ The application workflow starts in [local setup](../docs/setup.md). These comman
 `capture_research.py` fetches the URLs in its `SOURCES` table and records retrieval metadata and hashes. Review that table for the intended versions first. Use a new dated metadata file and a new private raw-capture directory; existing output paths are refused. A capture hash identifies bytes, not the accuracy of the source.
 
 ```bash
-python scripts/capture_research.py --output research/source-snapshot-YYYY-MM-DD.json --capture-dir /private/source-captures/decision-models-YYYY-MM-DD
+python scripts/capture_research.py --output research/provenance/source-snapshot-YYYY-MM-DD.json --capture-dir /private/source-captures/decision-models-YYYY-MM-DD
 ```
 
 Replace the date and private directory before running. Keep raw pages outside public source control. The script reports sanitized error types; failed captures are not successful source verification. Review and cite new facts before updating guides, and preserve earlier snapshots.
@@ -25,7 +25,7 @@ Replace the date and private directory before running. Keep raw pages outside pu
 The extractor supports **JevBench v1.6.1 only**. Supply its captured JSON, the actual review date and a new output directory:
 
 ```bash
-python scripts/extract_benchmarks.py --input /private/source-captures/jevbench-results.txt --output-dir research/jevbench-v1.6.1-YYYY-MM-DD --review-date YYYY-MM-DD
+python scripts/extract_benchmarks.py --input /private/source-captures/jevbench-results.txt --output-dir research/provenance/jevbench-v1.6.1-YYYY-MM-DD --review-date YYYY-MM-DD
 ```
 
 The command writes a selected-row CSV and method metadata with hashes. It refuses another benchmark version or an existing destination. A newer benchmark needs its own method review and extractor; changing a version string does not establish comparable scores. [Benchmark interpretation](../docs/benchmarks.md)

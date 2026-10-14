@@ -52,7 +52,7 @@ Selected entries from the artifact generated October 7:
 | d1-3B | 48.99 | 40.08 | 1.0000 / 0 |
 | d1-omni-600M | 17.90 | 9.45 | 1.0000 / 0 |
 
-The pinned Decision Index results differ from the release-card snapshots above. Clef's public-score advantage reverses on the full score. Perplexity has a small pending share, and paired bootstrap uncertainty is not available in this artifact. Use the actual pinned results and generation metadata rather than treating the edition date or point estimates as a statistically established ranking. [Pinned results](https://huggingface.co/spaces/multimodalart/jev-decision-index/blob/32425c2/data/index.json), [extraction](../research/decision-index-snapshot.json)
+The pinned Decision Index results differ from the release-card snapshots above. Clef's public-score advantage reverses on the full score. Perplexity has a small pending share, and paired bootstrap uncertainty is not available in this artifact. Use the actual pinned results and generation metadata rather than treating the edition date or point estimates as a statistically established ranking. [Pinned results](https://huggingface.co/spaces/multimodalart/jev-decision-index/blob/32425c2/data/index.json), [extraction](../research/provenance/decision-index-snapshot.json)
 
 ## Domain fitting versus zero-shot
 
@@ -64,7 +64,7 @@ Unsloth reports substantial gains after adding and training a decision head, inc
 
 ## Frozen JevBench extract
 
-[benchmark-extract.csv](../research/benchmark-extract.csv) contains selected rows from **v1.6.1**, published October 6 and amended through October 8. The extraction preserves source identifiers, measurement dates, raw and adjusted latency, eligibility and price basis.
+[benchmark-extract.csv](../research/provenance/benchmark-extract.csv) contains selected rows from **v1.6.1**, published October 6 and amended through October 8. The extraction preserves source identifiers, measurement dates, raw and adjusted latency, eligibility and price basis.
 
 | System | Capability | Composite | Intelligence |
 |---|---:|---:|---:|
@@ -94,4 +94,4 @@ Before claiming “better and cheaper,” require the same request shape, schema
 
 ## 10 October versioned update
 
-The [new research review](../research/decision-model-expansion-2026-10-10.md) analyzes JevBench **v1.6.6** and the subsequently published **v1.6.7**, preserves all nine/ten rows in a [separate dated CSV](../research/benchmark-expansion-2026-10-10.csv), and records [method/scorer hashes and source conflicts](../research/benchmark-expansion-method-2026-10-10.json). These releases use a fresh draw and frozen field median; the earlier v1.6.1 extract above remains historical. Do not rank old Jev figures against the new draw or treat estimated base-model prices as invoices. OpenRouter decision rankings are request-volume data, not quality benchmarks. Vega selected task wins coexist with much weaker broad results; its current source claims require pin-aware context/license review.
+The [new research review](../research/decision-model-expansion-2026-10-10.md) analyzes JevBench **v1.6.6** and the subsequently published **v1.6.7**, preserves all nine/ten rows in a [separate dated CSV](../research/provenance/benchmark-expansion-2026-10-10.csv), and records [method/scorer hashes and source conflicts](../research/provenance/benchmark-expansion-method-2026-10-10.json). These releases use a fresh draw and frozen field median; the earlier v1.6.1 extract above remains historical. Do not rank old Jev figures against the new draw or treat estimated base-model prices as invoices. OpenRouter decision rankings are request-volume data, not quality benchmarks. Vega selected task wins coexist with much weaker broad results; its current source claims require pin-aware context/license review.

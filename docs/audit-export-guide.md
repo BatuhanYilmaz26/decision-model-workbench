@@ -53,4 +53,4 @@ Workspace backups include export metadata and its source audit events. Current r
 
 Capture and download do not delete audit events, datasets, models or backups. Configure your enterprise archive's access, retention and key custody separately. Dataset deletion, automatic audit retention, offsite/WORM ingestion and distributed enterprise acceptance require additional controls. This feature exports existing project audit events; it does not add audit coverage for every possible read, external provider operation or infrastructure event.
 
-[Primary source metadata](../research/audit-export-sources-2026-10-14.json) records the hashing and transaction references.
+[Primary source metadata](../research/provenance/audit-export-sources-2026-10-14.json) records the hashing and transaction references.

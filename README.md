@@ -1,22 +1,63 @@
 # Decision Model Platform
 
-A local-first application and practical guide for building decision models for a specific domain. Define allowed outcomes, review your data, reserve independent evaluation sets, train and calibrate a model, then serve decisions through an authenticated API.
+A local-first application and practical guide for using decision models in your own domain. Add a hosted model to an existing application, or build your own model from a natural-language description, uploaded examples and reviewed synthetic training data.
 
-The guide also covers integrating hosted decision APIs into existing applications and training on remote GPUs when local VRAM is insufficient. Model comparisons include versioned benchmarks, source citations and cost assumptions.
+Use it for bounded decisions such as routing support tickets, assigning invoice categories or choosing a review queue. Define the allowed outcomes, evaluate the probabilities and connect the result to your application's rules and fallback.
 
 ## Choose your path
 
-| Goal | Start here |
-|---|---|
-| Understand Jev, Laya, Vega and other decision models | [Concepts](docs/concepts.md), [model landscape](docs/model-landscape.md), [benchmarks](docs/benchmarks.md) |
-| Add a hosted decision API to an existing application | [API integration](docs/api-integration-guide.md), [application blueprints](docs/application-blueprints.md) |
-| Build and train your own domain model locally | [Setup](docs/setup.md), [workflow](docs/product-workflow.md), [data](docs/data-guide.md), [training](docs/training-guide.md) |
-| Train without a local GPU | [Remote training](docs/remote-training-guide.md): AWS, Azure, GCP, Modal and RunPod |
-| Follow a complete support-routing example | [Domain adoption guide](docs/domain-adoption-guide.md) |
+| What you want to do | What you will use | Start here |
+|---|---|---|
+| Use a decision model without training one | Hosted API requests, typed response validation and fallbacks | [API integration](docs/api-integration-guide.md), [application blueprints](docs/application-blueprints.md) |
+| Train a model for your domain | Browser application, reviewed data, model training and release API | [Local setup](docs/setup.md), [complete workflow](docs/product-workflow.md) |
+| Generate additional training examples | A configured local or hosted teacher and your reviewed training seeds | [Synthetic data workflow](#generate-synthetic-training-data) |
+| Train when local VRAM is insufficient | A custom training container on one of five GPU providers | [Remote training](docs/remote-training-guide.md), [provider walkthroughs](#train-on-a-remote-gpu) |
+| Choose a model and compare results | Model contracts, dated benchmarks and primary sources | [Concepts](docs/concepts.md), [model landscape](docs/model-landscape.md), [benchmarks](docs/benchmarks.md) |
+
+## Train your own domain model
+
+Start with [local setup](docs/setup.md#install-and-start), which installs the application, provisions a credential and launches its API, worker and browser interface. You can use the CPU comparison baseline without a GPU; Laya, Unsloth and Vega need their separate model environments.
+
+1. **Describe your use case.** Create a project with your domain, decision policy and data requirements in natural language. Define category, yes/no or rating questions and confirm the allowed outcomes. Follow the [project workflow](docs/product-workflow.md#1-describe-the-decision).
+2. **Supply examples.** Enter a few examples or upload CSV, XLSX, TSV, JSON or JSONL. Preview the data, map its columns to the decision format and review the labels. The [data guide](docs/data-guide.md) explains the format and review controls.
+3. **Reserve evaluation data.** Prepare independent training, validation, calibration and test sets from reviewed operational records. Inspect coverage and set your quality requirements before training. Follow [data readiness](docs/data-guide.md#inspect-readiness-before-training).
+4. **Fill training gaps.** Optionally generate and review synthetic candidates for missing cases. Extend only the training portion of the reserved study, preserving the evaluation sets. Follow [synthetic generation](#generate-synthetic-training-data).
+5. **Train and evaluate.** Start with the CPU baseline, then use [Laya or Unsloth](docs/training-guide.md), or the separate [Vega workflow](docs/vega-guide.md). Inspect calibration, class-level results and export/reload checks using the [evaluation guide](docs/evaluation-guide.md).
+6. **Release and use the model.** Activate an eligible version, call its authenticated decision endpoint and route abstained or failed decisions to your fallback. Follow [release and integration](docs/product-workflow.md#6-release-and-integrate) and [deployment](docs/deployment-guide.md).
+
+For a concrete support-routing walkthrough, use the [domain adoption guide](docs/domain-adoption-guide.md). Its [domain specification](examples/support/spec.json), [CSV examples](examples/support/seeds.csv), [canonical JSONL examples](examples/support/seeds.jsonl) and [decision request](examples/support/request.json) show the expected inputs. These fictional examples illustrate the format; use independently reviewed operational records to evaluate your own domain.
+
+## Generate synthetic training data
+
+Configure a local or hosted generative teacher using [teacher setup](docs/setup.md#configure-a-teacher). Describe the cases you need, such as uncommon outcomes, missing evidence or different writing styles. In the application, select a reserved snapshot and explicitly approve the generation request; its worker supplies only the reviewed training seeds to that teacher.
+
+Generation creates unapproved candidate records for review. Approve, correct or reject them, then extend the original training snapshot with the reviewed version. Validation, calibration and test data stay reserved. A hosted teacher receives the selected policy and seeds, so use an approved provider or a local teacher when those records must stay on your machine.
+
+Follow [generate and review synthetic candidates](docs/data-guide.md#generate-and-review-synthetic-candidates) for the complete workflow. Generated labels require review, and teacher confidence does not establish domain accuracy.
+
+## Use an existing model through its API
+
+Follow [API integration](docs/api-integration-guide.md) for Python and TypeScript request examples, provider-specific contracts, probability validation, timeouts and fallback handling. The guide covers TypeSafe/Jev, OpenRouter, Perplexity, Cloudflare and TypeLLM, with separate local Vega examples. You need the selected provider's credentials; hosted calls can incur charges and transmit the submitted state.
+
+Use [application blueprints](docs/application-blueprints.md) to add a decision boundary to an existing project. For provider evaluation, calibration and release through this application's UI, follow [hosted decision studies](docs/hosted-decisions-guide.md) and adapt the [hosted profile template](examples/hosted-profiles.json).
+
+## Train on a remote GPU
+
+Prepare the data and custom container using the [shared remote-training guide](docs/remote-training-guide.md), then select a provider. Direct walkthroughs explain operator submission; managed workflows use the application's approval, job-history and artifact-validation controls.
+
+| Provider | Submit directly | Manage from the application |
+|---|---|---|
+| AWS SageMaker AI | [Boto3 training job](docs/remote-training/aws.md) | [Managed AWS training](docs/managed-cloud-training.md) |
+| Azure Machine Learning | [CLI/SDK command job](docs/remote-training/azure.md) | [Managed Azure training](docs/managed-azure-training.md) |
+| Google Cloud | [Custom GPU job](docs/remote-training/gcp.md) | [Managed GCP training](docs/managed-gcp-training.md) |
+| Modal | [GPU Function and Volume](docs/remote-training/modal.md) | [Managed Modal Sandbox](docs/managed-modal-training.md) |
+| RunPod | [GPU Pod and SSH](docs/remote-training/runpod.md) | [Managed RunPod training](docs/managed-runpod-training.md) |
+
+Check [provider selection](docs/remote-training/provider-selection.md), [account compatibility](docs/verification.md#provider-compatibility-checks) and [returned model admission](docs/remote-admission-guide.md) before using enterprise data or releasing a remote export. Providers require their own accounts, permissions, quota and paid compute.
 
 ## What the application supports
 
-Persistent domain projects, reviewer assignment queues, immutable reviewed datasets, queued jobs, training-seed-only synthetic candidates, native Laya training, a CPU comparison baseline, tenant-scoped credentials and frozen release criteria. The [capability guide](docs/capabilities.md) explains these features and their practical boundaries.
+The local application supports persistent domain projects, file/manual intake, reviewed dataset revisions, synthetic-candidate jobs, model evaluation, versioned releases and authenticated inference. It also provides reviewer queues, owner-defined release criteria, policy successors, audit exports and backup/recovery. The [capability guide](docs/capabilities.md) explains the supported behavior and limits.
 
 Local training supports Laya, Unsloth and Vega through separate model environments. Hosted adapters and managed cloud controllers are experimental; validate provider behavior, model outputs and billing in your account before use. Review synthetic candidates and evaluate model quality on independent domain records. The application uses single-host SQLite and does not provide distributed enterprise storage or interactive enterprise SSO.
 
@@ -33,7 +74,7 @@ Follow [testing](docs/verification.md) and [runtime compatibility and upgrades](
 | Operations | [Deployment](docs/deployment-guide.md), [CPU containers](docs/container-guide.md), [model containers](docs/model-container-guide.md), [Windows process ownership](docs/windows-process-guide.md), [authentication](docs/authentication-guide.md), [audit exports](docs/audit-export-guide.md), [backup and recovery](docs/recovery-guide.md), [encrypted recovery](docs/encrypted-recovery-guide.md), [scheduled backups](docs/scheduled-backups-guide.md), [backup monitoring](docs/backup-monitoring-guide.md) |
 | Research | [Primary sources](research/sources.md), [10 October comparison](research/decision-model-expansion-2026-10-10.md), [12 October refresh](research/decision-model-refresh-2026-10-12.md) |
 
-Model and benchmark references are dated **9–12 October 2026**; the [runtime and cloud API comparison](docs/compatibility-and-upgrades.md) is dated **13 October 2026**. Prices, aliases, APIs and rankings can change. Benchmark figures are attributed to their publishers; use the pinned versions and methods when comparing results.
+Model and benchmark references are dated **9–12 October 2026**; the [runtime and cloud API comparison](docs/compatibility-and-upgrades.md) is dated **14 October 2026**. Prices, aliases, APIs and rankings can change. Benchmark figures are attributed to their publishers; use the pinned versions and methods when comparing results.
 
 ## Repository layout
 
@@ -42,7 +83,7 @@ Model and benchmark references are dated **9–12 October 2026**; the [runtime a
 | [app.py](app.py) | Streamlit interface for projects, review, jobs and releases |
 | [decision_workbench/](decision_workbench/) | Data contracts, API, persistence, workers and model adapters |
 | [docs/](docs/) | Reader and operator guides |
-| [research/](research/) | Cited research, dated source metadata and benchmark extracts |
+| [research/](research/README.md) | Model comparisons, annotated sources and optional [provenance records](research/provenance/README.md) |
 | [examples/](examples/) | Fictional data and configuration templates |
 | [requirements/](requirements/) | Separate dependency profiles for platform and model environments |
 | [docker/models/](docker/models/) | Vega/semantic runtime image |

@@ -110,18 +110,18 @@ rows = read_records(
 )
 assert len(rows) == 12
 snapshot = json.loads(
-    (root / "research/benchmark-method.json").read_text(encoding="utf-8-sig")
+    (root / "research/provenance/benchmark-method.json").read_text(encoding="utf-8-sig")
 )
-extract = root / "research/benchmark-extract.csv"
+extract = root / "research/provenance/benchmark-extract.csv"
 assert hashlib.sha256(extract.read_bytes()).hexdigest() == snapshot["extract_sha256"]
 with extract.open(encoding="utf-8-sig", newline="") as stream:
     results = list(csv.DictReader(stream))
 assert any("Jev 1.13.0" in row["name"] for row in results)
 index_snapshot = json.loads(
-    (root / "research/decision-index-snapshot.json").read_text(encoding="utf-8-sig")
+    (root / "research/provenance/decision-index-snapshot.json").read_text(encoding="utf-8-sig")
 )
 source_registry = json.loads(
-    (root / "research/source-snapshot.json").read_text(encoding="utf-8-sig")
+    (root / "research/provenance/source-snapshot.json").read_text(encoding="utf-8-sig")
 )
 for field, source_id in (
     ("methodology_sha256", "decision-index-methodology-32425c2"),

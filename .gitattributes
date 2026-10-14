@@ -9,5 +9,5 @@
 
 # Preserve byte-bound training source identity and benchmark artifact hashes.
 decision_workbench/**/*.py -text
-research/benchmark-extract.csv -text
-research/benchmark-expansion-2026-10-10.csv -text
+research/provenance/benchmark-extract.csv -text
+research/provenance/benchmark-expansion-2026-10-10.csv -text

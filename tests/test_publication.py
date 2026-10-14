@@ -43,6 +43,8 @@ class PublicationTests(unittest.TestCase):
             "data/model-cache/weights.bin",
             "nested/.venv/lib/module.py",
             "tests/__pycache__/test.pyc",
+            "unsloth_compiled_cache/UnslothRLOOTrainer.py",
+            "nested/Unsloth_Compiled_Cache/generated.py",
         ):
             with self.subTest(name=name):
                 self.assertIsNotNone(private_path_reason(name))
@@ -55,7 +57,7 @@ class PublicationTests(unittest.TestCase):
             "docker/models/Dockerfile.vega",
             "examples/cloud/aws-profiles.json",
             ".env.example",
-            "research/source-snapshot.json",
+            "research/provenance/source-snapshot.json",
             "tests/fixtures/provider-contracts/README.md",
             "decision_workbench/platform/credentials.py",
             ".github/workflows/checks.yml",

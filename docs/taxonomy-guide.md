@@ -2,7 +2,7 @@
 
 Use this workflow when real examples suggest missing categories in an existing **choice** question. It proposes a schema change before a new training study. It does not train a model, automatically label data, or change a released model.
 
-The [TypeLLM invoice cookbook](https://typellm.ai/cookbook/discover-invoice-categories?v=2) demonstrates an enum plus a conditional category-name field. TypeLLM uses constrained generation over autoregressive models; typed generation can still choose the wrong category. The current [HTTP contract](https://typellm.ai/docs/api) accepts `context`, typed `questions`, a model and options at `POST https://api.typellm.ai/v1/generate`. This application extends that pattern with authenticated proposals, immutable reviews and owner-confirmed schema versions. [Dated source captures](../research/taxonomy-sources-2026-10-11.json) preserve the API, cookbook, package metadata and repository revision `fd9b97a06386d1898d2c241796c3c81bd10db9c0`.
+The [TypeLLM invoice cookbook](https://typellm.ai/cookbook/discover-invoice-categories?v=2) demonstrates an enum plus a conditional category-name field. TypeLLM uses constrained generation over autoregressive models; typed generation can still choose the wrong category. The current [HTTP contract](https://typellm.ai/docs/api) accepts `context`, typed `questions`, a model and options at `POST https://api.typellm.ai/v1/generate`. This application extends that pattern with authenticated proposals, immutable reviews and owner-confirmed schema versions. [Dated source captures](../research/provenance/taxonomy-sources-2026-10-11.json) preserve the API, cookbook, package metadata and repository revision `fd9b97a06386d1898d2c241796c3c81bd10db9c0`.
 
 ## User workflow
 

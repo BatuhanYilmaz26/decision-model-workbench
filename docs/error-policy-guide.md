@@ -101,4 +101,4 @@ Back up and stop API, browser and worker services before upgrading. Workspace sc
 
 An error policy adds evaluation and release gates. It does not change the training objective, calibrate a business decision threshold, optimize actions for minimum expected cost, or establish enterprise data quality. Owners must justify costs, representative independent gold, subgroup adequacy and the deployed action/review policy.
 
-[Primary reference metadata](../research/error-policy-sources-2026-10-14.json) records the official evaluation/statistical sources retrieved on 14 October 2026.
+[Primary reference metadata](../research/provenance/error-policy-sources-2026-10-14.json) records the official evaluation/statistical sources retrieved on 14 October 2026.

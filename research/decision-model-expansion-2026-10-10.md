@@ -1,7 +1,7 @@
 # Decision-model research expansion — 10 October 2026
 
 This dated comparison covers decision APIs, taxonomy discovery, Vega and JevBench v1.6.6/v1.6.7. Results are attributed to their publishers, with pins and methods retained; they are not independently reproduced model evaluations.
-The [source registry](expansion-sources-2026-10-10.json) records URLs, dates, status and source hashes. The [19 benchmark rows](benchmark-expansion-2026-10-10.csv) and [method metadata](benchmark-expansion-method-2026-10-10.json) identify model revisions, latency boundaries, cost assumptions and uncertainty. Hashes identify captured bytes; numerical results remain attributed to their benchmark publishers.
+The [source registry](provenance/expansion-sources-2026-10-10.json) records URLs, dates, status and source hashes. The [19 benchmark rows](provenance/benchmark-expansion-2026-10-10.csv) and [method metadata](provenance/benchmark-expansion-method-2026-10-10.json) identify model revisions, latency boundaries, cost assumptions and uncertainty. Hashes identify captured bytes; numerical results remain attributed to their benchmark publishers.
 
 ## Sources and findings
 
@@ -68,7 +68,7 @@ Version 1.6.6 evaluates nine self-hosted systems on a fresh 1,500-item draw, inc
 
 The full nine-row extraction, including Gutsy/d1-omni, is in the CSV. Capability is an average of benchmark axes; Composite A is a penalized weighted harmonic score. Neither is raw percent accuracy. Version 1.6.7 adds Blink on the **same** draw with unchanged earlier point scores: capability 69.95, Composite A 61.16 and estimated cost 0.04776/1,000. Retain revised uncertainty and the evaluator's repeatability modification. [v1.6.6 artifact](https://benchmarkheaven.com/api/jevbench/v1.6.6), [v1.6.7 artifact](https://benchmarkheaven.com/api/jevbench/v1.6.7)
 
-The frozen field median changes public/sealed gap penalties; do not compare these Intelligence values directly with the older v1.6.1 board. Refusals/errors remain in the denominator. Raw local latency is separately adjusted by `2× + 0.15s`, an assumed hosted-equivalent surcharge, not measured API latency. Every cost here is an estimate based on a frozen market reference or override, not a model invoice or actual GPU total cost. The method metadata retains the scorer hashes, sample counts and bootstrap details. [Evaluator method](https://github.com/fstandhartinger/jevbench), [local method record](benchmark-expansion-method-2026-10-10.json)
+The frozen field median changes public/sealed gap penalties; do not compare these Intelligence values directly with the older v1.6.1 board. Refusals/errors remain in the denominator. Raw local latency is separately adjusted by `2× + 0.15s`, an assumed hosted-equivalent surcharge, not measured API latency. Every cost here is an estimate based on a frozen market reference or override, not a model invoice or actual GPU total cost. The method metadata retains the scorer hashes, sample counts and bootstrap details. [Evaluator method](https://github.com/fstandhartinger/jevbench), [local method record](provenance/benchmark-expansion-method-2026-10-10.json)
 
 ### New candidate models and serving caveats
 

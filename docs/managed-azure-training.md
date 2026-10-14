@@ -70,4 +70,4 @@ A terminal job does not prove that the existing cluster has zero nodes. Observat
 
 Backup/restore validates the frozen study/profile, immutable input receipt, named job identity and history chain. Interrupted local jobs do not free unknown upstream compute capacity. Restore credentials separately and observe the same resource; automated safe profile-change recovery, overdue watchdogs and monetary reconciliation remain requirements.
 
-See the [API reference metadata dated 11 October](../research/cloud-azure-sources-2026-10-11.json) for source versions and [provider compatibility checks](verification.md#provider-compatibility-checks) before production use.
+See the [API reference metadata dated 11 October](../research/provenance/cloud-azure-sources-2026-10-11.json) for source versions and [provider compatibility checks](verification.md#provider-compatibility-checks) before production use.

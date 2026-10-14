@@ -85,4 +85,4 @@ The local catalog limits are 100,000 events, 512 MiB of catalog database and 10,
 
 Use local filesystems with working OS file locks and SQLite durability. Distributed/NFS scheduling, cloud replication, enterprise key custody, external alerts, power-loss behavior and large-scale recovery require separate qualification. Verify your restart supervisor, resource use, due/failure behavior and recovery objectives on the intended host. [Python SQLite transactions](https://docs.python.org/3.13/library/sqlite3.html), [Windows file locking](https://docs.python.org/3.13/library/msvcrt.html), [POSIX file locking](https://docs.python.org/3.12/library/fcntl.html)
 
-[Primary source metadata](../research/scheduled-backup-sources-2026-10-14.json) records the interfaces used by the scheduler and catalog.
+[Primary source metadata](../research/provenance/scheduled-backup-sources-2026-10-14.json) records the interfaces used by the scheduler and catalog.
