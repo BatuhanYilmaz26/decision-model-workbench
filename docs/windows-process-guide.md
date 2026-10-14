@@ -1,5 +1,7 @@
 # Windows model process ownership
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Run Windows model workloads through the application worker so training, inference, model validation and semantic subprocesses share the GPU/CPU capacity lease. The launcher assigns workloads to a Windows Job Object before model imports and refuses work when assignment fails. Standalone CLI commands use a separate process-ownership path.
 
 The parent owns the durable job handle. The child closes its temporary joining handle immediately. Kill-on-last-handle-close covers job members and ordinary `CreateProcess` descendants; this implementation enables neither breakaway option. Windows job assignment can conflict with an existing host job policy, so qualify the actual service host and preserve refusal. [Microsoft job-object semantics](https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects).

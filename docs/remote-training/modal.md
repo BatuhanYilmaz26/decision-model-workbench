@@ -1,5 +1,7 @@
 # Train a decision model on Modal
 
+[Provider directory](README.md) · [All guides](../README.md) · [Project overview](../../README.md)
+
 Run the repository's decision-model trainer in a Modal GPU Function, using a prepared container image and a persistent Volume for data and exports. Modal's [Unsloth example](https://modal.com/docs/examples/unsloth_finetune) shows the platform's fine-tuning infrastructure; the command below selects the decision-head trainer rather than the example's generative trainer.
 
 ## Stage immutable input on a Volume

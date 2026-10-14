@@ -1,5 +1,7 @@
 # Train a domain decision model
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Training is part of the durable product workflow: confirm policy, import and review data, reserve independent holdouts, define acceptance criteria, queue training, inspect evaluation and release. Start with the [operator guide](setup.md). The CLI adapters share the same four-file protocol as the worker.
 
 Before installing a GPU environment, review [runtime compatibility and dependency advisories](compatibility-and-upgrades.md). The historical Laya/Unsloth profile requires remediation and a new GPU qualification before production use. The CPU baseline runs in a separate application environment.

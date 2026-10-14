@@ -1,5 +1,7 @@
 # From a hosted API to your own domain decision model
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Build one domain-specific decision workflow from intake to application rollout. This guide uses support-ticket routing to connect hosted APIs, reviewed examples, synthetic coverage, local or cloud training and release. Follow the linked walkthroughs for executable commands, and evaluate each stage against your own operational records.
 
 ## Choose the entry point

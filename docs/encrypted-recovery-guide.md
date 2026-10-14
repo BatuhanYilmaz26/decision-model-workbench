@@ -1,5 +1,7 @@
 # Encrypt and recover a local workspace
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Capture a consistent workspace and its registered model exports into an encrypted bundle, verify it using a separately retained receipt, and recover into a new directory. These are filesystem-level operator commands: the tenant API does not expose all-tenant backup downloads.
 
 The encrypted workflow preserves the existing [backup scope, validation and interrupted-job rules](recovery-guide.md). It includes private domain records from every tenant in the workspace. Registered model data are checked against the captured registry; credentials, caches and incomplete training checkpoints remain outside recovery.

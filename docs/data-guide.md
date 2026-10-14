@@ -1,5 +1,7 @@
 # Describe a domain and build trustworthy training data
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Turn a domain description and example records into reviewed training data. Define the question contract, import or enter examples, reserve independent evaluation sets, then generate additional training candidates where coverage is missing. The `state/questions/gold` format follows [Laya's training implementation](https://github.com/NandhaKishorM/laya/blob/main/laya/train.py) and [Unsloth's dataset builder](https://github.com/unslothai/unsloth/blob/main/unsloth/models/decision.py).
 
 ## Describe the problem in natural language

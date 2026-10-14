@@ -1,5 +1,7 @@
 # Local setup and user workflow
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Install the application, start its API and worker, then open the browser interface. Run the commands from the repository root. Data preparation supports Python 3.10+; the Windows application profile uses Python 3.13. Model training uses a separate GPU environment. See [dependency profiles](../requirements/README.md) for the Linux container and Windows model versions.
 
 ## Install and start

@@ -1,5 +1,7 @@
 # Model landscape
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Choose a model by its decision contract, training path, deployment requirements and license. The comparison below summarizes primary sources dated **9 October 2026**; announcement dates and checkpoint versions are listed separately.
 
 See the [comparison dated 12 October](../research/decision-model-refresh-2026-10-12.md) for Vega 0.8.0, its updated author-run benchmark and API context/identity details. Earlier entries retain their dated source versions.

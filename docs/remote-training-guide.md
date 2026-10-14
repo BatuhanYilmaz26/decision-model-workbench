@@ -1,5 +1,7 @@
 # Train remotely when local VRAM is insufficient
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Train your own open-weight decision model on a rented GPU when local VRAM is insufficient. The workflows below run the repository's Laya or Unsloth trainer with the same reviewed datasets and export checks used locally. Hosted Jev access is a separate API workflow; TypeSafe's [model documentation](https://docs.typesafe.ai/models) does not offer customer fine-tuning.
 
 Choose AWS, Azure, Google Cloud, Modal or RunPod based on your infrastructure, identity and GPU needs. Each walkthrough covers data staging, job submission, output retrieval and shutdown. Before sending domain data, prepare a Linux training image and verify it with a small non-sensitive study. See [provider compatibility checks](verification.md#provider-compatibility-checks).

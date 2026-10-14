@@ -1,5 +1,7 @@
 # Research provenance
 
+[Research index](../README.md) · [Project overview](../../README.md)
+
 These records identify the sources and versions behind the project's guides. They contain public URLs, retrieval dates, source/checkpoint revisions, hashes and selected benchmark results. You do not need to read or configure them to use the application.
 
 | Files | Purpose |

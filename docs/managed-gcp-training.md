@@ -1,5 +1,7 @@
 # Managed GCP training through the application
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Submit an approved frozen study to a Google Cloud CustomJob, monitor its state and retrieve the Cloud Storage export for local model validation. The adapter uses Google-auth and regional REST endpoints. For direct submission with `gcloud` or REST, use the [GCP walkthrough](remote-training/gcp.md).
 
 ## Configure an approved operator profile

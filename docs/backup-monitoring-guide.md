@@ -1,5 +1,7 @@
 # Monitor backup freshness and failures
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Publish a signed summary from the authenticated backup catalog, then show backup health and scoped incidents in the application. The API verifies a public key; it does not receive the backup decryption key, signing private key or catalog receipts.
 
 Use this with the [scheduled backup service](scheduled-backups-guide.md). Signatures establish the configured publisher's identity and protect the summary against modification. They do not establish backup quality or replace complete encrypted verification and recovery drills. [Ed25519 signing and verification](https://cryptography.io/en/stable/hazmat/primitives/asymmetric/ed25519/)

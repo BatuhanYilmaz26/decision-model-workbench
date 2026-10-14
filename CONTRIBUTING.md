@@ -1,10 +1,14 @@
 # Contributing
 
+[All guides](docs/README.md) · [Project overview](README.md)
+
 Contributions should help readers integrate a decision API, prepare trustworthy domain data, train a model or operate the local platform. Describe the problem, resulting behavior and relevant validation in each pull request. Keep changes focused and preserve existing data/model contracts.
 
 ## Documentation
 
 Write for someone who has not read a development conversation. Explain the purpose, prerequisites, inputs, steps, expected output and relevant limits. Keep commands and examples consistent with the actual APIs. Link related guides instead of repeating operational details across pages.
+
+Add each guide to its folder's README and keep every public Markdown page reachable from the root README. Include return navigation to the relevant index and project overview. Link to existing headings when directing readers to a specific step. The repository checker refuses missing files/headings, unreachable pages and omitted entries in the guide, provider and research indexes.
 
 Start a guide with the reader's task and expected result. Place version requirements beside installation or configuration steps, and dates beside claims that can change. Describe limitations as supported behavior, missing functionality or checks the reader must perform. Keep development chronology and execution reports out of walkthroughs. Use the compatibility guide for experimental adapter status and test scope; retain those limits when simplifying the prose.
 

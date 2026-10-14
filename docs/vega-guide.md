@@ -1,5 +1,7 @@
 # Vega: integrate and adapt a frozen-feature decision model
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Train and serve a Vega domain adapter using frozen language-model features, a learned engine and separate applicability examples. This guide covers the application's paired data workflow and standalone commands. Laya and Unsloth use a [different four-file protocol](training-guide.md).
 
 Review [runtime compatibility and GPU dependency advisories](compatibility-and-upgrades.md) before selecting the pinned Torch environment. Resolve the applicable advisories and validate the replacement runtime on your hardware before a production rollout.

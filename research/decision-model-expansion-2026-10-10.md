@@ -1,5 +1,7 @@
 # Decision-model research expansion — 10 October 2026
 
+[Research index](README.md) · [Project overview](../README.md)
+
 This dated comparison covers decision APIs, taxonomy discovery, Vega and JevBench v1.6.6/v1.6.7. Results are attributed to their publishers, with pins and methods retained; they are not independently reproduced model evaluations.
 The [source registry](provenance/expansion-sources-2026-10-10.json) records URLs, dates, status and source hashes. The [19 benchmark rows](provenance/benchmark-expansion-2026-10-10.csv) and [method metadata](provenance/benchmark-expansion-method-2026-10-10.json) identify model revisions, latency boundaries, cost assumptions and uncertainty. Hashes identify captured bytes; numerical results remain attributed to their benchmark publishers.
 

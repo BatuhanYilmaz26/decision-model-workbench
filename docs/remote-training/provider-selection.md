@@ -1,5 +1,7 @@
 # Choose remote training infrastructure
 
+[Provider directory](README.md) · [All guides](../README.md) · [Project overview](../../README.md)
+
 Choose a GPU training provider based on your cloud accounts, identity requirements, storage controls, GPU capacity and total study cost. Use this comparison before the [provider walkthroughs](../remote-training-guide.md). Check quota, stock and regional pricing in your account before submission.
 
 ## Match the provider to the organization

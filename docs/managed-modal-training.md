@@ -1,5 +1,7 @@
 # Managed Modal training
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Run an owner-approved decision-model study in a Modal GPU Sandbox from the application. The controller uploads the frozen study, records the Sandbox identity and retrieves a completed Volume export for local validation. Use **Modal SDK 1.6.1** in the API/worker environment.
 
 ## Prepare an approved workspace and image

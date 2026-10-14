@@ -1,5 +1,7 @@
 # Workspace backup and recovery
 
+[All guides](README.md) · [Project overview](../README.md)
+
 The local platform provides operator commands to back up the SQLite workspace and all registered CPU, native Laya and Unsloth model exports. Recovery restores into a new directory and preserves immutable project/data/model history and the active release revision. It does not replay unfinished work.
 
 This is the single-host local profile.

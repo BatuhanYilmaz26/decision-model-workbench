@@ -1,5 +1,7 @@
 # Integrate decision models into an application
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Add a decision model to your application's backend using a hosted API or a released local model. This guide covers provider contracts, Python and TypeScript calls, response validation and fallback handling. Start with labeled, non-sensitive examples before connecting a model to business actions. For an end-to-end rollout, see [application blueprints](application-blueprints.md) and the [API and model comparison dated 12 October](../research/decision-model-refresh-2026-10-12.md).
 
 ## Choose the contract before the model

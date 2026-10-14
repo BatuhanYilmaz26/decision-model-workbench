@@ -1,5 +1,7 @@
 # Build applications that use decision models
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Use decision models for support routing, invoice categorization, retrieval filtering, agent action review or model cascades. The designs below explain where to insert a model, what evidence to collect and how to measure the result. Connect them using the [API examples](api-integration-guide.md), then follow the [evaluation guide](evaluation-guide.md) before automating a branch.
 
 ## Extend an existing application

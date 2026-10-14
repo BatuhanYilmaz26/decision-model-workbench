@@ -1,5 +1,7 @@
 # Schedule encrypted backups and retain verified copies
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Run encrypted captures on a fixed interval, retain their trusted receipts in a separate catalog, and prune older owned bundles after verifying the copies you will keep. This is a single-host operator service; it does not invoke training, teacher or provider jobs.
 
 ## Configure private storage

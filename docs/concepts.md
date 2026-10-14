@@ -1,5 +1,7 @@
 # What you are training
 
+[All guides](README.md) · [Project overview](../README.md)
+
 A domain decision model approximates a function:
 
 `state + questions + allowed outcomes → probability distributions`

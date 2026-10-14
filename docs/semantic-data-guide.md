@@ -1,5 +1,7 @@
 # Find and review semantic relatives before reservation
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Different wording does not make two records independent. The platform supports a separate local embedding audit to propose related states, followed by authenticated adjudication. Its encoder does not train the decision head, generate examples or label business outcomes. It helps keep source relatives out of different evaluation roles.
 
 Cosine similarity can propose paraphrases, but candidate selection depends on the model and threshold. Similarity alone does not establish shared source history. The project compares every pair within an explicitly bounded study; it refuses candidate overflow instead of returning a silently truncated top-k list. [Sentence Transformers paraphrase mining](https://sbert.net/examples/sentence_transformer/applications/paraphrase-mining/README.html)

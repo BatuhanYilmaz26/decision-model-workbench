@@ -64,15 +64,43 @@ else:
         )
 files = {p for p in files if p.is_file()}
 documents = sorted(p for p in files if p.suffix == ".md")
+document_text = {path: path.read_text(encoding="utf-8-sig") for path in documents}
+
+
+def heading_anchors(text):
+    """GitHub-style heading IDs, including repeated headings and explicit IDs."""
+    anchors = set(re.findall(r'<a\s+[^>]*(?:id|name)=["\']([^"\']+)', text))
+    occurrences = {}
+    fenced = False
+    for line in text.splitlines():
+        if line.lstrip().startswith(("```", "~~~")):
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        heading = re.match(r"^ {0,3}#{1,6}\s+(.+?)(?:\s+#+)?\s*$", line)
+        if not heading:
+            continue
+        value = re.sub(r"<[^>]*>", "", heading[1]).lower()
+        slug = re.sub(r"[^\w\- ]", "", value).replace(" ", "-")
+        occurrence = occurrences.get(slug, 0)
+        occurrences[slug] = occurrence + 1
+        anchors.add(slug if not occurrence else f"{slug}-{occurrence}")
+    return anchors
+
+
+anchors = {path: heading_anchors(text) for path, text in document_text.items()}
+navigation = {path: set() for path in documents}
 links = 0
 blocks = 0
 for path in documents:
-    text = path.read_text(encoding="utf-8-sig")
+    text = document_text[path]
     errors.extend(reader_facing_violations(path.relative_to(root).as_posix(), text))
     for link in re.findall(r"\]\(([^)]+)\)", text):
-        if re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*:", link) or link.startswith("#"):
+        if re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*:", link):
             continue
-        target = (path.parent / unquote(link.strip("<>").split("#")[0])).resolve()
+        destination, _, fragment = link.strip("<>").partition("#")
+        target = (path.parent / unquote(destination)).resolve() if destination else path
         links += 1
         if not target.is_relative_to(root):
             errors.append(f"{path.relative_to(root)}: link outside repository: {link}")
@@ -85,6 +113,14 @@ for path in documents:
             errors.append(
                 f"{path.relative_to(root)}: link absent from public checkout: {link}"
             )
+        if target.is_dir() and target / "README.md" in files:
+            target = target / "README.md"
+        if target in navigation:
+            navigation[path].add(target)
+            if fragment and unquote(fragment) not in anchors[target]:
+                errors.append(
+                    f"{path.relative_to(root)}: heading absent from public checkout: {link}"
+                )
     for block in re.findall(r"```python\s*\n(.*?)\n```", text, flags=re.S):
         try:
             ast.parse(block)
@@ -95,6 +131,21 @@ for path in documents:
         errors.append(
             f"{path.relative_to(root)}: public documentation references local internal material"
         )
+
+reachable = set()
+pending = [root / "README.md"]
+while pending:
+    path = pending.pop()
+    if path not in reachable:
+        reachable.add(path)
+        pending.extend(navigation.get(path, set()) - reachable)
+for path in set(documents) - reachable:
+    errors.append(f"{path.relative_to(root)}: document unreachable from root README")
+for folder in (root / "docs", root / "docs/remote-training", root / "research"):
+    index = folder / "README.md"
+    for guide in documents:
+        if guide.parent == folder and guide != index and guide not in navigation.get(index, set()):
+            errors.append(f"{index.relative_to(root)}: guide absent from folder index: {guide.name}")
 for path in sorted(files):
     if path.suffix == ".py":
         ast.parse(path.read_text(encoding="utf-8-sig"), filename=str(path))

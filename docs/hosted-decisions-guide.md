@@ -1,5 +1,7 @@
 # Use a hosted decision model through the platform
 
+[All guides](README.md) · [Project overview](../README.md)
+
 The platform supports TypeSafe, OpenRouter, Perplexity and Cloudflare decision adapters. An owner evaluates a fixed project schema against reserved domain records, fits a local temperature policy, and releases the eligible version through the same authenticated decision endpoint as local models. This study does not train, download or export the provider's weights.
 
 Start with the [API guide](api-integration-guide.md) for provider contracts and application integration. Configure an operator profile and check it with the selected account before running a domain study. [Provider compatibility checks](verification.md#provider-compatibility-checks)

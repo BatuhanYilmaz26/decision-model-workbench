@@ -1,5 +1,7 @@
 # Export and verify project audit history
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Capture an owner-approved audit window, download its canonical JSONL records and verify the file against a separately retained manifest checksum. Use this when a review, incident investigation or operational archive needs more than the recent audit view's 500 events.
 
 Audit exports contain actor identities, action names, target identifiers and timestamps. Owner-supplied action notes may contain confidential information. Protect downloaded files as project data; the default `.dmtlog` extension is excluded from Git. The publication checker also refuses renamed files whose header identifies this export format.

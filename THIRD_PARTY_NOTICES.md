@@ -1,5 +1,7 @@
 # Third-party terms and attribution
 
+[All guides](docs/README.md) · [Project overview](README.md)
+
 Apache-2.0 applies to this project's original code and documentation. It does not replace the terms for dependencies, model weights, backbones, provider schemas, benchmark data or cited articles. No downloaded model weights are distributed in this repository.
 
 ## Model and training components

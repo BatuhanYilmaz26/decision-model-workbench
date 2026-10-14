@@ -1,5 +1,7 @@
 # Runtime compatibility and upgrades
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Choose the dependency profile for your operating system and training backend before installation. Keep the CPU application separate from GPU training environments. A newer package can change model serialization, probability extraction or CUDA behavior even when it installs successfully.
 
 Use compatible, validated versions. A working pinned profile does not need an upgrade merely because a newer release exists. Change it when an applicable fix, required feature or provider deprecation justifies the change, and verify the resulting behavior before replacing the accepted environment.

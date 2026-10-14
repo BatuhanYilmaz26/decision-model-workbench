@@ -1,5 +1,7 @@
 # Run and verify the local container platform
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Run the API, independent worker and browser with a Linux/amd64 CPU image using CPython 3.12.15. Compose keeps workspace data in a named volume. The verifier checks CPU training, release, inference, service replacement and recovery using fictional examples. For GPU training and serving, use a separate [model image](model-container-guide.md) or [model environment](setup.md#configure-model-training-and-serving).
 
 The [Vega/semantic image](model-container-guide.md) has its own CUDA dependencies and GPU checks. Native Laya and Unsloth need separately validated Linux training images.

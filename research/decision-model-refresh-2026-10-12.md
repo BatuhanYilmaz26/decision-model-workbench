@@ -1,5 +1,7 @@
 # Decision-model research refresh — 12 October 2026
 
+[Research index](README.md) · [Project overview](../README.md)
+
 Compare the decision API contracts and Vega results published by **12 October 2026**. This update supplements the [10 October comparison](decision-model-expansion-2026-10-10.md); the [source metadata](provenance/expansion-sources-2026-10-12.json) identifies dated URLs and capture hashes.
 
 ## Sources and findings

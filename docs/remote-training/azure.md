@@ -1,5 +1,7 @@
 # Train a decision model with Azure Machine Learning
 
+[Provider directory](README.md) · [All guides](../README.md) · [Project overview](../../README.md)
+
 Run a decision-model trainer as an Azure Machine Learning command job. This walkthrough stages four reviewed data splits, submits a GPU job and retrieves the complete export. Prepare the data and container using the [shared remote-training guide](../remote-training-guide.md).
 
 Use this route for direct CLI or SDK submission. For application-managed approvals, job history, cancellation and Blob retrieval into local model validation, follow [managed Azure training](../managed-azure-training.md).

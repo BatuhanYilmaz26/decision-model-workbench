@@ -1,5 +1,7 @@
 # Annotated source register
 
+[Research index](README.md) · [Project overview](../README.md)
+
 Use this register to find the primary documentation, source code, model cards and benchmark artifacts behind the guides. The initial references are dated **9 October 2026**, with later additions grouped below.
 
 [Source metadata](provenance/source-snapshot.json) records URLs, retrieval dates and SHA-256 hashes. Follow the original links for full documents. Hashes identify the retrieved version; they do not independently verify a publisher's claims.

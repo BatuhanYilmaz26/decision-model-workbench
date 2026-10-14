@@ -1,5 +1,7 @@
 # Evaluate costly mistakes and critical outcomes
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Use an error policy when average accuracy alone cannot express your domain's acceptance criteria. Define mistake costs and critical-label limits before the first training or hosted evaluation job, then compare the exported runtime on reserved validation and test data.
 
 The application freezes this policy alongside accuracy, F1, calibration and sample-count gates. It applies to the CPU baseline, local Laya/Unsloth/Vega reports, calibrated hosted studies and independently remeasured remote exports. Hosted and GPU/cloud execution still require their respective [compatibility checks](verification.md).

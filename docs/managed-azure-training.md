@@ -1,5 +1,7 @@
 # Managed Azure training through the application
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Submit an owner-approved decision-model study to Azure Machine Learning from the application, monitor the job and retrieve its Blob export for local validation. The adapter targets Azure ML **2026-09-01** ARM and Blob **2026-04-06** APIs. For direct CLI or SDK submission, use the [Azure walkthrough](remote-training/azure.md).
 
 ## Prepare the approved infrastructure

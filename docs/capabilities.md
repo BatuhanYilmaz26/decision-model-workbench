@@ -1,5 +1,7 @@
 # Use the local platform
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Use the workflows below to create a domain project, review examples, train a model and release an authenticated decision endpoint. Each guide explains the required inputs, configuration, outputs and operating limits.
 
 | Capability | How to use it | What you receive | Boundary |

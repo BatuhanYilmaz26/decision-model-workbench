@@ -1,5 +1,7 @@
 # Benchmark evidence and its limits
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Compare decision models using the published benchmarks below. Each result belongs to a particular model version, dataset draw, scoring method and execution environment. The tables contain publisher-reported results and extracts from benchmark artifacts dated **9 October 2026**; they are not new measurements made by this repository.
 
 The [comparison dated 12 October](../research/decision-model-refresh-2026-10-12.md) adds Vega's 3,841-decision author-run study and the v1.6.6/v1.6.7 artifact identities. Keep these studies separate from earlier draws and fitted-model results. The fixed versions provide reproducible comparison references rather than a live leaderboard.

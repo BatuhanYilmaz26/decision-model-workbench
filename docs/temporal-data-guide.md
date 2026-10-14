@@ -1,5 +1,7 @@
 # Reserve data using information available at decision time
 
+[All guides](README.md) · [Project overview](../README.md)
+
 For changing customer traffic or delayed outcomes, reserve earlier decisions for training and later decisions for evaluation. Random splitting can give misleading estimates when observations are correlated over time. Information unavailable at prediction time is leakage, including future outcomes accidentally included in the input state. [scikit-learn cross-validation guidance](https://scikit-learn.org/stable/modules/cross_validation.html), [scikit-learn leakage guidance](https://scikit-learn.org/stable/common_pitfalls.html#data-leakage)
 
 ## Declare operational timestamps

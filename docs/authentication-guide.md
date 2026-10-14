@@ -1,5 +1,7 @@
 # Credentials and enterprise access tokens
 
+[All guides](README.md) · [Project overview](../README.md)
+
 The API supports local workspace keys and an optional JWT access-token adapter. Both derive tenant, actor and role from operator-controlled configuration. The browser's credential field accepts either form. The current adapter does not implement an interactive OIDC authorization-code/PKCE login or refresh-token session.
 
 The dependency profile pins PyJWT 2.15.1 and cryptography 50.0.2. Configure RS256 or ES256 public signing keys and the `at+jwt` or `application/at+jwt` access-token type. Fixed algorithms, issuer and audience validation help keep API access tokens separate from ID tokens. [RFC 8725](https://www.rfc-editor.org/rfc/rfc8725.html), [RFC 9068](https://www.rfc-editor.org/rfc/rfc9068.html), [PyJWT verification API](https://pyjwt.readthedocs.io/en/latest/api.html)

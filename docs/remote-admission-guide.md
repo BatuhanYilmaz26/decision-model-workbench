@@ -1,5 +1,7 @@
 # Bring a remotely trained decision model into the platform
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Bring a remotely trained model into the local platform using **frozen study → operator staging → runtime validation → owner release**. Native Laya and Unsloth use four data files; Vega uses eight, including applicability negatives. Choose a [provider workflow](remote-training-guide.md) to train the frozen inputs. Managed cloud controllers accept Laya/Unsloth studies; Vega requires its separate operator route and is rejected by those managed launchers.
 
 Use this workflow **before training**. A pre-existing checkpoint without the frozen study request cannot enter this route by relabeling it or changing its report. Local training remains available through the normal worker. The current transfer route requires an authenticated operator with filesystem access to the workspace; a browser upload of multi-gigabyte weights is not implemented.

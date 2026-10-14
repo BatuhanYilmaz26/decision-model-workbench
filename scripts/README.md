@@ -1,10 +1,12 @@
 # Helper commands
 
+[All guides](../docs/README.md) · [Project overview](../README.md)
+
 The application workflow starts in [local setup](../docs/setup.md). These commands support training, reproducible checks and research maintenance; they do not replace the browser/API workflow.
 
 | Command | Purpose | Guide |
 |---|---|---|
-| `python scripts/check_repository.py` | Validate public links, Python examples, syntax, data examples and benchmark identity | [Testing](../docs/verification.md) |
+| `python scripts/check_repository.py` | Validate local files/headings, guide reachability, folder indexes, Python examples, source syntax, data examples and benchmark identity | [Testing](../docs/verification.md) |
 | `python scripts/verify_containers.py --help` | Run an isolated fictional CPU or Vega lifecycle and retain a local report | [CPU containers](../docs/container-guide.md), [model containers](../docs/model-container-guide.md) |
 | `python scripts/train_unsloth.py --help` | Thin entry point for the shared Unsloth trainer | [Training](../docs/training-guide.md) |
 | `python scripts/predict_unsloth.py --help` | Load a selected Unsloth checkpoint and typed request | [Training](../docs/training-guide.md) |

@@ -1,5 +1,7 @@
 # Linux Vega and semantic model image
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Train and serve Vega models, or run semantic data audits, in a Linux GPU container. The image supplies vegaml 0.8.0, Torch 2.10.0+cu126, Transformers 5.17.0 and NumPy 2.5.2 for Linux/amd64 CPython 3.12.15, alongside the application dependencies. Use the [CPU container](container-guide.md) for CPU workflows. Native Laya and Unsloth require separate compatible model images.
 
 The pinned Torch profile has [dependency advisories](compatibility-and-upgrades.md#gpu-dependency-advisories). Remediate and requalify the model environment before production use; a successful image build does not establish model safety or quality.

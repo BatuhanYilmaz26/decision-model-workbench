@@ -1,5 +1,7 @@
 # Application architecture
 
+[All guides](README.md) · [Project overview](../README.md)
+
 The platform combines a browser interface, authenticated HTTP API, durable SQLite workspace and independent worker. Model training runs outside web requests. The local design coordinates processes on one host; multi-host deployment needs an independently validated storage and scheduling design.
 
 ```mermaid

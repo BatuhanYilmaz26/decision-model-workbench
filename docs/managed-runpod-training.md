@@ -1,5 +1,7 @@
 # Managed RunPod training
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Train a frozen decision-model study in a RunPod v2 GPU Pod using an approved network volume. The application records submission and Pod state, then retrieves the completed export for local validation. Prepare the provider profile and owner approvals before creating the Pod.
 
 ## Prepare approved infrastructure and identity

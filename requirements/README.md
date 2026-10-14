@@ -1,5 +1,7 @@
 # Dependency profiles
 
+[All guides](../docs/README.md) · [Project overview](../README.md)
+
 Use separate environments for the application and model training. Select a profile matching your interpreter, operating system and accelerator; a Windows snapshot is not a Linux lock.
 
 | Profile | Target | Purpose |
@@ -11,6 +13,12 @@ Use separate environments for the application and model training. Select a profi
 | [Vega runtime pins](vega-runtime.txt) | Matching model environment | vegaml 0.8.0 and direct runtime pins; not a complete transitive lock |
 | [AWS client pins](aws-sdk.txt) | API/worker environment | Boto3/Botocore 1.43.113 control clients |
 | [Modal client pins](modal-transport.txt) | API/worker environment | SDK 1.6.1 Sandbox transport |
+| [Azure transport pins](azure-transport.txt) | API/worker environment | HTTP transport for the managed Azure controller |
+| [GCP authentication pins](gcp-auth.txt) | API/worker environment | Authentication dependencies for the managed GCP controller |
+| [RunPod transport pins](runpod-transport.txt) | API/worker environment | REST and signed storage transport dependencies |
+| [Semantic encoder pins](semantic-models.txt) | Separate model environment | Direct pins for the local semantic-audit encoder |
+
+The [CPU Linux input constraints](platform-linux-amd64-py312.in) and [Vega Linux input constraints](vega-linux-amd64-py312-cu126.in) are maintenance inputs for their corresponding locks. Use the `.txt` lock for installation; consult [runtime compatibility](../docs/compatibility-and-upgrades.md) before regenerating a profile. The [Torch/Triton Linux stage](torch-linux-amd64-py312-cu126.txt) supplies accelerator packages from their intended index.
 
 Linux recipes pin the Python base digest, require hashed wheels and install project source without dependency resolution or build isolation. Build the selected image and run its checks before use. Model snapshots and direct runtime pins are platform-specific profiles rather than complete cross-platform locks. Review the [current versions and GPU dependency advisories](../docs/compatibility-and-upgrades.md) before selecting a training environment. Follow [testing](../docs/verification.md), [CPU containers](../docs/container-guide.md) or [model containers](../docs/model-container-guide.md).
 

@@ -6,6 +6,8 @@ Use it for bounded decisions such as routing support tickets, assigning invoice 
 
 ## Choose your path
 
+Browse the [complete guide directory](docs/README.md), or choose a workflow below.
+
 | What you want to do | What you will use | Start here |
 |---|---|---|
 | Use a decision model without training one | Hosted API requests, typed response validation and fallbacks | [API integration](docs/api-integration-guide.md), [application blueprints](docs/application-blueprints.md) |
@@ -81,14 +83,15 @@ Model and benchmark references are dated **9–12 October 2026**; the [runtime a
 | Location | Purpose |
 |---|---|
 | [app.py](app.py) | Streamlit interface for projects, review, jobs and releases |
-| [decision_workbench/](decision_workbench/) | Data contracts, API, persistence, workers and model adapters |
-| [docs/](docs/) | Reader and operator guides |
+| [decision_workbench/](decision_workbench/README.md) | Data contracts, API, persistence, workers and model adapters |
+| [docs/](docs/README.md) | Complete reader and operator guide directory |
 | [research/](research/README.md) | Model comparisons, annotated sources and optional [provenance records](research/provenance/README.md) |
-| [examples/](examples/) | Fictional data and configuration templates |
-| [requirements/](requirements/) | Separate dependency profiles for platform and model environments |
-| [docker/models/](docker/models/) | Vega/semantic runtime image |
-| [scripts/](scripts/) | Training helpers, research capture and repository checks |
-| [tests/](tests/) | Behavioral tests and provider contract fixtures |
+| [examples/](examples/README.md) | Fictional data and configuration templates |
+| [requirements/](requirements/README.md) | Separate dependency profiles for platform and model environments |
+| [docker/](docker/README.md) | CPU services and the separate Vega/semantic model image |
+| [scripts/](scripts/README.md) | Training helpers, research capture and repository checks |
+| [tests/](tests/README.md) | Behavioral tests and provider contract fixtures |
+| [.github/](.github/README.md) | Automated checks for pushes and pull requests |
 
 Read [the architecture](docs/architecture.md) for the component flow and [contributing](CONTRIBUTING.md) for development and documentation standards.
 

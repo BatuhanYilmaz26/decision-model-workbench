@@ -1,5 +1,7 @@
 # Managed cloud training through the platform
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Submit a frozen decision-model study to AWS SageMaker AI through the browser, authenticated API and independent worker. The controller stages inputs in S3, records the provider job and retrieves its export for local validation. Install Boto3/Botocore **1.43.113** in the control environment and prepare a compatible training image. For direct submission, use the [AWS walkthrough](remote-training/aws.md).
 
 ## Operator configuration

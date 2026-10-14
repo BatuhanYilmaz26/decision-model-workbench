@@ -1,5 +1,7 @@
 # Create and operate a policy successor
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Create a new project version when your decision rules, outcome schema or frozen acceptance criteria need to change. The successor starts from an owner-reviewed draft of the current domain, questions and optional criteria. The original project's records, models and active release remain available under its existing API routes.
 
 Use this workflow after clarifying a policy exception, adding an outcome, or deciding that different error-cost limits are needed. If evaluation findings influenced the change, obtain fresh independent evaluation gold; a new project identifier does not make previously inspected examples unseen.

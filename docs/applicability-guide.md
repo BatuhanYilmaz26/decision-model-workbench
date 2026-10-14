@@ -1,5 +1,7 @@
 # Review and reserve applicability evidence
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Applicability examples say that a specific domain question should not be applied to the supplied evidence. They are separate from labelled business examples. A weather bulletin can be inapplicable to an invoice category question; assigning it an invented invoice label or uniform target would change the training objective.
 
 The application's **Applicability** tab supports intake, authenticated review, frozen reservations and an eight-file export for the [Vega trainer](vega-guide.md). The local worker and operator admission paths consume those paired inputs; owner acceptance controls release and resident serving. Laya, Unsloth and the CPU baseline use their separate positive-data contracts.

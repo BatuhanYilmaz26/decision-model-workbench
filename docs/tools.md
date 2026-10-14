@@ -1,5 +1,7 @@
 # Tools and integrations
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Start with manual examples or a CSV/XLSX upload. Add integrations when you need a private synthesis endpoint, model registry, experiment tracking or controlled access to enterprise records.
 
 | Need | Optional route | Boundary |

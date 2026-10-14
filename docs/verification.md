@@ -1,5 +1,7 @@
 # Testing and compatibility
 
+[All guides](README.md) · [Project overview](../README.md)
+
 Select a runtime profile, check your installation and validate the model before release. Installation tests, provider compatibility and domain evaluation answer different questions; complete the checks that apply to your deployment.
 
 ## Supported execution profiles

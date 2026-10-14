@@ -1,5 +1,7 @@
 # Decision-model research
 
+[Research index](README.md) · [Project overview](../README.md)
+
 Use these pages to understand the model and API choices behind the guides:
 
 | Resource | What you will find |
