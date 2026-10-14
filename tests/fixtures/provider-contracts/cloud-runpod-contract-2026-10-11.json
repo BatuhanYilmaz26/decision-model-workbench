@@ -1,0 +1,597 @@
+{
+  "format": "domain-runpod-contract-v1",
+  "api_version": "2.0.0",
+  "source": {
+    "id": "v2-openapi.json",
+    "url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/api-reference-v2/openapi.json",
+    "resolved_url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/api-reference-v2/openapi.json",
+    "captured_utc": "2026-10-11T11:08:35.007585+00:00",
+    "sha256": "0b364f88dbdc53c0d985d5aea9c4050e73e6958c7ff16bc89d6b2f63844ac926",
+    "bytes": 413356
+  },
+  "schemas": {
+    "BaseContainerConfig": {
+      "type": "object",
+      "description": "Container configuration universal to every containerized resource. Compose ContainerConfig instead unless the resource cannot support a direct registry credential (clusters \u2014 there the registry credential arrives via a pod template, see CreateClusterRequest.templateId).\n",
+      "properties": {
+        "args": {
+          "type": "string",
+          "description": "The container's command, as a single raw string. This is the field `entrypoint` and `cmd` encode into, exposed in its stored form.\n\nTwo shapes are accepted. A bare shell string is treated as CMD and split into arguments, which is what the console's \"Container start command\" field writes. A JSON object of the form `{\"entrypoint\":[...],\"cmd\":[...]}` sets either or both explicitly.\n\nResponses always return both representations: `args` exactly as stored, plus the deconstructed `entrypoint` and `cmd`. Supplying `args` together with `entrypoint` or `cmd` is allowed only when they describe the same command, so a read-modify-write client can send back everything it received. Send `\"\"` to clear, omit to leave unchanged.\n",
+          "examples": [
+            "--model meta-llama/Llama-3-8B --max-model-len 8192",
+            "{\"entrypoint\":[\"/bin/bash\",\"-c\"],\"cmd\":[\"python -u main.py\"]}",
+            ""
+          ]
+        },
+        "cmd": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Container CMD in exec form. When the image defines an ENTRYPOINT, this is the argument list passed to it. Encoded into the `args` field; supplying both is allowed only when they describe the same command. Send `[]` to clear, omit to leave unchanged.\n",
+          "examples": [
+            [
+              "--model",
+              "meta-llama/Llama-3-8B",
+              "--max-model-len",
+              "8192"
+            ]
+          ]
+        },
+        "entrypoint": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Container ENTRYPOINT in exec form, overriding the image's own. Encoded into `args` field; supplying both is allowed only when they describe the same command. Send `[]` to clear, omit to leave unchanged.\n",
+          "examples": [
+            [
+              "/bin/bash",
+              "-c"
+            ]
+          ]
+        },
+        "disk": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Container disk in GB (ephemeral, wiped on restart)",
+          "examples": [
+            50
+          ]
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Environment variables as key-value pairs",
+          "examples": [
+            {
+              "JUPYTER_PASSWORD": "hunter2"
+            }
+          ]
+        },
+        "image": {
+          "type": "string",
+          "description": "Docker image reference",
+          "examples": [
+            "runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404"
+          ]
+        },
+        "ports": {
+          "type": "array",
+          "description": "Exposed ports, formatted as port/protocol",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            [
+              "8888/http",
+              "22/tcp"
+            ]
+          ]
+        }
+      }
+    },
+    "ContainerConfig": {
+      "description": "Reusable container configuration shared across templates, pods, and serverless endpoints. Adding a field here automatically propagates to all three resources.\n",
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/BaseContainerConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "registry": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Container registry credential ID (for private images)",
+              "examples": [
+                null
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "CreatePodRequest": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/ContainerConfig"
+        },
+        {
+          "type": "object",
+          "required": [
+            "name"
+          ],
+          "description": "Request body for creating a pod. Exactly one of `gpu` or `cpu`\nmust be set \u2014 enforced at the handler layer. For CPU pods, memory\nis derived by the API from the selected flavor's RAM multiplier;\nclients provide only CPU flavor and vCPU count. CPU pods support\ncontainer disk and network volumes only; `mounts.persistent` is\ninvalid when `cpu` is set.\n\n`image` is required unless `templateId` is set.\n",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "examples": [
+                "my-training-pod"
+              ]
+            },
+            "cloud": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Cloud"
+                }
+              ],
+              "default": "SECURE",
+              "description": "Cloud tier. Defaults to `SECURE` when omitted."
+            },
+            "cpu": {
+              "$ref": "#/components/schemas/CreateCpuConfig"
+            },
+            "dataCenterIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Preferred data centers for placement. Omit or pass an empty\narray to let the scheduler choose.\n",
+              "examples": [
+                [
+                  "US-TX-3"
+                ]
+              ]
+            },
+            "globalNetworking": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable global networking, giving the pod a private IP reachable across data centers. Requires an NVIDIA GPU and a global-networking-enabled data center (both enforced upstream). See `GET /v2/catalog/datacenters` (`globalNetwork`) for eligible data centers.",
+              "examples": [
+                false
+              ]
+            },
+            "gpu": {
+              "$ref": "#/components/schemas/CreateGpuConfig"
+            },
+            "mounts": {
+              "$ref": "#/components/schemas/Mounts"
+            },
+            "startJupyter": {
+              "type": "boolean",
+              "default": false,
+              "description": "Create-time flag telling the provisioner to start JupyterLab:\ninjects a generated `JUPYTER_PASSWORD` environment variable,\nunless the request already sets one. Only images that honor\nthe convention start Jupyter from it (Runpod official images\ndo); expose `8888/http` in `ports` to reach it.\n\nNot part of the pod's readable config \u2014 never returned by\nGET and not changeable by PATCH.\n",
+              "examples": [
+                true
+              ]
+            },
+            "startSsh": {
+              "type": "boolean",
+              "default": false,
+              "description": "Create-time flag telling the provisioner to set up SSH\naccess: injects a `PUBLIC_KEY` environment variable carrying\nyour account's registered SSH public keys, unless the request\nalready sets one. **Requires registered keys** (`PUT\n/v2/account/ssh-keys`) \u2014 with none registered the flag does\nnothing and the pod has no SSH access. Only images that honor\nthe convention start sshd from it (all Runpod official images\ndo). Connect using the pod's `ssh` block; the `ssh.direct`\nvariant additionally needs a `22/tcp` entry in `ports`.\n\nNot part of the pod's readable config \u2014 never returned by\nGET and not changeable by PATCH.\n",
+              "examples": [
+                true
+              ]
+            },
+            "templateId": {
+              "type": "string",
+              "minLength": 1,
+              "description": "ID of a pod template to base this pod on. The template is\nresolved at create time into the same container settings you\ncould otherwise spread into this body (image, args, disk,\nports, env, registry, persistent mount, startSsh,\nstartJupyter, allowedCudaVersions); explicit body fields\noverride the template's, except `env`, which is merged per\nkey with body values winning. Sending either CUDA field\n(`gpu.allowedCudaVersions` or `gpu.minCudaVersion`) replaces\nthe template's CUDA constraint entirely, and CPU pods ignore\nit (like the persistent mount). The template is a one-time\nsource of settings: later template edits do not affect the\npod, and the created pod does not retain a link to the\ntemplate (`template` stays null). The template may be one\nof your own or a public catalog template \u2014 see\n`GET /v2/catalog/templates` (unknown or inaccessible ID \u2192\n404) \u2014 and must not be a serverless template (\u2192 422). CPU\npods do not inherit a template's persistent mount.\n",
+              "examples": [
+                "30zmvf89kd"
+              ]
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false,
+      "if": {
+        "not": {
+          "required": [
+            "templateId"
+          ]
+        }
+      },
+      "then": {
+        "required": [
+          "image"
+        ]
+      }
+    },
+    "NetworkMount": {
+      "type": "object",
+      "required": [
+        "volumeId",
+        "path"
+      ],
+      "additionalProperties": false,
+      "description": "Reference to a NetworkVolume. Custom paths are honored at runtime on\nboth GPU and CPU pods. The underlying `volumeId` is immutable\npost-create; the mount `path` may be changed via PATCH.\n",
+      "properties": {
+        "volumeId": {
+          "type": "string",
+          "description": "ID of an existing NetworkVolume in the same data center as the pod.",
+          "examples": [
+            "vol_xyz"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "description": "Mount path inside the container. No default \u2014 must be specified explicitly.",
+          "examples": [
+            "/runpod-volume"
+          ]
+        }
+      }
+    },
+    "Mounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Storage mounts attached to a pod. At-most-one of `persistent` or\n`network` may be set today (mutually exclusive, enforced at the\nhandler with 400 if both are present). The `network` field is an\narray for forward compatibility with eventual multi-network-volume\nsupport, but `maxItems` is 1 today.\n\nPATCH semantics:\n- Omitting `mounts` or sending `{}` leaves the existing mount\n  unchanged.\n- An explicit `network: []` is rejected with 400 (clearing mounts\n  is not supported).\n- Mount kind is fixed at create \u2014 a PATCH that introduces a kind\n  not present at create (persistent on a network pod, network on\n  a persistent pod, or any mount on a previously-mountless pod)\n  is rejected with 400.\n- The `volumeId` of a network mount is immutable; a PATCH that\n  names a different `volumeId` is rejected with 400.\n- Partial mounts are not supported \u2014 every mount entry must\n  include the full schema (`size` + `path` for persistent,\n  `volumeId` + `path` for network). Missing required fields \u2192 422.\n",
+      "properties": {
+        "persistent": {
+          "$ref": "#/components/schemas/PersistentMount"
+        },
+        "network": {
+          "type": "array",
+          "maxItems": 1,
+          "items": {
+            "$ref": "#/components/schemas/NetworkMount"
+          }
+        }
+      }
+    },
+    "BaseGpuConfig": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "GPU type identifier",
+          "examples": [
+            "NVIDIA GeForce RTX 4090"
+          ]
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1,
+          "description": "Number of GPUs",
+          "examples": [
+            1
+          ]
+        }
+      }
+    },
+    "CreateGpuConfig": {
+      "description": "GPU request for a pod create. Carries the CUDA host constraints, which\nlive here rather than at the body's top level so they are\nunrepresentable on a CPU pod.\n",
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/BaseGpuConfig"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "allowedCudaVersions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+$"
+              },
+              "description": "Acceptable CUDA versions for the host machine, as `major.minor`.\nOmit to accept any version. Matching is exact, so a version no\nmachine reports yields a capacity error rather than a fallback \u2014\ndiscover valid values per GPU type via\n`GET /v2/catalog/gpus?include=AVAILABILITY&product=POD`\n(`cudaVersions`).\n\nA non-empty set is mutually exclusive with minCudaVersion (400\nif both are sent). An explicit `[]` states no constraint, so it\nmay accompany a floor.\n",
+              "examples": [
+                [
+                  "12.8",
+                  "12.6"
+                ]
+              ]
+            },
+            "minCudaVersion": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+$",
+              "description": "Lowest acceptable CUDA version for the host machine, as\n`major.minor`, compared numerically rather than as a decimal \u2014\nso 12.11 is above 12.2. Use this for an open-ended floor and\nallowedCudaVersions for an exact set.\n\nMutually exclusive with a non-empty allowedCudaVersions (400 if\nboth are sent); an explicit `[]` there states no constraint and\nmay accompany this floor.\n",
+              "examples": [
+                "12.1"
+              ]
+            },
+            "minRamPerGpu": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Minimum host system RAM in GB per requested GPU. This is a placement filter, not a resource request. The actual total allocated system RAM may be higher and is returned in gpu.memory.",
+              "examples": [
+                8
+              ]
+            },
+            "minVcpuCountPerGpu": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Minimum host vCPU count per requested GPU. This is a placement filter, not a resource request. The actual total allocated vCPU count may be higher and is returned in gpu.vcpuCount.",
+              "examples": [
+                2
+              ]
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "Pod": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/ContainerConfig"
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "name",
+            "status",
+            "actions",
+            "image",
+            "args",
+            "disk",
+            "mounts",
+            "ports",
+            "env",
+            "registry",
+            "cloud",
+            "dataCenterId",
+            "cudaVersion",
+            "ssh",
+            "template",
+            "cost",
+            "locked",
+            "runtime",
+            "createdAt",
+            "startedAt",
+            "globalNetworking"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "examples": [
+                "pod_abc123"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "examples": [
+                "my-training-pod"
+              ]
+            },
+            "status": {
+              "$ref": "#/components/schemas/PodStatus"
+            },
+            "actions": {
+              "type": "array",
+              "description": "Valid state transitions for the current status.",
+              "items": {
+                "$ref": "#/components/schemas/PodAction"
+              }
+            },
+            "mounts": {
+              "$ref": "#/components/schemas/Mounts"
+            },
+            "gpu": {
+              "description": "Present for GPU pods; omitted from CPU pods.",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/GpuConfig"
+                }
+              ]
+            },
+            "cpu": {
+              "description": "Present for CPU pods; omitted from GPU pods.",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/CpuConfig"
+                }
+              ]
+            },
+            "cloud": {
+              "$ref": "#/components/schemas/Cloud"
+            },
+            "dataCenterId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Data center where the pod is running (assigned by scheduler)",
+              "examples": [
+                "US-TX-3"
+              ]
+            },
+            "cudaVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "CUDA version reported by the host machine. Retained while the pod is stopped \u2014 a stopped pod keeps its machine assignment and resumes onto the same host. Null means unknown or not applicable (CPU pods, or a host that has not reported one), not that CUDA is absent.",
+              "examples": [
+                "12.8"
+              ]
+            },
+            "ssh": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/PodSsh"
+                }
+              ],
+              "description": "SSH connection details, via the Runpod proxy or directly to the pod's published `22/tcp` port."
+            },
+            "cluster": {
+              "description": "Cluster membership; omitted from a standalone pod. Member pods are managed through `/v2/clusters/{id}` \u2014 they are excluded from `GET /v2/pods` by default (pass `includeClusterPods=true` to include them) and cannot be modified or deleted via the pod endpoints.",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/PodCluster"
+                }
+              ]
+            },
+            "template": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "ID of the template this pod was created from",
+              "examples": [
+                null
+              ]
+            },
+            "cost": {
+              "type": "number",
+              "format": "float",
+              "description": "Current cost in USD per hour (0.0 when EXITED or TERMINATED)",
+              "examples": [
+                0.35
+              ]
+            },
+            "locked": {
+              "type": "boolean",
+              "description": "Whether the pod is locked (prevents stopping or resetting)",
+              "examples": [
+                false
+              ]
+            },
+            "globalNetworking": {
+              "$ref": "#/components/schemas/PodGlobalNetworking"
+            },
+            "runtime": {
+              "description": "Live utilization metrics. Null when the pod is not RUNNING.",
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PodRuntime"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "examples": [
+                "2026-03-13T20:00:00Z"
+              ]
+            },
+            "startedAt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "examples": [
+                "2026-03-13T20:00:00Z"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "PodStatus": {
+      "type": "string",
+      "description": "Lifecycle status of a pod.\n- `PROVISIONING` \u2014 pod is being allocated\n- `STARTING`     \u2014 container is starting\n- `RUNNING`      \u2014 container is healthy\n- `EXITED`       \u2014 container exited (stopped)\n- `ERROR`        \u2014 container is in an unrecoverable error state\n- `TERMINATED`   \u2014 pod has been permanently deleted\n",
+      "enum": [
+        "PROVISIONING",
+        "STARTING",
+        "RUNNING",
+        "EXITED",
+        "ERROR",
+        "TERMINATED"
+      ]
+    },
+    "Pagination": {
+      "type": "object",
+      "required": [
+        "nextCursor",
+        "hasNextPage"
+      ],
+      "description": "Cursor-pagination metadata, uniform across list endpoints. Every response carries it: follow `nextCursor` while `hasNextPage` is true to walk the full result set.\n",
+      "properties": {
+        "nextCursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Pass as the `cursor` query parameter to fetch the next page. Null on the last page.\n",
+          "examples": [
+            null
+          ]
+        },
+        "hasNextPage": {
+          "type": "boolean",
+          "description": "Whether more items exist after this page.",
+          "examples": [
+            false
+          ]
+        }
+      }
+    },
+    "NetworkVolume": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "size",
+        "dataCenter",
+        "type"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique network volume identifier",
+          "examples": [
+            "agv6w2qcg7"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable name (not required to be unique)",
+          "examples": [
+            "my-dataset"
+          ]
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 4096,
+          "description": "Allocated storage in GB",
+          "examples": [
+            50
+          ]
+        },
+        "dataCenter": {
+          "type": "string",
+          "description": "Data center location; immutable after creation",
+          "examples": [
+            "EU-RO-1"
+          ]
+        },
+        "type": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/VolumeType"
+            }
+          ],
+          "description": "Storage tier of this volume. Set at creation and immutable."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,92 @@
+[
+  {
+    "id": "aws-create",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateTrainingJob.html",
+    "retrieved_at": "2026-10-11T09:45:23.778131+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateTrainingJob.html",
+    "bytes": 72142,
+    "sha256": "1e0ed42587360509800378807ec5480f0e55bfd2be8861991e3fc7a48ecbddcd"
+  },
+  {
+    "id": "aws-describe",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_DescribeTrainingJob.html",
+    "retrieved_at": "2026-10-11T09:45:23.779165+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_DescribeTrainingJob.html",
+    "bytes": 82587,
+    "sha256": "d43c0bcdc3ac5cc4aa92907164c61585e0af50065c2cf215e3b7c134734bea2b"
+  },
+  {
+    "id": "aws-stop",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_StopTrainingJob.html",
+    "retrieved_at": "2026-10-11T09:45:23.779803+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_StopTrainingJob.html",
+    "bytes": 16896,
+    "sha256": "2c4c203022881bb2ecbba0e9ebb26e0e7a928c235ae86c78fc3cbc22e1e437fa"
+  },
+  {
+    "id": "aws-retry",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_RetryStrategy.html",
+    "retrieved_at": "2026-10-11T09:45:23.780430+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_RetryStrategy.html",
+    "bytes": 13681,
+    "sha256": "022b1cc70d843422e78398ad03bb9118c84af0ae3286de22dde58c69579096fa"
+  },
+  {
+    "id": "aws-output",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo-output.html",
+    "retrieved_at": "2026-10-11T09:45:24.410886+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo-output.html",
+    "bytes": 16243,
+    "sha256": "afb75747c692f26aeed9d14703166b521382830edc49efead301cfa68c826184"
+  },
+  {
+    "id": "aws-put",
+    "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html",
+    "retrieved_at": "2026-10-11T09:45:24.427687+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html",
+    "bytes": 130613,
+    "sha256": "7b7df1cbf7298decf9476a307fc41b2bc1a53e24784c9b15663b62032839a608"
+  },
+  {
+    "id": "aws-get",
+    "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html",
+    "retrieved_at": "2026-10-11T09:45:24.440174+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html",
+    "bytes": 105009,
+    "sha256": "499dea4578770c86b21bac12f96617a89216f1fcaf4db0ac673d999118ca7e3a"
+  },
+  {
+    "id": "aws-sts",
+    "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html",
+    "retrieved_at": "2026-10-11T09:45:24.451268+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html",
+    "bytes": 22947,
+    "sha256": "e914c87a934c5fb054fd4b429e928feac26559f38fa93d49cf3cdd01822098ff"
+  },
+  {
+    "id": "aws-roles",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html",
+    "retrieved_at": "2026-10-11T09:45:24.716343+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html",
+    "bytes": 107666,
+    "sha256": "b4115398839230df8fd0730807f1ce726206e46d45cad71e20ddc239d985676a"
+  },
+  {
+    "id": "aws-storage",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/model-train-storage-env-var-summary.html",
+    "retrieved_at": "2026-10-11T09:45:24.781693+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/dg/model-train-storage-env-var-summary.html",
+    "bytes": 19353,
+    "sha256": "d8ad33b268659a7b1025d09165eb05266063d58c221a8ea599bb9ec1f7d70695"
+  }
+]

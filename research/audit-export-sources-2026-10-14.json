@@ -1,0 +1,20 @@
+[
+  {
+    "id": "python-hashlib",
+    "url": "https://docs.python.org/3/library/hashlib.html",
+    "retrieved_utc": "2026-10-14T14:46:42.519015+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.python.org/3/library/hashlib.html",
+    "sha256": "d2b949a1e6603684ce0a267dceffc43dc30d0e3c6ad9ed6e60814ab99913bb08",
+    "bytes": 121928
+  },
+  {
+    "id": "sqlite-transactions",
+    "url": "https://www.sqlite.org/lang_transaction.html",
+    "retrieved_utc": "2026-10-14T14:46:43.360748+00:00",
+    "status": 200,
+    "resolved_url": "https://www.sqlite.org/lang_transaction.html",
+    "sha256": "b65dc308fd9e0ce471844c97366a4f5ad3a1f42833a3b19486ad7d6555a8e24e",
+    "bytes": 27068
+  }
+]

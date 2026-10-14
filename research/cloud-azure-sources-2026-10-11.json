@@ -1,0 +1,131 @@
+{
+  "format": "domain-cloud-sources-v1",
+  "repository_revision": "65eb9311d304dcf9874d05fdec39ea65baae8db8",
+  "sources": [
+    {
+      "id": "ml-openapi",
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/65eb9311d304dcf9874d05fdec39ea65baae8db8/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/MachineLearningServices/stable/2026-09-01/openapi.json",
+      "resolved_url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/65eb9311d304dcf9874d05fdec39ea65baae8db8/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/MachineLearningServices/stable/2026-09-01/openapi.json",
+      "captured_utc": "2026-10-11T10:39:46.849178+00:00",
+      "sha256": "6d2f0eb954e46a5618ba11ffab930ae51363181739c5184e068f7b6e1b292e2e",
+      "bytes": 1198855
+    },
+    {
+      "id": "jobs-create",
+      "url": "https://learn.microsoft.com/en-us/rest/api/azureml/jobs/create-or-update?view=rest-azureml-2026-09-01",
+      "resolved_url": "https://learn.microsoft.com/en-us/rest/api/azureml/jobs/create-or-update?view=rest-azureml-2026-07-01&viewFallbackFrom=rest-azureml-2026-09-01",
+      "captured_utc": "2026-10-11T10:39:48.312910+00:00",
+      "sha256": "c6ba268588bbf9fc8205b4d0035a45243afb9a17ce69f22ad6565eed6cf4b2b9",
+      "bytes": 328903
+    },
+    {
+      "id": "jobs-cancel",
+      "url": "https://learn.microsoft.com/en-us/rest/api/azureml/jobs/cancel?view=rest-azureml-2026-09-01",
+      "resolved_url": "https://learn.microsoft.com/en-us/rest/api/azureml/jobs/cancel?view=rest-azureml-2026-07-01&viewFallbackFrom=rest-azureml-2026-09-01",
+      "captured_utc": "2026-10-11T10:39:49.374812+00:00",
+      "sha256": "142756ea022c6bd6e67c5469d4dec4f1ae559ca95be4cd40bee54d7984a4e017",
+      "bytes": 43164
+    },
+    {
+      "id": "managed-identities",
+      "url": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-use-managed-identities",
+      "resolved_url": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-identity-based-service-authentication?view=azureml-api-2",
+      "captured_utc": "2026-10-11T10:39:50.441032+00:00",
+      "sha256": "39ab72d648c6e2f8535b9fce5eaa852199a3423b8a716175f53b56af9e5bfd6d",
+      "bytes": 125574
+    },
+    {
+      "id": "blob-put",
+      "url": "https://learn.microsoft.com/en-us/rest/api/storageservices/put-blob",
+      "resolved_url": "https://learn.microsoft.com/en-us/rest/api/storageservices/put-blob",
+      "captured_utc": "2026-10-11T10:39:50.805656+00:00",
+      "sha256": "478147a1f0d31e28d7055e9e772db8f6b6e42e1992880d80c5b37889180b77a1",
+      "bytes": 78588
+    },
+    {
+      "id": "blob-get",
+      "url": "https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob",
+      "resolved_url": "https://learn.microsoft.com/en-us/rest/api/storageservices/get-blob",
+      "captured_utc": "2026-10-11T10:39:51.276987+00:00",
+      "sha256": "e78ab8154e0e869e9ffde32ae9b45273c46cac2f3f53e8be1f7252de27f0ad55",
+      "bytes": 82988
+    },
+    {
+      "id": "oauth-client-credentials",
+      "url": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow",
+      "resolved_url": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow",
+      "captured_utc": "2026-10-11T10:39:51.588530+00:00",
+      "sha256": "78e9e643aef33ff13b927a8c0df332f6ba22a25a3c27b7a49b9f520c9a6e81e6",
+      "bytes": 74246
+    },
+    {
+      "id": "command-yaml",
+      "url": "https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command?view=azureml-api-2",
+      "resolved_url": "https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command?view=azureml-api-2",
+      "captured_utc": "2026-10-11T10:39:52.036444+00:00",
+      "sha256": "478bb883c59b8c42640cfac2c6f2d3f8fe3b0bee39563e3fda80334ff8f268db",
+      "bytes": 74010
+    },
+    {
+      "id": "ml-sdk-constants",
+      "url": "https://raw.githubusercontent.com/Azure/azure-sdk-for-python/main/sdk/ml/azure-ai-ml/azure/ai/ml/constants/_common.py",
+      "captured_utc": "2026-10-11T10:51:40.760786+00:00",
+      "sha256": "7ec216909c5347e46c002b1a42973b32dc43a801fcae3086f4a896bb5ce9f6a2",
+      "bytes": 39338
+    },
+    {
+      "id": "ml-sdk-job-service",
+      "url": "https://raw.githubusercontent.com/Azure/azure-sdk-for-python/main/sdk/ml/azure-ai-ml/azure/ai/ml/entities/_job/job_service.py",
+      "captured_utc": "2026-10-11T10:52:13.183447+00:00",
+      "sha256": "039745524d11c783e3300015222425f7f0e0df15dea9d6d0d00cbf4cea5be9aa",
+      "bytes": 16306
+    },
+    {
+      "id": "ml-sdk-job-constants",
+      "url": "https://raw.githubusercontent.com/Azure/azure-sdk-for-python/main/sdk/ml/azure-ai-ml/azure/ai/ml/constants/_job/job.py",
+      "captured_utc": "2026-10-11T10:52:26.391630+00:00",
+      "sha256": "ac4c65a732bf64441b55a57ce08a8fe929311cda98e7173bf7d5be38d683bf5a",
+      "bytes": 4759
+    },
+    {
+      "id": "storage-versioning",
+      "url": "https://learn.microsoft.com/en-us/rest/api/storageservices/versioning-for-the-azure-storage-services",
+      "resolved_url": "https://learn.microsoft.com/en-us/rest/api/storageservices/versioning-for-the-azure-storage-services",
+      "captured_utc": "2026-10-11T10:58:39.464149+00:00",
+      "sha256": "6628d460f0639f75e9b2019a04daa0dce504ce20bc3a538f2e237f5234d7dd7a",
+      "bytes": 61536
+    },
+    {
+      "id": "storage-account",
+      "url": "https://learn.microsoft.com/en-us/rest/api/storagerp/storage-accounts/get-properties?view=rest-storagerp-2025-06-01",
+      "resolved_url": "https://learn.microsoft.com/en-us/rest/api/storagerp/storage-accounts/get-properties?view=rest-storagerp-2025-06-01",
+      "captured_utc": "2026-10-11T10:58:40.619183+00:00",
+      "sha256": "45f09c6322f8f9afcdb51c7acdb7ba53b13c87da8910ed3e95b67100846880d4",
+      "bytes": 263247
+    },
+    {
+      "id": "input-output-modes",
+      "url": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-manage-inputs-outputs-pipeline?view=azureml-api-2",
+      "resolved_url": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-manage-inputs-outputs-pipeline?view=azureml-api-2",
+      "captured_utc": "2026-10-11T10:58:40.943988+00:00",
+      "sha256": "08bde88022c5cb45bb6b91dba611bc7d53cd49d603c32ea49f2d5613fb215c5a",
+      "bytes": 88525
+    },
+    {
+      "id": "subscription-get",
+      "url": "https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/get?view=rest-resources-2022-12-01",
+      "resolved_url": "https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/get?view=rest-resources-2022-12-01",
+      "captured_utc": "2026-10-11T10:58:41.757216+00:00",
+      "sha256": "b86c215f6569e68c6a301eebd0b4b1c86896cafe6971e3ae6d0874456bc62c9e",
+      "bytes": 54903
+    },
+    {
+      "id": "gpu-sizes",
+      "url": "https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/gpu-accelerated/ncast4v3-series",
+      "resolved_url": "https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/gpu-accelerated/ncast4v3-series",
+      "captured_utc": "2026-10-11T11:03:08.192262+00:00",
+      "sha256": "77e484572110abf83ddb86c630ef171d1876123715c5d64a481c258d057d6050",
+      "bytes": 59962
+    }
+  ]
+}

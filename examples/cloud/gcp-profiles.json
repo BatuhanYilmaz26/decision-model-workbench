@@ -1,0 +1,29 @@
+{
+  "format": "domain-cloud-profiles-v1",
+  "profiles": [
+    {
+      "id": "gcp-example",
+      "provider": "gcp",
+      "tenants": [
+        "replace-with-workspace-tenant"
+      ],
+      "credential_prefix": "DMT_CLOUD_GCP",
+      "account_id": "123456789012",
+      "region": "europe-west4",
+      "bucket": "your-private-bucket",
+      "prefix": "decision-runs",
+      "image_digest": "europe-west4-docker.pkg.dev/your-project/trainers/laya@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "gpu": "NVIDIA_TESLA_T4",
+      "volume_gb": 100,
+      "max_runtime_seconds": 7200,
+      "max_runs_day": 2,
+      "max_inflight": 1,
+      "max_artifact_bytes": 8589934592,
+      "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "project_id": "your-project",
+      "operator_service_account": "operator@your-project.iam.gserviceaccount.com",
+      "training_service_account": "trainer@your-project.iam.gserviceaccount.com",
+      "machine_type": "n1-standard-8"
+    }
+  ]
+}

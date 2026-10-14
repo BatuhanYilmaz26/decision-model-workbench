@@ -1,0 +1,28 @@
+{
+  "format": "domain-cloud-profiles-v1",
+  "profiles": [
+    {
+      "id": "runpod-fixture",
+      "provider": "runpod",
+      "tenants": [
+        "your-tenant-id"
+      ],
+      "credential_prefix": "DMT_CLOUD_RUNPOD",
+      "account_id": "user_example",
+      "region": "EU-RO-1",
+      "volume_id": "your_volume_id",
+      "volume_gb": 100,
+      "prefix": "studies",
+      "registry_id": null,
+      "image_digest": "ghcr.io/example/trainer@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "gpu": "NVIDIA GeForce RTX 4090",
+      "cuda_version": "12.8",
+      "disk_gb": 50,
+      "max_runtime_seconds": 7200,
+      "max_runs_day": 2,
+      "max_inflight": 1,
+      "max_artifact_bytes": 1048576,
+      "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

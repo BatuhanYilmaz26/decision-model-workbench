@@ -1,0 +1,596 @@
+[
+  {
+    "id": "x-post",
+    "url": "https://x.com/akshay_pachaar/status/2101037514945597645",
+    "retrieved_at": "2026-10-10T16:34:17.419494+00:00",
+    "status": 200,
+    "resolved_url": "https://x.com/akshay_pachaar/status/2101037514945597645",
+    "bytes": 435376,
+    "sha256": "1f79f012b5ca31b1cbb45d5153748e2acb64fe43191d021697ea7888a0acfa6a"
+  },
+  {
+    "id": "openrouter-rankings",
+    "url": "https://openrouter.ai/rankings/decisions",
+    "retrieved_at": "2026-10-10T16:34:17.420451+00:00",
+    "status": 200,
+    "resolved_url": "https://openrouter.ai/rankings/decisions",
+    "bytes": 1413002,
+    "sha256": "6f58f6fca32af1cdb210dadb884871ace61b1087ba08c1496754598551b7e8b5"
+  },
+  {
+    "id": "jevbench-166-page",
+    "url": "https://benchmarkheaven.com/jev-models/v1.6.6",
+    "retrieved_at": "2026-10-10T16:34:17.421123+00:00",
+    "status": 200,
+    "resolved_url": "https://benchmarkheaven.com/jev-models/v1.6.6",
+    "bytes": 775479,
+    "sha256": "5c12e32ba95a0912b5fb5a270f3728f15cb3c14ea9df4a8cbab94fc0452f9e0f"
+  },
+  {
+    "id": "jevbench-manifest",
+    "url": "https://benchmarkheaven.com/api/jevbench/manifest",
+    "retrieved_at": "2026-10-10T16:34:17.422987+00:00",
+    "status": 200,
+    "resolved_url": "https://benchmarkheaven.com/api/jevbench/manifest",
+    "bytes": 6741,
+    "sha256": "ed8a1faf64278d61b0aad2858c78504d653ec1bcd187b7d65c60d1842980f6f5"
+  },
+  {
+    "id": "typellm-cookbook",
+    "url": "https://typellm.ai/cookbook/discover-invoice-categories?v=2",
+    "retrieved_at": "2026-10-10T16:34:17.538425+00:00",
+    "status": 200,
+    "resolved_url": "https://typellm.ai/cookbook/discover-invoice-categories?v=2",
+    "bytes": 66942,
+    "sha256": "a3359864bcab51562b739f1bf1dda06c2ad98db6881cc3af43cd3e42e0b7a8df"
+  },
+  {
+    "id": "invoice-notebook",
+    "url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/main/examples/notebooks/discover_invoice_categories.ipynb",
+    "retrieved_at": "2026-10-10T16:34:17.960016+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/main/examples/notebooks/discover_invoice_categories.ipynb",
+    "bytes": 21373,
+    "sha256": "cb0c72722f1129025edb851d36c3ffdf7296ac45eb40db5256f6d6e31222da47"
+  },
+  {
+    "id": "vega-article",
+    "url": "https://www.nandakishorm.com/writing/vega",
+    "retrieved_at": "2026-10-10T16:34:18.121974+00:00",
+    "status": 200,
+    "resolved_url": "https://www.nandakishorm.com/writing/vega",
+    "bytes": 136309,
+    "sha256": "94db6b9da8d9cb9449f202675b0a4a919bf73469029fd237a92790ac4bc54b8e"
+  },
+  {
+    "id": "vega-readme",
+    "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/main/README.md",
+    "retrieved_at": "2026-10-10T16:34:18.149956+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/main/README.md",
+    "bytes": 21800,
+    "sha256": "20136df890c0fbd3316898bf367a975246f5158c1250a8bb37c1a4571af27ab7"
+  },
+  {
+    "id": "vega-card",
+    "url": "https://huggingface.co/nandakishorm/vega-08b-public-intents/raw/main/README.md",
+    "retrieved_at": "2026-10-10T16:34:18.201619+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/nandakishorm/vega-08b-public-intents/raw/main/README.md",
+    "bytes": 15080,
+    "sha256": "c9e172d0825611a51b6d38ddee037bfa3c575ea1ae766d12ae8b38ab09a4375c"
+  },
+  {
+    "id": "vega-commit",
+    "url": "https://api.github.com/repos/NandhaKishorM/vegaml/commits/main",
+    "retrieved_at": "2026-10-10T16:34:18.276855+00:00",
+    "status": 200,
+    "resolved_url": "https://api.github.com/repos/NandhaKishorM/vegaml/commits/main",
+    "bytes": 8484,
+    "sha256": "463858aa4bb7d662cafbe7fc2e8c0f88f3af81dd222f8ddcf217cbde76360a89"
+  },
+  {
+    "id": "vega-model-revision",
+    "url": "https://huggingface.co/api/models/nandakishorm/vega-08b-public-intents",
+    "retrieved_at": "2026-10-10T16:34:18.325874+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/api/models/nandakishorm/vega-08b-public-intents",
+    "bytes": 2321,
+    "sha256": "418d1db545c7328b1c5a28e575fe4f3526ebb261e43596ad85486bc862bf4ba1"
+  },
+  {
+    "id": "invoice-commit",
+    "url": "https://api.github.com/repos/TypeLLM/TypeLLM/commits/main",
+    "retrieved_at": "2026-10-10T16:34:18.415395+00:00",
+    "status": 200,
+    "resolved_url": "https://api.github.com/repos/TypeLLM/TypeLLM/commits/main",
+    "bytes": 7120,
+    "sha256": "80323da71efd5b43d1b14cd1d893decdf549d046ab43afc9c65baea6542cdaa2"
+  },
+  {
+    "id": "jevbench-166-artifact",
+    "url": "https://benchmarkheaven.com/api/jevbench/v1.6.6",
+    "retrieved_at": "2026-10-10T16:35:51.537249+00:00",
+    "status": 200,
+    "resolved_url": "https://benchmarkheaven.com/api/jevbench/v1.6.6",
+    "bytes": 293077,
+    "sha256": "31b1f53ef9ff065eefae2fdaf619c65f4ef579ce0608b7698a1bc63b620bf0cc"
+  },
+  {
+    "id": "jevbench-167-artifact",
+    "url": "https://benchmarkheaven.com/api/jevbench/v1.6.7",
+    "retrieved_at": "2026-10-10T16:35:51.538268+00:00",
+    "status": 200,
+    "resolved_url": "https://benchmarkheaven.com/api/jevbench/v1.6.7",
+    "bytes": 326737,
+    "sha256": "64120ec678f2613389b016e871e6ac3dd690b0c438cfae35a801abb0a584305c"
+  },
+  {
+    "id": "openrouter-howto",
+    "url": "https://openrouter.ai/blog/tutorials/how-to-use-jev/",
+    "retrieved_at": "2026-10-10T16:35:51.538926+00:00",
+    "status": 200,
+    "resolved_url": "https://openrouter.ai/blog/tutorials/how-to-use-jev/",
+    "bytes": 288887,
+    "sha256": "6cde3d45d3837b0f7e03b66a270804068d07e9ecda2082259f39ab623f88b251"
+  },
+  {
+    "id": "jevbench-source",
+    "url": "https://raw.githubusercontent.com/fstandhartinger/jevbench/main/README.md",
+    "retrieved_at": "2026-10-10T16:35:51.540146+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/fstandhartinger/jevbench/main/README.md",
+    "bytes": 38359,
+    "sha256": "2165b3f9d537c9d03e5d7ab8e5736cc8d0661417fbdf53cb89a8e5f3bace30c3"
+  },
+  {
+    "id": "vega-package-config",
+    "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/01d2850408084034e27174621c19e01f0f0b9e92/pyproject.toml",
+    "retrieved_at": "2026-10-10T16:35:52.077040+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/01d2850408084034e27174621c19e01f0f0b9e92/pyproject.toml",
+    "bytes": 2427,
+    "sha256": "fa44fd167b7c94b5e0ce127e8b87a118d1e3884db5852e1b0d4e3d81c347a6a7"
+  },
+  {
+    "id": "vega-finetune",
+    "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/01d2850408084034e27174621c19e01f0f0b9e92/notebooks/vega_finetune.py",
+    "retrieved_at": "2026-10-10T16:35:52.104160+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/01d2850408084034e27174621c19e01f0f0b9e92/notebooks/vega_finetune.py",
+    "bytes": 20903,
+    "sha256": "d273821a66565ca220e281757b0f93b296d70184319a485da22382470a92c416"
+  },
+  {
+    "id": "vega-loader",
+    "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/01d2850408084034e27174621c19e01f0f0b9e92/vegaml/__init__.py",
+    "retrieved_at": "2026-10-10T16:35:52.232228+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/01d2850408084034e27174621c19e01f0f0b9e92/vegaml/__init__.py",
+    "bytes": 10475,
+    "sha256": "0d96454ae9f3a5967fab4e8ded22b4d911b8239f7391e3398860b777be16b996"
+  },
+  {
+    "id": "openrouter-api",
+    "url": "https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-request",
+    "retrieved_at": "2026-10-10T16:38:32.565689+00:00",
+    "status": 200,
+    "resolved_url": "https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-request",
+    "bytes": 784774,
+    "sha256": "a4fe9dd5bbb87157be3e9fb74ff2f0704cfa54851150bdcdb899e3c4081bbf96"
+  },
+  {
+    "id": "openrouter-models",
+    "url": "https://openrouter.ai/api/v1/models",
+    "retrieved_at": "2026-10-10T16:38:32.566667+00:00",
+    "status": 200,
+    "resolved_url": "https://openrouter.ai/api/v1/models",
+    "bytes": 765931,
+    "sha256": "34a0570beb74cce2a49e7d6b89d00af071f4c9ff706c49ea36f7e61a20c10f0e"
+  },
+  {
+    "id": "jev-api",
+    "url": "https://docs.typesafe.ai/api.md",
+    "retrieved_at": "2026-10-10T16:38:32.567316+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.typesafe.ai/api.md",
+    "bytes": 11344,
+    "sha256": "6b760275f89341fe15cff80c28aacae94d7d0c0c99afcd987ec0bca680b5713a"
+  },
+  {
+    "id": "jev-models",
+    "url": "https://docs.typesafe.ai/models.md",
+    "retrieved_at": "2026-10-10T16:38:32.568027+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.typesafe.ai/models.md",
+    "bytes": 6684,
+    "sha256": "15351adaab85874b5f1a942fc2fdf3c7b3ecadcc936d580793d734855a0038f3"
+  },
+  {
+    "id": "jev-python",
+    "url": "https://docs.typesafe.ai/sdk/python.md",
+    "retrieved_at": "2026-10-10T16:38:32.568728+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.typesafe.ai/sdk/python.md",
+    "bytes": 3827,
+    "sha256": "ff4564cfcf2b577f36be5f6bb6bb0ee5f4f39306af1a39357316a54c81f92279"
+  },
+  {
+    "id": "cloudflare-flash",
+    "url": "https://developers.cloudflare.com/workers-ai/models/clef-flash/",
+    "retrieved_at": "2026-10-10T16:38:32.599310+00:00",
+    "status": 200,
+    "resolved_url": "https://developers.cloudflare.com/workers-ai/models/clef-flash/",
+    "bytes": 165696,
+    "sha256": "df9bf1c49b4d1c7f3e222723ba0c182939a94516d716873f64fbe5761c2845d7"
+  },
+  {
+    "id": "perplexity-api",
+    "url": "https://docs.perplexity.ai/docs/decisions/quickstart",
+    "retrieved_at": "2026-10-10T16:38:33.120442+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.perplexity.ai/docs/decisions/quickstart",
+    "bytes": 741115,
+    "sha256": "310dca9c57a2be266e53b11b1a86d227383c5ee394d29b521ef60e0eb4b6494d"
+  },
+  {
+    "id": "aws-create-training",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateTrainingJob.html",
+    "retrieved_at": "2026-10-10T16:38:33.124270+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateTrainingJob.html",
+    "bytes": 72142,
+    "sha256": "1e0ed42587360509800378807ec5480f0e55bfd2be8861991e3fc7a48ecbddcd"
+  },
+  {
+    "id": "aws-storage",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/model-train-storage.html",
+    "retrieved_at": "2026-10-10T16:38:33.225537+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/dg/model-train-storage.html",
+    "bytes": 14997,
+    "sha256": "5104e79dd4d7b1cf75ec3e6b16d25d6224c60e0d19ead6662c97ab49c83f2c92"
+  },
+  {
+    "id": "aws-training-image",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo-dockerfile.html",
+    "retrieved_at": "2026-10-10T16:38:33.255926+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo-dockerfile.html",
+    "bytes": 42892,
+    "sha256": "102b8da1a747240e2e2adabfd91024c1c2d5155e5d1a4f51e123a501d30540db"
+  },
+  {
+    "id": "azure-training",
+    "url": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-train-model?view=azureml-api-2",
+    "retrieved_at": "2026-10-10T16:38:33.333311+00:00",
+    "status": 200,
+    "resolved_url": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-train-model?view=azureml-api-2",
+    "bytes": 84764,
+    "sha256": "9232fe149c74e472e788f98f04c180fa0e2cab75cfaf1d89f76c700a4a685647"
+  },
+  {
+    "id": "azure-job-schema",
+    "url": "https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command?view=azureml-api-2",
+    "retrieved_at": "2026-10-10T16:38:33.389689+00:00",
+    "status": 200,
+    "resolved_url": "https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command?view=azureml-api-2",
+    "bytes": 74389,
+    "sha256": "61ffa8c8eda740410af960f9d1d111616da5a0735e9301784c51c6b298d6e8c7"
+  },
+  {
+    "id": "azure-compute",
+    "url": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-create-attach-compute-cluster?view=azureml-api-2",
+    "retrieved_at": "2026-10-10T16:38:33.525059+00:00",
+    "status": 200,
+    "resolved_url": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-create-attach-compute-cluster?view=azureml-api-2",
+    "bytes": 81162,
+    "sha256": "d2cc8fae4de7690ae43b94f884b690d04ea76d39a60efede37790cdbceaacd24"
+  },
+  {
+    "id": "azure-manage-jobs",
+    "url": "https://learn.microsoft.com/en-us/cli/azure/ml/job?view=azure-cli-latest",
+    "retrieved_at": "2026-10-10T16:38:33.543358+00:00",
+    "status": 200,
+    "resolved_url": "https://learn.microsoft.com/en-us/cli/azure/ml/job?view=azure-cli-latest",
+    "bytes": 157399,
+    "sha256": "a3e85a3fd74ca253b9cb8972a023d3e436672121078989c703fbc1dffa045e63"
+  },
+  {
+    "id": "gcp-custom-job",
+    "url": "https://cloud.google.com/vertex-ai/docs/training/create-custom-job",
+    "retrieved_at": "2026-10-10T16:38:33.599891+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/training/create-custom-job",
+    "bytes": 517450,
+    "sha256": "d602ec15a9267aee4b693abd635097bef61936c0f5d38d032d37d0a70eae5092"
+  },
+  {
+    "id": "gcp-export",
+    "url": "https://cloud.google.com/vertex-ai/docs/training/code-requirements",
+    "retrieved_at": "2026-10-10T16:38:33.602153+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/training/code-requirements",
+    "bytes": 450676,
+    "sha256": "06db27ed8f8d1fac7cc34b5662b8cd13dc214d285ae16ae46ab94de8456d049c"
+  },
+  {
+    "id": "gcp-cli",
+    "url": "https://cloud.google.com/sdk/gcloud/reference/ai/custom-jobs/create",
+    "retrieved_at": "2026-10-10T16:38:33.731364+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.cloud.google.com/sdk/gcloud/reference/ai/custom-jobs/create",
+    "bytes": 191490,
+    "sha256": "e25e469ae9141385ea2a12ed20da6c2ad77ca13bbd64c9c493fcabf813e9bcb7"
+  },
+  {
+    "id": "modal-unsloth",
+    "url": "https://modal.com/docs/examples/unsloth_finetune",
+    "retrieved_at": "2026-10-10T16:38:33.745132+00:00",
+    "status": 200,
+    "resolved_url": "https://modal.com/docs/examples/unsloth_finetune",
+    "bytes": 80072,
+    "sha256": "e455a9162d3ab350c5911cb87f469221470eaa525ab29782063f82119891c6af"
+  },
+  {
+    "id": "modal-volumes",
+    "url": "https://modal.com/docs/guide/volumes",
+    "retrieved_at": "2026-10-10T16:38:34.013151+00:00",
+    "status": 200,
+    "resolved_url": "https://modal.com/docs/guide/volumes",
+    "bytes": 122529,
+    "sha256": "69812346c7f5e14dc884ff29754897ad7a0a71e2d3d647f1cd89b85d85588cdf"
+  },
+  {
+    "id": "modal-volume-cli",
+    "url": "https://modal.com/docs/cli/latest/volume",
+    "retrieved_at": "2026-10-10T16:38:34.037601+00:00",
+    "status": 200,
+    "resolved_url": "https://modal.com/docs/cli/latest/volume",
+    "bytes": 59836,
+    "sha256": "47a56c8c04236d512fd1ebb8a953cfe7d370e43c10b57738187963390b75fea0"
+  },
+  {
+    "id": "modal-images",
+    "url": "https://modal.com/docs/guide/images",
+    "retrieved_at": "2026-10-10T16:38:34.471104+00:00",
+    "status": 200,
+    "resolved_url": "https://modal.com/docs/guide/images",
+    "bytes": 84287,
+    "sha256": "422f82a25c68929db7d52ff4e75b5044c4f400fbf8bd49a28b685a8875094d18"
+  },
+  {
+    "id": "runpod-create",
+    "url": "https://docs.runpod.io/api-reference/pods/POST/pods",
+    "retrieved_at": "2026-10-10T16:38:34.805257+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.runpod.io/api-reference/pods/POST/pods",
+    "bytes": 663336,
+    "sha256": "b95413a4bda6dd05e5344e20e2b9b2b95683d477e489f3d71d1dfea5776865a6"
+  },
+  {
+    "id": "runpod-storage",
+    "url": "https://docs.runpod.io/pods/storage/types",
+    "retrieved_at": "2026-10-10T16:38:34.809062+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.runpod.io/pods/storage/types",
+    "bytes": 435101,
+    "sha256": "b71557e55d4d2a64e5148944222eab5bfd08b1fa0176c91b40c25078c90085d7"
+  },
+  {
+    "id": "runpod-connect",
+    "url": "https://docs.runpod.io/pods/connect-to-a-pod",
+    "retrieved_at": "2026-10-10T16:38:34.866834+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.runpod.io/pods/connect-to-a-pod",
+    "bytes": 408488,
+    "sha256": "d91df78e0335b630af56376671399fa10b531c9cc3acf0ee518721eeda4a477d"
+  },
+  {
+    "id": "runpod-stop",
+    "url": "https://docs.runpod.io/api-reference/pods/POST/pods/podId/stop",
+    "retrieved_at": "2026-10-10T16:38:35.157690+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.runpod.io/api-reference/pods/POST/pods/podId/stop",
+    "bytes": 359691,
+    "sha256": "3853c0f8a93e59c874f9b06e50bb2f87bb806c29c8865a8b253b6e7f3139f653"
+  },
+  {
+    "id": "runpod-delete",
+    "url": "https://docs.runpod.io/api-reference/pods/DELETE/pods/podId",
+    "retrieved_at": "2026-10-10T16:38:35.174312+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.runpod.io/api-reference/pods/DELETE/pods/podId",
+    "bytes": 359491,
+    "sha256": "33bdfdb4fdae817e016b133e7eafd4bc5e9997c5dd6a938cf7e946a559e9b4c1"
+  },
+  {
+    "id": "vega-card-c85",
+    "url": "https://huggingface.co/nandakishorm/vega-08b-public-intents/raw/c85f2338fcc965f5ab0050a5752200e86fa8f63b/README.md",
+    "retrieved_at": "2026-10-10T16:42:33.027400+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/nandakishorm/vega-08b-public-intents/raw/c85f2338fcc965f5ab0050a5752200e86fa8f63b/README.md",
+    "bytes": 15080,
+    "sha256": "c9e172d0825611a51b6d38ddee037bfa3c575ea1ae766d12ae8b38ab09a4375c"
+  },
+  {
+    "id": "vega-card-benchmark-pin",
+    "url": "https://huggingface.co/nandakishorm/vega-08b-public-intents/raw/73a76a4f6c4fe672e0daa2d45ddc355afc5bc9dd/README.md",
+    "retrieved_at": "2026-10-10T16:42:33.028382+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/nandakishorm/vega-08b-public-intents/raw/73a76a4f6c4fe672e0daa2d45ddc355afc5bc9dd/README.md",
+    "bytes": 15060,
+    "sha256": "5dad7b0e379c383e1a3dd53a90f500cfd90f77e779f6c158aeaa47ed49c33c5a"
+  },
+  {
+    "id": "vega-readme-pinned",
+    "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/01d2850408084034e27174621c19e01f0f0b9e92/README.md",
+    "retrieved_at": "2026-10-10T16:42:33.029000+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/01d2850408084034e27174621c19e01f0f0b9e92/README.md",
+    "bytes": 21800,
+    "sha256": "20136df890c0fbd3316898bf367a975246f5158c1250a8bb37c1a4571af27ab7"
+  },
+  {
+    "id": "invoice-notebook-pinned",
+    "url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/7c5b2805c9390377621b4c513bdaab39ff8b5413/examples/notebooks/discover_invoice_categories.ipynb",
+    "retrieved_at": "2026-10-10T16:42:33.029783+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/7c5b2805c9390377621b4c513bdaab39ff8b5413/examples/notebooks/discover_invoice_categories.ipynb",
+    "bytes": 21373,
+    "sha256": "cb0c72722f1129025edb851d36c3ffdf7296ac45eb40db5256f6d6e31222da47"
+  },
+  {
+    "id": "unsloth-docker",
+    "url": "https://unsloth.ai/docs/get-started/install/docker.md",
+    "retrieved_at": "2026-10-10T16:42:33.030491+00:00",
+    "status": 200,
+    "resolved_url": "https://unsloth.ai/docs/get-started/install/docker.md",
+    "bytes": 34540,
+    "sha256": "c532a5eb664890ea3b9225ec0f37b4b4c12f8ba15ff5e0842d4b9d587f2b0b88"
+  },
+  {
+    "id": "modal-existing-images",
+    "url": "https://modal.com/docs/guide/existing-images",
+    "retrieved_at": "2026-10-10T16:42:33.031251+00:00",
+    "status": 200,
+    "resolved_url": "https://modal.com/docs/guide/existing-images",
+    "bytes": 75805,
+    "sha256": "fdc018b268c6d60fe1d375247eb167db7b3024baa1471a4b914370a7666fe5a3"
+  },
+  {
+    "id": "runpod-ssh",
+    "url": "https://docs.runpod.io/pods/configuration/use-ssh",
+    "retrieved_at": "2026-10-10T16:42:33.587125+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.runpod.io/pods/configuration/use-ssh",
+    "bytes": 474439,
+    "sha256": "45896a6d27e37b67e58e416e7a1957532535038bec5fa27fea0dad808b0758dd"
+  },
+  {
+    "id": "aws-output",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo-output.html",
+    "retrieved_at": "2026-10-10T16:42:33.601203+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo-output.html",
+    "bytes": 16243,
+    "sha256": "afb75747c692f26aeed9d14703166b521382830edc49efead301cfa68c826184"
+  },
+  {
+    "id": "aws-env-paths",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/model-train-storage-env-var-summary.html",
+    "retrieved_at": "2026-10-10T16:42:33.648872+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/dg/model-train-storage-env-var-summary.html",
+    "bytes": 19353,
+    "sha256": "d8ad33b268659a7b1025d09165eb05266063d58c221a8ea599bb9ec1f7d70695"
+  },
+  {
+    "id": "wald-card",
+    "url": "https://huggingface.co/org2ai/Wald-4B/raw/ce3286f7efd332530e5dccd8a17d6496e029f714/README.md",
+    "retrieved_at": "2026-10-10T16:53:53.680096+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/org2ai/Wald-4B/raw/ce3286f7efd332530e5dccd8a17d6496e029f714/README.md",
+    "bytes": 5938,
+    "sha256": "4486fff454e6a357c541a25d63faabef6a44fa656baf76ba8a3da3c6a56d7144"
+  },
+  {
+    "id": "rsi-card",
+    "url": "https://huggingface.co/shgao/rsi-jev-v6.1-vl-27b/raw/d0dccc052ee844ab7481ddfacad1b7335ab394e0/README.md",
+    "retrieved_at": "2026-10-10T16:53:53.681182+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/shgao/rsi-jev-v6.1-vl-27b/raw/d0dccc052ee844ab7481ddfacad1b7335ab394e0/README.md",
+    "bytes": 19367,
+    "sha256": "f9381440a2757d98738194e0f06ccfde8fc5fdb8a5737afb8e16855777b7f757"
+  },
+  {
+    "id": "blink-card",
+    "url": "https://huggingface.co/PixilabAI/Blink-v0.3-26B-A4B-NVFP4/raw/08caad20c1574fb76341ca809ff38fdb081f7d4a/README.md",
+    "retrieved_at": "2026-10-10T16:53:53.681858+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/PixilabAI/Blink-v0.3-26B-A4B-NVFP4/raw/08caad20c1574fb76341ca809ff38fdb081f7d4a/README.md",
+    "bytes": 7168,
+    "sha256": "00c9ca57d738bcbd291d110c6ff9a888a20536fb3d4bc7bd4e4e3d607ada65ce"
+  },
+  {
+    "id": "gcp-discovery",
+    "url": "https://aiplatform.googleapis.com/$discovery/rest?version=v1",
+    "retrieved_at": "2026-10-10T16:53:53.682557+00:00",
+    "status": 200,
+    "resolved_url": "https://aiplatform.googleapis.com/$discovery/rest?version=v1",
+    "bytes": 3896108,
+    "sha256": "f69a33da9b20cc35cc1fc3aa5f7523847d98a087c966057f4b3145875c87e8e6"
+  },
+  {
+    "id": "azure-command-schema",
+    "url": "https://azuremlschemas.azureedge.net/latest/commandJob.schema.json",
+    "retrieved_at": "2026-10-10T16:53:53.683456+00:00",
+    "status": 200,
+    "resolved_url": "https://azuremlschemas.azureedge.net/latest/commandJob.schema.json",
+    "bytes": 48292,
+    "sha256": "3e6ef009c98ea4a1db5f15fa2cd711e5a3611d7a4bc978ae9113a2c4e91cea88"
+  },
+  {
+    "id": "modal-app-cli",
+    "url": "https://modal.com/docs/cli/latest/app",
+    "retrieved_at": "2026-10-10T16:53:54.153344+00:00",
+    "status": 200,
+    "resolved_url": "https://modal.com/docs/cli/latest/app",
+    "bytes": 75127,
+    "sha256": "15a0f61d04e7a3720f2535497159bc4110cce502689646dd4cf92309c0ef6235"
+  },
+  {
+    "id": "modal-gpu",
+    "url": "https://modal.com/docs/guide/gpu",
+    "retrieved_at": "2026-10-10T16:53:54.182208+00:00",
+    "status": 200,
+    "resolved_url": "https://modal.com/docs/guide/gpu",
+    "bytes": 76387,
+    "sha256": "eefdb821b255d7a1d361332d6fc646a1d5b6bcf07a9c8d729d237288903f36ca"
+  },
+  {
+    "id": "modal-timeout",
+    "url": "https://modal.com/docs/guide/timeouts",
+    "retrieved_at": "2026-10-10T16:53:54.225244+00:00",
+    "status": 200,
+    "resolved_url": "https://modal.com/docs/guide/timeouts",
+    "bytes": 53602,
+    "sha256": "ac8208af73e68dee97f70c282f95eea69a68737557ec1b727216495881e9a24d"
+  },
+  {
+    "id": "azure-environment-cli",
+    "url": "https://learn.microsoft.com/en-us/cli/azure/ml/environment?view=azure-cli-latest",
+    "retrieved_at": "2026-10-10T16:53:54.614934+00:00",
+    "status": 200,
+    "resolved_url": "https://learn.microsoft.com/en-us/cli/azure/ml/environment?view=azure-cli-latest",
+    "bytes": 123835,
+    "sha256": "2b600d1be8ab03eff0c9edbb9c63b29e2da0a8c90a2294f74546c91935549e84"
+  },
+  {
+    "id": "azure-compute-cli",
+    "url": "https://learn.microsoft.com/en-us/cli/azure/ml/compute?view=azure-cli-latest",
+    "retrieved_at": "2026-10-10T16:53:54.739920+00:00",
+    "status": 200,
+    "resolved_url": "https://learn.microsoft.com/en-us/cli/azure/ml/compute?view=azure-cli-latest",
+    "bytes": 197452,
+    "sha256": "d20e9c05f4bfce88cd58da6f8fece4372d6701f66a38a6a04fae03226d87da9b"
+  },
+  {
+    "id": "gcp-cancel-cli",
+    "url": "https://cloud.google.com/sdk/gcloud/reference/ai/custom-jobs/cancel",
+    "retrieved_at": "2026-10-10T16:53:54.747618+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.cloud.google.com/sdk/gcloud/reference/ai/custom-jobs/cancel",
+    "bytes": 171109,
+    "sha256": "d143796ba8e0fc9f742a945d4e321ae91286ec07d634f9931e149a2eb2808f10"
+  },
+  {
+    "id": "aws-sdk-model",
+    "url": "https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/sagemaker/2017-07-24/service-2.json",
+    "retrieved_at": "2026-10-10T17:01:16.374826+00:00",
+    "status": 200,
+    "bytes": 2468754,
+    "sha256": "9261020513c7a5d32b8da8caf917a12a5e037146312f580318bb0abc3dc3c967",
+    "resolved_url": "https://raw.githubusercontent.com/boto/botocore/develop/botocore/data/sagemaker/2017-07-24/service-2.json"
+  }
+]

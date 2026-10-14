@@ -1,0 +1,558 @@
+[
+  {
+    "id": "checkout-release",
+    "url": "https://api.github.com/repos/actions/checkout/releases/latest",
+    "retrieved_utc": "2026-10-13T19:35:43.956593+00:00",
+    "status": 200,
+    "resolved_url": "https://api.github.com/repos/actions/checkout/releases/latest",
+    "sha256": "9a8f606546958900e4562dc717c21f138ef4742cad9ce95ffd32d9608b8a3656",
+    "bytes": 2372,
+    "tag": "v7.0.1",
+    "published_at": "2026-07-20T15:10:05Z",
+    "html_url": "https://github.com/actions/checkout/releases/tag/v7.0.1"
+  },
+  {
+    "id": "setup-python-release",
+    "url": "https://api.github.com/repos/actions/setup-python/releases/latest",
+    "retrieved_utc": "2026-10-13T19:35:43.957555+00:00",
+    "status": 200,
+    "resolved_url": "https://api.github.com/repos/actions/setup-python/releases/latest",
+    "sha256": "8ff36b35768c2f9965791963bd73588ead49264176e40ee91fc103b3760e7189",
+    "bytes": 3496,
+    "tag": "v7.0.0",
+    "published_at": "2026-07-20T03:15:01Z",
+    "html_url": "https://github.com/actions/setup-python/releases/tag/v7.0.0"
+  },
+  {
+    "id": "aws-training",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateTrainingJob.html",
+    "retrieved_utc": "2026-10-13T19:35:43.958286+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateTrainingJob.html",
+    "sha256": "1e0ed42587360509800378807ec5480f0e55bfd2be8861991e3fc7a48ecbddcd",
+    "bytes": 72142
+  },
+  {
+    "id": "aws-container",
+    "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo-dockerfile.html",
+    "retrieved_utc": "2026-10-13T19:35:43.958985+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo-dockerfile.html",
+    "sha256": "102b8da1a747240e2e2adabfd91024c1c2d5155e5d1a4f51e123a501d30540db",
+    "bytes": 42892
+  },
+  {
+    "id": "azure-command-yaml",
+    "url": "https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command?view=azureml-api-2",
+    "retrieved_utc": "2026-10-13T19:35:43.959638+00:00",
+    "status": 200,
+    "resolved_url": "https://learn.microsoft.com/en-us/azure/machine-learning/reference-yaml-job-command?view=azureml-api-2",
+    "sha256": "7e4afca9a5b030a7970a43eb4b9e47cd9ad48faef4a87e0b22af8513e55dd62f",
+    "bytes": 74396
+  },
+  {
+    "id": "azure-create",
+    "url": "https://learn.microsoft.com/en-us/rest/api/azureml/jobs/create-or-update?view=rest-azureml-2026-09-01",
+    "retrieved_utc": "2026-10-13T19:35:44.010636+00:00",
+    "status": 200,
+    "resolved_url": "https://learn.microsoft.com/en-us/rest/api/azureml/jobs/create-or-update?view=rest-azureml-2026-07-01&viewFallbackFrom=rest-azureml-2026-09-01",
+    "sha256": "c6ba268588bbf9fc8205b4d0035a45243afb9a17ce69f22ad6565eed6cf4b2b9",
+    "bytes": 328903
+  },
+  {
+    "id": "azure-versions",
+    "url": "https://api.github.com/repos/Azure/azure-rest-api-specs/contents/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/MachineLearningServices/stable",
+    "retrieved_utc": "2026-10-13T19:35:44.133724+00:00",
+    "status": 200,
+    "resolved_url": "https://api.github.com/repos/Azure/azure-rest-api-specs/contents/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/MachineLearningServices/stable",
+    "sha256": "efdc3eaddf12b14c09230cbdcf2ed691b8772db704b98db9c20d50480495f59a",
+    "bytes": 34347
+  },
+  {
+    "id": "gcp-discovery",
+    "url": "https://aiplatform.googleapis.com/$discovery/rest?version=v1",
+    "retrieved_utc": "2026-10-13T19:35:44.180458+00:00",
+    "status": 200,
+    "resolved_url": "https://aiplatform.googleapis.com/$discovery/rest?version=v1",
+    "sha256": "4fb315cbb0f9a93eaf49e8bb77a11e53a8594d049272bd5b9fc624a1bf6e1ab7",
+    "bytes": 3896108
+  },
+  {
+    "id": "gcp-cli",
+    "url": "https://cloud.google.com/sdk/gcloud/reference/ai/custom-jobs/create",
+    "retrieved_utc": "2026-10-13T19:35:44.600433+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.cloud.google.com/sdk/gcloud/reference/ai/custom-jobs/create",
+    "sha256": "a1424054dd0cff29ec3a8d40d899b33c6e739bc1a36414913e2d0f9e9315e6f3",
+    "bytes": 191486
+  },
+  {
+    "id": "gcp-training",
+    "url": "https://cloud.google.com/vertex-ai/docs/training/create-custom-job",
+    "retrieved_utc": "2026-10-13T19:35:44.633692+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/training/create-custom-job",
+    "sha256": "a0ab20bd03d448318cbe7cd08f703109572465ddd722f3829f250110ef80089c",
+    "bytes": 518606
+  },
+  {
+    "id": "runpod-schema",
+    "url": "https://raw.githubusercontent.com/runpod/docs/main/api-reference-v2/openapi.json",
+    "retrieved_utc": "2026-10-13T19:35:44.731522+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/runpod/docs/main/api-reference-v2/openapi.json",
+    "sha256": "0b364f88dbdc53c0d985d5aea9c4050e73e6958c7ff16bc89d6b2f63844ac926",
+    "bytes": 413356
+  },
+  {
+    "id": "runpod-migration",
+    "url": "https://docs.runpod.io/api-reference-v2/migrate-from-v1",
+    "retrieved_utc": "2026-10-13T19:35:44.840075+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.runpod.io/api-reference-v2/migrate-from-v1",
+    "sha256": "cef2ba8f9c32acbbb584adf094bae7fb9a02c4a2d3e09c66dc983fc6ddfdb79a",
+    "bytes": 457330
+  },
+  {
+    "id": "modal-sandbox",
+    "url": "https://modal.com/docs/reference/modal.Sandbox",
+    "retrieved_utc": "2026-10-13T19:35:44.927448+00:00",
+    "status": 200,
+    "resolved_url": "https://modal.com/docs/sdk/py/latest/Sandbox",
+    "sha256": "bd6a7df1ea3da2306b36075669501ea581fb7b99de971ac575e033b3a5455a17",
+    "bytes": 377476
+  },
+  {
+    "id": "modal-functions",
+    "url": "https://modal.com/docs/guide/gpu",
+    "retrieved_utc": "2026-10-13T19:35:45.047191+00:00",
+    "status": 200,
+    "resolved_url": "https://modal.com/docs/guide/gpu",
+    "sha256": "b9e92147246b6c535c9a88f3361cbadea8f91200acb7e8af261b50dd6c47ca12",
+    "bytes": 76576
+  },
+  {
+    "id": "modal-volumes",
+    "url": "https://modal.com/docs/guide/volumes",
+    "retrieved_utc": "2026-10-13T19:35:45.229230+00:00",
+    "status": 200,
+    "resolved_url": "https://modal.com/docs/guide/volumes",
+    "sha256": "f2a8202e40816e66781e4154fe9e64f82fd10c3dc261e08fdf082684eae29c4c",
+    "bytes": 122718
+  },
+  {
+    "id": "laya-head",
+    "url": "https://api.github.com/repos/NandhaKishorM/laya/commits?per_page=1",
+    "retrieved_utc": "2026-10-13T19:35:45.389887+00:00",
+    "status": 200,
+    "resolved_url": "https://api.github.com/repos/NandhaKishorM/laya/commits?per_page=1",
+    "sha256": "1d01fc29c78a99be0e28cbe53157faf771ecc166eacfe4abcf4aca73a66d118a",
+    "bytes": 3426
+  },
+  {
+    "id": "vega-head",
+    "url": "https://api.github.com/repos/NandhaKishorM/vegaml/commits?per_page=1",
+    "retrieved_utc": "2026-10-13T19:35:45.428346+00:00",
+    "status": 200,
+    "resolved_url": "https://api.github.com/repos/NandhaKishorM/vegaml/commits?per_page=1",
+    "sha256": "7e5fb613a8ef6615e26d09b65f71f346136dee79d82e51bb3fa45d36d5eefc09",
+    "bytes": 4087
+  },
+  {
+    "id": "unsloth-decision",
+    "url": "https://raw.githubusercontent.com/unslothai/unsloth/main/unsloth/models/decision.py",
+    "retrieved_utc": "2026-10-13T19:35:45.537052+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/unslothai/unsloth/main/unsloth/models/decision.py",
+    "sha256": "1b4a9d45965e4cfa93995d634d2104637f2c559595f06b104cc1e94075a45b67",
+    "bytes": 76691
+  },
+  {
+    "id": "laya-card",
+    "url": "https://huggingface.co/api/models/convaiinnovations/laya",
+    "retrieved_utc": "2026-10-13T19:35:45.753020+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/api/models/convaiinnovations/laya",
+    "sha256": "5281d2179bdee72055a59d9cd88c3bf1212e58e8e378c3c016e537827d7bbff7",
+    "bytes": 4608
+  },
+  {
+    "id": "vega-card",
+    "url": "https://huggingface.co/api/models/nandakishorm/vega-08b-public-intents",
+    "retrieved_utc": "2026-10-13T19:35:45.808846+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/api/models/nandakishorm/vega-08b-public-intents",
+    "sha256": "e6e7159a8d7632d4e5063c747a7e38044e0f33df72a3f8c11b3dc9de6226c8c3",
+    "bytes": 2487
+  },
+  {
+    "id": "typesafe-models",
+    "url": "https://docs.typesafe.ai/models",
+    "retrieved_utc": "2026-10-13T19:35:45.888964+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.typesafe.ai/models",
+    "sha256": "df0a3142c46bfd7f7fd0c5ccba37b79741743ebbac147c056a32c61758b790a2",
+    "bytes": 359107
+  },
+  {
+    "id": "cloudflare-clef",
+    "url": "https://developers.cloudflare.com/workers-ai/models/clef-flash/",
+    "retrieved_utc": "2026-10-13T19:35:46.014551+00:00",
+    "status": 200,
+    "resolved_url": "https://developers.cloudflare.com/workers-ai/models/clef-flash/",
+    "sha256": "dce2a347b7831a2193bc85ec2b1de67a09fe4acbacece118846308cd76ec0a45",
+    "bytes": 165696
+  },
+  {
+    "id": "pypi-boto3",
+    "url": "https://pypi.org/pypi/boto3/json",
+    "retrieved_utc": "2026-10-13T19:35:46.120528+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/boto3/json",
+    "sha256": "8f49151389c2d59c168ff578df21600c315b22d748afd5068c80ea21d58eecd2",
+    "bytes": 3303814,
+    "latest_version": "1.43.113",
+    "requires_python": ">=3.10"
+  },
+  {
+    "id": "pypi-botocore",
+    "url": "https://pypi.org/pypi/botocore/json",
+    "retrieved_utc": "2026-10-13T19:35:46.215009+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/botocore/json",
+    "sha256": "95c23b548c7d8fdedc17dfe2c6d9b609fa3120547e5618fdfd19756d94a1bc26",
+    "bytes": 3851971,
+    "latest_version": "1.43.113",
+    "requires_python": ">=3.10"
+  },
+  {
+    "id": "pypi-google-auth",
+    "url": "https://pypi.org/pypi/google-auth/json",
+    "retrieved_utc": "2026-10-13T19:35:46.547924+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/google-auth/json",
+    "sha256": "8d238e7b6d74ad49a532fed6fb8bbb74591e3941854d5023466bb8cd1d3cad3c",
+    "bytes": 339240,
+    "latest_version": "2.62.0",
+    "requires_python": ">=3.10"
+  },
+  {
+    "id": "pypi-fsspec",
+    "url": "https://pypi.org/pypi/fsspec/json",
+    "retrieved_utc": "2026-10-13T19:35:47.893735+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/fsspec/json",
+    "sha256": "248a373709712c1dd645772cfa5c74b1d26b7e5f6678e0132c8c856109c6cf4d",
+    "bytes": 149919,
+    "latest_version": "2026.9.0",
+    "requires_python": ">=3.10"
+  },
+  {
+    "id": "pypi-modal",
+    "url": "https://pypi.org/pypi/modal/json",
+    "retrieved_utc": "2026-10-13T19:35:48.790461+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/modal/json",
+    "sha256": "6335eea0d0710f2a3de5237a30ffac71b24e4ef04f355694b6e293a5dfce5eec",
+    "bytes": 2947384,
+    "latest_version": "1.6.1",
+    "requires_python": "<3.15,>=3.10"
+  },
+  {
+    "id": "pypi-pip",
+    "url": "https://pypi.org/pypi/pip/json",
+    "retrieved_utc": "2026-10-13T19:35:49.907149+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/pip/json",
+    "sha256": "6e11a831a6a7c5aac56ee8634c4041a4d86b19380f43879a76a1903dcde9d814",
+    "bytes": 228494,
+    "latest_version": "26.2.1",
+    "requires_python": ">=3.10"
+  },
+  {
+    "id": "pypi-setuptools",
+    "url": "https://pypi.org/pypi/setuptools/json",
+    "retrieved_utc": "2026-10-13T19:35:52.148288+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/setuptools/json",
+    "sha256": "b17d794d3d3176216e3aabb872735d5e2d7aa16f62b374694af32ee6287ca73f",
+    "bytes": 1179626,
+    "latest_version": "84.0.0",
+    "requires_python": ">=3.10"
+  },
+  {
+    "id": "pypi-torch",
+    "url": "https://pypi.org/pypi/torch/json",
+    "retrieved_utc": "2026-10-13T19:35:53.367467+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/torch/json",
+    "sha256": "cad63dc8aa6714ea2133a44b64985d87b3e4ebea217657f1e02e35481fa33b61",
+    "bytes": 870628,
+    "latest_version": "2.14.1",
+    "requires_python": ">=3.10"
+  },
+  {
+    "id": "pypi-transformers",
+    "url": "https://pypi.org/pypi/transformers/json",
+    "retrieved_utc": "2026-10-13T19:35:53.867892+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/transformers/json",
+    "sha256": "f93cbaa24724d95694dc789ecdb0580e94ab26cd99b9f6db4e91e00192109fbd",
+    "bytes": 415077,
+    "latest_version": "5.19.0",
+    "requires_python": ">=3.10.0"
+  },
+  {
+    "id": "pypi-wheel",
+    "url": "https://pypi.org/pypi/wheel/json",
+    "retrieved_utc": "2026-10-13T19:35:55.028691+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/wheel/json",
+    "sha256": "113f8abc907676e530c9dca238f3b2bd26e2b142747d16d7d4775810e1155980",
+    "bytes": 125190,
+    "latest_version": "0.48.0",
+    "requires_python": ">=3.9"
+  },
+  {
+    "id": "pypi-datasets",
+    "url": "https://pypi.org/pypi/datasets/json",
+    "retrieved_utc": "2026-10-13T19:35:55.403610+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/datasets/json",
+    "sha256": "7c098e286be2920b221864c2ac99103cdfb517754e9c98e811da61f4b885a9df",
+    "bytes": 210172,
+    "latest_version": "5.1.0",
+    "requires_python": ">=3.10.0"
+  },
+  {
+    "id": "pypi-unsloth",
+    "url": "https://pypi.org/pypi/unsloth/json",
+    "retrieved_utc": "2026-10-13T19:35:56.634914+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/unsloth/json",
+    "sha256": "e07104abdc2411d400c7de5fd0e34ab3080a1cabab33412fc27d107fbdc7023d",
+    "bytes": 431022,
+    "latest_version": "2026.10.5",
+    "requires_python": "<3.15,>=3.9"
+  },
+  {
+    "id": "pypi-unsloth-zoo",
+    "url": "https://pypi.org/pypi/unsloth-zoo/json",
+    "retrieved_utc": "2026-10-13T19:35:56.737340+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/unsloth-zoo/json",
+    "sha256": "fb51ffc66fcf4b965cc47fcb6c203ebd17f1d3851a3580fdca69090d1ed21dab",
+    "bytes": 354891,
+    "latest_version": "2026.10.5",
+    "requires_python": "<3.15,>=3.9"
+  },
+  {
+    "id": "pypi-vegaml",
+    "url": "https://pypi.org/pypi/vegaml/json",
+    "retrieved_utc": "2026-10-13T19:35:57.107641+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/vegaml/json",
+    "sha256": "7effe376317dddde8226946f85f493e6a62cadb778057668a18fc9378d23b2b1",
+    "bytes": 49905,
+    "latest_version": "0.8.0",
+    "requires_python": ">=3.10"
+  },
+  {
+    "id": "checkout-tag",
+    "url": "https://api.github.com/repos/actions/checkout/git/ref/tags/v7.0.1",
+    "retrieved_utc": "2026-10-13T19:43:21.102417+00:00",
+    "status": 200,
+    "resolved_url": "https://api.github.com/repos/actions/checkout/git/ref/tags/v7.0.1",
+    "sha256": "2d93602db4d23c52722ac2e83e9553fa46d84b00dd83ed8557f32b39278fe62e",
+    "bytes": 341
+  },
+  {
+    "id": "setup-python-tag",
+    "url": "https://api.github.com/repos/actions/setup-python/git/ref/tags/v7.0.0",
+    "retrieved_utc": "2026-10-13T19:43:21.181177+00:00",
+    "status": 200,
+    "resolved_url": "https://api.github.com/repos/actions/setup-python/git/ref/tags/v7.0.0",
+    "sha256": "561c7bc4684d22cd75f55596aaaeba9f9418063cda6feda5eb9386db36e03f90",
+    "bytes": 349
+  },
+  {
+    "id": "checkout-action",
+    "url": "https://raw.githubusercontent.com/actions/checkout/v7.0.1/action.yml",
+    "retrieved_utc": "2026-10-13T19:43:21.237291+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/actions/checkout/v7.0.1/action.yml",
+    "sha256": "d59219cb79590abdb877deaa14e3b65a00c05318bf5a6f3b989b9162b5d08c35",
+    "bytes": 5144
+  },
+  {
+    "id": "setup-python-action",
+    "url": "https://raw.githubusercontent.com/actions/setup-python/v7.0.0/action.yml",
+    "retrieved_utc": "2026-10-13T19:43:21.354199+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/actions/setup-python/v7.0.0/action.yml",
+    "sha256": "e6dc8046c02bd3c9f7bf2fea6ba2e59b4e83c7de2b26ec2149a1627f5d66f96c",
+    "bytes": 2502
+  },
+  {
+    "id": "openrouter-current",
+    "url": "https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-request",
+    "retrieved_utc": "2026-10-13T19:43:21.557530+00:00",
+    "status": 200,
+    "resolved_url": "https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-request",
+    "sha256": "e70b5f6a2dff0129d2f156c5fe7485fe413cf7830ed8c26fa7a631b3600905c3",
+    "bytes": 787804
+  },
+  {
+    "id": "perplexity-current",
+    "url": "https://docs.perplexity.ai/docs/decisions/quickstart",
+    "retrieved_utc": "2026-10-13T19:43:21.641758+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.perplexity.ai/docs/decisions/quickstart",
+    "sha256": "f07c1ca9367daf1821c8e2c8d75ec349402b672e3b131f05dc6f5e044f8aa4d6",
+    "bytes": 744321
+  },
+  {
+    "id": "torch-cu126",
+    "url": "https://download.pytorch.org/whl/cu126/torch/",
+    "retrieved_utc": "2026-10-13T19:43:21.701538+00:00",
+    "status": 200,
+    "resolved_url": "https://download.pytorch.org/whl/cu126/torch/",
+    "sha256": "56bcc941ecf0fbe19b7e7c7ea5cc598f854140d1facf6ec4c2fb68facbacfbab",
+    "bytes": 147978
+  },
+  {
+    "id": "torchvision-cu126",
+    "url": "https://download.pytorch.org/whl/cu126/torchvision/",
+    "retrieved_utc": "2026-10-13T19:43:21.704820+00:00",
+    "status": 200,
+    "resolved_url": "https://download.pytorch.org/whl/cu126/torchvision/",
+    "sha256": "ba16a1f0962bf973ba2570d74e10b445ec4188f9567666cc52c0ff329b8103b3",
+    "bytes": 159474
+  },
+  {
+    "id": "laya-latest-metadata",
+    "url": "https://raw.githubusercontent.com/NandhaKishorM/laya/c73908d96ff73c0062c340a11bf7c54ec7d8bc4d/pyproject.toml",
+    "retrieved_utc": "2026-10-13T19:43:21.925232+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/NandhaKishorM/laya/c73908d96ff73c0062c340a11bf7c54ec7d8bc4d/pyproject.toml",
+    "sha256": "9c73cf4b8c7cd1eb4a0177560e6b62ac34ecb0f86e6ec5354eac73ca6b28ffc1",
+    "bytes": 3956
+  },
+  {
+    "id": "laya-pinned-metadata",
+    "url": "https://raw.githubusercontent.com/NandhaKishorM/laya/1adc59f7e371deb601fcfa18a14e25db238addcc/pyproject.toml",
+    "retrieved_utc": "2026-10-13T19:43:22.036625+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/NandhaKishorM/laya/1adc59f7e371deb601fcfa18a14e25db238addcc/pyproject.toml",
+    "sha256": "616816d2f2c279b6ad97b2dcdcd6216df357580f5aaf81894ae67357395dfad4",
+    "bytes": 3956
+  },
+  {
+    "id": "setuptools-advisory",
+    "url": "https://github.com/pypa/setuptools/security/advisories/GHSA-h35f-9h28-mq5c",
+    "retrieved_utc": "2026-10-13T19:43:22.045224+00:00",
+    "status": 200,
+    "resolved_url": "https://github.com/pypa/setuptools/security/advisories/GHSA-h35f-9h28-mq5c",
+    "sha256": "dde6a6ff4c0b9d375a135668def2ca5771c9572f3efffda0ef1d11de9b5938ab",
+    "bytes": 198005
+  },
+  {
+    "id": "wheel-advisory",
+    "url": "https://github.com/pypa/wheel/security/advisories/GHSA-8rrh-rw8j-w5fx",
+    "retrieved_utc": "2026-10-13T19:43:22.078320+00:00",
+    "status": 200,
+    "resolved_url": "https://github.com/pypa/wheel/security/advisories/GHSA-8rrh-rw8j-w5fx",
+    "sha256": "610bcec252e3045bf10a6d90de94d63311ea2e78569c95c223256520882530fc",
+    "bytes": 207417
+  },
+  {
+    "id": "pip-changelog",
+    "url": "https://pip.pypa.io/en/stable/news/",
+    "retrieved_utc": "2026-10-13T19:43:22.202618+00:00",
+    "status": 200,
+    "resolved_url": "https://pip.pypa.io/en/stable/news/",
+    "sha256": "af6fe26e99d985e3904aee77a112ac3743fb5aaf81e0280424130d1d5fa6aebd",
+    "bytes": 528993
+  },
+  {
+    "id": "datasets-pinned-metadata",
+    "url": "https://pypi.org/pypi/datasets/4.8.5/json",
+    "retrieved_utc": "2026-10-13T19:59:09.866802+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/datasets/4.8.5/json",
+    "sha256": "d5590aa494fc5b26479db21dd7e5ef26016727152cb3b3dd5f6473e499c835bf",
+    "bytes": 21928
+  },
+  {
+    "id": "unsloth-pinned-metadata",
+    "url": "https://pypi.org/pypi/unsloth/2026.10.3/json",
+    "retrieved_utc": "2026-10-13T19:59:09.868781+00:00",
+    "status": 200,
+    "resolved_url": "https://pypi.org/pypi/unsloth/2026.10.3/json",
+    "sha256": "acfcb4e35d2bbd18ef37acb85aea4b5cec624dd651b06d8a6e0b3288e5bc7c83",
+    "bytes": 76396
+  },
+  {
+    "id": "datasets-advisory",
+    "url": "https://api.github.com/advisories/GHSA-379c-qx7v-6h59",
+    "retrieved_utc": "2026-10-13T19:59:09.869525+00:00",
+    "status": 200,
+    "resolved_url": "https://api.github.com/advisories/GHSA-379c-qx7v-6h59",
+    "sha256": "680c3f1bc9b38d6672bdc6cdf0fde4296e66ab761828a0b670304427264d8479",
+    "bytes": 2290
+  },
+  {
+    "id": "fsspec-advisory",
+    "url": "https://github.com/fsspec/filesystem_spec/security/advisories/GHSA-27vj-qcqg-25rc",
+    "retrieved_utc": "2026-10-13T19:59:09.870186+00:00",
+    "status": 200,
+    "resolved_url": "https://github.com/fsspec/filesystem_spec/security/advisories/GHSA-27vj-qcqg-25rc",
+    "sha256": "5c8d25a7b20932ed87f56b1a9c671fc96db32718fca00d315881ae30f8a6d8be",
+    "bytes": 211022
+  },
+  {
+    "id": "torch-jit-advisory",
+    "url": "https://api.github.com/advisories/GHSA-rrmf-rvhw-rf47",
+    "retrieved_utc": "2026-10-13T19:59:09.870849+00:00",
+    "status": 200,
+    "resolved_url": "https://api.github.com/advisories/GHSA-rrmf-rvhw-rf47",
+    "sha256": "1355c6b899ad6ee383abe0e470dc703d729671cc02d5f5addb8af16671e7bf4e",
+    "bytes": 2137
+  },
+  {
+    "id": "torch-pt2-advisory",
+    "url": "https://raw.githubusercontent.com/pypa/advisory-database/main/vulns/torch/PYSEC-2026-139.yaml",
+    "retrieved_utc": "2026-10-13T19:59:10.036190+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/pypa/advisory-database/main/vulns/torch/PYSEC-2026-139.yaml",
+    "sha256": "23d5917bd5b4c7ceae2990c433773f4df08fa953c4b5d5af4fcbae52f202acaf",
+    "bytes": 1567
+  },
+  {
+    "id": "torch-security-policy",
+    "url": "https://raw.githubusercontent.com/pytorch/pytorch/main/SECURITY.md",
+    "retrieved_utc": "2026-10-13T19:59:10.338289+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/pytorch/pytorch/main/SECURITY.md",
+    "sha256": "9e2ddaa8ce7a9d7c1ea3a027b2c40e69e75c21cad246b8ae2b9ba2ec20b1871b",
+    "bytes": 15495
+  },
+  {
+    "id": "httpx-clients",
+    "url": "https://www.python-httpx.org/advanced/clients/",
+    "retrieved_utc": "2026-10-13T19:59:10.406714+00:00",
+    "status": 200,
+    "resolved_url": "https://www.python-httpx.org/advanced/clients/",
+    "sha256": "9e8119ec1da842d3a4c97973fbe6bdf3e7250da44e2706cc546ac4f7644a7f0a",
+    "bytes": 63166
+  },
+  {
+    "id": "windows-sharing",
+    "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew",
+    "retrieved_utc": "2026-10-13T19:59:10.436030+00:00",
+    "status": 200,
+    "resolved_url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew",
+    "sha256": "eb3d9c3bb97b71cfdc4c70c8144aabe5bc460f151463a5f1d2b8f04d55ca74ff",
+    "bytes": 115313
+  }
+]

@@ -1,0 +1,18 @@
+FROM python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+WORKDIR /app
+ARG TARGETARCH
+RUN test "$TARGETARCH" = "amd64"
+RUN useradd --create-home --uid 10001 platform && mkdir -p /app/data && chown platform:platform /app/data
+COPY requirements/platform-linux-amd64-py312.txt ./requirements/platform-linux-amd64-py312.txt
+RUN python -m pip install --no-cache-dir --require-hashes --only-binary=:all: \
+    --index-url https://pypi.org/simple -r requirements/platform-linux-amd64-py312.txt
+COPY pyproject.toml README.md LICENSE NOTICE THIRD_PARTY_NOTICES.md ./
+COPY decision_workbench ./decision_workbench
+RUN python -m pip install --no-cache-dir --no-deps --no-build-isolation . \
+    && python -m pip check
+COPY app.py ./
+COPY examples ./examples
+USER platform
+ENV DMT_HOME=/app/data/workspace
+EXPOSE 8080 8501
+CMD ["domain-platform", "serve", "--host", "0.0.0.0", "--port", "8080"]

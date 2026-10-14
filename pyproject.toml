@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=83,<85", "wheel>=0.46.2,<0.49"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "domain-decisions"
+version = "0.2.0"
+description = "Local-first domain decision model platform"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md"]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+ui = ["streamlit>=1.40,<2", "openpyxl>=3.1,<4", "httpx>=0.27,<1"]
+platform = ["PyJWT[crypto]==2.15.1", "cryptography==50.0.2", "fastapi>=0.115,<1", "uvicorn>=0.30,<1", "python-multipart>=0.0.20,<1", "httpx>=0.27,<1", "scikit-learn>=1.6,<2", "numpy>=1.26,<3", "openpyxl>=3.1,<4"]
+xlsx = ["openpyxl>=3.1,<4"]
+aws = ["boto3==1.43.113", "botocore==1.43.113"]
+gcp = ["google-auth==2.62.0", "httpx>=0.27,<1"]
+azure = ["httpx==0.28.1"]
+runpod = ["botocore==1.43.113", "httpx==0.28.1"]
+modal = ["modal==1.6.1"]
+semantic = ["torch==2.10.0", "transformers==5.17.0", "numpy==2.5.2", "safetensors==0.8.0", "tokenizers==0.23.3"]
+
+[project.scripts]
+domain-decisions = "decision_workbench.cli:main"
+domain-platform = "decision_workbench.platform.cli:main"
+domain-worker = "decision_workbench.platform.worker:main"
+
+[tool.setuptools.packages.find]
+include = ["decision_workbench*"]

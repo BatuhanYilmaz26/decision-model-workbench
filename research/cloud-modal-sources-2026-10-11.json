@@ -1,0 +1,136 @@
+{
+  "format": "domain-cloud-sources-v1",
+  "captured_utc": "2026-10-11T19:09:41.881937+00:00",
+  "sdk_version": "1.6.1",
+  "sdk_wheel": {
+    "filename": "modal-1.6.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/d2/3c/6b7d9a15dab9af2833ce674bbc72b5654d4099d5b088f1cc1eda3f8249ca/modal-1.6.1-py3-none-any.whl",
+    "sha256": "f408ef88563003a83e491a6be09d4221eaa6e038fa4faa2ad8b15b25afe949a4"
+  },
+  "sources": [
+    {
+      "id": "modal/client.py",
+      "url": "https://files.pythonhosted.org/packages/d2/3c/6b7d9a15dab9af2833ce674bbc72b5654d4099d5b088f1cc1eda3f8249ca/modal-1.6.1-py3-none-any.whl",
+      "sha256": "72cb6b2f4c295c266672f46ced2cb7411c3d573f33919cbc34d934b4f7b7f2c9",
+      "bytes": 22852,
+      "wheel_member": "modal/client.py"
+    },
+    {
+      "id": "modal/sandbox.py",
+      "url": "https://files.pythonhosted.org/packages/d2/3c/6b7d9a15dab9af2833ce674bbc72b5654d4099d5b088f1cc1eda3f8249ca/modal-1.6.1-py3-none-any.whl",
+      "sha256": "ce5b93f10e5440b5acd487949e85443d91d35b07842ffa5d052cf8ee37213d9f",
+      "bytes": 148094,
+      "wheel_member": "modal/sandbox.py"
+    },
+    {
+      "id": "modal/_workspace.py",
+      "url": "https://files.pythonhosted.org/packages/d2/3c/6b7d9a15dab9af2833ce674bbc72b5654d4099d5b088f1cc1eda3f8249ca/modal-1.6.1-py3-none-any.whl",
+      "sha256": "3bec38195fbe62afc131202ce2821fa7beb4f528d9331e299688c618c3ac1f18",
+      "bytes": 21821,
+      "wheel_member": "modal/_workspace.py"
+    },
+    {
+      "id": "modal/volume.py",
+      "url": "https://files.pythonhosted.org/packages/d2/3c/6b7d9a15dab9af2833ce674bbc72b5654d4099d5b088f1cc1eda3f8249ca/modal-1.6.1-py3-none-any.whl",
+      "sha256": "3ac1194c08ab37d4b154c31432f37b81059bca758a5c57f62327b67bd14145ab",
+      "bytes": 70570,
+      "wheel_member": "modal/volume.py"
+    },
+    {
+      "id": "modal/_image.py",
+      "url": "https://files.pythonhosted.org/packages/d2/3c/6b7d9a15dab9af2833ce674bbc72b5654d4099d5b088f1cc1eda3f8249ca/modal-1.6.1-py3-none-any.whl",
+      "sha256": "501027be53a74f40ac4eda78e23d288435e563e9e2a79d0df962eae72a4d634c",
+      "bytes": 132397,
+      "wheel_member": "modal/_image.py"
+    },
+    {
+      "id": "modal/config.py",
+      "url": "https://files.pythonhosted.org/packages/d2/3c/6b7d9a15dab9af2833ce674bbc72b5654d4099d5b088f1cc1eda3f8249ca/modal-1.6.1-py3-none-any.whl",
+      "sha256": "1a087a56490619b66c0c288319a319a45e67455420fa6365adfbe52fdec3d836",
+      "bytes": 20314,
+      "wheel_member": "modal/config.py"
+    },
+    {
+      "id": "modal/_grpc_client.py",
+      "url": "https://files.pythonhosted.org/packages/d2/3c/6b7d9a15dab9af2833ce674bbc72b5654d4099d5b088f1cc1eda3f8249ca/modal-1.6.1-py3-none-any.whl",
+      "sha256": "6a30b14ea84393eae95ae6265127115f060c3d59afba3a3c724befbf89747339",
+      "bytes": 7088,
+      "wheel_member": "modal/_grpc_client.py"
+    },
+    {
+      "id": "modal/_utils/grpc_utils.py",
+      "url": "https://files.pythonhosted.org/packages/d2/3c/6b7d9a15dab9af2833ce674bbc72b5654d4099d5b088f1cc1eda3f8249ca/modal-1.6.1-py3-none-any.whl",
+      "sha256": "19c97913210c10731a3251a1f7417adce8b597d2ba72799e4c26c60a8bb027e0",
+      "bytes": 29998,
+      "wheel_member": "modal/_utils/grpc_utils.py"
+    },
+    {
+      "id": "Client.html",
+      "url": "https://modal.com/docs/sdk/py/latest/Client",
+      "sha256": "5e04c8e7127d3cfc70ad4ad65f0706d8f2eac07a53c5ab101ad930e72ebe2535",
+      "bytes": 55506
+    },
+    {
+      "id": "Workspace.html",
+      "url": "https://modal.com/docs/sdk/py/latest/Workspace",
+      "sha256": "33c1fa52ef625a3354cbc0cc151f5f914ba430b128f99ea02c9fda0ad631dc02",
+      "bytes": 115708
+    },
+    {
+      "id": "App.html",
+      "url": "https://modal.com/docs/sdk/py/latest/App",
+      "sha256": "1a9341f8ab17a2a98daf9127245386d1e7a94d3223ae91e583b7ef5def0370d6",
+      "bytes": 388607
+    },
+    {
+      "id": "Volume.html",
+      "url": "https://modal.com/docs/sdk/py/latest/Volume",
+      "sha256": "73f6be55291b7efeec081f7446366e982bb6066ba06c106d7ff8a5504e348eda",
+      "bytes": 196975
+    },
+    {
+      "id": "Sandbox.html",
+      "url": "https://modal.com/docs/sdk/py/latest/Sandbox",
+      "sha256": "b985e9c2ad0330335965b593ff13ca3fbf4fe401e79f66a1693b07725bbc2f1f",
+      "bytes": 379591
+    },
+    {
+      "id": "Image.html",
+      "url": "https://modal.com/docs/sdk/py/latest/Image",
+      "sha256": "46ecd2fd85e734d3c57e1801de2864a20cce34c0a81c89786f9aeb0059a273b4",
+      "bytes": 562148
+    },
+    {
+      "id": "volumes.html",
+      "url": "https://modal.com/docs/guide/volumes",
+      "sha256": "69812346c7f5e14dc884ff29754897ad7a0a71e2d3d647f1cd89b85d85588cdf",
+      "bytes": 122529
+    },
+    {
+      "id": "regions.html",
+      "url": "https://modal.com/docs/guide/region-selection",
+      "sha256": "bdaced23212788df63d40ebee884e0fb0415a339de8ae5b0c69abb8cf255ed2a",
+      "bytes": 62891
+    },
+    {
+      "id": "gpu.html",
+      "url": "https://modal.com/docs/guide/gpu",
+      "sha256": "eefdb821b255d7a1d361332d6fc646a1d5b6bcf07a9c8d729d237288903f36ca",
+      "bytes": 76387
+    },
+    {
+      "id": "job-queue.html",
+      "url": "https://modal.com/docs/guide/job-queue",
+      "sha256": "744ad7050f41b514e04675d32b7e0257174dafce75bb79ddff188a84c1d5c70a",
+      "bytes": 58242
+    },
+    {
+      "id": "data-residency.html",
+      "url": "https://modal.com/docs/guide/data-residency",
+      "sha256": "62f371c3a08f00025dcb58be4775c42d48858251cbd4847102e1efd9a5dea9f9",
+      "bytes": 69378,
+      "captured_utc": "2026-10-11T19:21:34.633548+00:00"
+    }
+  ],
+  "boundary": "Modal SDK 1.6.1 source and Sandbox, Workspace, App and Volume API documentation"
+}

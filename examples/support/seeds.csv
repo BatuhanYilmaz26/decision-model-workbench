@@ -1,0 +1,14 @@
+id,group_id,state,team,refund,urgency,reviewed
+t01,c01,"I was charged twice. Please refund the extra charge.",billing,true,0,true
+t02,c02,"The app crashes for everyone and no work can continue.",technical,false,2,true
+t03,c03,"Can I get a quote for twenty seats?",sales,false,0,true
+t04,c04,"Where should I send a partnership proposal?",other,false,0,true
+t05,c05,"The theme setting is broken but the app still works.",technical,false,1,true
+t06,c06,"Please send last month's invoice.",billing,false,0,true
+t07,c07,"Please explain the annual plan price.",sales,false,0,true
+t08,c08,"I do not want a refund. I only need the invoice.",billing,false,0,true
+t09,c09,"All login attempts fail and we cannot use the service.",technical,false,2,true
+t10,c10,"Can you refund my cancelled subscription payment?",billing,true,0,true
+t11,c11,"The file list loads slowly, but uploads work.",technical,false,1,true
+t12,c12,"Hello, I would like to share feedback about your newsletter.",other,false,0,true
+

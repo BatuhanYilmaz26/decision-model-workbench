@@ -1,0 +1,13 @@
+* text=auto
+*.md text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.jsonl text eol=lf
+*.csv text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+
+# Preserve byte-bound training source identity and benchmark artifact hashes.
+decision_workbench/**/*.py -text
+research/benchmark-extract.csv -text
+research/benchmark-expansion-2026-10-10.csv -text

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "cryptography-aead",
+    "url": "https://cryptography.io/en/stable/hazmat/primitives/aead/",
+    "retrieved_utc": "2026-10-14T09:44:55.377418+00:00",
+    "status": 200,
+    "resolved_url": "https://cryptography.io/en/stable/hazmat/primitives/aead/",
+    "sha256": "36f43c1c1447ecd4181c9f55ed1cfee2fb4aa9c21a5cd337486e08f202805ea3",
+    "bytes": 134634
+  },
+  {
+    "id": "cryptography-hkdf",
+    "url": "https://cryptography.io/en/stable/hazmat/primitives/key-derivation-functions/",
+    "retrieved_utc": "2026-10-14T09:44:55.746189+00:00",
+    "status": 200,
+    "resolved_url": "https://cryptography.io/en/stable/hazmat/primitives/key-derivation-functions/",
+    "sha256": "8004a9ca1ae20035b090b76dfac9d8ce76f83d221bb5e068939affa5a9901d50",
+    "bytes": 236534
+  },
+  {
+    "id": "windows-file-acl",
+    "url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/icacls",
+    "retrieved_utc": "2026-10-14T09:44:56.071496+00:00",
+    "status": 200,
+    "resolved_url": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/icacls",
+    "sha256": "744285a31165599bd1593408422f6837f72543bf1ae854b2e7db212dd5c5d66f",
+    "bytes": 56421
+  }
+]

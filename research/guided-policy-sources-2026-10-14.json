@@ -1,0 +1,29 @@
+[
+  {
+    "id": "streamlit-data-editor",
+    "url": "https://docs.streamlit.io/develop/api-reference/data/st.data_editor",
+    "retrieved_utc": "2026-10-14T09:02:27.477439+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.streamlit.io/develop/api-reference/data/st.data_editor",
+    "sha256": "58bb7ef074c96c53d610e9bef422a607958759ba9c52e81763c0adebdd9a2e1b",
+    "bytes": 207140
+  },
+  {
+    "id": "streamlit-editor-state",
+    "url": "https://docs.streamlit.io/develop/concepts/design/dataframes",
+    "retrieved_utc": "2026-10-14T09:02:28.024448+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.streamlit.io/develop/concepts/design/dataframes",
+    "sha256": "e2322c85008e9fdb6046342b46c39cfe1ed372755e1fed1661d0bcdd5ae8e02d",
+    "bytes": 252870
+  },
+  {
+    "id": "streamlit-apptest",
+    "url": "https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest",
+    "retrieved_utc": "2026-10-14T09:02:28.693712+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest",
+    "sha256": "4c4574c65e17d12e5d39553cebac9d7fd2146083378ae0c8d1f86bc2811191ba",
+    "bytes": 509262
+  }
+]

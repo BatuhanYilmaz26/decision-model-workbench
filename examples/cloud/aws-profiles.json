@@ -1,0 +1,26 @@
+{
+  "format": "domain-cloud-profiles-v1",
+  "profiles": [
+    {
+      "id": "aws-domain-training",
+      "provider": "aws",
+      "tenants": [
+        "replace-with-workspace-tenant"
+      ],
+      "credential_prefix": "DMT_CLOUD_AWS",
+      "account_id": "123456789012",
+      "region": "eu-west-1",
+      "bucket": "replace-with-private-bucket",
+      "prefix": "decision-runs",
+      "role_arn": "arn:aws:iam::123456789012:role/replace-with-training-role",
+      "image_digest": "123456789012.dkr.ecr.eu-west-1.amazonaws.com/domain-trainer@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "gpu": "ml.g5.xlarge",
+      "volume_gb": 100,
+      "max_runtime_seconds": 7200,
+      "max_runs_day": 2,
+      "max_inflight": 1,
+      "max_artifact_bytes": 8589934592,
+      "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

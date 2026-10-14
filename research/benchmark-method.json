@@ -1,0 +1,35 @@
+{
+  "benchmark": "JevBench by Benchmark Heaven",
+  "version": "v1.6.1",
+  "published_at": "2026-10-06T00:39:36.000Z",
+  "review_date": "2026-10-09",
+  "publisher_source_sha256": "5cd8c1332226ea9c179883d2285c0d8b8cc593ae38f2645197364a7ddd9c83c1",
+  "retrieved_bytes_sha256": "3d4af307fc729c6d8be99b0ecc56eeff1269e0d894911b3d163ea14c2fe6e306",
+  "source_url": "https://benchmarkheaven.com/api/decision-results/jevbench/v1.6.1/json",
+  "method": {
+    "capability": {
+      "definition": "Arithmetic mean of Intelligence and Calibration; ranked models within both official caps. Headline on the open-weights board.",
+      "reference_key": "jev-1.13.0@v1.5.7",
+      "cost_cap_usd_per_1000": 0.06459465517241379,
+      "median_latency_cap_s": 1.2329566404223442,
+      "factor": 2
+    },
+    "composite": {
+      "definition": "Weighted harmonic mean of Intelligence, Calibration, Speed and Cost, multiplied by squared penalties when Intelligence is below its configured floor, or Speed or Cost is below 50. Equal 25% weights do not mean an arithmetic average.",
+      "weights": {
+        "calibration": 25,
+        "cost": 25,
+        "intelligence": 25,
+        "speed": 25
+      },
+      "intelligence_floor": 50,
+      "speed_floor": 50,
+      "cost_floor": 50,
+      "zero_axis_score": 0,
+      "missing_axis_score": null
+    }
+  },
+  "scope": "Published v1.6.1 including addenda a6, a7, a8, a11, a12 through 2026-10-08; cite source_sha256 for the exact result bytes. Later live-board reruns and dated carry remain separate.",
+  "rows_selected": 36,
+  "extract_sha256": "d68ed3ab675b0c976e98ca0e3026ba39eaaf417d64f253361221d9d5f3289c40"
+}

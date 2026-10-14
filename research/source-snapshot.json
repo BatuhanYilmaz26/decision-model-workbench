@@ -1,0 +1,164 @@
+[
+  {
+    "id": "clef",
+    "url": "https://huggingface.co/Cloudflare/clef/raw/main/README.md",
+    "retrieved_at": "2026-10-09T17:19:56.037198+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/Cloudflare/clef/raw/main/README.md",
+    "sha256": "ef3278427a57fed1c6ba5e50ce7fcfbbb62f640071690d8143dcec328fdbda6f",
+    "bytes": 10231
+  },
+  {
+    "id": "clef-flash",
+    "url": "https://huggingface.co/Cloudflare/clef-flash/raw/main/README.md",
+    "retrieved_at": "2026-10-09T17:19:56.038220+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/Cloudflare/clef-flash/raw/main/README.md",
+    "sha256": "9036da69502d2888f54cdee8bff832e534f74e164e7a02124c4bc511b18dc821",
+    "bytes": 10239
+  },
+  {
+    "id": "perplexity-v1",
+    "url": "https://huggingface.co/perplexity-ai/pplx-decider-v1-27b/raw/main/README.md",
+    "retrieved_at": "2026-10-09T17:19:56.038992+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/perplexity-ai/pplx-decider-v1-27b/raw/main/README.md",
+    "sha256": "00a24386cd2bfed10d9f53bc9c37341ef02f71af5ebc30389ffa26583bdb98a0",
+    "bytes": 2385
+  },
+  {
+    "id": "perplexity-v1.1",
+    "url": "https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b/raw/main/README.md",
+    "retrieved_at": "2026-10-09T17:19:56.039646+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b/raw/main/README.md",
+    "sha256": "265e16155cbc9c65bcf2a797521b8214eb659cf327f7bbed19ddcc298491eae4",
+    "bytes": 5696
+  },
+  {
+    "id": "kev",
+    "url": "https://huggingface.co/jaredpalmer/kev-27b/raw/main/README.md",
+    "retrieved_at": "2026-10-09T17:19:56.040284+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/jaredpalmer/kev-27b/raw/main/README.md",
+    "sha256": "68aa827316b88410981138208f4ed34d461d2ba762e4fb8ab27329445c4fca57",
+    "bytes": 26671
+  },
+  {
+    "id": "lev",
+    "url": "https://raw.githubusercontent.com/InterfazeAI/lev/main/README.md",
+    "retrieved_at": "2026-10-09T17:19:56.066410+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/InterfazeAI/lev/main/README.md",
+    "sha256": "7c9ffa5ddfe54a04d967136a265287fa1c7e7323954a8ab604e600b2368fbda4",
+    "bytes": 23426
+  },
+  {
+    "id": "strands",
+    "url": "https://huggingface.co/StrandsAgents/strands-decider-2B-hobson-v19/raw/main/README.md",
+    "retrieved_at": "2026-10-09T17:19:56.128474+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/StrandsAgents/strands-decider-2B-hobson-v19/raw/main/README.md",
+    "sha256": "e9bd6ec77988cf45a0b13ebf3193743bcf1c9a0bd34f43bed84a211c76025ecb",
+    "bytes": 9841
+  },
+  {
+    "id": "typed-decisions",
+    "url": "https://huggingface.co/datasets/LocalLLaMA/typed-decisions/raw/main/README.md",
+    "retrieved_at": "2026-10-09T17:19:56.236238+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/datasets/LocalLLaMA/typed-decisions/raw/main/README.md",
+    "sha256": "257572fae9b6601eb143b9842da9d40ee0f13e1cb239e335d86b020cd4fe483d",
+    "bytes": 15271
+  },
+  {
+    "id": "jevbench-manifest",
+    "url": "https://benchmarkheaven.com/api/jevbench/manifest",
+    "retrieved_at": "2026-10-09T17:19:56.668583+00:00",
+    "status": 200,
+    "resolved_url": "https://benchmarkheaven.com/api/jevbench/manifest",
+    "sha256": "b1a8f3a1c76281fa31f17cae41f3ea804abda2d6651f3d10c387527cb2576789",
+    "bytes": 6741
+  },
+  {
+    "id": "jevbench-results",
+    "url": "https://benchmarkheaven.com/api/decision-results/jevbench/v1.6.1/json",
+    "retrieved_at": "2026-10-09T17:19:56.669119+00:00",
+    "status": 200,
+    "resolved_url": "https://benchmarkheaven.com/api/decision-results/jevbench/v1.6.1/json",
+    "sha256": "3d4af307fc729c6d8be99b0ecc56eeff1269e0d894911b3d163ea14c2fe6e306",
+    "bytes": 155875
+  },
+  {
+    "id": "jevbench-method",
+    "url": "https://raw.githubusercontent.com/fstandhartinger/jevbench/main/README.md",
+    "retrieved_at": "2026-10-09T17:19:56.669687+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/fstandhartinger/jevbench/main/README.md",
+    "sha256": "e4af50530be8a9abe99dab7e23bf8d0134796ea596216d207d6ef044d05e3af5",
+    "bytes": 38191
+  },
+  {
+    "id": "decision-index",
+    "url": "https://huggingface.co/spaces/multimodalart/jev-decision-index/raw/main/README.md",
+    "retrieved_at": "2026-10-09T17:19:56.669914+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/spaces/multimodalart/jev-decision-index/raw/main/README.md",
+    "sha256": "4df193d5a162a615c0eb07434be45e3ca4c0d3a8a380021ec10f04d8e01be8da",
+    "bytes": 6675
+  },
+  {
+    "id": "unsloth-training",
+    "url": "https://unsloth.ai/docs/basics/train-your-own-decision-model-with-unsloth.md",
+    "retrieved_at": "2026-10-09T17:19:56.670271+00:00",
+    "status": 200,
+    "resolved_url": "https://unsloth.ai/docs/basics/train-your-own-decision-model-with-unsloth.md",
+    "sha256": "6b7398d3f3daf87e39c0e46e20084c1e8823b37f4fcb59bf507ada58a25c812f",
+    "bytes": 14195
+  },
+  {
+    "id": "unsloth-code",
+    "url": "https://raw.githubusercontent.com/unslothai/unsloth/main/unsloth/models/decision.py",
+    "retrieved_at": "2026-10-09T17:19:56.684179+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/unslothai/unsloth/main/unsloth/models/decision.py",
+    "sha256": "4b538ffda29f7b2af74a13a21b7bb520f112c035efe69d8e9b7b20a6011ec5ee",
+    "bytes": 74294
+  },
+  {
+    "id": "laya-code",
+    "url": "https://raw.githubusercontent.com/NandhaKishorM/laya/main/laya/train.py",
+    "retrieved_at": "2026-10-09T17:19:56.758672+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/NandhaKishorM/laya/main/laya/train.py",
+    "sha256": "c325941f275a90b486d00c3ca28dc4ee1ece795218fdaa7c67818d711ee79645",
+    "bytes": 64317
+  },
+  {
+    "id": "laya-benchmarks",
+    "url": "https://raw.githubusercontent.com/NandhaKishorM/laya/main/BENCHMARKS.md",
+    "retrieved_at": "2026-10-09T17:19:56.809034+00:00",
+    "status": 200,
+    "resolved_url": "https://raw.githubusercontent.com/NandhaKishorM/laya/main/BENCHMARKS.md",
+    "sha256": "1a99611fc119b5147c02bb1e4728e70995b3914cfdc4cf9c68a23563402a0a43",
+    "bytes": 32840
+  },
+  {
+    "id": "decision-index-methodology-32425c2",
+    "url": "https://huggingface.co/spaces/multimodalart/jev-decision-index/raw/32425c2/data/methodology.json",
+    "retrieved_at": "2026-10-09T17:45:46.184318+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/spaces/multimodalart/jev-decision-index/raw/32425c2/data/methodology.json",
+    "sha256": "b2ed9be97606bf0587b4b91a0fafc6a29167598ea8f0d6edd48edc1985d5a285",
+    "bytes": 293789
+  },
+  {
+    "id": "decision-index-index-32425c2",
+    "url": "https://huggingface.co/spaces/multimodalart/jev-decision-index/raw/32425c2/data/index.json",
+    "retrieved_at": "2026-10-09T17:45:47.322112+00:00",
+    "status": 200,
+    "resolved_url": "https://huggingface.co/spaces/multimodalart/jev-decision-index/raw/32425c2/data/index.json",
+    "sha256": "ba0e8a3dd26cd5fce58cf78325b85d0ab43be48c40b5be47b1e30cd33e882547",
+    "bytes": 1586855
+  }
+]

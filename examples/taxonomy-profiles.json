@@ -1,0 +1,19 @@
+{
+  "format": "domain-taxonomy-profiles-v1",
+  "profiles": [
+    {
+      "id": "typellm-discovery",
+      "provider": "typellm",
+      "model": "typellm-latest",
+      "response_model": "typellm-latest",
+      "key_env": "DMT_TAXONOMY_TYPESAFE_API_KEY",
+      "tenants": ["replace-with-authorized-tenant"],
+      "projects": ["replace-with-authorized-project"],
+      "max_calls_day": 20,
+      "max_inflight": 1,
+      "timeout_seconds": 30,
+      "max_request_bytes": 64000,
+      "max_rows": 20
+    }
+  ]
+}

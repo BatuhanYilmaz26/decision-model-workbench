@@ -1,0 +1,70 @@
+{
+  "format": "domain-cloud-sources-v1",
+  "repository_revision": "983ff46825e22de0a0c66de8badf50d8ba036ce5",
+  "sources": [
+    {
+      "id": "v2-openapi.json",
+      "url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/api-reference-v2/openapi.json",
+      "resolved_url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/api-reference-v2/openapi.json",
+      "captured_utc": "2026-10-11T11:08:35.007585+00:00",
+      "sha256": "0b364f88dbdc53c0d985d5aea9c4050e73e6958c7ff16bc89d6b2f63844ac926",
+      "bytes": 413356
+    },
+    {
+      "id": "v1-openapi.json",
+      "url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/api-reference/openapi.json",
+      "resolved_url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/api-reference/openapi.json",
+      "captured_utc": "2026-10-11T11:08:35.366875+00:00",
+      "sha256": "a8f5aebc4338883270a5d97f8b9a89ba4b7838d1c99f0a8392e117937caba57c",
+      "bytes": 157976
+    },
+    {
+      "id": "graphql-spec.mdx",
+      "url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/references/graphql-spec.mdx",
+      "resolved_url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/references/graphql-spec.mdx",
+      "captured_utc": "2026-10-11T11:08:35.683864+00:00",
+      "sha256": "b08e261b4732a515bc13f44321b8498e48654488330b072067d35058c7bf9157",
+      "bytes": 482
+    },
+    {
+      "id": "manage-pods.mdx",
+      "url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/sdks/graphql/manage-pods.mdx",
+      "resolved_url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/sdks/graphql/manage-pods.mdx",
+      "captured_utc": "2026-10-11T11:08:35.996265+00:00",
+      "sha256": "b61ebcd5841bfb3649467f56c1e4e185fc5243238e7190f0e9dca7043e413eac",
+      "bytes": 11717
+    },
+    {
+      "id": "s3-api.mdx",
+      "url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/storage/s3-api.mdx",
+      "resolved_url": "https://raw.githubusercontent.com/runpod/docs/983ff46825e22de0a0c66de8badf50d8ba036ce5/storage/s3-api.mdx",
+      "captured_utc": "2026-10-11T11:08:36.323484+00:00",
+      "sha256": "f5ce192a176842bbd6ec793d15b50db3df9166f0ec70db58e33c9251de4d580a",
+      "bytes": 26137
+    },
+    {
+      "id": "v2-overview.html",
+      "url": "https://docs.runpod.io/api-reference-v2/overview",
+      "resolved_url": "https://docs.runpod.io/api-reference-v2/overview",
+      "captured_utc": "2026-10-11T11:18:15.474401+00:00",
+      "sha256": "7b0f0145e4d6a5be57547cd1c1e4288b396dccba9468a22a533a854a5c88cd09",
+      "bytes": 375322
+    },
+    {
+      "id": "v2-migration.html",
+      "url": "https://docs.runpod.io/api-reference-v2/migrate-from-v1",
+      "resolved_url": "https://docs.runpod.io/api-reference-v2/migrate-from-v1",
+      "captured_utc": "2026-10-11T11:18:15.881405+00:00",
+      "sha256": "32c680dd527bf31387dbb1b2e73bd50f90266d7bec98b895afce7425e5f93473",
+      "bytes": 454251
+    },
+    {
+      "id": "storage.html",
+      "url": "https://docs.runpod.io/storage/s3-api",
+      "resolved_url": "https://docs.runpod.io/storage/s3-api",
+      "captured_utc": "2026-10-11T11:18:16.283082+00:00",
+      "sha256": "a974eae9bea2bcf16738e7c49500ca71ec5f4eb6c9a1ed81ed7822d8675ddd5b",
+      "bytes": 697359
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "format": "domain-cloud-profiles-v1",
+  "profiles": [
+    {
+      "id": "azure-example",
+      "provider": "azure",
+      "tenants": [
+        "your-workspace"
+      ],
+      "credential_prefix": "DMT_CLOUD_AZURE",
+      "account_id": "00000000-1111-2222-3333-444444444444",
+      "tenant_id": "11111111-2222-3333-4444-555555555555",
+      "operator_application_id": "22222222-3333-4444-5555-666666666666",
+      "compute_principal_id": "33333333-4444-5555-6666-777777777777",
+      "workspace_principal_id": "44444444-5555-6666-7777-888888888888",
+      "resource_group": "dmt-fixture",
+      "workspace": "dmt-workspace",
+      "compute": "decision-gpu",
+      "environment": "decision-trainer",
+      "environment_version": "1",
+      "registry": "dmtregistry",
+      "storage_account": "dmtstorage",
+      "container": "decision-runs",
+      "datastore": "decision_data",
+      "prefix": "studies",
+      "image_digest": "dmtregistry.azurecr.io/trainer@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "gpu": "Standard_NC4as_T4_v3",
+      "region": "westeurope",
+      "max_runtime_seconds": 7200,
+      "idle_seconds": 120,
+      "max_runs_day": 2,
+      "max_inflight": 1,
+      "max_artifact_bytes": 1048576,
+      "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

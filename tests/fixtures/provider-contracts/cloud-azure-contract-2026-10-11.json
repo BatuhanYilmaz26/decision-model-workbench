@@ -1,0 +1,311 @@
+{
+  "api_version": "2026-09-01",
+  "source_url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/65eb9311d304dcf9874d05fdec39ea65baae8db8/specification/machinelearningservices/resource-manager/Microsoft.MachineLearningServices/MachineLearningServices/stable/2026-09-01/openapi.json",
+  "source_sha256": "6d2f0eb954e46a5618ba11ffab930ae51363181739c5184e068f7b6e1b292e2e",
+  "repository_revision": "65eb9311d304dcf9874d05fdec39ea65baae8db8",
+  "definitions": {
+    "CommandJob": {
+      "type": "object",
+      "properties": {
+        "codeId": {
+          "type": "string"
+        },
+        "command": {
+          "type": "string"
+        },
+        "distribution": {
+          "$ref": "#/definitions/DistributionConfiguration"
+        },
+        "environmentId": {
+          "type": "string"
+        },
+        "environmentVariables": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/JobInput"
+          }
+        },
+        "limits": {
+          "$ref": "#/definitions/CommandJobLimits"
+        },
+        "outputs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/JobOutput"
+          }
+        },
+        "parameters": {},
+        "queueSettings": {
+          "$ref": "#/definitions/QueueSettings"
+        },
+        "resources": {
+          "$ref": "#/definitions/JobResourceConfiguration"
+        }
+      },
+      "required": [
+        "command",
+        "environmentId"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/definitions/JobBaseProperties"
+        }
+      ]
+    },
+    "JobBaseProperties": {
+      "type": "object",
+      "properties": {
+        "componentId": {
+          "type": "string"
+        },
+        "computeId": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "experimentName": {
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/definitions/IdentityConfiguration"
+        },
+        "isArchived": {
+          "type": "boolean"
+        },
+        "jobType": {
+          "$ref": "#/definitions/JobType"
+        },
+        "notificationSetting": {
+          "$ref": "#/definitions/NotificationSetting"
+        },
+        "services": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/JobService"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/JobStatus"
+        }
+      },
+      "discriminator": "jobType",
+      "required": [
+        "jobType"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/definitions/ResourceBase"
+        }
+      ]
+    },
+    "ResourceBase": {
+      "type": "object",
+      "properties": {
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CommandJobLimits": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/JobLimits"
+        }
+      ]
+    },
+    "JobLimits": {
+      "type": "object",
+      "properties": {
+        "jobLimitsType": {
+          "$ref": "#/definitions/JobLimitsType"
+        },
+        "timeout": {
+          "type": "string",
+          "format": "duration"
+        }
+      },
+      "discriminator": "jobLimitsType",
+      "required": [
+        "jobLimitsType"
+      ]
+    },
+    "JobLimitsType": {
+      "type": "string",
+      "enum": [
+        "Command",
+        "Sweep"
+      ]
+    },
+    "JobResourceConfiguration": {
+      "type": "object",
+      "properties": {
+        "dockerArgs": {
+          "type": "string"
+        },
+        "dockerArgsList": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "shmSize": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/ResourceConfiguration"
+        }
+      ]
+    },
+    "ResourceConfiguration": {
+      "type": "object",
+      "properties": {
+        "instanceCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "instanceType": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {}
+        }
+      }
+    },
+    "ManagedIdentity": {
+      "type": "object",
+      "properties": {
+        "clientId": {
+          "$ref": "#/definitions/Azure.Core.uuid"
+        },
+        "objectId": {
+          "$ref": "#/definitions/Azure.Core.uuid"
+        },
+        "resourceId": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/IdentityConfiguration"
+        }
+      ]
+    },
+    "IdentityConfiguration": {
+      "type": "object",
+      "properties": {
+        "identityType": {
+          "$ref": "#/definitions/IdentityConfigurationType"
+        }
+      },
+      "discriminator": "identityType",
+      "required": [
+        "identityType"
+      ]
+    },
+    "UriFileJobInput": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "ReadOnlyMount",
+            "ReadWriteMount",
+            "Download",
+            "Direct",
+            "EvalMount",
+            "EvalDownload"
+          ]
+        },
+        "uri": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "uri"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/definitions/JobInput"
+        }
+      ]
+    },
+    "JobInput": {
+      "type": "object",
+      "properties": {
+        "jobInputType": {
+          "$ref": "#/definitions/JobInputType"
+        }
+      },
+      "discriminator": "jobInputType",
+      "required": [
+        "jobInputType"
+      ]
+    },
+    "UriFileJobOutput": {
+      "type": "object",
+      "properties": {
+        "assetName": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "ReadWriteMount",
+            "Upload",
+            "Direct"
+          ]
+        },
+        "uri": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/JobOutput"
+        }
+      ]
+    },
+    "JobOutput": {
+      "type": "object",
+      "properties": {
+        "jobOutputType": {
+          "$ref": "#/definitions/JobOutputType"
+        }
+      },
+      "discriminator": "jobOutputType",
+      "required": [
+        "jobOutputType"
+      ]
+    },
+    "JobType": {
+      "type": "string",
+      "enum": [
+        "AutoML",
+        "Command",
+        "Sweep",
+        "Pipeline",
+        "Spark"
+      ]
+    }
+  }
+}

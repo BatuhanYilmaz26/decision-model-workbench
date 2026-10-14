@@ -1,0 +1,28 @@
+{
+  "state": "I was charged twice. Please refund the extra charge.",
+  "questions": {
+    "team": {
+      "type": "choice",
+      "instructions": "Which team should handle the primary request?",
+      "criteria": {
+        "billing": "Charges, refunds or invoices",
+        "technical": "Bugs, outages or configuration",
+        "sales": "Purchasing or pricing",
+        "other": "No matching support team"
+      }
+    },
+    "refund": {
+      "type": "noul",
+      "instructions": "Does the writer explicitly request a refund?"
+    },
+    "urgency": {
+      "type": "score",
+      "instructions": "Rate the urgency based on stated service impact.",
+      "criteria": [
+        "No urgent impact stated",
+        "Limited impact; work can continue",
+        "Service blocked or unavailable"
+      ]
+    }
+  }
+}

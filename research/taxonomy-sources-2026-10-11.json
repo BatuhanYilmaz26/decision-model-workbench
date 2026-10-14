@@ -1,0 +1,92 @@
+{
+  "captures": [
+    {
+      "id": "api",
+      "url": "https://typellm.ai/docs/api",
+      "resolved_url": "https://typellm.ai/docs/api",
+      "status": 200,
+      "sha256": "46b2ce82ce3b08739e9753da9d6ba806b55b4194f781df5a7f8e5add56079de4",
+      "bytes": 84988,
+      "retrieved_utc": "2026-10-11T20:50:23.661587+00:00"
+    },
+    {
+      "id": "cookbook",
+      "url": "https://typellm.ai/cookbook/discover-invoice-categories?v=2",
+      "resolved_url": "https://typellm.ai/cookbook/discover-invoice-categories?v=2",
+      "status": 200,
+      "sha256": "87a6640595d9d52b40e0cfe83db49f434801b355054814edda0183a2fdb0c93e",
+      "bytes": 67806,
+      "retrieved_utc": "2026-10-11T20:50:24.250861+00:00"
+    },
+    {
+      "id": "tree",
+      "url": "https://api.github.com/repos/TypeLLM/TypeLLM/git/trees/main?recursive=1",
+      "resolved_url": "https://api.github.com/repos/TypeLLM/TypeLLM/git/trees/main?recursive=1",
+      "status": 200,
+      "sha256": "efde8394f549e23eb0f8691fad6b3ac8330b056910b0a58e26ac52cba8b8d72f",
+      "bytes": 59514,
+      "retrieved_utc": "2026-10-11T20:50:24.682672+00:00"
+    },
+    {
+      "id": "pypi",
+      "url": "https://pypi.org/pypi/typellm/json",
+      "resolved_url": "https://pypi.org/pypi/typellm/json",
+      "status": 200,
+      "sha256": "0ca7a78c90d3a4f7b2bdf4c794c967502859131ddbb960d5e8330cdab0aee776",
+      "bytes": 81955,
+      "retrieved_utc": "2026-10-11T20:50:24.921068+00:00"
+    },
+    {
+      "id": "sdk",
+      "url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/fd9b97a06386d1898d2c241796c3c81bd10db9c0/typellm/sglang.py",
+      "resolved_url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/fd9b97a06386d1898d2c241796c3c81bd10db9c0/typellm/sglang.py",
+      "status": 200,
+      "sha256": "8dcbd28bf9b0a19ab4618872b7ab3e86f92e866736f29a030e6be24e48dfcee2",
+      "bytes": 55608,
+      "retrieved_utc": "2026-10-11T21:12:43.462945+00:00"
+    },
+    {
+      "id": "protocol",
+      "url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/fd9b97a06386d1898d2c241796c3c81bd10db9c0/typellm/protocol.py",
+      "resolved_url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/fd9b97a06386d1898d2c241796c3c81bd10db9c0/typellm/protocol.py",
+      "status": 200,
+      "sha256": "630db48d4f321230a898236fa9a961c416e3265045dc55fdbec815a63280da04",
+      "bytes": 1490,
+      "retrieved_utc": "2026-10-11T21:12:43.765838+00:00"
+    },
+    {
+      "id": "notebook",
+      "url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/fd9b97a06386d1898d2c241796c3c81bd10db9c0/examples/notebooks/discover_invoice_categories.ipynb",
+      "resolved_url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/fd9b97a06386d1898d2c241796c3c81bd10db9c0/examples/notebooks/discover_invoice_categories.ipynb",
+      "status": 200,
+      "sha256": "cb0c72722f1129025edb851d36c3ffdf7296ac45eb40db5256f6d6e31222da47",
+      "bytes": 21373,
+      "retrieved_utc": "2026-10-11T21:12:44.095789+00:00"
+    },
+    {
+      "id": "client-source",
+      "url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/fd9b97a06386d1898d2c241796c3c81bd10db9c0/typellm/__init__.py",
+      "status": 200,
+      "sha256": "c3a65c5b185cccb061ce2dbc464021ec9450392c4e63901566fe9b39883ef43d",
+      "bytes": 1017,
+      "retrieved_utc": "2026-10-11T21:16:19.265653+00:00"
+    },
+    {
+      "id": "runtime",
+      "url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/fd9b97a06386d1898d2c241796c3c81bd10db9c0/typellm/runtime.py",
+      "status": 200,
+      "sha256": "0db6072a6b699e67d19a256e32d2b2a6eb16f14efc87bb45d1eb842302418cfd",
+      "bytes": 83225,
+      "retrieved_utc": "2026-10-11T21:17:05.396767+00:00"
+    },
+    {
+      "id": "schema",
+      "url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/fd9b97a06386d1898d2c241796c3c81bd10db9c0/typellm/schema.py",
+      "status": 200,
+      "sha256": "66668913e550185f513bf20615379560609f7f1bda6e2965069ffdec3e55d284",
+      "bytes": 47580,
+      "retrieved_utc": "2026-10-11T21:17:05.717481+00:00"
+    }
+  ],
+  "repository_revision": "fd9b97a06386d1898d2c241796c3c81bd10db9c0"
+}

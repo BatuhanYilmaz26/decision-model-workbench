@@ -1,0 +1,39 @@
+services:
+  api:
+    image: ${DMT_MODEL_IMAGE:?Set the qualified local model image reference}
+    command: ["domain-platform", "serve", "--host", "0.0.0.0", "--port", "8080"]
+    environment:
+      DMT_MODEL_CACHE: /app/model-cache/hub
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    volumes:
+      - type: bind
+        source: ${DMT_MODEL_CACHE_PATH:?Set the predownloaded approved Hub cache directory}
+        target: /app/model-cache/hub
+        read_only: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${DMT_GPU_DEVICE:?Select the same NVIDIA device for API and worker}"]
+              capabilities: [gpu]
+  worker:
+    image: ${DMT_MODEL_IMAGE:?Set the qualified local model image reference}
+    command: ["domain-worker"]
+    environment:
+      DMT_MODEL_CACHE: /app/model-cache/hub
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    volumes:
+      - type: bind
+        source: ${DMT_MODEL_CACHE_PATH:?Set the predownloaded approved Hub cache directory}
+        target: /app/model-cache/hub
+        read_only: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${DMT_GPU_DEVICE:?Select the same NVIDIA device for API and worker}"]
+              capabilities: [gpu]

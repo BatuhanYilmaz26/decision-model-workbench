@@ -1,0 +1,54 @@
+{
+  "format": "domain-cloud-sources-v1",
+  "sources": [
+    {
+      "id": "aiplatform-discovery",
+      "url": "https://aiplatform.googleapis.com/$discovery/rest?version=v1",
+      "captured_utc": "2026-10-11T10:11:30.848824+00:00",
+      "sha256": "a28536686a7e16aecdb5e7302c23ef22bd6fa1cdfef83b8a1f1346a92d86c721",
+      "bytes": 3896108
+    },
+    {
+      "id": "storage-discovery",
+      "url": "https://storage.googleapis.com/$discovery/rest?version=v1",
+      "captured_utc": "2026-10-11T10:11:31.294657+00:00",
+      "sha256": "f68b3caf3ef95335af7f9ccdf97288ba2e81be0ee8078c9c5449638d440cbc7c",
+      "bytes": 253841
+    },
+    {
+      "id": "resource-manager-discovery",
+      "url": "https://cloudresourcemanager.googleapis.com/$discovery/rest?version=v1",
+      "captured_utc": "2026-10-11T10:11:31.657658+00:00",
+      "sha256": "efb24aebec724f781b5b5420de70b491cc5a431289ccb1b3f4b84433e76e4d05",
+      "bytes": 125254
+    },
+    {
+      "id": "custom-job-spec",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/rest/Shared.Types/CustomJobSpec",
+      "captured_utc": "2026-10-11T10:11:32.864521+00:00",
+      "sha256": "98003d9bead3b58e9c2ccf38315483c97d9c5f35d7062fdb195a54d6e6bf014a",
+      "bytes": 794571
+    },
+    {
+      "id": "training-code",
+      "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/training/code-requirements",
+      "captured_utc": "2026-10-11T10:11:33.750663+00:00",
+      "sha256": "169856e4b25f5b087b2101f32392daa5e0d7b2dff89e4a7e5d2a5d8d48842814",
+      "bytes": 450672
+    },
+    {
+      "id": "storage-checksums",
+      "url": "https://docs.cloud.google.com/storage/docs/data-validation",
+      "captured_utc": "2026-10-11T10:11:34.824358+00:00",
+      "sha256": "e102b863ccd7781903086bb7058a9372a09679d889670ff0deb3994910fefd56",
+      "bytes": 211358
+    },
+    {
+      "id": "google-auth-pypi",
+      "url": "https://pypi.org/pypi/google-auth/json",
+      "captured_utc": "2026-10-11T10:11:35.045171+00:00",
+      "sha256": "da45cf0bef552c122b292a3ca41ec63243bdb0496b7a29375e7188bb7efe8612",
+      "bytes": 337714
+    }
+  ]
+}

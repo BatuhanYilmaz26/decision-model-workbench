@@ -1,0 +1,7 @@
+# Optional CPU audit runner libraries; capture the installed exact local wheel tags
+# with create_semantic_profile.py. Fresh installs/Linux/other wheels remain unqualified.
+torch==2.10.0
+transformers==5.17.0
+numpy==2.5.2
+safetensors==0.8.0
+tokenizers==0.23.3

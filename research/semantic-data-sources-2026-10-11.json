@@ -1,0 +1,77 @@
+{
+  "captures": [
+    {
+      "id": "minilm-card",
+      "url": "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/raw/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/README.md",
+      "resolved_url": "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/raw/1110a243fdf4706b3f48f1d95db1a4f5529b4d41/README.md",
+      "status": 200,
+      "retrieved_utc": "2026-10-11T20:02:40.445177+00:00",
+      "sha256": "dcd602d2fd35c203a247304a06fec6654a12f7941b739f9221a064fe8dc3b7f0",
+      "bytes": 10502
+    },
+    {
+      "id": "paraphrase-mining",
+      "url": "https://sbert.net/examples/sentence_transformer/applications/paraphrase-mining/README.html",
+      "resolved_url": "https://sbert.net/examples/sentence_transformer/applications/paraphrase-mining/README.html",
+      "status": 200,
+      "retrieved_utc": "2026-10-11T20:02:40.785982+00:00",
+      "sha256": "0aad30ea397bfdd2cdbfe4f0f927342bab7e49fd7d4c276816c3e546fe5aa5c2",
+      "bytes": 156841
+    },
+    {
+      "id": "model-metadata",
+      "url": "https://huggingface.co/api/models/sentence-transformers/all-MiniLM-L6-v2/revision/1110a243fdf4706b3f48f1d95db1a4f5529b4d41?blobs=true",
+      "status": 200,
+      "retrieved_utc": "2026-10-11T20:18:03.511935+00:00",
+      "bytes": 10786,
+      "sha256": "c7e0902f6053153d47832477cfce74609cd5065aeeb8bae5e415779ccb648548"
+    },
+    {
+      "id": "torch-cache",
+      "url": "https://raw.githubusercontent.com/pytorch/pytorch/v2.10.0/torch/_inductor/runtime/cache_dir_utils.py",
+      "resolved_url": "https://raw.githubusercontent.com/pytorch/pytorch/v2.10.0/torch/_inductor/runtime/cache_dir_utils.py",
+      "status": 200,
+      "retrieved_utc": "2026-10-11T20:29:06.725642+00:00",
+      "sha256": "54c32dfbbf15547a4013dd250d1edc3412dcf69c44de6139a45ba11a7ca1d55d",
+      "bytes": 1444
+    }
+  ],
+  "scope": "Pinned MiniLM model card, model asset hashes and semantic candidate-mining documentation",
+  "model_asset_hashes": [
+    {
+      "file": "config.json",
+      "method": "published Git blob SHA-1 plus local SHA-256",
+      "git_blob_sha1": "72b987fd805cfa2b58c4c8c952b274a11bfd5a00",
+      "sha256": "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41"
+    },
+    {
+      "file": "model.safetensors",
+      "method": "published LFS SHA-256",
+      "sha256": "53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db"
+    },
+    {
+      "file": "special_tokens_map.json",
+      "method": "published Git blob SHA-1 plus local SHA-256",
+      "git_blob_sha1": "e7b0375001f109a6b8873d756ad4f7bbb15fbaa5",
+      "sha256": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3"
+    },
+    {
+      "file": "tokenizer.json",
+      "method": "published Git blob SHA-1 plus local SHA-256",
+      "git_blob_sha1": "cb202bfe2e3c98645018a6d12f182a434c9d3e02",
+      "sha256": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037"
+    },
+    {
+      "file": "tokenizer_config.json",
+      "method": "published Git blob SHA-1 plus local SHA-256",
+      "git_blob_sha1": "c79f2b6a0cea6f4b564fed1938984bace9d30ff0",
+      "sha256": "acb92769e8195aabd29b7b2137a9e6d6e25c476a4f15aa4355c233426c61576b"
+    },
+    {
+      "file": "vocab.txt",
+      "method": "published Git blob SHA-1 plus local SHA-256",
+      "git_blob_sha1": "fb140275c155a9c7c5a3b3e0e77a9e839594a938",
+      "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+    }
+  ]
+}

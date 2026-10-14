@@ -1,0 +1,2 @@
+# Reviewed Modal control SDK; not a CUDA training lock.
+modal==1.6.1

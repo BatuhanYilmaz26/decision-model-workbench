@@ -1,0 +1,64 @@
+{
+  "format": "domain-decision-profiles-v1",
+  "profiles": [
+    {
+      "id": "typesafe",
+      "provider": "typesafe",
+      "model": "jev-1.13.0",
+      "response_model": "jev-1.13.0",
+      "key_env": "DMT_PROVIDER_TYPESAFE_API_KEY",
+      "tenants": [
+        "my-enterprise"
+      ],
+      "max_calls_day": 1000,
+      "max_inflight": 2,
+      "timeout_seconds": 15,
+      "max_request_bytes": 64000
+    },
+    {
+      "id": "openrouter",
+      "provider": "openrouter",
+      "model": "typesafe/jev-1.13",
+      "response_model": "typesafe/jev-1.13-20260917",
+      "key_env": "DMT_PROVIDER_OPENROUTER_API_KEY",
+      "tenants": [
+        "my-enterprise"
+      ],
+      "max_calls_day": 1000,
+      "max_inflight": 2,
+      "timeout_seconds": 15,
+      "max_request_bytes": 64000,
+      "response_provider": "TypeSafe",
+      "provider_slug": "typesafe"
+    },
+    {
+      "id": "perplexity",
+      "provider": "perplexity",
+      "model": "pplx-decider-v1.1-27b",
+      "response_model": "pplx-decider-v1.1-27b",
+      "key_env": "DMT_PROVIDER_PERPLEXITY_API_KEY",
+      "tenants": [
+        "my-enterprise"
+      ],
+      "max_calls_day": 1000,
+      "max_inflight": 2,
+      "timeout_seconds": 15,
+      "max_request_bytes": 64000
+    },
+    {
+      "id": "cloudflare",
+      "provider": "cloudflare",
+      "model": "clef-flash",
+      "response_model": "clef-flash",
+      "key_env": "DMT_PROVIDER_CLOUDFLARE_API_KEY",
+      "tenants": [
+        "my-enterprise"
+      ],
+      "max_calls_day": 1000,
+      "max_inflight": 2,
+      "timeout_seconds": 15,
+      "max_request_bytes": 1024,
+      "account_id": "00000000000000000000000000000000"
+    }
+  ]
+}

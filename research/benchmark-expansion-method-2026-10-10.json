@@ -1,0 +1,103 @@
+{
+  "reviewed_on": "2026-10-10",
+  "reproduced": false,
+  "extract_file": "benchmark-expansion-2026-10-10.csv",
+  "extract_sha256": "20fa73cd563cad47aa25caea68b6fb23c59d8145df4770a6862a43dbc36f243e",
+  "rows": 19,
+  "artifacts": [
+    {
+      "revision": "v1.6.6",
+      "url": "https://benchmarkheaven.com/api/jevbench/v1.6.6",
+      "retrieved_sha256": "31b1f53ef9ff065eefae2fdaf619c65f4ef579ce0608b7698a1bc63b620bf0cc",
+      "publisher_source_sha256": "18f9665d3e4674cdf015a254c897aea27c7bae846eed90a16b58381a7b1fb8ee",
+      "draw": "v1.6-regular-20261010-a2",
+      "sample": {
+        "open": 300,
+        "published_open": 300,
+        "sealed": 1200,
+        "total": 1500
+      },
+      "G_med": 10.073244581339713,
+      "g_med_fixed": true,
+      "scoring_parameters": {
+        "B": 1000,
+        "g_med_fixed": 10.073244581339713,
+        "noul_method": "O1S",
+        "only": null,
+        "seed": 16,
+        "test_allow_partial": false,
+        "workers": 4
+      },
+      "scorer_sources_sha256": {
+        "noul_method_v16.py": "119e59486ab3300b972fbcbadb0fe1dceceb124287607375aa61c66063c607d0",
+        "score_v15.py": "0931e05c6410b1b971201834397cb609cdb25f942723c50375632952f6dcc447",
+        "score_v15_headlineA.py": "826f2cbcb57007ec8a161e6eb0111182b8a656c0638027c6c78022a858fd8e2c",
+        "score_v16.py": "02132271117653e6302c509232a581d0094f0e78eac8b1bfc67596fd5d5097e9"
+      },
+      "bootstrap": {
+        "B": 1000,
+        "bootstrap_seed": 16,
+        "g_med_fixed": true
+      },
+      "row_count": 9
+    },
+    {
+      "revision": "v1.6.7",
+      "url": "https://benchmarkheaven.com/api/jevbench/v1.6.7",
+      "retrieved_sha256": "64120ec678f2613389b016e871e6ac3dd690b0c438cfae35a801abb0a584305c",
+      "publisher_source_sha256": "36b2acecfacac871ead42a1d4cb62e770605221a2b489fce7ffdc7d08f061a3e",
+      "draw": "v1.6-regular-20261010-a2",
+      "sample": {
+        "open": 300,
+        "published_open": 300,
+        "sealed": 1200,
+        "total": 1500
+      },
+      "G_med": 10.073244581339713,
+      "g_med_fixed": true,
+      "scoring_parameters": {
+        "B": 1000,
+        "g_med_fixed": 10.073244581339713,
+        "noul_method": "O1S",
+        "only": null,
+        "seed": 16,
+        "test_allow_partial": false,
+        "workers": 6
+      },
+      "scorer_sources_sha256": {
+        "noul_method_v16.py": "119e59486ab3300b972fbcbadb0fe1dceceb124287607375aa61c66063c607d0",
+        "score_v15.py": "0931e05c6410b1b971201834397cb609cdb25f942723c50375632952f6dcc447",
+        "score_v15_headlineA.py": "826f2cbcb57007ec8a161e6eb0111182b8a656c0638027c6c78022a858fd8e2c",
+        "score_v16.py": "02132271117653e6302c509232a581d0094f0e78eac8b1bfc67596fd5d5097e9"
+      },
+      "bootstrap": {
+        "B": 1000,
+        "bootstrap_seed": 16,
+        "g_med_fixed": true
+      },
+      "row_count": 10
+    }
+  ],
+  "source_conflicts": [
+    {
+      "subject": "Vega context",
+      "publisher_claim": "Current author README/card says oversized inputs are refused.",
+      "evaluator_report": "v1.6.6/1.6.7 says 29 states were truncated at 73728 tokens on its pinned runtime.",
+      "resolution": "Unresolved as a general runtime guarantee; pins differ, evaluate exact installed package/checkpoint at boundary."
+    },
+    {
+      "subject": "Vega license",
+      "current_card_revision": "c85f2338fcc965f5ab0050a5752200e86fa8f63b",
+      "current_card_tag": "apache-2.0",
+      "evaluator_pin": "73a76a4f6c4fe672e0daa2d45ddc355afc5bc9dd",
+      "evaluator_note": "Checkpoint repository declares no licence field.",
+      "resolution": "Retrieved the exact evaluator-pinned card: its frontmatter lacks a license field. Current c85 card adds apache-2.0; the metadata difference is explained by the revisions. This does not settle separate backbone/distribution obligations."
+    },
+    {
+      "subject": "JevBench manifest",
+      "manifest_revision": "v1.6.1",
+      "requested_revision": "v1.6.6",
+      "resolution": "Use the exact /api/jevbench/v1.6.6 artifact; do not treat the generic manifest as its method snapshot."
+    }
+  ]
+}

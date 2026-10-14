@@ -1,0 +1,127 @@
+{
+  "captures": [
+    {
+      "id": "tree",
+      "url": "https://api.github.com/repos/NandhaKishorM/vegaml/git/trees/main?recursive=1",
+      "status": 200,
+      "sha256": "721b8991885b0dfb69ae6d89a615bb779855d095d3595a3946b15a343dd32c76",
+      "bytes": 12432,
+      "retrieved_utc": "2026-10-12T06:03:13.824665+00:00"
+    },
+    {
+      "id": "hub",
+      "url": "https://huggingface.co/api/models/nandakishorm/vega-08b-public-intents",
+      "status": 200,
+      "sha256": "fa3cdc504a6cbd0bd17cee2e5689f03d1170a2ce0327535465b7b833da8be632",
+      "bytes": 2461,
+      "retrieved_utc": "2026-10-12T06:03:14.020506+00:00"
+    },
+    {
+      "id": "pypi",
+      "url": "https://pypi.org/pypi/vegaml/json",
+      "status": 200,
+      "sha256": "7effe376317dddde8226946f85f493e6a62cadb778057668a18fc9378d23b2b1",
+      "bytes": 49905,
+      "retrieved_utc": "2026-10-12T06:03:14.236085+00:00"
+    },
+    {
+      "id": "README.md",
+      "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/README.md",
+      "status": 200,
+      "sha256": "61cfde0abe05d1d220656dfc911122804b545ea562347355816ffb528c4bf228",
+      "bytes": 32205,
+      "retrieved_utc": "2026-10-12T06:03:40.352343+00:00"
+    },
+    {
+      "id": "pyproject.toml",
+      "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/pyproject.toml",
+      "status": 200,
+      "sha256": "8238f6131ba5b121e446f3313b8850663080c9ad619f46acc914806e06c3e81d",
+      "bytes": 2642,
+      "retrieved_utc": "2026-10-12T06:03:40.648542+00:00"
+    },
+    {
+      "id": "notebooks_vega_finetune.py",
+      "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/notebooks/vega_finetune.py",
+      "status": 200,
+      "sha256": "7c2db72f4f2f5bdeab398304b4e64e3413e500b494eaecedf817f3017a51a352",
+      "bytes": 21514,
+      "retrieved_utc": "2026-10-12T06:03:40.938152+00:00"
+    },
+    {
+      "id": "vegaml__api.py",
+      "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/vegaml/_api.py",
+      "status": 200,
+      "sha256": "9f486050bad5cfbc5cf515c78045c23705c5498a1ad0398167b78eb6a2265985",
+      "bytes": 14835,
+      "retrieved_utc": "2026-10-12T06:03:41.239990+00:00"
+    },
+    {
+      "id": "vegaml__common.py",
+      "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/vegaml/_common.py",
+      "status": 200,
+      "sha256": "97717e15184ecfad84273c75f1e3d2b83fd5fbfdb7c90b8eaad760f0eb22194a",
+      "bytes": 55470,
+      "retrieved_utc": "2026-10-12T06:03:41.567038+00:00"
+    },
+    {
+      "id": "vegaml_hub.py",
+      "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/vegaml/hub.py",
+      "status": 200,
+      "sha256": "e5b80fecf9fbebecadef5a3f11d5ea24846c5ad7880c496f93003e31c5e3d2f0",
+      "bytes": 6199,
+      "retrieved_utc": "2026-10-12T06:03:41.861756+00:00"
+    },
+    {
+      "id": "tests_test_finetune_gate.py",
+      "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/tests/test_finetune_gate.py",
+      "status": 200,
+      "sha256": "319cc8e38f21ffcd312fcbd63a4b017386f5f41b6d69a40b1de6b92051a83c4e",
+      "bytes": 6839,
+      "retrieved_utc": "2026-10-12T06:03:42.162608+00:00"
+    },
+    {
+      "id": "tests_test_no_remote_code.py",
+      "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/tests/test_no_remote_code.py",
+      "status": 200,
+      "sha256": "93124c45fe284331e3a6133d3609dd2395071f8609d04f27d1d4caefbcda8c5a",
+      "bytes": 4499,
+      "retrieved_utc": "2026-10-12T06:03:42.454759+00:00"
+    },
+    {
+      "id": "tests_test_adapter_routing.py",
+      "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/tests/test_adapter_routing.py",
+      "status": 200,
+      "sha256": "9cea654788ae42be26da1cbadf9f1ac077fe0bfa140dbdf981f8b0d14d73e63a",
+      "bytes": 7429,
+      "retrieved_utc": "2026-10-12T06:03:42.763059+00:00"
+    },
+    {
+      "id": "model_vega_config.json",
+      "url": "https://huggingface.co/nandakishorm/vega-08b-public-intents/resolve/42ac8d4fa9efb61f96e53d80962cf28f6dfe667e/vega_config.json",
+      "status": 200,
+      "sha256": "12f4f73784d58532ef244288c425df24944a8bda9c8414aa7c0981dfd2d88494",
+      "bytes": 11236,
+      "retrieved_utc": "2026-10-12T06:04:55.872429+00:00"
+    },
+    {
+      "id": "model_README.md",
+      "url": "https://huggingface.co/nandakishorm/vega-08b-public-intents/resolve/42ac8d4fa9efb61f96e53d80962cf28f6dfe667e/README.md",
+      "status": 200,
+      "sha256": "9ef2f0b41a42626c73daab92c16873d6b674949fc0b44e0f6009368a9cebca29",
+      "bytes": 25028,
+      "retrieved_utc": "2026-10-12T06:04:56.330374+00:00"
+    },
+    {
+      "id": "backbone",
+      "url": "https://huggingface.co/api/models/Qwen/Qwen3.5-0.8B",
+      "status": 200,
+      "sha256": "beb51e93166bf792ccd9786e305533d45226db91bf8843f3d8cb33980c067947",
+      "bytes": 20762,
+      "retrieved_utc": "2026-10-12T06:07:07.206307+00:00"
+    }
+  ],
+  "repository_revision": "3bf76b71437fc58d5ffa21b680e30fb5887a1bb4",
+  "model_revision": "42ac8d4fa9efb61f96e53d80962cf28f6dfe667e",
+  "backbone_revision": "2fc06364715b967f1860aea9cf38778875588b17"
+}

@@ -1,0 +1,129 @@
+{
+  "repository_commit": "32425c2",
+  "edition": {
+    "id": "v0.3",
+    "label": "Decision Index 0.3.1",
+    "date": "2026-10-06",
+    "panel_id": "decision-index-0.3",
+    "jev_version": "jev-1.13.0",
+    "jev_edition": "Full release v1"
+  },
+  "results_generated_utc": "2026-10-07T18:25:58Z",
+  "methodology_generated_utc": "2026-09-28T00:39:48+00:00",
+  "methodology_sha256": "b2ed9be97606bf0587b4b91a0fafc6a29167598ea8f0d6edd48edc1985d5a285",
+  "results_sha256": "ba0e8a3dd26cd5fce58cf78325b85d0ab43be48c40b5be47b1e30cd33e882547",
+  "formula": [
+    {
+      "id": "balanced_raw",
+      "normalization": "raw",
+      "formula": "100*(0.2585*category[knowledge] + 0.2585*category[language] + 0.2002*category[retrieval] + 0.1828*category[tools] + 0.1000*category[arts])"
+    },
+    {
+      "id": "balanced_skill",
+      "normalization": "skill",
+      "formula": "Public index: 100*(0.2585*category[knowledge] + 0.2585*category[language] + 0.2002*category[retrieval] + 0.1828*category[tools] + 0.1000*category[arts]). Full score: 0.20*public + 0.50*private_same_skills + 0.30*private_new_domains, private parts mapped onto the public scale with untuned stock models"
+    },
+    {
+      "id": "breadth_skill",
+      "normalization": "skill",
+      "shift": 0.1,
+      "formula": "100*(product_c((0.1+0.9*category[c])**w[c])-0.1)/0.9"
+    }
+  ],
+  "clarifications": [
+    "CRUXEval uses the sole frozen output-choice track; the proposal incorrectly mentioned an input track that does not exist in this suite.",
+    "Interactive scores use existing frozen pilots and first complete benchmark runs, not the proposed expanded three-repeat protocol.",
+    "Reproductions have no interactive runs. Those six benchmarks receive zero only as labeled provisional lower bounds, never an official final ranking.",
+    "Unsupported source cases receive zero before chance normalization. F1 uses fixed label universes and conservative missing-label penalties.",
+    "All linked requests must succeed for source-case support; no successful-intersection score shortcut.",
+    "Point estimates only; paired cluster-bootstrap uncertainty is not yet calculated.",
+    "The index panel is the Decision Index 0.3 panel (decision-index-0.3), not the frozen core25 proposal; core25 scores are still computed and kept as frozen_scores.",
+    "Benchmarks outside the frozen core25 panel enter with their board score times the answered share (unanswered or unsupported counts as wrong); the 19 core25 static benchmarks keep their case-group coverage adjustment."
+  ],
+  "selected_rows": [
+    {
+      "engine": "jev",
+      "name": "Jev",
+      "scores": {
+        "balanced_raw": 68.55,
+        "balanced_skill": 60.11,
+        "breadth_skill": 57.27,
+        "public_skill": 57.96
+      },
+      "coverage": 1,
+      "pending": 0
+    },
+    {
+      "engine": "clef",
+      "name": "Cloudflare clef",
+      "scores": {
+        "balanced_raw": 71.07,
+        "balanced_skill": 53.08,
+        "breadth_skill": 61.04,
+        "public_skill": 61.71
+      },
+      "coverage": 1,
+      "pending": 0
+    },
+    {
+      "engine": "clef-flash",
+      "name": "Cloudflare clef-flash",
+      "scores": {
+        "balanced_raw": 66.53,
+        "balanced_skill": 47.61,
+        "breadth_skill": 55.17,
+        "public_skill": 56.15
+      },
+      "coverage": 1,
+      "pending": 0
+    },
+    {
+      "engine": "laya-1e28ac20",
+      "name": "Laya",
+      "scores": {
+        "balanced_raw": 28.26,
+        "balanced_skill": 4.43,
+        "breadth_skill": 5.97,
+        "public_skill": 6.19
+      },
+      "coverage": 0.7594,
+      "pending": 0.24
+    },
+    {
+      "engine": "pplx-decider-v1.1-27b",
+      "name": "Perplexity Decider v1.1 (27B)",
+      "scores": {
+        "balanced_raw": 71.66,
+        "balanced_skill": 62.75,
+        "breadth_skill": 61.52,
+        "public_skill": 62.25
+      },
+      "coverage": 0.9993,
+      "pending": 0.0007
+    },
+    {
+      "engine": "d1-3b",
+      "name": "LiquidAI d1-3B",
+      "scores": {
+        "balanced_raw": 62.38,
+        "balanced_skill": 40.08,
+        "breadth_skill": 46.22,
+        "public_skill": 48.99
+      },
+      "coverage": 1,
+      "pending": 0
+    },
+    {
+      "engine": "d1-omni-600m",
+      "name": "LiquidAI d1-omni-600M",
+      "scores": {
+        "balanced_raw": 37.58,
+        "balanced_skill": 9.45,
+        "breadth_skill": 16.11,
+        "public_skill": 17.9
+      },
+      "coverage": 1,
+      "pending": 0
+    }
+  ]
+}

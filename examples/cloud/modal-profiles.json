@@ -1,0 +1,31 @@
+{
+  "format": "domain-cloud-profiles-v1",
+  "profiles": [
+    {
+      "id": "modal-local-owner",
+      "provider": "modal",
+      "tenants": [
+        "replace-with-tenant"
+      ],
+      "credential_prefix": "DMT_CLOUD_MODAL",
+      "account_id": "replace-workspace",
+      "region": "eu-west",
+      "environment": "replace-environment",
+      "app_name": "replace-app",
+      "app_id": "ap-ReplaceMe",
+      "volume_name": "replace-volume",
+      "volume_id": "vo-ReplaceMe",
+      "modal_image_id": "im-ReplaceMe",
+      "image_digest": "ghcr.io/example/trainer@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "prefix": "studies",
+      "gpu": "T4",
+      "cpu": 2,
+      "memory_mb": 8192,
+      "max_runtime_seconds": 7200,
+      "max_runs_day": 2,
+      "max_inflight": 1,
+      "max_artifact_bytes": 1073741824,
+      "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

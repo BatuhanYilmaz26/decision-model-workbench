@@ -1,0 +1,41 @@
+{
+  "scope": "Temporal splitting, prediction-time information boundaries and semantic similarity methodology",
+  "captures": [
+    {
+      "id": "sklearn-leakage",
+      "url": "https://scikit-learn.org/stable/common_pitfalls.html",
+      "resolved_url": "https://scikit-learn.org/stable/common_pitfalls.html",
+      "retrieved_utc": "2026-10-11T19:38:02.715607+00:00",
+      "status": 200,
+      "bytes": 109748,
+      "sha256": "21fac11c181ab35624dcf8673f0475d403d4f6ecf0f9bead01a573d7642b515c"
+    },
+    {
+      "id": "sklearn-cross-validation",
+      "url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+      "resolved_url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+      "retrieved_utc": "2026-10-11T19:38:03.378763+00:00",
+      "status": 200,
+      "bytes": 169672,
+      "sha256": "78d7587fa92ba3b3e480c9d841b50fedc14ac29d571ccb319d4068235154f0e2"
+    },
+    {
+      "id": "sbert-semantic-similarity",
+      "url": "https://sbert.net/docs/sentence_transformer/usage/semantic_textual_similarity.html",
+      "resolved_url": "https://sbert.net/docs/sentence_transformer/usage/semantic_textual_similarity.html",
+      "retrieved_utc": "2026-10-11T19:38:03.699122+00:00",
+      "status": 200,
+      "bytes": 156113,
+      "sha256": "e149b9c65240f9f94196408a87b9fe0336d9dbe1ce322dc7b333c375a24df194"
+    },
+    {
+      "id": "sbert-paraphrase-mining",
+      "url": "https://www.sbert.net/examples/sentence_transformer/applications/paraphrase-mining/README.html",
+      "resolved_url": "https://www.sbert.net/examples/sentence_transformer/applications/paraphrase-mining/README.html",
+      "retrieved_utc": "2026-10-11T19:38:04.020232+00:00",
+      "status": 200,
+      "bytes": 156841,
+      "sha256": "0aad30ea397bfdd2cdbfe4f0f927342bab7e49fd7d4c276816c3e546fe5aa5c2"
+    }
+  ]
+}

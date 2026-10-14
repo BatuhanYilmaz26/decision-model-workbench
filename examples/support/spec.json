@@ -1,0 +1,28 @@
+{
+  "description": "Route software support tickets by topic. Billing handles charges, refunds and invoices; technical handles bugs and outages; sales handles purchasing; other handles everything else. Refund request means explicitly requesting money back, not merely asking about a charge. This classifier routes tickets and does not authorize refunds.",
+  "questions": {
+    "team": {
+      "type": "choice",
+      "instructions": "Which team should handle the primary request?",
+      "criteria": {
+        "billing": "Charges, refunds or invoices",
+        "technical": "Bugs, outages or configuration",
+        "sales": "Purchasing or pricing",
+        "other": "No matching support team"
+      }
+    },
+    "refund": {
+      "type": "noul",
+      "instructions": "Does the writer explicitly request a refund?"
+    },
+    "urgency": {
+      "type": "score",
+      "instructions": "Rate the urgency based on stated service impact.",
+      "criteria": [
+        "No urgent impact stated",
+        "Limited impact; work can continue",
+        "Service blocked or unavailable"
+      ]
+    }
+  }
+}

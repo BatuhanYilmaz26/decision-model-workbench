@@ -1,0 +1,248 @@
+{
+  "scope": "Decision API contracts, Vega source/model cards and versioned benchmark artifacts dated 12 October 2026",
+  "captures": [
+    {
+      "id": "x-article",
+      "url": "https://x.com/akshay_pachaar/status/2101037514945597645",
+      "retrieved_utc": "2026-10-12T06:22:52.059195+00:00",
+      "status": 200,
+      "resolved_url": "https://x.com/akshay_pachaar/status/2101037514945597645",
+      "sha256": "be3034b749626ae95d375a8282c8f489cba8d4cb9509af598d4c25f7b0f466ee",
+      "bytes": 435226
+    },
+    {
+      "id": "openrouter-rankings",
+      "url": "https://openrouter.ai/rankings/decisions",
+      "retrieved_utc": "2026-10-12T06:22:52.060250+00:00",
+      "status": 200,
+      "resolved_url": "https://openrouter.ai/rankings/decisions",
+      "sha256": "5383c3afe4c7ade3ca4ff89f38856b61cce4e96444667832ed5a8eb978684f6b",
+      "bytes": 1403143
+    },
+    {
+      "id": "jevbench-166-page",
+      "url": "https://benchmarkheaven.com/jev-models/v1.6.6",
+      "retrieved_utc": "2026-10-12T06:22:52.061002+00:00",
+      "status": 200,
+      "resolved_url": "https://benchmarkheaven.com/jev-models/v1.6.6",
+      "sha256": "5a73917b0bebd06e8966041413b0b736e699a38b995a3bbf82e90367b2f9254c",
+      "bytes": 784654
+    },
+    {
+      "id": "jevbench-166-json",
+      "url": "https://benchmarkheaven.com/api/jevbench/v1.6.6",
+      "retrieved_utc": "2026-10-12T06:22:52.061636+00:00",
+      "status": 200,
+      "resolved_url": "https://benchmarkheaven.com/api/jevbench/v1.6.6",
+      "sha256": "31b1f53ef9ff065eefae2fdaf619c65f4ef579ce0608b7698a1bc63b620bf0cc",
+      "bytes": 293077
+    },
+    {
+      "id": "jevbench-167-json",
+      "url": "https://benchmarkheaven.com/api/jevbench/v1.6.7",
+      "retrieved_utc": "2026-10-12T06:22:52.062275+00:00",
+      "status": 200,
+      "resolved_url": "https://benchmarkheaven.com/api/jevbench/v1.6.7",
+      "sha256": "64120ec678f2613389b016e871e6ac3dd690b0c438cfae35a801abb0a584305c",
+      "bytes": 326737
+    },
+    {
+      "id": "typellm-cookbook",
+      "url": "https://typellm.ai/cookbook/discover-invoice-categories?v=2",
+      "retrieved_utc": "2026-10-12T06:22:52.798164+00:00",
+      "status": 200,
+      "resolved_url": "https://typellm.ai/cookbook/discover-invoice-categories?v=2",
+      "sha256": "a00a142391dd2c058557f4546b0b2c6d3b10bbcefa0ec1526cc24563bc0b0ece",
+      "bytes": 67806
+    },
+    {
+      "id": "typellm-tree",
+      "url": "https://api.github.com/repos/TypeLLM/TypeLLM/git/trees/main?recursive=1",
+      "retrieved_utc": "2026-10-12T06:22:52.822079+00:00",
+      "status": 200,
+      "resolved_url": "https://api.github.com/repos/TypeLLM/TypeLLM/git/trees/main?recursive=1",
+      "sha256": "efde8394f549e23eb0f8691fad6b3ac8330b056910b0a58e26ac52cba8b8d72f",
+      "bytes": 59514
+    },
+    {
+      "id": "vega-article",
+      "url": "https://www.nandakishorm.com/writing/vega",
+      "retrieved_utc": "2026-10-12T06:22:52.882910+00:00",
+      "status": 200,
+      "resolved_url": "https://www.nandakishorm.com/writing/vega",
+      "sha256": "25c437a43b5536a12e866d2e20934d9248270b86e58a1f55fb253300e6351e4c",
+      "bytes": 162326
+    },
+    {
+      "id": "typesafe-api",
+      "url": "https://docs.typesafe.ai/api",
+      "retrieved_utc": "2026-10-12T06:22:52.962419+00:00",
+      "status": 200,
+      "resolved_url": "https://docs.typesafe.ai/api",
+      "sha256": "3a948fb6b7b4be05cfeb9772660648911571e2bb009b5b4c10d1f255d3a86a4a",
+      "bytes": 530639
+    },
+    {
+      "id": "typesafe-models",
+      "url": "https://docs.typesafe.ai/models",
+      "retrieved_utc": "2026-10-12T06:22:53.098343+00:00",
+      "status": 200,
+      "resolved_url": "https://docs.typesafe.ai/models",
+      "sha256": "6e0ce8f7f0e9cff08fcc749e270ea1080d8c2b08bbc103f0336323b522bc0cf1",
+      "bytes": 341827
+    },
+    {
+      "id": "openrouter-api",
+      "url": "https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-request",
+      "retrieved_utc": "2026-10-12T06:22:53.254076+00:00",
+      "status": 200,
+      "resolved_url": "https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-request",
+      "sha256": "3b1b6af63131b9d3be8037e96ffb09eed5bd7033a42e92dc5f24562bb9da3d3e",
+      "bytes": 787317
+    },
+    {
+      "id": "perplexity-api",
+      "url": "https://docs.perplexity.ai/docs/decisions/quickstart",
+      "retrieved_utc": "2026-10-12T06:22:53.258343+00:00",
+      "status": 200,
+      "resolved_url": "https://docs.perplexity.ai/docs/decisions/quickstart",
+      "sha256": "ccdc37edaa1d6439e79a2a6c5f9bc88760ad55ed33a9824fd5def573dd8601fc",
+      "bytes": 744129
+    },
+    {
+      "id": "cloudflare-clef",
+      "url": "https://developers.cloudflare.com/workers-ai/models/clef-flash/",
+      "retrieved_utc": "2026-10-12T06:22:53.279783+00:00",
+      "status": 200,
+      "resolved_url": "https://developers.cloudflare.com/workers-ai/models/clef-flash/",
+      "sha256": "df9bf1c49b4d1c7f3e222723ba0c182939a94516d716873f64fbe5761c2845d7",
+      "bytes": 165696
+    },
+    {
+      "id": "aws-training",
+      "url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateTrainingJob.html",
+      "retrieved_utc": "2026-10-12T06:22:53.295092+00:00",
+      "status": 200,
+      "resolved_url": "https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateTrainingJob.html",
+      "sha256": "1e0ed42587360509800378807ec5480f0e55bfd2be8861991e3fc7a48ecbddcd",
+      "bytes": 72142
+    },
+    {
+      "id": "azure-training",
+      "url": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-train-model?view=azureml-api-2",
+      "retrieved_utc": "2026-10-12T06:22:53.367391+00:00",
+      "status": 200,
+      "resolved_url": "https://learn.microsoft.com/en-us/azure/machine-learning/how-to-train-model?view=azureml-api-2",
+      "sha256": "da6054a27dbed1db2e0e6f541e1e7b55c4bd1ef5006c18c3e3e856bec3b3538a",
+      "bytes": 84764
+    },
+    {
+      "id": "gcp-training",
+      "url": "https://cloud.google.com/vertex-ai/docs/training/create-custom-job",
+      "retrieved_utc": "2026-10-12T06:22:53.455261+00:00",
+      "status": 200,
+      "resolved_url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/training/create-custom-job",
+      "sha256": "4f858a4f38c6cc62a56a3495e083d643e64b672fbf4a9a811ea31caf54dd718b",
+      "bytes": 517450
+    },
+    {
+      "id": "modal-gpu",
+      "url": "https://modal.com/docs/guide/gpu",
+      "retrieved_utc": "2026-10-12T06:22:53.712599+00:00",
+      "status": 200,
+      "resolved_url": "https://modal.com/docs/guide/gpu",
+      "sha256": "69b84c0613c05913bb31098ee27ddd0e9f496fbc502109b9e8351595409f0874",
+      "bytes": 76391
+    },
+    {
+      "id": "modal-residency",
+      "url": "https://modal.com/docs/guide/region-selection",
+      "retrieved_utc": "2026-10-12T06:22:53.737361+00:00",
+      "status": 200,
+      "resolved_url": "https://modal.com/docs/guide/region-selection",
+      "sha256": "2257a96f6bd9ed5843b33c43aca6dc2b9a3d189e32fbb4c6a04568ccdb7219f7",
+      "bytes": 62895
+    },
+    {
+      "id": "runpod-create",
+      "url": "https://docs.runpod.io/api-reference-v2/pods/create-a-pod",
+      "retrieved_utc": "2026-10-12T06:22:53.925129+00:00",
+      "status": 200,
+      "resolved_url": "https://docs.runpod.io/api-reference-v2/pods/create-a-pod",
+      "sha256": "ab5cbfd472fa24093926ea21ecde197cc5d70fe5abeaaf6796add49c8c1eb91a",
+      "bytes": 789572
+    },
+    {
+      "id": "runpod-migration",
+      "url": "https://docs.runpod.io/api-reference-v2/migrate-from-v1",
+      "retrieved_utc": "2026-10-12T06:22:54.122938+00:00",
+      "status": 200,
+      "resolved_url": "https://docs.runpod.io/api-reference-v2/migrate-from-v1",
+      "sha256": "eb9272fa078f4051f9edd9f97c7538d8631a854724be834c6ae5e914f7756c5b",
+      "bytes": 457098
+    },
+    {
+      "id": "typellm-notebook",
+      "url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/fd9b97a06386d1898d2c241796c3c81bd10db9c0/examples/notebooks/discover_invoice_categories.ipynb",
+      "retrieved_utc": "2026-10-12T06:22:56.111740+00:00",
+      "status": 200,
+      "resolved_url": "https://raw.githubusercontent.com/TypeLLM/TypeLLM/fd9b97a06386d1898d2c241796c3c81bd10db9c0/examples/notebooks/discover_invoice_categories.ipynb",
+      "sha256": "cb0c72722f1129025edb851d36c3ffdf7296ac45eb40db5256f6d6e31222da47",
+      "bytes": 21373
+    },
+    {
+      "id": "modal-data-residency",
+      "url": "https://modal.com/docs/guide/data-residency",
+      "retrieved_utc": "2026-10-12T06:35:30.232694+00:00",
+      "status": 200,
+      "resolved_url": "https://modal.com/docs/guide/data-residency",
+      "sha256": "2db6b28b3f1bf79dac2c6c83e5167dc04b96262b106a2fa3bc1866617836e0cd",
+      "bytes": 69382
+    },
+    {
+      "id": "vega-public-entrypoint",
+      "url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/vegaml/__init__.py",
+      "retrieved_utc": "2026-10-12T06:35:30.233844+00:00",
+      "status": 200,
+      "resolved_url": "https://raw.githubusercontent.com/NandhaKishorM/vegaml/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4/vegaml/__init__.py",
+      "sha256": "357f093ed3bba68a923aac636eef381585fd5463fbddccf0955cbfab9d37858f",
+      "bytes": 18848
+    },
+    {
+      "id": "typesafe-launch",
+      "url": "https://typesafe.ai/blog/introducing-system-one-models-and-jev",
+      "retrieved_utc": "2026-10-12T06:35:30.234581+00:00",
+      "status": 200,
+      "resolved_url": "https://typesafe.ai/blog/introducing-system-one-models-and-jev",
+      "sha256": "41c2973ba8f5d993ac36eee7444b7fc222cbd782dbb07e3cf788d0f73e5d2665",
+      "bytes": 271027
+    },
+    {
+      "id": "langchain-harness",
+      "url": "https://www.langchain.com/blog/building-a-harness-with-jev",
+      "retrieved_utc": "2026-10-12T06:35:30.235224+00:00",
+      "status": 200,
+      "resolved_url": "https://www.langchain.com/blog/building-a-harness-with-jev",
+      "sha256": "762068aaa5af661640e595d0dd88436f145ce8dc20a8e00e4eda1f92ad535a8a",
+      "bytes": 168250
+    },
+    {
+      "id": "laya-source",
+      "url": "https://github.com/NandhaKishorM/laya",
+      "retrieved_utc": "2026-10-12T06:35:30.235858+00:00",
+      "status": 200,
+      "resolved_url": "https://github.com/NandhaKishorM/laya",
+      "sha256": "b8506fa49b3b8a7b1b64cf6d1fae95920ab2307a333f89803b71a849ed6411d9",
+      "bytes": 965431
+    },
+    {
+      "id": "unsloth-guide",
+      "url": "https://unsloth.ai/docs/basics/train-your-own-decision-model-with-unsloth",
+      "retrieved_utc": "2026-10-12T06:35:30.300634+00:00",
+      "status": 200,
+      "resolved_url": "https://unsloth.ai/docs/new/train-your-own-decision-model-with-unsloth",
+      "sha256": "545206fe3290324e64c2aa31ad5f1871b144d200fbd60efe5e91b9e1b0c4543c",
+      "bytes": 1050261
+    }
+  ]
+}

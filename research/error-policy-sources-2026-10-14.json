@@ -1,0 +1,29 @@
+[
+  {
+    "id": "wilson-interval",
+    "url": "https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportion_confint.html",
+    "retrieved_utc": "2026-10-14T08:20:32.655469+00:00",
+    "status": 200,
+    "resolved_url": "https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportion_confint.html",
+    "sha256": "1d677c9b5ba15e3b4bbe135e547277fe489ff09f9e0fe9dfaf72733d712c61f2",
+    "bytes": 87351
+  },
+  {
+    "id": "cost-sensitive-learning",
+    "url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_cost_sensitive_learning.html",
+    "retrieved_utc": "2026-10-14T08:20:33.068469+00:00",
+    "status": 200,
+    "resolved_url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_cost_sensitive_learning.html",
+    "sha256": "e756c25090d908588ccd718e8d023eafdec0db3ef466b57f751ce1ba3eba4337",
+    "bytes": 520491
+  },
+  {
+    "id": "classification-metrics",
+    "url": "https://scikit-learn.org/stable/modules/model_evaluation.html",
+    "retrieved_utc": "2026-10-14T08:20:33.412955+00:00",
+    "status": 200,
+    "resolved_url": "https://scikit-learn.org/stable/modules/model_evaluation.html",
+    "sha256": "7e740e140ba75771bb1c7de132babfd958c277b5529d187e7ba744e69729120c",
+    "bytes": 438145
+  }
+]

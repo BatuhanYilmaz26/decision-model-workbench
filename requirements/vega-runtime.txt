@@ -1,0 +1,9 @@
+# Vega engine/adapter runtime; qualify fresh installs and each OS/GPU separately.
+# Measured on CPython 3.12.13 with torch 2.10.0+cu126 (official CUDA wheel).
+vegaml==0.8.0
+torch==2.10.0
+transformers==5.17.0
+numpy==2.5.2
+safetensors==0.8.0
+tokenizers==0.23.3
+huggingface-hub==1.33.0

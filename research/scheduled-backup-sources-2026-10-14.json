@@ -1,0 +1,38 @@
+[
+  {
+    "id": "python-sqlite-transactions",
+    "url": "https://docs.python.org/3.13/library/sqlite3.html",
+    "retrieved_utc": "2026-10-14T12:19:39.728920+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.python.org/3.13/library/sqlite3.html",
+    "sha256": "2abc48071a0417b71ba6777068a1cf816577d03ddd95edcb251f21e78fba0fba",
+    "bytes": 314907
+  },
+  {
+    "id": "python-windows-locking",
+    "url": "https://docs.python.org/3.13/library/msvcrt.html",
+    "retrieved_utc": "2026-10-14T12:19:39.933986+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.python.org/3.13/library/msvcrt.html",
+    "sha256": "9216e9d1dedbe2fa56be7f23f8b5f74aaa15fa1eaf2854da3f6c651ca08b1d62",
+    "bytes": 44720
+  },
+  {
+    "id": "python-posix-locking",
+    "url": "https://docs.python.org/3.12/library/fcntl.html",
+    "retrieved_utc": "2026-10-14T12:19:40.156639+00:00",
+    "status": 200,
+    "resolved_url": "https://docs.python.org/3.12/library/fcntl.html",
+    "sha256": "980700948b741da39b7c06371cdcbc73195e37998c9c63251023ed7d12c69689",
+    "bytes": 43068
+  },
+  {
+    "id": "sqlite-online-backup",
+    "url": "https://www.sqlite.org/backup.html",
+    "retrieved_utc": "2026-10-14T12:19:41.320937+00:00",
+    "status": 200,
+    "resolved_url": "https://www.sqlite.org/backup.html",
+    "sha256": "306b6cca5c7c2f93b648040ae139f14d7d3221c0d16d79b5749e69d808382e04",
+    "bytes": 28195
+  }
+]
