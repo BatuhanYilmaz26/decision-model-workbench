@@ -30,7 +30,8 @@ from decision_workbench.platform.worker import Worker
 class RecoveryTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
-        self.folder = Path(self.temporary.name)
+        # Hosted Windows temporary roots can be aliases; fixtures use the real path.
+        self.folder = Path(self.temporary.name).resolve()
         self.home = self.folder / "source"
         self.store = Store(self.home)
         self.service = Service(self.store, runtime=object())

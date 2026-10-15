@@ -20,7 +20,10 @@ class RemoteBrowserTests(unittest.TestCase):
     def test_browser_prepares_study_after_consent_and_retrieves_inputs(self):
         with tempfile.TemporaryDirectory() as name:
             home = Path(name)
-            app = create_app(home, fixtures.keys())
+            app = create_app(home, fixtures.keys() + [{
+                "key_sha256": hashlib.sha256(b"editor-secret").hexdigest(),
+                "tenant": "A", "actor": "editor", "role": "editor",
+            }])
             owner = {"tenant": "A", "actor": "owner", "role": "admin"}
             project = app.state.service.create_project(
                 owner, "remote UI", "Fictional policy", fixtures.QUESTIONS
@@ -67,6 +70,10 @@ class RemoteBrowserTests(unittest.TestCase):
 
                 def widget(kind, label):
                     return next(w for w in getattr(at, kind) if w.label == label)
+
+                widget("selectbox", "Training backend").select("laya-native").run(timeout=30)
+                widget("radio", "Training location").set_value("Cloud GPU").run(timeout=30)
+                self.assertTrue(widget("button", "Queue training").disabled)
 
                 self.assertTrue(
                     widget("button", "Prepare remote training study").disabled
@@ -118,6 +125,19 @@ class RemoteBrowserTests(unittest.TestCase):
                 self.assertEqual(len(study_downloads), 1)
                 self.assertTrue(app.state.store.release_policy("A", project)["locked"])
                 self.assertEqual(app.state.store.list("A", project, "model"), [])
+                editor = AppTest.from_file(str(Path("app.py").resolve()))
+                editor.session_state["credential"] = "editor-secret"
+                editor.session_state["api_url"] = url
+                editor.session_state["principal"] = {
+                    "tenant": "A", "actor": "editor", "role": "editor"
+                }
+                editor.run(timeout=30)
+                self.assertFalse(editor.exception)
+                self.assertFalse(editor.error)
+                location = next(w for w in editor.radio if w.label == "Training location")
+                self.assertEqual(list(location.options), ["This computer"])
+                self.assertFalse(any(b.label == "Prepare remote training study" for b in editor.button))
+                self.assertTrue(any("Ask a workspace owner" in c.value for c in editor.caption))
             finally:
                 server.should_exit = True
                 thread.join(timeout=15)

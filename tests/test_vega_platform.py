@@ -716,6 +716,18 @@ class VegaPlatformTests(unittest.TestCase):
             ).set_value("vega").run(timeout=30)
             self.assertEqual(len(browser.exception), 0)
             self.assertEqual(len(browser.error), 0)
+            # This is a CPU-only HTTP/UI contract fixture, not GPU acceptance.
+            # Keep the runtime-availability state explicit instead of pretending
+            # that the test environment installed or executed Vega.
+            availability = browser.session_state["runtime-capabilities"]
+            if not availability["runtimes"]["training"]["packages"].get("vegaml"):
+                self.assertTrue(next(b for b in browser.button if b.label == "Queue training").disabled)
+            availability = copy.deepcopy(availability)
+            for runtime in availability["runtimes"].values():
+                runtime.update(system="Fixture", python="fixture", error=None, cuda=True, mps=False, gpus=[])
+                runtime["packages"].update(torch="fixture", vegaml="fixture")
+            browser.session_state["runtime-capabilities"] = availability
+            browser.run(timeout=30)
             self.assertEqual(
                 next(
                     s

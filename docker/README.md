@@ -7,6 +7,7 @@ Choose the CPU application image for data review, preparation, comparison traini
 | File | Purpose | Guide |
 |---|---|---|
 | [Application Dockerfile](../Dockerfile) | Build the Linux/amd64 CPU application image | [CPU container setup](../docs/container-guide.md) |
+| [Regression Dockerfile](Dockerfile.checks) | Add Git to a test-only image for the full Linux suite | [Linux regression](../docs/container-guide.md#run-the-full-linux-regression) |
 | [compose.yaml](../compose.yaml) | Run API, worker and browser with local persistence | [CPU services and credentials](../docs/container-guide.md) |
 | [Model-image directory](models/README.md) | Build the separate Vega/semantic runtime | [Model containers](../docs/model-container-guide.md) |
 | [compose.models.yaml](../compose.models.yaml) | Apply the model-runtime Compose configuration | [GPU container workflow](../docs/model-container-guide.md) |

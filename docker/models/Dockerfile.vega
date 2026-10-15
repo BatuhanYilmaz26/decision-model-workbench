@@ -14,6 +14,7 @@ COPY decision_workbench ./decision_workbench
 RUN python -m pip install --no-cache-dir --no-deps --no-build-isolation . \
     && python -m pip check
 COPY app.py ./
+COPY .streamlit/config.toml ./.streamlit/config.toml
 COPY examples ./examples
 USER platform
 ENV DMT_HOME=/app/data/workspace \

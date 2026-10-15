@@ -5,14 +5,15 @@ import io
 import json
 import math
 import os
+from pathlib import Path
 import uuid
 import httpx
 import streamlit as st
 from decision_workbench.data import validate_questions, options, hard_gold
 from decision_workbench.ui.intake import render_examples, render_upload
 
-st.set_page_config(page_title="Domain Decision Platform", layout="wide")
-st.title("Domain Decision Platform")
+st.set_page_config(page_title="Decision Model Workbench", layout="wide")
+st.title("Decision Model Workbench")
 st.caption(
     "Define a domain · review data · train · evaluate · release · make decisions"
 )
@@ -25,6 +26,8 @@ def api(method, path, **kwargs):
     global _api_client
     binary = kwargs.pop("binary", False)
     timeout = 30.0
+    if method == "GET" and path == "/v1/runtime-capabilities":
+        timeout = 75.0
     if method == "POST" and path.endswith(("/releases", "/decisions")):
         timeout = float(os.environ.get("DMT_UI_MODEL_TIMEOUT_SECONDS", "420"))
         if not math.isfinite(timeout) or timeout <= 0:
@@ -36,6 +39,7 @@ def api(method, path, **kwargs):
             base_url=st.session_state["api_url"],
             headers={"Authorization": "Bearer " + st.session_state["credential"]},
             timeout=30.0,
+            trust_env=st.session_state.get("connection_mode") != "personal",
         )
     try:
         response = _api_client.request(method, path, timeout=timeout, **kwargs)
@@ -60,49 +64,9 @@ def submit(project, kind, config):
     )
 
 
-if "credential" not in st.session_state:
-    st.subheader("Connect to your workspace")
-    st.write(
-        "The service saves projects and jobs across browser and worker restarts. Use a workspace key or an API access token supplied through your enterprise identity provider."
-    )
-    with st.form("connect"):
-        url = st.text_input(
-            "Workspace API URL", os.environ.get("DMT_API_URL", "http://127.0.0.1:8080")
-        )
-        token = st.text_input(
-            "Workspace credential",
-            type="password",
-            help="Workspace key or enterprise API access token. ID tokens are not accepted.",
-        )
-        connect = st.form_submit_button("Connect")
-    if connect:
-        try:
-            parsed = httpx.URL(url)
-            if (
-                parsed.scheme != "https"
-                and parsed.host not in ("localhost", "127.0.0.1", "::1")
-                and url.rstrip("/") != os.environ.get("DMT_API_URL", "").rstrip("/")
-            ):
-                raise ValueError("Remote workspaces require HTTPS")
-            if parsed.userinfo:
-                raise ValueError(
-                    "Use the credential field, not credentials inside a URL"
-                )
-            with httpx.Client(timeout=10) as client:
-                response = client.get(
-                    url.rstrip("/") + "/v1/me",
-                    headers={"Authorization": "Bearer " + token},
-                )
-                response.raise_for_status()
-            st.session_state.update(
-                credential=token, api_url=url.rstrip("/"), principal=response.json()
-            )
-            st.rerun()
-        except (ValueError, httpx.HTTPError):
-            st.error(
-                "Connection failed. Check the API address, running service, and credential."
-            )
-    st.stop()
+from decision_workbench.ui.onboarding import render_connection, render_runtime
+
+render_connection(Path(__file__).resolve().parent)
 
 principal = st.session_state["principal"]
 with st.sidebar:
@@ -110,11 +74,13 @@ with st.sidebar:
     st.caption(f"{principal['actor']} · {principal['role']}")
     if st.button("Sign out"):
         st.session_state.clear()
+        st.session_state["manual_connection"] = True
         st.rerun()
     if st.button("Refresh workspace"):
         st.rerun()
 
 try:
+    capabilities = render_runtime(api, principal)
     next_project = st.session_state.pop("next_project", None)
     if next_project:
         st.session_state["project_history_page"] = 0
@@ -122,7 +88,7 @@ try:
     project_page = st.sidebar.number_input(
         "Project history page", min_value=0, value=0, step=1, key="project_history_page"
     )
-    projects = api("GET", f"/v1/projects?limit=100&offset={int(project_page)*100}")
+    projects = api("GET", f"/v1/projects?limit=100&offset={int(project_page) * 100}")
     labels = {p["id"]: p["payload"]["name"] for p in projects}
     if st.session_state.get("active_project") not in labels:
         st.session_state.pop("active_project", None)
@@ -136,6 +102,18 @@ try:
         if projects
         else None
     )
+    if project is None:
+        st.subheader("Start with your domain")
+        st.write(
+            "Open Create a domain project below. Describe the decision you want to make, the evidence available and the allowed answers. Then enter a few examples or upload a spreadsheet."
+        )
+        st.markdown(
+            "1. **Define** your domain and decision questions.\n2. **Add and review** real examples (CSV, XLSX, TSV, JSON or JSONL).\n3. **Reserve** independent training and evaluation data; optionally generate training candidates.\n4. **Train** on a CPU, a compatible local accelerator or an approved cloud GPU.\n5. **Evaluate and release**, then make decisions or connect the API to your application."
+        )
+        st.link_button(
+            "Follow the complete workflow",
+            "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/product-workflow.md",
+        )
     with st.expander("Create a domain project", expanded=not projects):
         st.write(
             "Describe the policy and data you need. Build and confirm the questions your model should decide."
@@ -282,7 +260,7 @@ try:
     )
     datasets = api(
         "GET",
-        f"/v1/projects/{project}/entities/dataset?limit=50&offset={int(history_page)*50}",
+        f"/v1/projects/{project}/entities/dataset?limit=50&offset={int(history_page) * 50}",
     )
     snapshots = api("GET", f"/v1/projects/{project}/entities/snapshot")
     models = api("GET", f"/v1/projects/{project}/entities/model")
@@ -295,6 +273,9 @@ try:
             "Decisions and audit",
             "Applicability",
         ]
+    )
+    st.caption(
+        "Work left to right: add and review examples → reserve data / generate candidates → train locally, evaluate a hosted API or prepare cloud training → release a tested version → make decisions. Applicability is an additional requirement for Vega."
     )
     with tabs[5]:
         from decision_workbench.ui.gates import render_gates
@@ -345,7 +326,9 @@ try:
                 "Dataset version",
                 [d["id"] for d in datasets],
                 key=selection_key,
-                format_func=lambda k: f"{k[:10]} · {next(d for d in datasets if d['id']==k)['payload']['row_count']} rows",
+                format_func=lambda k: (
+                    f"{k[:10]} · {next(d for d in datasets if d['id'] == k)['payload']['row_count']} rows"
+                ),
             )
             dataset = next(d for d in datasets if d["id"] == dataset_id)
             row_page = st.number_input(
@@ -655,8 +638,58 @@ try:
                 "Training snapshot", [s["id"] for s in snapshots]
             )
             backend = st.selectbox(
-                "Training backend", ["laya-native", "unsloth", "cpu-baseline", "vega"]
+                "Training backend", ["cpu-baseline", "laya-native", "unsloth", "vega"]
             )
+            training_location = st.radio(
+                "Training location",
+                ["This computer", "Cloud GPU"]
+                if principal["role"] == "admin"
+                else ["This computer"],
+                horizontal=True,
+                key="training-location-" + project,
+            )
+            if principal["role"] != "admin":
+                st.caption(
+                    "Ask a workspace owner to configure and approve cloud training. Your role can queue local training."
+                    if principal["role"] == "editor"
+                    else "Ask a workspace owner or editor to arrange model training."
+                )
+            if training_location == "Cloud GPU":
+                st.info(
+                    "Choose a model backend above, then open Train on a cloud GPU below. Local training is disabled in this mode; data/compute approval is required before provider submission."
+                )
+            elif backend == "cpu-baseline":
+                st.info(
+                    "Runs on your CPU with the platform dependencies. No GPU or model download is required. This lexical classifier is a useful baseline for your domain."
+                )
+            elif backend == "laya-native":
+                st.info(
+                    "Native Laya automatically selects a device supported by its model environment. CPU execution can be slow. Install the separate dependencies before queueing; inspect hardware above."
+                )
+            elif backend == "unsloth":
+                st.info(
+                    "This Unsloth profile needs a compatible CUDA model environment. It cannot use the CPU-only platform environment. Use a cloud GPU if your computer cannot run it."
+                )
+            else:
+                st.info(
+                    "Vega uses its separate pinned model environment and applicability data. Follow the Vega guide to qualify the device and required cached assets."
+                )
+            local_ready = True
+            if training_location == "This computer":
+                from decision_workbench.ui.onboarding import local_backend_available
+
+                if capabilities is None:
+                    capabilities = (
+                        api("GET", "/v1/runtime-capabilities")
+                        if principal["role"] == "admin"
+                        else None
+                    )
+                    if capabilities:
+                        st.session_state["runtime-capabilities"] = capabilities
+                if capabilities:
+                    local_ready, reason = local_backend_available(backend, capabilities)
+                    if not local_ready:
+                        st.warning(reason)
             config = {"snapshot": training_snapshot, "backend": backend}
             vega_ready = True
             if backend == "vega":
@@ -759,6 +792,8 @@ try:
                 "Queue training",
                 disabled=acceptance["policy"] is None
                 or not vega_ready
+                or training_location != "This computer"
+                or not local_ready
                 or principal["role"] not in ("admin", "editor"),
             ):
                 st.json(submit(project, "train", config))
@@ -1023,7 +1058,7 @@ try:
                                     )
                                 )
                 st.caption(
-                    "Managed controls currently support AWS, Azure, GCP and RunPod. Other providers use the five-provider guides and operator import-remote. Cancelling a local control job does not stop cloud compute: request provider stop and observe its terminal status. Retrieved models remain inactive until independent admission and owner release. RunPod stop permanently terminates its dedicated Pod; the approved network volume remains. Trainer exit does not establish billing shutdown. Storage/image/log costs continue after training."
+                    "Managed controls currently support AWS, Azure, GCP, Modal and RunPod. Other providers use the five-provider guides and operator import-remote. Cancelling a local control job does not stop cloud compute: request provider stop and observe its terminal status. Retrieved models remain inactive until independent admission and owner release. RunPod stop permanently terminates its dedicated Pod; the approved network volume remains. Trainer exit does not establish billing shutdown. Storage/image/log costs continue after training."
                 )
         if principal["role"] in ("admin", "editor"):
             with st.expander("Workspace health and alerts"):

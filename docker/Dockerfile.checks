@@ -1,0 +1,8 @@
+# Test-only Git tooling; the application image keeps its runtime dependencies.
+ARG PLATFORM_IMAGE=domain-decision-platform:local
+FROM ${PLATFORM_IMAGE}
+USER root
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+USER platform

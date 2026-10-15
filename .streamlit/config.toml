@@ -1,0 +1,7 @@
+# Personal mode is permitted only on a loopback-bound browser server.
+# Shared deployments must override this address and use workspace authentication.
+[server]
+address = "127.0.0.1"
+
+[browser]
+gatherUsageStats = false

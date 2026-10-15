@@ -415,6 +415,14 @@ def create_app(home=None, keys=None, hosted=None):
     def me(p=Depends(identity)):
         return p
 
+    @app.get("/v1/runtime-capabilities")
+    def runtime_capabilities(p=Depends(identity)):
+        if p["role"] != "admin":
+            raise PermissionError("Only workspace owners can inspect runtime configuration")
+        from .capabilities import runtime_capabilities as inspect
+
+        return inspect()
+
     @app.get("/v1/projects")
     def projects(
         limit: int = Query(default=100, ge=1, le=500),

@@ -366,19 +366,26 @@ class BackupMonitorTests(unittest.TestCase):
         schedule._append(policy, key, state, uuid.uuid4().hex, "capture.begin")
         self.publisher.start(interval=1)
         try:
-            initial = json.loads(self.health.read_text())["payload"]["generated_at"]
             deadline = time.monotonic() + 5
-            while (
-                json.loads(self.health.read_text())["payload"]["generated_at"]
-                <= initial
-            ):
+            initial = None
+            while True:
+                try:
+                    payload = json.loads(self.health.read_text())["payload"]
+                except PermissionError:
+                    # Windows can briefly deny a read during atomic replacement.
+                    if time.monotonic() > deadline:
+                        self.fail("Backup health snapshot remained unreadable")
+                    time.sleep(0.05)
+                    continue
+                if initial is None:
+                    initial = payload["generated_at"]
+                elif payload["generated_at"] > initial:
+                    break
                 if time.monotonic() > deadline:
                     self.fail("Independent backup health thread did not refresh")
                 time.sleep(0.05)
             self.assertEqual(
-                json.loads(self.health.read_text())["payload"]["last_attempt"][
-                    "status"
-                ],
+                payload["last_attempt"]["status"],
                 "running",
             )
             self.assertTrue(self.reader.read()["healthy"])

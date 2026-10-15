@@ -41,8 +41,8 @@ def main():
     run = commands.add_parser(
         "run", help="Start the local API, worker and browser app together"
     )
-    run.add_argument("--home", default="data/workspace")
-    run.add_argument("--keys-file", required=True)
+    run.add_argument("--home", help="Workspace directory (personal and operator modes use separate defaults)")
+    run.add_argument("--keys-file", help="Operator credential file; omit for a personal local workspace")
     run.add_argument("--api-port", type=int, default=8080)
     run.add_argument("--ui-port", type=int, default=8501)
     backup = commands.add_parser(
@@ -481,13 +481,17 @@ def launch(args, stop_event=None):
             "Run from the repository root or set DMT_APP_PATH to the browser app file"
         )
     root = app_path.parent
+    if not args.keys_file:
+        from .local import launch_personal
+
+        return launch_personal(args, app_path, stop_event)
     keys = Path(args.keys_file).resolve()
     if not keys.is_file():
         raise SystemExit("Provision an operator credential file first")
     environment = os.environ.copy()
     environment.update(
         DMT_KEYS_FILE=str(keys),
-        DMT_HOME=str(Path(args.home).resolve()),
+        DMT_HOME=str(Path(args.home or "data/workspace").resolve()),
         DMT_API_URL=f"http://127.0.0.1:{args.api_port}",
     )
     # Complete an upgrade before API and worker can race their startup migrations.

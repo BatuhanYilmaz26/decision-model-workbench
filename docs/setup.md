@@ -2,7 +2,7 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-Install the application, start its API and worker, then open the browser interface. Run the commands from the repository root. Data preparation supports Python 3.10+; the Windows application profile uses Python 3.13. Model training uses a separate GPU environment. See [dependency profiles](../requirements/README.md) for the Linux container and Windows model versions.
+Install the application, start its API and worker, then open the browser interface. Run the commands from the repository root. Data preparation supports Python 3.10+; the Windows application profile uses Python 3.13. CPU baseline training uses the application environment; Laya, Unsloth and Vega use separately configured model environments. See [dependency profiles](../requirements/README.md) for the Linux container and Windows model versions.
 
 ## Install and start
 
@@ -14,15 +14,41 @@ Activate using `.venv\Scripts\Activate.ps1` in PowerShell or `source .venv/bin/a
 
 ```bash
 python -m pip install -e ".[ui,platform]"
+domain-platform run
+```
+
+Open the displayed browser address. Your personal workspace opens automatically: no account, workspace key or cloud subscription is required. The launcher starts an authenticated loopback API, independent worker and Streamlit client. CPU baseline training needs no GPU or model download. Projects persist in `data/local-workspace`; Ctrl+C stops the services. Use `--home` to choose a different personal directory.
+
+Personal mode defaults model and generated-module caches to a private `model-cache` directory beside your workspace (`data/model-cache` with the default layout). Explicit `DMT_MODEL_CACHE`, `HF_HOME` and `UNSLOTH_COMPILE_LOCATION` settings take precedence. Use writable storage for these caches; a read-only global cache can prevent model-library startup.
+
+Alternatively, start the browser app directly from the repository root:
+
+```bash
+python -m streamlit run app.py --server.address 127.0.0.1
+```
+
+Choose **On this computer → Start local workspace**. The app starts its API and worker once for the browser-server lifetime, rather than on every page refresh. Optional local settings let you select an existing model-environment Python executable and a local or approved hosted synthetic teacher before starting. Restart the browser server to change those settings; uploads and project history are retained. Closing a browser tab does not cancel jobs. Stopping the browser server stops the personal services; unfinished jobs are reconciled after restart and are not automatically replayed.
+
+## Personal and shared workspaces
+
+Personal mode is for one person on a loopback-bound server. Browsers able to access that server share the same local owner identity. The API still authenticates every request using a random credential created for each service lifetime; only its hash is written to temporary service configuration. The browser never asks you to copy that credential. Bind shared deployments to their intended network address and use authenticated shared-workspace connections instead; personal mode is disabled when the browser server is not bound to a literal loopback address.
+
+Personal projects use tenant `local`. When configuring scoped hosted-model or cloud profiles for this mode, include that tenant and the intended project IDs. Profile credentials stay in operator configuration; the UI selects approved profiles rather than accepting arbitrary provider endpoints in training jobs. Backup keys, vaults and schedules remain operator CLI workflows linked from the guides.
+
+To use separate people/roles, stable API credentials, or an existing operator workspace:
+
+```bash
 domain-platform provision-key --file data/operator-keys.json --tenant my-enterprise --actor owner --role admin
 domain-platform run --keys-file data/operator-keys.json
 ```
 
-Provisioning prints a bearer credential once and stores its hash. Keep the credential private. Open the displayed browser address, leave the workspace API at its local default, and connect using that credential. `run` starts the API, independent worker and Streamlit client. Ctrl+C stops them; the workspace persists in `data/workspace`.
+Provisioning prints a bearer credential once and stores its hash. Choose **Shared workspace**, enter the API address and that credential, then connect. This mode retains the existing default `data/workspace`; it does not merge projects with the personal workspace. For a team-hosted API, use its HTTPS address and the administrator-issued credential. Selecting cloud training does not require moving your workspace: you can retain local projects while sending an explicitly approved training study to a provider.
 
 The credential file must stay operator-controlled. Roles are admin, editor, reviewer and inference. Provision separate people/applications with separate actor names. Live key rotation/revocation is implemented; see the [authentication guide](authentication-guide.md). The trusted JWT adapter is available, while interactive enterprise SSO and real identity-provider qualification require separate operational validation.
 
 ## Use the application
+
+The entry screen links local installation, hosted decision APIs, synthetic teacher configuration and AWS, Azure, GCP, Modal and RunPod training guides. After connection, **Computer, model environment and provider setup → Check available hardware and model packages** inspects the configured worker and serving environments without downloading models. It reports installed packages, CUDA/MPS availability and GPU memory. Availability is separate from successful backend execution, sufficient free memory and domain quality. CPU baseline is the default training backend. **Training location** selects this computer or cloud GPU; provider selection and approval appear under **Train on a cloud GPU** after reserving data. Hosted evaluation is a separate action because it does not train provider weights.
 
 1. **Create a project.** Describe the domain/policy and separately describe required data, rare cases, languages and evidence fields. Build questions with the category/yes-no/rating controls. Confirm the schema. Advanced JSON import is optional.
 2. **Supply examples.** Enter individual examples or a batch of up to 50 into a new or existing collection, or upload CSV/XLSX/TSV/JSON/JSONL. Preview worksheets, map evidence/ID/source-family/label columns and translate source values to allowed outcomes. Missing labels stay unknown. Choose the operational/synthetic source type accurately; the direct example form defaults to synthetic.
@@ -59,10 +85,10 @@ $env:DMT_MODEL_PYTHON = $env:DMT_WORKER_PYTHON
 $env:DMT_MODEL_CACHE = Join-Path (Get-Location) "data/model-cache/hub"
 $env:HF_HOME = Join-Path (Get-Location) "data/model-cache"
 $env:UNSLOTH_COMPILE_LOCATION = Join-Path (Get-Location) "data/model-cache/unsloth_compiled_cache"
-.venv/Scripts/domain-platform.exe run --keys-file data/operator-keys.json
+.venv/Scripts/domain-platform.exe run
 ```
 
-The API and browser stay in the lightweight platform environment. `DMT_MODEL_PYTHON` falls back to `DMT_WORKER_PYTHON`, then the API interpreter. Run `domain-worker` directly in the model environment if starting services separately; use the same `DMT_HOME`.
+The API and browser stay in the lightweight platform environment. `DMT_MODEL_PYTHON` falls back to `DMT_WORKER_PYTHON`, then the API interpreter. Native Laya supports its configured automatic device selection; Unsloth's selected application profile requires compatible CUDA dependencies. Vega has its own package/assets and applicability requirements. CPU and Apple MPS support differ by engine; the application does not translate CUDA training to an arbitrary GPU. Use the CPU baseline or a qualified cloud GPU when your hardware cannot run the selected model. Run `domain-worker` directly in the model environment if starting services separately; use the same `DMT_HOME`.
 
 Unsloth generates optimized trainer modules when its runtime is imported. Its default `unsloth_compiled_cache` location is relative to the process's working directory, so imports from the repository root can create that folder beside the source. These are generated library files and are excluded from Git. The setting above directs future generation into the private model cache; set it before importing Unsloth or launching the model services. You do not need to edit or commit those generated modules. [Upstream cache setting](https://github.com/unslothai/unsloth-zoo/blob/main/unsloth_zoo/compiler.py)
 

@@ -2,7 +2,7 @@
 
 [Package directory](../README.md) · [All guides](../../docs/README.md) · [Project overview](../../README.md)
 
-These components support the [Streamlit application](../../app.py), which connects to the authenticated API. Launch it using [local setup](../../docs/setup.md); these files do not run as separate applications.
+These components support the [Streamlit application](../../app.py). Its [onboarding](onboarding.py) opens a personal loopback workspace or connects to an authenticated shared API. Launch it using [local setup](../../docs/setup.md); these files do not run as separate applications.
 
 | User task | Guide |
 |---|---|

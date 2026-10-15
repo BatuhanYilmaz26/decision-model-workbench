@@ -65,7 +65,13 @@ The CI workflow includes a Docker build and the maintained acceptance command. C
 
 ## Run the full Linux regression
 
-After building the image, run this from the repository root in a POSIX shell. It mounts the fictional tests and required public contract files; it uses the application's installed source and examples from the image. Test services communicate over container-local loopback, with no external network or host ports:
+The publication tests need Git, which is not part of the application runtime. Build the [test-only image](../docker/Dockerfile.checks) after building the application image:
+
+```bash
+docker build --file docker/Dockerfile.checks --tag domain-decision-platform:checks .
+```
+
+Run this from the repository root in a POSIX shell. It mounts the fictional tests, public check helpers and Git exclusions; it uses the application's installed source and examples from the image. Test services communicate over container-local loopback, with no external network or host ports:
 
 ```bash
 docker run --rm --network none --read-only \
@@ -73,7 +79,9 @@ docker run --rm --network none --read-only \
   --cap-drop ALL --security-opt no-new-privileges \
   --env PYTHONDONTWRITEBYTECODE=1 \
   --mount "type=bind,source=$(pwd)/tests,target=/app/tests,readonly" \
-  --entrypoint python domain-decision-platform:local \
+  --mount "type=bind,source=$(pwd)/scripts,target=/app/scripts,readonly" \
+  --mount "type=bind,source=$(pwd)/.gitignore,target=/app/.gitignore,readonly" \
+  --entrypoint python domain-decision-platform:checks \
   -m unittest discover -s tests -v
 ```
 

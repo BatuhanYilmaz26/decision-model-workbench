@@ -47,7 +47,7 @@ class IntakeTests(unittest.TestCase):
             self.assertFalse(bad_output.exists())
 
 class AppTests(unittest.TestCase):
-    def test_workspace_login_has_no_session_only_actions(self):
+    def test_local_entry_and_shared_connection_are_available_without_a_key(self):
         try:
             from streamlit.testing.v1 import AppTest
         except ImportError:
@@ -55,9 +55,13 @@ class AppTests(unittest.TestCase):
         app = AppTest.from_file(str(ROOT / 'app.py')).run(timeout=20)
         self.assertEqual(len(app.exception), 0)
         self.assertEqual(len(app.error), 0)
-        self.assertEqual(len(app.text_input), 2)
+        self.assertEqual(app.text_input[0].label, 'Workspace API URL')
         self.assertEqual(app.text_input[1].label, 'Workspace credential')
-        self.assertEqual(app.button[0].label, 'Connect')
+        self.assertEqual(app.button[0].label, 'Start local workspace')
+        self.assertTrue(any(b.label == 'Connect' for b in app.button))
+        self.assertTrue(any(w.label == 'Model-environment Python executable (optional)' for w in app.text_input))
+        self.assertTrue(any(w.label == 'Teacher base URL (optional)' for w in app.text_input))
+        self.assertEqual(next(w for w in app.radio if w.label == 'Where is your workspace?').value, 'On this computer')
 
 if __name__ == '__main__':
     unittest.main()

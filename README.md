@@ -18,7 +18,7 @@ Browse the [complete guide directory](docs/README.md), or choose a workflow belo
 
 ## Train your own domain model
 
-Start with [local setup](docs/setup.md#install-and-start), which installs the application, provisions a credential and launches its API, worker and browser interface. You can use the CPU comparison baseline without a GPU; Laya, Unsloth and Vega need their separate model environments.
+Start with [local setup](docs/setup.md#install-and-start). Install the application and run `domain-platform run` to open a personal localhost workspace without an account or pasted credential. You can also run `streamlit run app.py --server.address 127.0.0.1` and select **Start local workspace**. CPU baseline training needs no GPU; Laya, Unsloth and Vega need their compatible model environments. Use a [shared workspace](docs/setup.md#personal-and-shared-workspaces) for team roles and stable application API credentials.
 
 1. **Describe your use case.** Create a project with your domain, decision policy and data requirements in natural language. Define category, yes/no or rating questions and confirm the allowed outcomes. Follow the [project workflow](docs/product-workflow.md#1-describe-the-decision).
 2. **Supply examples.** Enter a few examples or upload CSV, XLSX, TSV, JSON or JSONL. Preview the data, map its columns to the decision format and review the labels. The [data guide](docs/data-guide.md) explains the format and review controls.
