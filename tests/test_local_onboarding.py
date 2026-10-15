@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class PersonalWorkspaceTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.home = Path(self.temp.name) / "personal"
+        self.home = (Path(self.temp.name) / "personal").resolve()
         self.workspace = LocalWorkspace(self.home, ROOT)
 
     def tearDown(self):

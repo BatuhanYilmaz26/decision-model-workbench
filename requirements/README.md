@@ -4,6 +4,8 @@
 
 Use separate environments for the application and model training. Select a profile matching your interpreter, operating system and accelerator; a Windows snapshot is not a Linux lock.
 
+For the standard local CPU application, follow the [root quick start](../README.md#run-on-your-computer) and run `python -m pip install -r requirements.txt` from the repository root. The [root requirements file](../requirements.txt) installs the editable project with its `ui` and `platform` extras from [pyproject.toml](../pyproject.toml). It uses compatible dependency ranges; the exact platform locks below serve repeatable installs. Model runtimes and provider clients remain optional, separately selected profiles.
+
 | Profile | Target | Purpose |
 |---|---|---|
 | [Linux CPU lock](platform-linux-amd64-py312.txt) | Linux/amd64, CPython 3.12.15 | 87 hash-locked external dependencies for API, UI, CPU training and five provider control clients |

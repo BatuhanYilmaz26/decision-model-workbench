@@ -4,6 +4,56 @@ A local-first application and practical guide for using decision models in your 
 
 Use it for bounded decisions such as routing support tickets, assigning invoice categories or choosing a review queue. Define the allowed outcomes, evaluate the probabilities and connect the result to your application's rules and fallback.
 
+## Run on your computer
+
+Install [Git](https://git-scm.com/downloads) and [Python](https://www.python.org/downloads/) first. Use Python **3.13 on Windows** or **3.12 on Linux** for the application profiles below; the Linux/macOS commands assume `python3.12` is installed. A GPU, cloud account and workspace key are not required for the local CPU application. macOS instructions use the same Python workflow, but end-to-end macOS support has not been qualified.
+
+### Windows PowerShell
+
+```powershell
+git clone https://github.com/BatuhanYilmaz26/decision-model-workbench.git
+cd decision-model-workbench
+py -3.13 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m pip check
+domain-platform run
+```
+
+If PowerShell blocks activation, use the virtual environment directly instead of changing your execution policy. After creating `.venv`, run:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip check
+.\.venv\Scripts\python.exe -m decision_workbench.platform.cli run
+```
+
+### Linux and macOS (Bash or Zsh)
+
+```bash
+git clone https://github.com/BatuhanYilmaz26/decision-model-workbench.git
+cd decision-model-workbench
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pip check
+domain-platform run
+```
+
+If Linux reports that `venv` or `ensurepip` is unavailable, install the matching Python 3.12 venv package using your distribution's package manager, then recreate the environment. If the Python command is missing, install the selected version before continuing.
+
+### Open the application
+
+Open the address printed in the terminal, normally [http://127.0.0.1:8501](http://127.0.0.1:8501) (localhost). The launcher starts the API, worker and browser server and connects your personal workspace automatically. Keep the terminal running while you use the application.
+
+Create a domain project, describe your decision, then enter examples or upload CSV, XLSX, TSV, JSON or JSONL. Follow [the domain-model workflow](#train-your-own-domain-model) to review data, reserve evaluation sets and train the **CPU baseline**. This baseline is a local classifier; Laya, Unsloth and Vega use their separate [model environments](docs/setup.md#configure-model-training-and-serving). Synthetic generation additionally needs a [local or hosted teacher](docs/setup.md#configure-a-teacher).
+
+Projects persist in `data/local-workspace`. Press **Ctrl+C** in the terminal to stop the services. Closing the browser tab does not stop them. To use the application later, open a terminal in the cloned folder, activate the same environment and run `domain-platform run` again. Run `deactivate` after stopping to leave the environment. If the default ports are occupied, use `domain-platform run --api-port 8081 --ui-port 8502` and open the new displayed address.
+
+[requirements.txt](requirements.txt) installs the editable project and its CPU/UI dependencies from [pyproject.toml](pyproject.toml); you do not need a second project-install command. It resolves compatible version ranges rather than freezing an operating-system-specific environment. For exact versions and hashes, use the matching [dependency profile](requirements/README.md). Keep GPU packages in their own environment. See [shared workspaces and advanced setup](docs/setup.md) for team access, providers, configuration and persistence.
+
+Reference: [Python virtual environments](https://docs.python.org/3/library/venv.html), [pip requirements files](https://pip.pypa.io/en/stable/reference/requirements-file-format/).
+
 ## Choose your path
 
 Browse the [complete guide directory](docs/README.md), or choose a workflow below.
@@ -83,6 +133,7 @@ Model and benchmark references are dated **9–12 October 2026**; the [runtime a
 | Location | Purpose |
 |---|---|
 | [app.py](app.py) | Streamlit interface for projects, review, jobs and releases |
+| [requirements.txt](requirements.txt) | Install the local CPU application and browser dependencies |
 | [decision_workbench/](decision_workbench/README.md) | Data contracts, API, persistence, workers and model adapters |
 | [docs/](docs/README.md) | Complete reader and operator guide directory |
 | [research/](research/README.md) | Model comparisons, annotated sources and optional [provenance records](research/provenance/README.md) |

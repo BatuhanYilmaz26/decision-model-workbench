@@ -5,6 +5,32 @@ on:
 permissions:
   contents: read
 jobs:
+  quickstart:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: '3.12.15'
+            interpreter: .venv/bin/python
+          - os: windows-latest
+            python: '3.13.5'
+            interpreter: .venv/Scripts/python.exe
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m venv .venv
+      - run: ${{ matrix.interpreter }} -m pip install -r requirements.txt
+      - run: ${{ matrix.interpreter }} -m pip check
+      - run: ${{ matrix.interpreter }} -m decision_workbench.platform.cli --help
+      - run: ${{ matrix.interpreter }} -m unittest discover -s tests -p test_local_onboarding.py -v
+      - run: ${{ matrix.interpreter }} -m unittest discover -s tests -p test_launcher.py -v
   preparation:
     strategy:
       fail-fast: false

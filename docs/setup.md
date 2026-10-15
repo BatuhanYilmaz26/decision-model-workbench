@@ -6,6 +6,15 @@ Install the application, start its API and worker, then open the browser interfa
 
 ## Install and start
 
+For complete Windows and Linux/macOS commands, including cloning and activation, follow the [local quick start](../README.md#run-on-your-computer). If you have not cloned the repository yet:
+
+```bash
+git clone https://github.com/BatuhanYilmaz26/decision-model-workbench.git
+cd decision-model-workbench
+```
+
+Using your selected application Python (3.13 on Windows or 3.12 on Linux), create a virtual environment:
+
 ```bash
 python -m venv .venv
 ```
@@ -13,9 +22,12 @@ python -m venv .venv
 Activate using `.venv\Scripts\Activate.ps1` in PowerShell or `source .venv/bin/activate` on Linux/macOS. Then:
 
 ```bash
-python -m pip install -e ".[ui,platform]"
+python -m pip install -r requirements.txt
+python -m pip check
 domain-platform run
 ```
+
+The root requirements file installs the project with its UI and CPU application dependencies, using the definitions in `pyproject.toml`. It does not install GPU training runtimes or every optional provider client. Select a [dependency profile](../requirements/README.md) when you need an exact platform lock or optional model/provider packages.
 
 Open the displayed browser address. Your personal workspace opens automatically: no account, workspace key or cloud subscription is required. The launcher starts an authenticated loopback API, independent worker and Streamlit client. CPU baseline training needs no GPU or model download. Projects persist in `data/local-workspace`; Ctrl+C stops the services. Use `--home` to choose a different personal directory.
 

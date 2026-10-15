@@ -1,0 +1,4 @@
+# Install the local CPU application and its UI from the project dependency metadata.
+# Run from the repository root: python -m pip install -r requirements.txt
+# GPU runtimes and provider clients have separate profiles in requirements/.
+-e .[ui,platform]
