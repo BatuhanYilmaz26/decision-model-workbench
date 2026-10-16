@@ -12,7 +12,7 @@ import tempfile
 import time
 from contextlib import contextmanager, closing
 from pathlib import Path, PurePosixPath
-from .store import Store, digest, encode
+from .store import WORKSPACE_SCHEMA_VERSION, Store, digest, encode
 
 FORMAT = "domain-workspace-backup-v1"
 MANIFEST = "backup-manifest.json"
@@ -127,9 +127,9 @@ def _validate_workspace(folder):
         if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
             raise ValueError("Workspace database integrity check failed")
         schema = db.execute("SELECT max(version) FROM schema_version").fetchone()[0]
-        if schema not in (3, 4, 5, 6, 7, 8):
+        if schema not in range(3, WORKSPACE_SCHEMA_VERSION + 1):
             raise ValueError(
-                "Backup requires workspace schema 3, 4, 5, 6, 7 or 8; upgrade with a compatible application first"
+                "Backup requires a supported workspace schema; upgrade with a compatible application first"
             )
         if db.execute(
             "SELECT 1 FROM sqlite_master WHERE type IN ('trigger','view') LIMIT 1"
@@ -216,6 +216,9 @@ def _validate_workspace(folder):
     from .schema_intake import verify_history as verify_schema_history
 
     verify_schema_history(store, lookup.values())
+    from .generation_worker import validate_history as validate_generation_history
+
+    validate_generation_history(store, lookup)
     for entity in lookup.values():
         value = entity["payload"]
         if entity["kind"] == "schema-intake":
@@ -599,13 +602,8 @@ def verify_backup(folder, manifest_sha256):
     ):
         raise ValueError("Backup manifest checksum/completion check failed")
     manifest = json.loads(path.read_text(encoding="utf-8"))
-    if manifest.get("format") != FORMAT or manifest.get("schema_version") not in (
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
+    if manifest.get("format") != FORMAT or manifest.get("schema_version") not in range(
+        3, WORKSPACE_SCHEMA_VERSION + 1
     ):
         raise ValueError("Unsupported workspace backup format")
     files = manifest.get("files")

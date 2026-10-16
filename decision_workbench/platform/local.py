@@ -131,7 +131,11 @@ class LocalWorkspace:
                     ],
                 ]
                 for index, command in enumerate(commands):
-                    process_options = {"env": self.environment}
+                    child_environment = dict(self.environment)
+                    if index == 0:
+                        child_environment.pop("DMT_TEACHER_API_KEY", None)
+                        child_environment.pop("TEACHER_API_KEY", None)
+                    process_options = {"env": child_environment}
                     if sys.platform == "win32":
                         from decision_workbench.training.process_guard import (
                             leased_process_options,
@@ -147,7 +151,7 @@ class LocalWorkspace:
                         # Distinct jobs support virtualenv launchers with separate
                         # inherited Windows job hierarchies.
                         process_options = leased_process_options(
-                            lease, self.environment
+                            lease, child_environment
                         )
                     self.processes.append(
                         subprocess.Popen(

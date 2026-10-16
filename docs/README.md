@@ -20,6 +20,7 @@ Choose a workflow below. Start with local setup for the browser application, API
 
 | Guide | Use it to |
 |---|---|
+| [Synthetic candidate generation](synthetic-generation-guide.md) | Preview and approve requests, inspect outcomes, review candidates and retry explicitly |
 | [Data preparation and synthetic generation](data-guide.md) | Define questions, import files, review labels and add training-only synthetic candidates |
 | [Teacher-assisted schema drafting](schema-assistant-guide.md) | Request, review and edit proposed decision questions before creating a project |
 | [Reviewer assignments](review-workflow.md) | Assign annotation work and review immutable dataset revisions |

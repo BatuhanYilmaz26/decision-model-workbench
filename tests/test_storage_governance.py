@@ -1,5 +1,7 @@
 """Behavioral acceptance for storage upgrades, review races and frozen policy."""
 
+from decision_workbench.platform.store import WORKSPACE_SCHEMA_VERSION
+
 import copy
 import json
 import sqlite3
@@ -8,11 +10,12 @@ import unittest
 from concurrent.futures import ThreadPoolExecutor
 import test_platform as platform_fixtures
 
-fixture_rows = platform_fixtures.fixture_rows
-QUESTIONS = platform_fixtures.QUESTIONS
 from decision_workbench.platform.store import Store, Conflict, digest
 from decision_workbench.platform.service import Service
 from decision_workbench.platform.worker import Worker
+
+fixture_rows = platform_fixtures.fixture_rows
+QUESTIONS = platform_fixtures.QUESTIONS
 
 
 class StorageGovernanceTests(unittest.TestCase):
@@ -217,7 +220,8 @@ class StorageGovernanceTests(unittest.TestCase):
         )
         with restarted.transaction() as db:
             self.assertEqual(
-                db.execute("SELECT max(version) FROM schema_version").fetchone()[0], 8
+                db.execute("SELECT max(version) FROM schema_version").fetchone()[0],
+                WORKSPACE_SCHEMA_VERSION,
             )
             self.assertEqual(
                 db.execute("SELECT count(*) FROM dataset_members").fetchone()[0], 13

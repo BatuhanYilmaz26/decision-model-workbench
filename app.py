@@ -474,35 +474,9 @@ try:
             if snapshot["payload"].get("temporal_audit"):
                 with st.expander("Declared temporal reservation audit"):
                     st.json(snapshot["payload"]["temporal_audit"])
-            coverage = st.text_area(
-                "Describe the synthetic data you need: rare outcomes, languages, lengths and policy boundaries"
-            )
-            count = st.number_input("Candidates", min_value=1, max_value=50, value=10)
-            seed_count = st.number_input(
-                "Approved training seeds to send", min_value=0, max_value=10, value=3
-            )
-            permitted = st.checkbox(
-                "The configured teacher is approved to receive this project policy and training seeds"
-            )
-            if st.button(
-                "Queue synthetic generation",
-                disabled=not permitted or principal["role"] not in ("admin", "editor"),
-            ):
-                st.json(
-                    submit(
-                        project,
-                        "generate",
-                        {
-                            "snapshot": snapshot_id,
-                            "count": int(count),
-                            "seed_count": int(seed_count),
-                            "coverage": coverage,
-                        },
-                    )
-                )
-            st.caption(
-                "Generation uses only this snapshot’s training split. Candidates return as an unreviewed dataset version. Review them before training."
-            )
+        from decision_workbench.ui.generation import render_generation
+
+        render_generation(api, project, principal, snapshot if snapshots else None)
     with tabs[2]:
         st.write(
             "Training runs in the independent worker; you can close this browser without losing the job."

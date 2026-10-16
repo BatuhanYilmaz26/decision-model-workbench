@@ -44,6 +44,7 @@ class Teacher:
         }
         self.finish_reason = "stop"
         self.raw = None
+        self.usage = None
         fixture = self
 
         class Handler(BaseHTTPRequestHandler):
@@ -71,6 +72,8 @@ class Teacher:
                         }
                     ],
                 }
+                if fixture.usage is not None:
+                    value["usage"] = fixture.usage
                 data = json.dumps(value).encode()
                 try:
                     self.send_response(200)

@@ -11,6 +11,7 @@ These modules provide the persistent local application and authenticated decisio
 | [capabilities.py](capabilities.py) | Bounded hardware/package inspection in configured model interpreters | [Model setup](../../docs/setup.md#configure-model-training-and-serving) |
 | [api.py](api.py) | Authenticated project, data, job, release and decision routes | [Workflow](../../docs/product-workflow.md), [authentication](../../docs/authentication-guide.md) |
 | [worker.py](worker.py) | Process queued preparation, synthetic and training jobs | [Data workflow](../../docs/data-guide.md), [training](../../docs/training-guide.md) |
+| [generation.py](generation.py) | Inspect approved synthetic requests and reconcile unknown outcomes | [Synthetic generation](../../docs/synthetic-generation-guide.md) |
 | [store.py](store.py) | Single-host SQLite state and immutable history | [Architecture](../../docs/architecture.md), [recovery](../../docs/recovery-guide.md) |
 
 For other capabilities, follow [hosted decisions](../../docs/hosted-decisions-guide.md), [managed cloud training](../../docs/remote-training/README.md), [reviewer assignments](../../docs/review-workflow.md), [policy successors](../../docs/policy-versioning-guide.md) and [audit exports](../../docs/audit-export-guide.md).

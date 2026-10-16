@@ -67,7 +67,7 @@ Known project families retain their original roles in later preparations, includ
 
 To add reviewed synthetic candidates later, select the existing snapshot under **Preserve holdouts from an existing snapshot when adding synthetic data**. Explicit reassignment controls are unavailable for this extension. The original real holdouts and training records remain unchanged; only reviewed synthetic training candidates can be added. See [synthetic generation](data-guide.md#generate-and-review-synthetic-candidates).
 
-Back up and stop the API, worker and browser before upgrading. Workspace schema **8** prevents older applications from starting against a workspace whose preparation jobs use explicit plans. Do not run mixed application versions. Recovery accepts supported schema-3 through schema-8 backups and upgrades older captures without rewriting their original data or hashes. See [backup and recovery](recovery-guide.md).
+Back up and stop the API, worker and browser before upgrading. Workspace schema **9** preserves explicit preparation plans and approved synthetic-generation history; older applications refuse the newer schema. Do not run mixed application versions. Recovery accepts supported schema-3 through schema-9 backups and upgrades older captures without rewriting their original data or hashes. See [backup and recovery](recovery-guide.md).
 
 ## Use the API
 

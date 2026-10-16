@@ -1,5 +1,7 @@
 """Real annotation lifecycle, cross-connection races and backup integrity."""
 
+from decision_workbench.platform.store import WORKSPACE_SCHEMA_VERSION
+
 import json
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -364,7 +366,8 @@ class AssignmentTests(unittest.TestCase):
         reopened = Store(self.home)
         with reopened.transaction() as db:
             self.assertEqual(
-                db.execute("SELECT max(version) FROM schema_version").fetchone()[0], 8
+                db.execute("SELECT max(version) FROM schema_version").fetchone()[0],
+                WORKSPACE_SCHEMA_VERSION,
             )
         self.assertEqual(self.assign(dataset, [row["id"]]).status_code, 201)
         result = self.review(dataset, row, 1, "pending")
@@ -381,7 +384,7 @@ class AssignmentTests(unittest.TestCase):
             {"tenant": "A", "actor": "owner", "role": "admin"}, self.project
         )["items"]
         self.assertEqual(before, after)
-        self.assertEqual(restored["restored_schema"], 8)
+        self.assertEqual(restored["restored_schema"], WORKSPACE_SCHEMA_VERSION)
         with reopened.transaction() as db:
             db.execute(
                 "DELETE FROM entities WHERE kind='review-assignment' AND json_extract(payload,'$.revision')=1"
@@ -402,7 +405,7 @@ class AssignmentTests(unittest.TestCase):
                 backup["destination"], root / "restored", backup["manifest_sha256"]
             )
             self.assertEqual(restored["source_schema"], 4)
-            self.assertEqual(restored["restored_schema"], 8)
+            self.assertEqual(restored["restored_schema"], WORKSPACE_SCHEMA_VERSION)
             stored = Store(restored["destination"]).get(
                 dataset["id"], "A", self.project
             )

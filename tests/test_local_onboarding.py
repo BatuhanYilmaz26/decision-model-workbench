@@ -32,9 +32,34 @@ class PersonalWorkspaceTests(unittest.TestCase):
         self.workspace = LocalWorkspace(self.home, ROOT)
 
     def tearDown(self):
+        processes = list(self.workspace.processes)
+        leases = [
+            lease.path
+            for lease in (self.workspace._lease, self.workspace._worker_lease)
+            if lease is not None
+        ]
         self.workspace.close()
         personal_workspace.clear()
-        self.temp.cleanup()
+        self.assertTrue(all(process.poll() is not None for process in processes))
+        if sys.platform == "win32":
+            from decision_workbench.training.windows_job import previous_job_active
+
+            self.assertTrue(all(previous_job_active(path) == 0 for path in leases))
+        self.assertEqual(self.home.parent, Path(self.temp.name).resolve())
+        # Windows can briefly retain a closing file handle after its job is empty.
+        deadline = time.monotonic() + 2
+        while True:
+            try:
+                self.temp.cleanup()
+                break
+            except PermissionError as exc:
+                if (
+                    sys.platform != "win32"
+                    or getattr(exc, "winerror", None) not in (32, 33)
+                    or time.monotonic() >= deadline
+                ):
+                    raise
+                time.sleep(0.05)
 
     def wait_job(self, client, prefix, job):
         deadline = time.monotonic() + 60
@@ -51,6 +76,7 @@ class PersonalWorkspaceTests(unittest.TestCase):
 
     def test_personal_cpu_lifecycle_persists_and_rejects_expired_and_missing_keys(self):
         seen = []
+        seen_headers = []
 
         class Teacher(BaseHTTPRequestHandler):
             def do_POST(self):
@@ -58,6 +84,7 @@ class PersonalWorkspaceTests(unittest.TestCase):
                     self.rfile.read(int(self.headers["Content-Length"]))
                 )
                 seen.append(request)
+                seen_headers.append(dict(self.headers))
                 content = json.dumps(
                     {
                         "rows": [
@@ -69,7 +96,12 @@ class PersonalWorkspaceTests(unittest.TestCase):
                     }
                 )
                 body = json.dumps(
-                    {"choices": [{"message": {"content": content}}]}
+                    {
+                        "model": "fixture-teacher",
+                        "choices": [
+                            {"finish_reason": "stop", "message": {"content": content}}
+                        ],
+                    }
                 ).encode()
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
@@ -91,8 +123,31 @@ class PersonalWorkspaceTests(unittest.TestCase):
         self.workspace.environment.update(
             DMT_TEACHER_BASE_URL=f"http://127.0.0.1:{teacher.server_port}/v1",
             DMT_TEACHER_MODEL="fixture-teacher",
+            DMT_TEACHER_API_KEY="fictional-worker-only",
         )
-        w = self.workspace.start()
+        launches = []
+        original_popen = subprocess.Popen
+
+        def capture_launch(command, *args, **kwargs):
+            launches.append((command, dict(kwargs["env"])))
+            return original_popen(command, *args, **kwargs)
+
+        with patch(
+            "decision_workbench.platform.local.subprocess.Popen",
+            side_effect=capture_launch,
+        ):
+            w = self.workspace.start()
+        roles = {command[3]: environment for command, environment in launches}
+        self.assertEqual(set(roles), {"api", "worker"})
+        self.assertNotIn("DMT_TEACHER_API_KEY", roles["api"])
+        self.assertNotIn("TEACHER_API_KEY", roles["api"])
+        self.assertEqual(
+            roles["worker"]["DMT_TEACHER_API_KEY"], "fictional-worker-only"
+        )
+        self.assertEqual(
+            roles["api"]["DMT_TEACHER_BASE_URL"],
+            roles["worker"]["DMT_TEACHER_BASE_URL"],
+        )
         children = list(w.processes)
         token = w.token
         with httpx.Client(
@@ -145,15 +200,23 @@ class PersonalWorkspaceTests(unittest.TestCase):
             self.assertEqual(queued.status_code, 202, queued.text)
             snapshot = self.wait_job(client, prefix, queued.json()["id"])["snapshot"]
             self.assertEqual(seen, [])
+            selection = {
+                "snapshot": snapshot,
+                "count": 1,
+                "seed_count": 1,
+                "coverage": "Fictional payment boundaries",
+            }
+            preview = client.post(prefix + "/generation-preview", json=selection)
+            self.assertEqual(preview.status_code, 200, preview.text)
             generated = client.post(
                 prefix + "/jobs",
                 json={
                     "kind": "generate",
                     "config": {
-                        "snapshot": snapshot,
-                        "count": 1,
-                        "seed_count": 1,
-                        "coverage": "Fictional payment boundaries",
+                        **selection,
+                        "data_approved": True,
+                        "cost_approved": True,
+                        "expected_preview_sha256": preview.json()["sha256"],
                     },
                     "request_key": "personal-generate",
                 },
@@ -161,6 +224,9 @@ class PersonalWorkspaceTests(unittest.TestCase):
             self.assertEqual(generated.status_code, 202, generated.text)
             candidates = self.wait_job(client, prefix, generated.json()["id"])
             self.assertEqual(len(seen), 1)
+            self.assertEqual(
+                seen_headers[0].get("Authorization"), "Bearer fictional-worker-only"
+            )
             self.assertEqual(seen[0]["model"], "fixture-teacher")
             candidate = client.get(
                 prefix + "/datasets/" + candidates["dataset"] + "/rows"

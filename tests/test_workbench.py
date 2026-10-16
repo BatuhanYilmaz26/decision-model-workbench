@@ -4,12 +4,24 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
-from decision_workbench.data import read_records, prepare, validate, hard_gold, jsonl, state_key, write_splits
+from decision_workbench.data import (
+    read_records,
+    prepare,
+    validate,
+    jsonl,
+    state_key,
+    write_splits,
+)
 from decision_workbench.synthetic import generate
 
 SPEC = json.loads(Path("examples/support/spec.json").read_text())
+
+
 def records():
-    return read_records(Path("examples/support/seeds.csv").read_bytes(), "seeds.csv", SPEC)
+    return read_records(
+        Path("examples/support/seeds.csv").read_bytes(), "seeds.csv", SPEC
+    )
+
 
 class DataTests(unittest.TestCase):
     def test_csv_roundtrip_and_all_primitives(self):
@@ -50,9 +62,12 @@ class DataTests(unittest.TestCase):
         rows.append(extra)
         split = prepare(rows)
         for field in ("group_id", "state"):
-            values = [{state_key(r) if field == "state" else r[field] for r in part} for part in split.values()]
+            values = [
+                {state_key(r) if field == "state" else r[field] for r in part}
+                for part in split.values()
+            ]
             for i, a in enumerate(values):
-                for b in values[i + 1:]:
+                for b in values[i + 1 :]:
                     self.assertFalse(a & b)
         self.assertEqual(sum(map(len, split.values())), len(rows))
         self.assertEqual(prepare(rows), prepare(rows))
@@ -75,13 +90,27 @@ class DataTests(unittest.TestCase):
     def test_synthetic_seed_lineage_stays_in_train(self):
         rows = records()
         extra = copy.deepcopy(rows[0])
-        extra.update(id="generated", group_id="generated-family", state="A fictional refund request")
-        extra["metadata"] = {"origin": "synthetic", "reviewed": True, "seed_ids": ["t01"]}
+        extra.update(
+            id="generated",
+            group_id="generated-family",
+            state="A fictional refund request",
+        )
+        extra["metadata"] = {
+            "origin": "synthetic",
+            "reviewed": True,
+            "seed_ids": ["t01"],
+        }
         rows.append(extra)
         split = prepare(rows)
         ids = {r["id"] for r in split["train"]}
         self.assertTrue({"t01", "generated"} <= ids)
-        self.assertTrue(all(r["metadata"]["origin"] == "real" for name in ("validation", "calibration", "test") for r in split[name]))
+        self.assertTrue(
+            all(
+                r["metadata"]["origin"] == "real"
+                for name in ("validation", "calibration", "test")
+                for r in split[name]
+            )
+        )
 
     def test_small_real_corpus_fails(self):
         with self.assertRaises(ValueError):
@@ -100,8 +129,20 @@ class DataTests(unittest.TestCase):
             self.skipTest("optional xlsx extra")
         workbook = Workbook()
         sheet = workbook.active
-        sheet.append(["id", "group_id", "state", "team", "refund", "urgency", "reviewed"])
-        sheet.append(["x1", "gx1", "Please refund the duplicate charge.", "billing", True, 0, True])
+        sheet.append(
+            ["id", "group_id", "state", "team", "refund", "urgency", "reviewed"]
+        )
+        sheet.append(
+            [
+                "x1",
+                "gx1",
+                "Please refund the duplicate charge.",
+                "billing",
+                True,
+                0,
+                True,
+            ]
+        )
         workbook.create_sheet("Not the import sheet")
         workbook.active = 1
         content = io.BytesIO()
@@ -110,17 +151,44 @@ class DataTests(unittest.TestCase):
         row = read_records(content.getvalue(), "example.xlsx", SPEC)[0]
         self.assertEqual(row["gold"]["refund"]["probabilities"]["true"], 1)
 
+
 class GenerationTests(unittest.TestCase):
     def test_request_export_is_validated_and_unreviewed(self):
         sample = records()[0]
+
         def transport(request, timeout):
             self.assertEqual(timeout, 120)
             body = json.loads(request.data)
             self.assertEqual(body["model"], "teacher-local")
-            content = json.dumps({"rows": [{"state": "Please refund my duplicated charge.", "gold": sample["gold"]}]})
-            return io.StringIO(json.dumps({"choices": [{"message": {"content": content}}]}))
-        result = generate(SPEC, [sample], base_url="http://localhost:8000/v1",
-                          model="teacher-local", count=1, request=transport)
+            content = json.dumps(
+                {
+                    "rows": [
+                        {
+                            "state": "Please refund my duplicated charge.",
+                            "gold": sample["gold"],
+                        }
+                    ]
+                }
+            )
+            return io.StringIO(
+                json.dumps(
+                    {
+                        "model": "teacher-local",
+                        "choices": [
+                            {"finish_reason": "stop", "message": {"content": content}}
+                        ],
+                    }
+                )
+            )
+
+        result = generate(
+            SPEC,
+            [sample],
+            base_url="http://localhost:8000/v1",
+            model="teacher-local",
+            count=1,
+            request=transport,
+        )
         self.assertEqual(result[0]["questions"], SPEC["questions"])
         self.assertFalse(result[0]["metadata"]["reviewed"])
         self.assertEqual(result[0]["metadata"]["seed_ids"], [sample["id"]])
@@ -129,14 +197,28 @@ class GenerationTests(unittest.TestCase):
 
     def test_bad_teacher_output_rejected(self):
         def transport(request, timeout):
-            return io.StringIO(json.dumps({"choices": [{"message": {"content": '{"rows":[]}'}}]}))
+            return io.StringIO(
+                json.dumps({"choices": [{"message": {"content": '{"rows":[]}'}}]})
+            )
+
         with self.assertRaises(ValueError):
-            generate(SPEC, [], base_url="http://localhost:8000/v1", model="teacher", count=1, request=transport)
+            generate(
+                SPEC,
+                [],
+                base_url="http://localhost:8000/v1",
+                model="teacher",
+                count=1,
+                request=transport,
+            )
 
     def test_remote_plaintext_and_invalid_count_rejected(self):
-        for url, count in (("http://remote.example/v1", 1), ("https://example.com/v1", 51)):
+        for url, count in (
+            ("http://remote.example/v1", 1),
+            ("https://example.com/v1", 51),
+        ):
             with self.assertRaises(ValueError):
                 generate(SPEC, [], base_url=url, model="teacher", count=count)
+
 
 if __name__ == "__main__":
     unittest.main()

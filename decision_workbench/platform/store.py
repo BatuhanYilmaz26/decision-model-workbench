@@ -11,6 +11,8 @@ from .dataset_storage import DatasetStorage
 from .operations import OperationsStorage
 from .paging import validate_page
 
+WORKSPACE_SCHEMA_VERSION = 9
+
 
 def encode(value):
     return json.dumps(value, sort_keys=True, ensure_ascii=False, allow_nan=False)
@@ -36,7 +38,9 @@ class Store(DatasetStorage, OperationsStorage):
             current = db.execute("SELECT max(version) FROM schema_version").fetchone()[
                 0
             ]
-            if current not in (None, 1, 2, 3, 4, 5, 6, 7, 8):
+            if current is not None and current not in range(
+                1, WORKSPACE_SCHEMA_VERSION + 1
+            ):
                 raise RuntimeError(
                     "Unsupported workspace schema version; restore a compatible application"
                 )
@@ -88,6 +92,13 @@ class Store(DatasetStorage, OperationsStorage):
             db.execute("INSERT OR IGNORE INTO schema_version VALUES (6)")
             db.execute("INSERT OR IGNORE INTO schema_version VALUES (7)")
             db.execute("INSERT OR IGNORE INTO schema_version VALUES (8)")
+            db.execute("INSERT OR IGNORE INTO schema_version VALUES (9)")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS generation_budget_lookup ON entities(tenant,json_extract(payload,'$.profile.base_url'),created) WHERE kind='generation-plan'"
+            )
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS generation_record_lookup ON entities(tenant,project,kind,json_extract(payload,'$.plan_id')) WHERE kind IN ('generation-process','generation-response','generation-result','generation-settlement')"
+            )
             db.execute(
                 "CREATE INDEX IF NOT EXISTS successor_request_lookup ON entities(tenant,json_extract(payload,'$.parent_project'),json_extract(payload,'$.successor.request_key_sha256')) WHERE kind='project'"
             )
@@ -265,13 +276,24 @@ class Store(DatasetStorage, OperationsStorage):
         }
 
     def submit(
-        self, tenant, project, actor, kind, config, request_key, validate_db=None
+        self,
+        tenant,
+        project,
+        actor,
+        kind,
+        config,
+        request_key,
+        validate_db=None,
+        *,
+        authorize=None,
     ):
         if not isinstance(request_key, str) or not 8 <= len(request_key) <= 128:
             raise ValueError("Use an 8–128 character idempotency key")
         request_hash = digest({"kind": kind, "config": config})
         now = time.time()
         with self.transaction() as db:
+            if authorize:
+                authorize()
             row = db.execute(
                 "SELECT * FROM jobs WHERE tenant=? AND project=? AND request_key=?",
                 (tenant, project, request_key),
@@ -281,6 +303,8 @@ class Store(DatasetStorage, OperationsStorage):
                     raise Conflict(
                         "Idempotency key already belongs to a different request"
                     )
+                if authorize:
+                    authorize()
                 return self.decode_job(row)
             pending = db.execute(
                 "SELECT count(*) FROM jobs WHERE tenant=? AND status IN ('queued','running','cancel_requested')",
@@ -332,6 +356,8 @@ class Store(DatasetStorage, OperationsStorage):
                 ),
             )
             self.audit(db, tenant, project, actor, "submit." + kind, job_id)
+            if authorize:
+                authorize()
         return self.job(job_id, tenant, project)
 
     def job(self, job_id, tenant, project):

@@ -13,7 +13,6 @@ import traceback
 import uuid
 from contextlib import contextmanager
 from decision_workbench.data import prepare, write_splits, jsonl, validate, state_key
-from decision_workbench.synthetic import generate
 from decision_workbench.temporal import audit_splits
 from decision_workbench.training.contracts import validate_splits
 from .store import Store, Conflict, digest
@@ -103,10 +102,13 @@ class Worker:
 
     def dispatch(self, job, cancelled):
         tenant, project, actor = job["tenant"], job["project"], job["actor"]
-        principal = {"tenant": tenant, "actor": actor, "role": "admin"}
         config = job["config"]
         if job["kind"] == "schema-suggest":
             from .schema_intake import run
+
+            return run(self, job, cancelled)
+        if job["kind"] == "generate":
+            from .generation_worker import run
 
             return run(self, job, cancelled)
         spec = self.store.get(project, tenant, project, "project")["payload"]
@@ -300,57 +302,6 @@ class Worker:
         from .taxonomy import verify_snapshot as verify_taxonomy_snapshot
 
         verify_taxonomy_snapshot(self.store, tenant, project, snapshot)
-        if job["kind"] == "generate":
-            self.store.heartbeat(
-                job,
-                "Requesting candidates from configured teacher using reserved training seeds",
-            )
-            base = os.environ.get("DMT_TEACHER_BASE_URL", "")
-            model = os.environ.get("DMT_TEACHER_MODEL", "")
-            if not base or not model:
-                raise ValueError(
-                    "Operator must configure DMT_TEACHER_BASE_URL and DMT_TEACHER_MODEL"
-                )
-            modified = {
-                **spec,
-                "description": spec["description"]
-                + "\nData requirements: "
-                + spec.get("data_requirements", "")
-                + "\nRequested candidate coverage: "
-                + config.get("coverage", ""),
-            }
-            seeds = snapshot["splits"]["train"][: config["seed_count"]]
-            rows = generate(
-                modified,
-                seeds,
-                base_url=base,
-                model=model,
-                api_key=os.environ.get("DMT_TEACHER_API_KEY", ""),
-                count=config["count"],
-            )
-            for row in rows:
-                row["metadata"].update(
-                    snapshot_id=config["snapshot"],
-                    prompt_sha256=digest(modified),
-                    policy_version=spec["policy_version"],
-                )
-            dataset = self.service.save_dataset(
-                principal,
-                project,
-                rows,
-                {
-                    "kind": "generated",
-                    "snapshot": config["snapshot"],
-                    "prompt_sha256": digest(modified),
-                    "teacher_model": model,
-                },
-                job=job,
-            )
-            return {
-                "dataset": dataset["id"],
-                "count": len(rows),
-                "review_required": True,
-            }
         policy = self.store.get(
             config["release_policy_id"], tenant, project, "release-policy"
         )["payload"]

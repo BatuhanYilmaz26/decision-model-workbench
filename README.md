@@ -101,9 +101,9 @@ The [domain adoption guide](docs/domain-adoption-guide.md) uses support routing 
 
 Configure a local or hosted generative teacher using [teacher setup](docs/setup.md#configure-a-teacher). Describe the cases you need, such as uncommon outcomes, missing evidence or different writing styles. In the application, select a reserved snapshot and explicitly approve the generation request; its worker supplies only the reviewed training seeds to that teacher.
 
-Generation creates unapproved candidate records for review. Approve, correct or reject them, then extend the original training snapshot with the reviewed version. Validation, calibration and test data stay reserved. A hosted teacher receives the selected policy and seeds, so use an approved provider or a local teacher when those records must stay on your machine.
+Generation creates unapproved candidate records for review. Approve, correct or reject them, then extend the original training snapshot with the reviewed version. Validation, calibration and test data stay reserved. A hosted teacher receives the selected policy and seeds, so verify the teacher's processing and retention settings. A localhost endpoint can still forward to a hosted model.
 
-Follow [generate and review synthetic candidates](docs/data-guide.md#generate-and-review-synthetic-candidates) for the complete workflow. Generated labels require review, and teacher confidence does not establish domain accuracy.
+Follow the [synthetic-generation guide](docs/synthetic-generation-guide.md) for request previews, data/cost approval, budget settings, saved outcomes and explicit retries. Generated labels require review, and teacher confidence does not establish domain accuracy.
 
 ## Use an existing model through its API
 

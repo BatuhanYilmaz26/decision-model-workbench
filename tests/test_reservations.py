@@ -1,5 +1,7 @@
 """Explicit group/time policies, real worker publication and immutable recovery."""
 
+from decision_workbench.platform.store import WORKSPACE_SCHEMA_VERSION
+
 import copy
 import hashlib
 from pathlib import Path
@@ -437,20 +439,23 @@ class ReservationPlatformTests(unittest.TestCase):
 
     def test_schema7_upgrade_preserves_entities_and_future_schema_refuses(self):
         with self.app.state.store.transaction() as db:
-            db.execute("DELETE FROM schema_version WHERE version=8")
+            db.execute("DELETE FROM schema_version WHERE version>7")
             before = [
                 tuple(r) for r in db.execute("SELECT * FROM entities ORDER BY id")
             ]
         current = Store(self.home)
         with current.transaction() as db:
             self.assertEqual(
-                db.execute("SELECT max(version) FROM schema_version").fetchone()[0], 8
+                db.execute("SELECT max(version) FROM schema_version").fetchone()[0],
+                WORKSPACE_SCHEMA_VERSION,
             )
             self.assertEqual(
                 [tuple(r) for r in db.execute("SELECT * FROM entities ORDER BY id")],
                 before,
             )
-            db.execute("INSERT INTO schema_version VALUES (9)")
+            db.execute(
+                "INSERT INTO schema_version VALUES (?)", (WORKSPACE_SCHEMA_VERSION + 1,)
+            )
         checksum = hashlib.sha256(current.database.read_bytes()).hexdigest()
         with self.assertRaisesRegex(RuntimeError, "Unsupported workspace"):
             Store(self.home)

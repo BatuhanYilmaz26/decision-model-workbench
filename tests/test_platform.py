@@ -5,14 +5,13 @@ import hashlib
 import json
 import tempfile
 import threading
-import time
 import unittest
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from fastapi.testclient import TestClient
 from decision_workbench.data import hard_gold, jsonl
 from decision_workbench.platform.api import create_app
-from decision_workbench.platform.store import Store, Conflict, digest
+from decision_workbench.platform.store import Store, Conflict
 from decision_workbench.platform.worker import Worker
 
 QUESTIONS = {
@@ -390,8 +389,10 @@ class PlatformTests(unittest.TestCase):
                 row = fixture_rows(1)[0]
                 body = json.dumps(
                     {
+                        "model": "fixture-chat-teacher",
                         "choices": [
                             {
+                                "finish_reason": "stop",
                                 "message": {
                                     "content": json.dumps(
                                         {
@@ -403,9 +404,9 @@ class PlatformTests(unittest.TestCase):
                                             ]
                                         }
                                     )
-                                }
+                                },
                             }
-                        ]
+                        ],
                     }
                 ).encode()
                 handler.send_response(200)
@@ -420,16 +421,6 @@ class PlatformTests(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            job = self.job(
-                "generate",
-                {
-                    "snapshot": snapshot,
-                    "count": 1,
-                    "seed_count": 3,
-                    "coverage": "rare invoice exceptions",
-                },
-                "generation-worker",
-            )
             with patch.dict(
                 "os.environ",
                 {
@@ -437,6 +428,26 @@ class PlatformTests(unittest.TestCase):
                     "DMT_TEACHER_MODEL": "fixture-chat-teacher",
                 },
             ):
+                config = {
+                    "snapshot": snapshot,
+                    "count": 1,
+                    "seed_count": 3,
+                    "coverage": "rare invoice exceptions",
+                }
+                preview = self.client.post(
+                    self.prefix + "/generation-preview", json=config
+                )
+                self.assertEqual(preview.status_code, 200, preview.text)
+                job = self.job(
+                    "generate",
+                    {
+                        **config,
+                        "data_approved": True,
+                        "cost_approved": True,
+                        "expected_preview_sha256": preview.json()["sha256"],
+                    },
+                    "generation-worker",
+                )
                 Worker(Store(self.home)).once()
             current = self.app.state.store.job(job["id"], "A", self.project)
             self.assertEqual(current["status"], "succeeded", current["error"])

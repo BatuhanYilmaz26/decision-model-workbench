@@ -32,6 +32,11 @@ def main():
             )
             p.add_argument("--model", required=True)
             p.add_argument("--count", type=int, default=10)
+            p.add_argument(
+                "--seed-count",
+                type=int,
+                help="Reviewed training seeds to send: 0–10; default is up to three available records",
+            )
     args = parser.parse_args()
     try:
         if args.command == "wizard":
@@ -89,9 +94,16 @@ def main():
                 raise ValueError(
                     "Choose a new output file to preserve existing candidates"
                 )
+            seed_count = (
+                min(3, len(rows)) if args.seed_count is None else args.seed_count
+            )
+            if not 0 <= seed_count <= min(10, len(rows)):
+                raise ValueError(
+                    "Choose 0–10 seeds, without exceeding the available reviewed training records"
+                )
             candidates = generate(
                 spec,
-                rows,
+                rows[:seed_count],
                 base_url=args.base_url,
                 model=args.model,
                 api_key=os.environ.get("TEACHER_API_KEY", ""),

@@ -61,6 +61,22 @@ class ReservationPreviewBody(Body):
     policy: dict[str, Any] | None = None
 
 
+class GenerationPreviewBody(Body):
+    snapshot: str = Field(min_length=1, max_length=128)
+    count: int = Field(ge=1, le=50)
+    seed_count: int = Field(ge=0, le=10)
+    coverage: str = Field(default="", max_length=4000)
+    retry_of: str | None = Field(default=None, min_length=1, max_length=128)
+
+
+class GenerationSettlementBody(Body):
+    expected_status_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    local_exit_confirmed: bool
+    upstream_complete_confirmed: bool
+    evidence_ref: str = Field(min_length=1, max_length=500)
+    note: str = Field(min_length=1, max_length=1000)
+
+
 class SchemaConfirmBody(Body):
     name: str = Field(min_length=1, max_length=120)
     description: str = Field(min_length=1, max_length=12000)
@@ -460,6 +476,16 @@ def create_app(home=None, keys=None, hosted=None):
     def schema_teacher(p=Depends(identity)):
         service.require(p, ("admin",))
         from .schema_intake import teacher_profile
+
+        try:
+            return {"available": True, "teacher": teacher_profile()}
+        except ValueError as exc:
+            return {"available": False, "reason": str(exc)}
+
+    @app.get("/v1/generation-teacher")
+    def generation_teacher(p=Depends(identity)):
+        service.require(p, ("admin",))
+        from .generation_profiles import teacher_profile
 
         try:
             return {"available": True, "teacher": teacher_profile()}
@@ -1022,6 +1048,50 @@ def create_app(home=None, keys=None, hosted=None):
         from .reservations import preview
 
         return preview(service, p, project, **body.model_dump())
+
+    @app.post("/v1/projects/{project}/generation-preview")
+    def generation_preview(
+        project: str, body: GenerationPreviewBody, p=Depends(identity)
+    ):
+        from .generation_plans import preview
+
+        return preview(service, p, project, body.model_dump())
+
+    @app.get("/v1/projects/{project}/generation-plans")
+    def generation_plans(
+        project: str,
+        limit: int = Query(default=20, ge=1, le=20),
+        offset: int = Query(default=0, ge=0, le=MAX_OFFSET),
+        p=Depends(identity),
+    ):
+        from .generation import list_requests
+
+        return list_requests(service, p, project, limit, offset)
+
+    @app.get("/v1/projects/{project}/generation-plans/{plan}")
+    def generation_plan(project: str, plan: str, p=Depends(identity)):
+        from .generation import view
+
+        return view(service, p, project, plan)
+
+    @app.post("/v1/projects/{project}/generation-plans/{plan}/settle")
+    def settle_generation(
+        project: str,
+        plan: str,
+        body: GenerationSettlementBody,
+        authorization: str | None = Header(default=None),
+        p=Depends(identity),
+    ):
+        from .generation import settle
+
+        return settle(
+            service,
+            p,
+            project,
+            plan,
+            **body.model_dump(),
+            authorize=lambda: authorize_again(authorization, p),
+        )
 
     @app.post("/v1/projects/{project}/jobs", status_code=202)
     def submit(

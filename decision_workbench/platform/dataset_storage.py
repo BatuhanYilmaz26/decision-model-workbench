@@ -92,7 +92,16 @@ class DatasetStorage:
         return digest(manifest)
 
     def add_dataset(
-        self, tenant, project, actor, rows, provenance, job=None, *, kind="dataset"
+        self,
+        tenant,
+        project,
+        actor,
+        rows,
+        provenance,
+        job=None,
+        *,
+        kind="dataset",
+        finalize=None,
     ):
         self.dataset_kind(kind)
         entity_id = uuid.uuid4().hex
@@ -117,6 +126,10 @@ class DatasetStorage:
                 (entity_id, kind, tenant, project, encode(payload), time.time()),
             )
             self.audit(db, tenant, project, actor, "create." + kind, entity_id)
+            if finalize:
+                finalize(db, entity_id, payload)
+            if job:
+                self._assert_owner(db, job)
         return self.get(entity_id, tenant, project, kind, include_rows=False)
 
     @staticmethod

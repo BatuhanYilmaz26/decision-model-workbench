@@ -1,5 +1,7 @@
 """Collection membership/rejection acceptance through real storage and HTTP routes."""
 
+from decision_workbench.platform.store import WORKSPACE_SCHEMA_VERSION
+
 import copy
 import json
 import unittest
@@ -359,7 +361,8 @@ class CollectionTests(unittest.TestCase):
         )
         with upgraded.transaction() as db:
             self.assertEqual(
-                db.execute("SELECT max(version) FROM schema_version").fetchone()[0], 8
+                db.execute("SELECT max(version) FROM schema_version").fetchone()[0],
+                WORKSPACE_SCHEMA_VERSION,
             )
 
     def test_membership_manifest_and_sequence_tampering_are_refused(self):

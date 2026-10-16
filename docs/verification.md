@@ -31,6 +31,8 @@ The dependency locks provide a narrower repeatable environment than the version 
 
 The unit suite includes HTTP services, SQLite state, worker/process ownership, authentication, storage and browser-widget tests. Cloud calls are fixtures; model contract tests do not download/train every real model. Native Windows job tests skip on Linux, and Linux kernel/descriptor tests skip on Windows. Report executed and skipped cases separately. GitHub Actions configuration is included, but a local pass does not establish a successful hosted CI run.
 
+The [synthetic-generation workflow](synthetic-generation-guide.md) has separate local HTTP/worker and Streamlit form tests for transfer/cost approvals, request identity, training-only seeds, all-or-nothing candidate publication, deadline/cancellation, unknown outcomes, explicit retries and recovery. Their fictional teacher checks transport and lifecycle behavior; it does not measure a generative model's domain accuracy or actual provider billing.
+
 ## Verify a fresh container
 
 ```bash

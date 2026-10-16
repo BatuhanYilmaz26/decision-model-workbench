@@ -88,7 +88,7 @@ At least four independent real groups are required by the tool. Four groups make
 
 ## Generate and review synthetic candidates
 
-Use a **generative chat teacher**, local or hosted. A non-generative decision model cannot write new examples.
+Use a **generative chat teacher**, local or hosted. A non-generative decision model cannot write new examples. Follow the [synthetic-generation guide](synthetic-generation-guide.md) to configure the teacher, preview the exact request, approve transfer and charges, inspect saved outcomes and retry explicitly.
 
 Provide policy, schema and a coverage matrix: common/rare labels, no-match cases, negation, contradictory evidence, lengths, languages and policy boundaries. Generate counterfactual pairs where one relevant fact changes the label; keep the pair in one family.
 

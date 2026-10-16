@@ -9,6 +9,7 @@ import threading
 import time
 
 from decision_workbench.data import validate_questions
+from decision_workbench.json_tools import strict_json
 from decision_workbench.training.provenance import source_fingerprint
 from decision_workbench.training.resources import ResourceLease
 from .store import Conflict, digest, encode
@@ -164,21 +165,6 @@ def request_body(domain, profile):
             "The complete teacher request exceeds its byte limit; shorten the domain description"
         )
     return body
-
-
-def strict_json(value):
-    def pairs(items):
-        result = {}
-        for key, item in items:
-            if key in result:
-                raise ValueError("Teacher output contains duplicate JSON keys")
-            result[key] = item
-        return result
-
-    def nonfinite(_):
-        raise ValueError("Nonfinite teacher output")
-
-    return json.loads(value, object_pairs_hook=pairs, parse_constant=nonfinite)
 
 
 def questions(value):

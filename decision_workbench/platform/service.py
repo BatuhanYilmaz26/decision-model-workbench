@@ -324,7 +324,16 @@ class Service:
                 "expected_reservation_sha256",
             },
             "semantic-audit": {"datasets", "base_snapshot", "threshold"},
-            "generate": {"snapshot", "count", "seed_count", "coverage"},
+            "generate": {
+                "snapshot",
+                "count",
+                "seed_count",
+                "coverage",
+                "data_approved",
+                "cost_approved",
+                "expected_preview_sha256",
+                "retry_of",
+            },
             "train": {
                 "snapshot",
                 "backend",
@@ -360,6 +369,7 @@ class Service:
         }
         if kind not in allowed or set(config) - allowed[kind]:
             raise ValueError("Unexpected job configuration fields")
+        validate_db = None
         if kind == "gate-semantic-audit":
             self.require(principal, ("admin",))
             threshold = config.get("threshold")
@@ -474,19 +484,11 @@ class Service:
                     "Review a semantic audit covering these exact inputs before preparation"
                 )
         elif kind == "generate":
-            self.store.get(config["snapshot"], principal["tenant"], project, "snapshot")
-            if type(config.get("count")) is not int or not 1 <= config["count"] <= 50:
-                raise ValueError("Request 1–50 candidates")
-            if (
-                type(config.get("seed_count")) is not int
-                or not 0 <= config["seed_count"] <= 10
-            ):
-                raise ValueError("Select 0–10 approved training seeds")
-            if (
-                not isinstance(config.get("coverage", ""), str)
-                or len(config.get("coverage", "")) > 4000
-            ):
-                raise ValueError("Coverage description is limited to 4,000 characters")
+            from .generation_plans import freeze
+
+            config, validate_db = freeze(
+                self, principal, project, config, key, authorize
+            )
         elif kind == "hosted-evaluate":
             if set(config) != {
                 "snapshot",
@@ -610,7 +612,6 @@ class Service:
                         raise ValueError(flag + " must be a boolean")
         else:
             raise ValueError("Unknown job kind")
-        validate_db = None
         reservation_fields = {
             "reservation_policy",
             "reservation_approved",
@@ -634,6 +635,7 @@ class Service:
             config,
             key,
             validate_db=validate_db,
+            authorize=authorize if kind == "generate" else None,
         )
 
     def activate(

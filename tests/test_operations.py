@@ -1,5 +1,7 @@
 """Durable incidents, real worker process death, migrations, recovery and browser operations."""
 
+from decision_workbench.platform.store import WORKSPACE_SCHEMA_VERSION
+
 import json
 import os
 from pathlib import Path
@@ -417,7 +419,7 @@ class OperationsTests(unittest.TestCase):
             ]
         backup = backup_workspace(self.home, self.folder / "backup4")
         manifest = verify_backup(backup["destination"], backup["manifest_sha256"])
-        self.assertEqual(manifest["schema_version"], 8)
+        self.assertEqual(manifest["schema_version"], WORKSPACE_SCHEMA_VERSION)
         receipt = restore_workspace(
             backup["destination"], self.folder / "restored4", backup["manifest_sha256"]
         )
@@ -463,11 +465,12 @@ class OperationsTests(unittest.TestCase):
             prior["destination"], self.folder / "restored3", prior["manifest_sha256"]
         )
         self.assertEqual(restored["source_schema"], 3)
-        self.assertEqual(restored["restored_schema"], 8)
+        self.assertEqual(restored["restored_schema"], WORKSPACE_SCHEMA_VERSION)
         upgraded = Store(restored["destination"])
         with upgraded.transaction() as db:
             self.assertEqual(
-                db.execute("SELECT max(version) FROM schema_version").fetchone()[0], 8
+                db.execute("SELECT max(version) FROM schema_version").fetchone()[0],
+                WORKSPACE_SCHEMA_VERSION,
             )
             self.assertEqual(
                 [

@@ -1,5 +1,7 @@
 """Real encrypted recovery, authenticated framing and adversarial publication refusal."""
 
+from decision_workbench.platform.store import WORKSPACE_SCHEMA_VERSION
+
 import hashlib
 import json
 from pathlib import Path
@@ -80,7 +82,7 @@ class EncryptedRecoveryTests(unittest.TestCase):
         result = encrypted.restore_encrypted(
             bundle, destination, self.key, captured["encrypted_manifest_sha256"]
         )
-        self.assertEqual(result["restored_schema"], 8)
+        self.assertEqual(result["restored_schema"], WORKSPACE_SCHEMA_VERSION)
         restored = Store(destination)
         self.assertEqual(restored.active("A", self.project)["model_id"], model)
         self.assertEqual(
@@ -375,7 +377,9 @@ class EncryptedRecoveryTests(unittest.TestCase):
             "restore-encrypted", *common, "--home", str(self.folder / "cli-restored")
         )
         self.assertEqual(restored.returncode, 0, restored.stderr)
-        self.assertEqual(json.loads(restored.stdout)["restored_schema"], 8)
+        self.assertEqual(
+            json.loads(restored.stdout)["restored_schema"], WORKSPACE_SCHEMA_VERSION
+        )
         bad = run(
             "restore-encrypted",
             *common[:-1],

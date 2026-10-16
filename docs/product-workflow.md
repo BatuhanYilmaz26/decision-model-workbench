@@ -22,7 +22,7 @@ Use automatic reservations or [assign source groups and date cutoffs explicitly]
 
 ## 4. Add reviewed training coverage
 
-If your policy has gaps, configure an approved teacher and request bounded synthetic coverage from reserved training seeds. Review every candidate before extending training. Preserve validation, calibration and test reservations. Generated labels are proposals, and evaluation gold must remain independently reviewed operational evidence.
+If your policy has gaps, follow [synthetic generation](synthetic-generation-guide.md) to configure a teacher, preview the policy and reserved training seeds, approve data transfer and charges, and inspect the saved outcome. Review every candidate before extending training. Preserve validation, calibration and test reservations. Generated labels are proposals, and evaluation gold must remain independently reviewed operational evidence.
 
 ## 5. Train and inspect the export
 

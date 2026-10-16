@@ -1,5 +1,7 @@
 """Signed backup health, public-key-only reads, incident scope and readiness controls."""
 
+from decision_workbench.platform.store import WORKSPACE_SCHEMA_VERSION
+
 import copy
 import json
 import os
@@ -341,7 +343,7 @@ class BackupMonitorTests(unittest.TestCase):
             self.key,
             captured["encrypted_manifest_sha256"],
         )
-        self.assertEqual(restored["restored_schema"], 8)
+        self.assertEqual(restored["restored_schema"], WORKSPACE_SCHEMA_VERSION)
         from decision_workbench.platform.store import Store
 
         incidents = Store(restored["destination"]).operations("A", self.project)[

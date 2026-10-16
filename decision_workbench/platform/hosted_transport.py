@@ -17,7 +17,7 @@ class TransportFailure(RuntimeError):
 
 
 def endpoint(profile):
-    if profile["provider"] == "schema-teacher":
+    if profile["provider"] in ("schema-teacher", "generation-teacher"):
         return profile["base_url"].rstrip("/") + "/chat/completions"
     return {
         "typesafe": "https://api.typesafe.ai/v1/systemone",
@@ -38,7 +38,7 @@ def receive(profile, body, key, transport=None):
         timeout=httpx.Timeout(
             (
                 float(profile["timeout_seconds"])
-                if profile["provider"] == "schema-teacher"
+                if profile["provider"] in ("schema-teacher", "generation-teacher")
                 else 2.0
             ),
             connect=3.0,
