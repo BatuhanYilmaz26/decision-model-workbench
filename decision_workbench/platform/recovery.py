@@ -127,9 +127,9 @@ def _validate_workspace(folder):
         if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
             raise ValueError("Workspace database integrity check failed")
         schema = db.execute("SELECT max(version) FROM schema_version").fetchone()[0]
-        if schema not in (3, 4, 5, 6, 7):
+        if schema not in (3, 4, 5, 6, 7, 8):
             raise ValueError(
-                "Backup requires workspace schema 3, 4, 5, 6 or 7; upgrade with a compatible application first"
+                "Backup requires workspace schema 3, 4, 5, 6, 7 or 8; upgrade with a compatible application first"
             )
         if db.execute(
             "SELECT 1 FROM sqlite_master WHERE type IN ('trigger','view') LIMIT 1"
@@ -213,8 +213,13 @@ def _validate_workspace(folder):
             raise ValueError("Workspace reference crosses scope or is missing")
         return item["payload"]
 
+    from .schema_intake import verify_history as verify_schema_history
+
+    verify_schema_history(store, lookup.values())
     for entity in lookup.values():
         value = entity["payload"]
+        if entity["kind"] == "schema-intake":
+            continue
         project = scoped(entity["project"], entity, "project")
         if entity["kind"] == "project":
             validate_questions(value["questions"])
@@ -227,6 +232,16 @@ def _validate_workspace(folder):
             from .audit_exports import verify_entity
 
             verify_entity(store, entity)
+        elif entity["kind"] == "reservation-plan":
+            from .reservations import load_plan
+
+            load_plan(
+                store,
+                entity["tenant"],
+                entity["project"],
+                {"id": entity["id"], "sha256": value["sha256"]},
+                require_current=False,
+            )
         elif entity["kind"] == "snapshot":
             from decision_workbench.training.contracts import validate_splits
 
@@ -306,7 +321,16 @@ def _validate_workspace(folder):
             ):
                 raise ValueError("Semantic review integrity mismatch")
     for incident in incidents:
-        scoped(incident["project"], incident, "project")
+        target = lookup.get(incident["project"])
+        scoped(
+            incident["project"],
+            incident,
+            (
+                "schema-intake"
+                if target and target["kind"] == "schema-intake"
+                else "project"
+            ),
+        )
         if incident["kind"].startswith("job_"):
             store.job(incident["target"], incident["tenant"], incident["project"])
         elif incident["target"] != (
@@ -581,6 +605,7 @@ def verify_backup(folder, manifest_sha256):
         5,
         6,
         7,
+        8,
     ):
         raise ValueError("Unsupported workspace backup format")
     files = manifest.get("files")

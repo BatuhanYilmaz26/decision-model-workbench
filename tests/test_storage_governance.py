@@ -217,7 +217,7 @@ class StorageGovernanceTests(unittest.TestCase):
         )
         with restarted.transaction() as db:
             self.assertEqual(
-                db.execute("SELECT max(version) FROM schema_version").fetchone()[0], 7
+                db.execute("SELECT max(version) FROM schema_version").fetchone()[0], 8
             )
             self.assertEqual(
                 db.execute("SELECT count(*) FROM dataset_members").fetchone()[0], 13

@@ -17,6 +17,8 @@ class TransportFailure(RuntimeError):
 
 
 def endpoint(profile):
+    if profile["provider"] == "schema-teacher":
+        return profile["base_url"].rstrip("/") + "/chat/completions"
     return {
         "typesafe": "https://api.typesafe.ai/v1/systemone",
         "typellm": "https://api.typellm.ai/v1/generate",
@@ -33,7 +35,15 @@ def receive(profile, body, key, transport=None):
     started = time.monotonic()
     with httpx.Client(
         transport=transport,
-        timeout=httpx.Timeout(2.0, connect=3.0, pool=2.0),
+        timeout=httpx.Timeout(
+            (
+                float(profile["timeout_seconds"])
+                if profile["provider"] == "schema-teacher"
+                else 2.0
+            ),
+            connect=3.0,
+            pool=2.0,
+        ),
         follow_redirects=False,
         trust_env=False,
     ) as client:
@@ -42,9 +52,9 @@ def receive(profile, body, key, transport=None):
             endpoint(profile),
             content=body,
             headers={
-                "Authorization": "Bearer " + key,
                 "Content-Type": "application/json",
                 "Accept-Encoding": "identity",
+                **({"Authorization": "Bearer " + key} if key else {}),
             },
         ) as response:
             if (
@@ -66,6 +76,9 @@ def receive(profile, body, key, transport=None):
 
 
 def child_main(transport=None):
+    from decision_workbench.training.process_guard import arm_parent_guard
+
+    arm_parent_guard()
     # Only the selected credential/evidence crosses a private pipe. Nothing is logged.
     try:
         data = sys.stdin.buffer.read(524289)
@@ -83,7 +96,9 @@ def child_main(transport=None):
     sys.stdout.buffer.flush()
 
 
-def run_process(profile, body, key, command=None, observe=None, record_started=None):
+def run_process(
+    profile, body, key, command=None, observe=None, record_started=None, lease=None
+):
     """Deadline covers process startup/communication; creation itself is an OS limit.
 
     command/observe are internal test seams. There is no environment/API URL override.
@@ -99,6 +114,14 @@ def run_process(profile, body, key, command=None, observe=None, record_started=N
             for k, v in os.environ.items()
             if k.upper() in {"SYSTEMROOT", "WINDIR", "TEMP", "TMP", "PATH"}
         }
+        process_options = {
+            "env": private_env,
+            "creationflags": getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        }
+        if lease is not None:
+            from decision_workbench.training.process_guard import leased_process_options
+
+            process_options.update(leased_process_options(lease, private_env))
         process = subprocess.Popen(
             (
                 command
@@ -112,10 +135,9 @@ def run_process(profile, body, key, command=None, observe=None, record_started=N
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
-            env=private_env,
             shell=False,
             close_fds=True,
-            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            **process_options,
         )
         terminated = False
         if record_started:

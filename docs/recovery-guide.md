@@ -34,7 +34,7 @@ The source API can remain running. Avoid external edits/deletion of registered a
 
 The bundle contains every tenant in the workspace and may include sensitive domain records. Store it under the enterprise's approved access controls and encrypted backup storage. This operation is a filesystem-level operator command; the tenant API does not expose a cross-tenant backup download. Reconfigure credentials and provider secrets separately after recovery.
 
-Verification and recovery support schema **3, 4, 5, 6 and 7** backups. Restoration preserves incident/assignment history and frozen policies while clearing copied worker heartbeats; the restarted worker must report fresh presence. Verification opens the captured database read-only and does not run migrations. Restore upgrades supported older schemas into the current workspace schema. Earlier schemas and future formats require a compatible version-specific recovery procedure.
+Verification and recovery support schema **3, 4, 5, 6, 7 and 8** backups. Restoration preserves incident/assignment history, explicit reservation plans and frozen policies while clearing copied worker heartbeats; the restarted worker must report fresh presence. Verification opens the captured database read-only and does not run migrations. Restore upgrades supported older schemas into the current workspace schema. Earlier schemas and future formats require a compatible version-specific recovery procedure.
 
 For an authenticated encrypted local bundle, use the [encrypted recovery workflow](encrypted-recovery-guide.md). Keep the recovery key and retained receipt separate from distributed backups. The plaintext commands in this guide remain available for approved encrypted storage.
 

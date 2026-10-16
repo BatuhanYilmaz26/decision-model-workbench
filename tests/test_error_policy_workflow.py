@@ -1,7 +1,5 @@
 """Frozen owner policy through real CPU jobs, release and recovery."""
 
-import copy
-import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -110,7 +108,7 @@ class ErrorPolicyWorkflowTests(unittest.TestCase):
                 actual["report"]["error_evaluation"],
                 model["payload"]["report"]["error_evaluation"],
             )
-            self.assertEqual(restored["restored_schema"], 7)
+            self.assertEqual(restored["restored_schema"], 8)
 
     def test_good_average_metrics_do_not_bypass_strict_critical_release_limit(self):
         snapshot = self.snapshot()

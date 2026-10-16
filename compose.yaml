@@ -18,6 +18,11 @@ x-cloud-environment: &cloud-env
   DMT_CLOUD_AWS_ACCESS_KEY_ID: ${DMT_CLOUD_AWS_ACCESS_KEY_ID:-}
   DMT_CLOUD_AWS_SECRET_ACCESS_KEY: ${DMT_CLOUD_AWS_SECRET_ACCESS_KEY:-}
   DMT_CLOUD_AWS_SESSION_TOKEN: ${DMT_CLOUD_AWS_SESSION_TOKEN:-}
+x-teacher-environment: &teacher-env
+  DMT_TEACHER_BASE_URL: ${DMT_TEACHER_BASE_URL:-}
+  DMT_TEACHER_MODEL: ${DMT_TEACHER_MODEL:-}
+  DMT_SCHEMA_TIMEOUT_SECONDS: ${DMT_SCHEMA_TIMEOUT_SECONDS:-60}
+  DMT_SCHEMA_CALLS_PER_DAY: ${DMT_SCHEMA_CALLS_PER_DAY:-20}
 x-common: &common
   build: .
   image: domain-decision-platform:local
@@ -32,7 +37,7 @@ services:
   api:
     <<: *common
     environment:
-      <<: [*env, *decision-env, *cloud-env]
+      <<: [*env, *decision-env, *cloud-env, *teacher-env]
       DMT_SEMANTIC_PROFILE_FILE: ${DMT_SEMANTIC_PROFILE_FILE:-}
       DMT_BACKUP_MONITOR_PROFILE: ${DMT_BACKUP_MONITOR_PROFILE:-}
     ports:
@@ -46,9 +51,7 @@ services:
     <<: *common
     command: ["domain-worker"]
     environment:
-      <<: [*env, *decision-env, *cloud-env]
-      DMT_TEACHER_BASE_URL: ${DMT_TEACHER_BASE_URL:-}
-      DMT_TEACHER_MODEL: ${DMT_TEACHER_MODEL:-}
+      <<: [*env, *decision-env, *cloud-env, *teacher-env]
       DMT_TEACHER_API_KEY: ${DMT_TEACHER_API_KEY:-}
       DMT_SEMANTIC_PROFILE_FILE: ${DMT_SEMANTIC_PROFILE_FILE:-}
       DMT_SEMANTIC_PYTHON: ${DMT_SEMANTIC_PYTHON:-}

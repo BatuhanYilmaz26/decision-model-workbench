@@ -1,7 +1,5 @@
 """Canonical training rows and conservative group splitting."""
 
-import csv
-import io
 import json
 import math
 import random
@@ -247,22 +245,12 @@ def state_key(row):
     )
 
 
-def prepare(
-    rows,
-    seed=3407,
-    *,
-    split_strategy="auto",
-    related_pairs=None,
-    training_only_ids=None,
-):
-    """Union groups AND identical states; synthetic families stay in training."""
+def related_groups(rows, *, related_pairs=None):
+    """Keep source families, identical states, semantic relatives and seeds together."""
     if not rows:
         raise ValueError("No records supplied")
     for row in rows:
         validate(row, require_review=True)
-    from .temporal import strategy, chronological_groups, audit_splits
-
-    mode = strategy(rows, split_strategy)
     if len({r["id"] for r in rows}) != len(rows):
         raise ValueError("Duplicate record ids")
     parent = list(range(len(rows)))
@@ -314,8 +302,24 @@ def prepare(
     groups = defaultdict(list)
     for i, row in enumerate(rows):
         groups[root(i)].append(row)
+    return list(groups.values())
+
+
+def prepare(
+    rows,
+    seed=3407,
+    *,
+    split_strategy="auto",
+    related_pairs=None,
+    training_only_ids=None,
+):
+    """Union groups AND identical states; synthetic families stay in training."""
+    groups = related_groups(rows, related_pairs=related_pairs)
+    from .temporal import strategy, chronological_groups, audit_splits
+
+    mode = strategy(rows, split_strategy)
     real, training_only = [], []
-    for group in groups.values():
+    for group in groups:
         (
             training_only
             if any(

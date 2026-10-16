@@ -6,8 +6,6 @@ import json
 import math
 import re
 import uuid
-import zipfile
-import io
 from pathlib import Path
 from decision_workbench.data import read_records, validate, validate_questions, dumps
 from .store import Conflict, digest
@@ -309,7 +307,7 @@ class Service:
             reviewer_role=principal["role"],
         )
 
-    def submit(self, principal, project, kind, config, key):
+    def submit(self, principal, project, kind, config, key, authorize=None):
         self.require(principal, ("admin", "editor"))
         self.project(principal, project)
         config = copy.deepcopy(config)
@@ -321,6 +319,9 @@ class Service:
                 "base_snapshot",
                 "split_strategy",
                 "semantic_audit",
+                "reservation_policy",
+                "reservation_approved",
+                "expected_reservation_sha256",
             },
             "semantic-audit": {"datasets", "base_snapshot", "threshold"},
             "generate": {"snapshot", "count", "seed_count", "coverage"},
@@ -609,8 +610,30 @@ class Service:
                         raise ValueError(flag + " must be a boolean")
         else:
             raise ValueError("Unknown job kind")
+        validate_db = None
+        reservation_fields = {
+            "reservation_policy",
+            "reservation_approved",
+            "expected_reservation_sha256",
+        }
+        if kind == "prepare" and set(config) & reservation_fields:
+            if not reservation_fields <= set(config):
+                raise ValueError(
+                    "Provide a reservation policy, preview identity and explicit approval together"
+                )
+            from .reservations import freeze
+
+            config, validate_db = freeze(
+                self, principal, project, config, key, authorize
+            )
         return self.store.submit(
-            principal["tenant"], project, principal["actor"], kind, config, key
+            principal["tenant"],
+            project,
+            principal["actor"],
+            kind,
+            config,
+            key,
+            validate_db=validate_db,
         )
 
     def activate(

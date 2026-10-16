@@ -359,7 +359,7 @@ class CollectionTests(unittest.TestCase):
         )
         with upgraded.transaction() as db:
             self.assertEqual(
-                db.execute("SELECT max(version) FROM schema_version").fetchone()[0], 7
+                db.execute("SELECT max(version) FROM schema_version").fetchone()[0], 8
             )
 
     def test_membership_manifest_and_sequence_tampering_are_refused(self):

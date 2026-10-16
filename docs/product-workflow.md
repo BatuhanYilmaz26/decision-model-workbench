@@ -8,6 +8,8 @@ Start the application using [local setup](setup.md), then work through the follo
 
 Create a project with your domain, policy and data needs in natural language. Define the evidence available at decision time, allowed outcomes, missing-evidence behavior and escalation policy. Confirm stable question IDs and outcome descriptions before collecting labels. The [data guide](data-guide.md) provides the format and a fictional support example.
 
+Build the questions manually, or use the optional [schema assistant](schema-assistant-guide.md) to request a teacher-generated draft. Review and edit its proposed questions and assumptions, then explicitly confirm the policy before creating the project. No examples are labelled or approved by this drafting step.
+
 ## 2. Collect and review examples
 
 Enter examples or upload CSV, XLSX, TSV, JSON or JSONL. Preview a worksheet and map columns and outcome values. Imports create unapproved drafts; approve, correct or reject each example using an authorized reviewer. Appends and reviews create immutable revisions. If another reviewer changes the collection first, refresh after the stale-edit conflict before resubmitting.
@@ -15,6 +17,8 @@ Enter examples or upload CSV, XLSX, TSV, JSON or JSONL. Preview a worksheet and 
 ## 3. Reserve independent evaluation data
 
 Prepare approved real examples into training, validation, calibration and locked test roles. Keep source families and known relatives together; use [temporal](temporal-data-guide.md) and [semantic](semantic-data-guide.md) review where needed. Inspect readiness, class counts and rejected-example exclusions. Set owner quality and minimum-count criteria before training: the first submission freezes them.
+
+Use automatic reservations or [assign source groups and date cutoffs explicitly](reservation-guide.md). Preview counts and confirm the role assignment before queuing preparation. Existing project families retain their original roles in later preparations.
 
 ## 4. Add reviewed training coverage
 

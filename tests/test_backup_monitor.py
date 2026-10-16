@@ -328,7 +328,7 @@ class BackupMonitorTests(unittest.TestCase):
             with self.subTest(output=output.name), self.assertRaises(ValueError):
                 monitor.Publisher(self.config, self.key, self.signing, output)
 
-    def test_backup_incidents_survive_backup_restore_and_schema7_guard(self):
+    def test_backup_incidents_survive_backup_restore_and_schema8_guard(self):
         self.setup_monitor()
         self.publisher.publish()
         self.store.collect_backup_operations(self.reader.read())
@@ -341,7 +341,7 @@ class BackupMonitorTests(unittest.TestCase):
             self.key,
             captured["encrypted_manifest_sha256"],
         )
-        self.assertEqual(restored["restored_schema"], 7)
+        self.assertEqual(restored["restored_schema"], 8)
         from decision_workbench.platform.store import Store
 
         incidents = Store(restored["destination"]).operations("A", self.project)[

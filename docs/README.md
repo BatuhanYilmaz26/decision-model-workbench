@@ -21,8 +21,10 @@ Choose a workflow below. Start with local setup for the browser application, API
 | Guide | Use it to |
 |---|---|
 | [Data preparation and synthetic generation](data-guide.md) | Define questions, import files, review labels and add training-only synthetic candidates |
+| [Teacher-assisted schema drafting](schema-assistant-guide.md) | Request, review and edit proposed decision questions before creating a project |
 | [Reviewer assignments](review-workflow.md) | Assign annotation work and review immutable dataset revisions |
 | [Temporal boundaries](temporal-data-guide.md) | Keep future information and related source families out of held-out evaluation |
+| [Explicit evaluation reservations](reservation-guide.md) | Assign source groups or date cutoffs, preview counts and confirm an immutable study |
 | [Semantic review](semantic-data-guide.md) | Inspect possible related examples before reserving a study |
 | [Category discovery](taxonomy-guide.md) | Review proposed categories and confirm a successor schema |
 | [Applicability data](applicability-guide.md) | Prepare positive and negative examples for deciding when a model applies |

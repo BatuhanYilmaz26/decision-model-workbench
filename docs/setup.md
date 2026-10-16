@@ -77,7 +77,7 @@ The release endpoint supports CPU baseline, native Laya, the pinned Unsloth prof
 
 An owner can create a new project with **Policy successor of** pointing to an existing project. Supply and confirm the successor schema/policy. Its policy version increments, and its data, jobs and releases have a separate scope; the earlier project/model remains available. Data is not silently copied. If previous test outcomes informed the new policy or gates, reserve fresh independent gold for the new study.
 
-The local store upgrades supported older schemas to schema 7 in a transaction on startup. Existing dataset hashes and pinned snapshots are preserved; old full-row JSON is converted to normalized roots. New reviews store a single changed record; appends add compact membership manifests. Historical membership and hashes remain pinned. Back up before an upgrade using the [operator recovery commands](recovery-guide.md); that guide lists the supported backup schema versions and recovery constraints. A legacy training run without frozen criteria cannot be newly activated; retrain under approved criteria in a successor project. An already active version is preserved by migration.
+The local store upgrades supported older schemas to schema 8 in a transaction on startup. Existing dataset hashes and pinned snapshots are preserved; old full-row JSON is converted to normalized roots. New reviews store a single changed record; appends add compact membership manifests. Historical membership and hashes remain pinned. Back up and stop all services before an upgrade using the [operator recovery commands](recovery-guide.md); that guide lists the supported backup schema versions and recovery constraints. Older applications refuse schema 8 rather than ignore its explicit reservation contracts; mixed-version operation is unsupported. A legacy training run without frozen criteria cannot be newly activated; retrain under approved criteria in a successor project. An already active version is preserved by migration.
 
 Dataset lists return compact metadata. `GET /v1/projects/{project}/datasets/{dataset}/rows?limit=50&offset=0` returns a bounded page; the maximum is 200. Historical versions are readable, and only the latest collection revision accepts another review or append. Downloads reconstruct and integrity-check the immutable version.
 
@@ -86,6 +86,8 @@ Dataset lists return compact metadata. `GET /v1/projects/{project}/datasets/{dat
 The worker reads `DMT_TEACHER_BASE_URL`, `DMT_TEACHER_MODEL` and optional `DMT_TEACHER_API_KEY` from its process environment. It does not load `.env` automatically. Configure these before starting services. Only the operator chooses endpoints; user job payloads cannot store credentials or arbitrary teacher URLs.
 
 Use an approved generative endpoint supporting `POST /chat/completions` and JSON object output mode. Localhost HTTP or remote HTTPS are supported. Compatibility of a specific provider and candidate quality require live acceptance. No generation occurs simply by opening the application.
+
+The optional [schema assistant](schema-assistant-guide.md) uses the same teacher to draft questions before project creation. Configure the API and worker consistently, then approve the domain-brief request in the browser. Its timeout and daily request limit are configurable separately; every proposed question still requires owner review.
 
 ## Configure model training and serving
 

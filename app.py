@@ -9,8 +9,9 @@ from pathlib import Path
 import uuid
 import httpx
 import streamlit as st
-from decision_workbench.data import validate_questions, options, hard_gold
+from decision_workbench.data import validate_questions
 from decision_workbench.ui.intake import render_examples, render_upload
+from decision_workbench.ui.onboarding import render_connection, render_runtime
 
 st.set_page_config(page_title="Decision Model Workbench", layout="wide")
 st.title("Decision Model Workbench")
@@ -64,8 +65,6 @@ def submit(project, kind, config):
     )
 
 
-from decision_workbench.ui.onboarding import render_connection, render_runtime
-
 render_connection(Path(__file__).resolve().parent)
 
 principal = st.session_state["principal"]
@@ -86,7 +85,7 @@ try:
         st.session_state["project_history_page"] = 0
         st.session_state["active_project"] = next_project
     project_page = st.sidebar.number_input(
-        "Project history page", min_value=0, value=0, step=1, key="project_history_page"
+        "Project history page", min_value=0, step=1, key="project_history_page"
     )
     projects = api("GET", f"/v1/projects?limit=100&offset={int(project_page) * 100}")
     labels = {p["id"]: p["payload"]["name"] for p in projects}
@@ -115,6 +114,9 @@ try:
             "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/product-workflow.md",
         )
     with st.expander("Create a domain project", expanded=not projects):
+        from decision_workbench.ui.schema_intake import render_schema_assistant
+
+        render_schema_assistant(api, principal)
         st.write(
             "Describe the policy and data you need. Build and confirm the questions your model should decide."
         )
@@ -423,6 +425,17 @@ try:
         semantic_audit, semantic_ready = render_semantic(
             api, submit, project, principal, chosen, base_snapshot
         )
+        from decision_workbench.ui.reservations import render_reservations
+
+        explicit_requested, explicit_config = render_reservations(
+            api,
+            project,
+            principal,
+            chosen,
+            semantic_audit,
+            semantic_ready,
+            base_snapshot,
+        )
         st.caption(
             "Auto uses chronological roles when real records declare decision/evidence/label timestamps; otherwise it preserves grouped random reservations. Chronological roles keep prior decisions and available labels strictly before the next role. Synthetic extensions preserve the original reservation."
         )
@@ -430,6 +443,7 @@ try:
             "Reserve train / validation / calibration / test",
             disabled=not chosen
             or not semantic_ready
+            or (explicit_requested and explicit_config is None)
             or principal["role"] not in ("admin", "editor"),
         ):
             st.json(
@@ -438,7 +452,12 @@ try:
                     "prepare",
                     {
                         "datasets": chosen,
-                        "split_strategy": "auto" if base_snapshot else split_strategy,
+                        "split_strategy": (
+                            "auto"
+                            if base_snapshot or explicit_requested
+                            else split_strategy
+                        ),
+                        **(explicit_config or {}),
                         **(
                             {"semantic_audit": semantic_audit} if semantic_audit else {}
                         ),
@@ -642,9 +661,11 @@ try:
             )
             training_location = st.radio(
                 "Training location",
-                ["This computer", "Cloud GPU"]
-                if principal["role"] == "admin"
-                else ["This computer"],
+                (
+                    ["This computer", "Cloud GPU"]
+                    if principal["role"] == "admin"
+                    else ["This computer"]
+                ),
                 horizontal=True,
                 key="training-location-" + project,
             )

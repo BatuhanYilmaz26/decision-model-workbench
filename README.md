@@ -1,8 +1,10 @@
-# Decision Model Platform
+# Decision Model Workbench
 
-A local-first application and practical guide for using decision models in your own domain. Add a hosted model to an existing application, or build your own model from a natural-language description, uploaded examples and reviewed synthetic training data.
+A local-first application and practical guide for using and training decision models across domains. The project is designed to be **model-agnostic and provider-agnostic**: start with your use case, data and decision rules, then choose a compatible model and where to run it.
 
-Use it for bounded decisions such as routing support tickets, assigning invoice categories or choosing a review queue. Define the allowed outcomes, evaluate the probabilities and connect the result to your application's rules and fallback.
+A decision model maps supplied evidence to defined outcomes: a category, a yes/no judgment or a rating on a specified scale. Evaluate its outputs and any reported probabilities, then connect the result to your application's rules and fallback. Use the workbench to integrate a hosted API or train a domain model from a natural-language description, uploaded examples and reviewed synthetic training data.
+
+Current integrations cover specific [model backends](docs/model-landscape.md), [hosted APIs](docs/api-integration-guide.md) and [remote training providers](docs/remote-training-guide.md). Model and provider contracts differ; using an additional backend requires a compatible integration and evaluation. The agnostic design does not mean every model or provider works automatically.
 
 ## Run on your computer
 
@@ -66,18 +68,34 @@ Browse the [complete guide directory](docs/README.md), or choose a workflow belo
 | Train when local VRAM is insufficient | A custom training container on one of five GPU providers | [Remote training](docs/remote-training-guide.md), [provider walkthroughs](#train-on-a-remote-gpu) |
 | Choose a model and compare results | Model contracts, dated benchmarks and primary sources | [Concepts](docs/concepts.md), [model landscape](docs/model-landscape.md), [benchmarks](docs/benchmarks.md) |
 
+## Where decision models can help
+
+Look for repeated judgments with defined outcomes and enough evidence to evaluate the result. These examples illustrate possible applications across domains; your own decision policy determines the labels, data and acceptance criteria.
+
+| Area | Example decisions |
+|---|---|
+| Customer operations | Identify an intent, select a team or propose an escalation |
+| Documents and business operations | Classify incoming documents, assign invoice categories or choose a processing queue |
+| Content and communities | Judge content against a defined rubric or flag ambiguous cases for review |
+| Search and retrieval | Rate passage relevance or judge whether retrieved evidence supports a query |
+| AI applications and agents | Select a workflow branch, review a proposed tool action or choose when to escalate to another model |
+| Product feedback | Categorize feedback, identify recurring issues or rate urgency using a defined scale |
+| Quality and maintenance | Classify inspection notes or prioritize maintenance reports for human review |
+
+These are application ideas, not prebuilt domain solutions or domain-accuracy guarantees. Start with the [concepts guide](docs/concepts.md), adapt the [application blueprints](docs/application-blueprints.md), then use the [data guide](docs/data-guide.md) and [evaluation guide](docs/evaluation-guide.md) for your domain. Application code remains responsible for authorization, calculations and actions; uncertain decisions need an explicit fallback.
+
 ## Train your own domain model
 
 Start with [local setup](docs/setup.md#install-and-start). Install the application and run `domain-platform run` to open a personal localhost workspace without an account or pasted credential. You can also run `streamlit run app.py --server.address 127.0.0.1` and select **Start local workspace**. CPU baseline training needs no GPU; Laya, Unsloth and Vega need their compatible model environments. Use a [shared workspace](docs/setup.md#personal-and-shared-workspaces) for team roles and stable application API credentials.
 
-1. **Describe your use case.** Create a project with your domain, decision policy and data requirements in natural language. Define category, yes/no or rating questions and confirm the allowed outcomes. Follow the [project workflow](docs/product-workflow.md#1-describe-the-decision).
+1. **Describe your use case.** Create a project with your domain, decision policy and data requirements in natural language. Define category, yes/no or rating questions manually, or review and edit a teacher draft using the optional [schema assistant](docs/schema-assistant-guide.md). Confirm the policy and allowed outcomes before collecting examples. Follow the [project workflow](docs/product-workflow.md#1-describe-the-decision).
 2. **Supply examples.** Enter a few examples or upload CSV, XLSX, TSV, JSON or JSONL. Preview the data, map its columns to the decision format and review the labels. The [data guide](docs/data-guide.md) explains the format and review controls.
-3. **Reserve evaluation data.** Prepare independent training, validation, calibration and test sets from reviewed operational records. Inspect coverage and set your quality requirements before training. Follow [data readiness](docs/data-guide.md#inspect-readiness-before-training).
+3. **Reserve evaluation data.** Prepare independent training, validation, calibration and test sets from reviewed operational records. Use automatic grouping or [choose source groups and date cutoffs](docs/reservation-guide.md) explicitly. Inspect coverage and set your quality requirements before training. Follow [data readiness](docs/data-guide.md#inspect-readiness-before-training).
 4. **Fill training gaps.** Optionally generate and review synthetic candidates for missing cases. Extend only the training portion of the reserved study, preserving the evaluation sets. Follow [synthetic generation](#generate-synthetic-training-data).
 5. **Train and evaluate.** Start with the CPU baseline, then use [Laya or Unsloth](docs/training-guide.md), or the separate [Vega workflow](docs/vega-guide.md). Inspect calibration, class-level results and export/reload checks using the [evaluation guide](docs/evaluation-guide.md).
 6. **Release and use the model.** Activate an eligible version, call its authenticated decision endpoint and route abstained or failed decisions to your fallback. Follow [release and integration](docs/product-workflow.md#6-release-and-integrate) and [deployment](docs/deployment-guide.md).
 
-For a concrete support-routing walkthrough, use the [domain adoption guide](docs/domain-adoption-guide.md). Its [domain specification](examples/support/spec.json), [CSV examples](examples/support/seeds.csv), [canonical JSONL examples](examples/support/seeds.jsonl) and [decision request](examples/support/request.json) show the expected inputs. These fictional examples illustrate the format; use independently reviewed operational records to evaluate your own domain.
+The [domain adoption guide](docs/domain-adoption-guide.md) uses support routing as one worked example of the general workflow. Its [domain specification](examples/support/spec.json), [CSV examples](examples/support/seeds.csv), [canonical JSONL examples](examples/support/seeds.jsonl) and [decision request](examples/support/request.json) show the expected inputs. Replace the fictional domain, outcomes and records with your own; use independently reviewed operational records to evaluate your model.
 
 ## Generate synthetic training data
 

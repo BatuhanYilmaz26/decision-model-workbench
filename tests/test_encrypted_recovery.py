@@ -80,7 +80,7 @@ class EncryptedRecoveryTests(unittest.TestCase):
         result = encrypted.restore_encrypted(
             bundle, destination, self.key, captured["encrypted_manifest_sha256"]
         )
-        self.assertEqual(result["restored_schema"], 7)
+        self.assertEqual(result["restored_schema"], 8)
         restored = Store(destination)
         self.assertEqual(restored.active("A", self.project)["model_id"], model)
         self.assertEqual(
@@ -375,7 +375,7 @@ class EncryptedRecoveryTests(unittest.TestCase):
             "restore-encrypted", *common, "--home", str(self.folder / "cli-restored")
         )
         self.assertEqual(restored.returncode, 0, restored.stderr)
-        self.assertEqual(json.loads(restored.stdout)["restored_schema"], 7)
+        self.assertEqual(json.loads(restored.stdout)["restored_schema"], 8)
         bad = run(
             "restore-encrypted",
             *common[:-1],

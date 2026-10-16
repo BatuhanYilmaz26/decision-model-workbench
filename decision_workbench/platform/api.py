@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import uuid
-from pathlib import Path
 from contextlib import asynccontextmanager
 from typing import Any, Literal
 from fastapi import (
@@ -45,6 +44,30 @@ class ProjectBody(Body):
     questions: dict[str, Any]
     parent_project: str | None = None
     data_requirements: str = Field(default="", max_length=4000)
+
+
+class SchemaIntakeBody(Body):
+    name: str = Field(min_length=1, max_length=120)
+    description: str = Field(min_length=1, max_length=12000)
+    data_requirements: str = Field(default="", max_length=4000)
+    request_key: str = Field(min_length=8, max_length=128)
+    data_approved: bool
+    cost_approved: bool
+
+
+class ReservationPreviewBody(Body):
+    datasets: list[str] = Field(min_length=1, max_length=20)
+    semantic_audit: str | None = None
+    policy: dict[str, Any] | None = None
+
+
+class SchemaConfirmBody(Body):
+    name: str = Field(min_length=1, max_length=120)
+    description: str = Field(min_length=1, max_length=12000)
+    data_requirements: str = Field(default="", max_length=4000)
+    questions: dict[str, Any]
+    expected_proposal_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    confirmed: bool
 
 
 class ReviewBody(Body):
@@ -418,7 +441,9 @@ def create_app(home=None, keys=None, hosted=None):
     @app.get("/v1/runtime-capabilities")
     def runtime_capabilities(p=Depends(identity)):
         if p["role"] != "admin":
-            raise PermissionError("Only workspace owners can inspect runtime configuration")
+            raise PermissionError(
+                "Only workspace owners can inspect runtime configuration"
+            )
         from .capabilities import runtime_capabilities as inspect
 
         return inspect()
@@ -430,6 +455,76 @@ def create_app(home=None, keys=None, hosted=None):
         p=Depends(identity),
     ):
         return store.list(p["tenant"], kind="project", limit=limit, offset=offset)
+
+    @app.get("/v1/schema-teacher")
+    def schema_teacher(p=Depends(identity)):
+        service.require(p, ("admin",))
+        from .schema_intake import teacher_profile
+
+        try:
+            return {"available": True, "teacher": teacher_profile()}
+        except ValueError as exc:
+            return {"available": False, "reason": str(exc)}
+
+    @app.post("/v1/schema-intakes", status_code=202)
+    def new_schema_intake(
+        body: SchemaIntakeBody,
+        authorization: str | None = Header(default=None),
+        p=Depends(identity),
+    ):
+        from .schema_intake import submit
+
+        values = body.model_dump()
+        return submit(
+            service,
+            p,
+            {k: values.pop(k) for k in ("name", "description", "data_requirements")},
+            **values,
+            authorize=lambda: authorize_again(authorization, p),
+        )
+
+    @app.get("/v1/schema-intakes")
+    def schema_intakes(
+        limit: int = Query(default=20, ge=1, le=100),
+        offset: int = Query(default=0, ge=0, le=MAX_OFFSET),
+        p=Depends(identity),
+    ):
+        service.require(p, ("admin",))
+        return store.list(p["tenant"], kind="schema-intake", limit=limit, offset=offset)
+
+    @app.get("/v1/schema-intakes/{intake}")
+    def schema_intake(intake: str, p=Depends(identity)):
+        from .schema_intake import view
+
+        return view(service, p, intake)
+
+    @app.post("/v1/schema-intakes/{intake}/cancel")
+    def cancel_schema_intake(intake: str, p=Depends(identity)):
+        from .schema_intake import view
+
+        value = view(service, p, intake)
+        store.cancel(value["job"]["id"], p["tenant"], intake, p["actor"])
+        return view(service, p, intake)
+
+    @app.post("/v1/schema-intakes/{intake}/confirm", status_code=201)
+    def confirm_schema_intake(
+        intake: str,
+        body: SchemaConfirmBody,
+        authorization: str | None = Header(default=None),
+        p=Depends(identity),
+    ):
+        from .schema_intake import confirm
+
+        values = body.model_dump()
+        return confirm(
+            service,
+            p,
+            intake,
+            {k: values.pop(k) for k in ("name", "description", "data_requirements")},
+            proposed_questions=values.pop("questions"),
+            **values,
+            authorize=lambda: authorize_again(authorization, p),
+        )
 
     @app.post("/v1/projects", status_code=201)
     def new_project(body: ProjectBody, p=Depends(identity)):
@@ -459,6 +554,7 @@ def create_app(home=None, keys=None, hosted=None):
             "gate-dataset",
             "gate-snapshot",
             "snapshot",
+            "reservation-plan",
             "model",
             "remote-study",
             "semantic-audit",
@@ -919,10 +1015,27 @@ def create_app(home=None, keys=None, hosted=None):
             p, project, run_id, body.action, body.revision, body.request_key
         )
 
+    @app.post("/v1/projects/{project}/reservation-preview")
+    def reservation_preview(
+        project: str, body: ReservationPreviewBody, p=Depends(identity)
+    ):
+        from .reservations import preview
+
+        return preview(service, p, project, **body.model_dump())
+
     @app.post("/v1/projects/{project}/jobs", status_code=202)
-    def submit(project: str, body: JobBody, p=Depends(identity)):
+    def submit(
+        project: str,
+        body: JobBody,
+        authorization: str | None = Header(default=None),
+        p=Depends(identity),
+    ):
         return service.submit(
-            p, project, **body.model_dump(exclude={"request_key"}), key=body.request_key
+            p,
+            project,
+            **body.model_dump(exclude={"request_key"}),
+            key=body.request_key,
+            authorize=lambda: authorize_again(authorization, p),
         )
 
     @app.get("/v1/projects/{project}/jobs")

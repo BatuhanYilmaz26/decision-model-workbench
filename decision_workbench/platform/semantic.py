@@ -1,6 +1,5 @@
 """Scoped offline semantic jobs, immutable pair reviews and reservation binding."""
 
-import copy
 import json
 import math
 import os
@@ -537,6 +536,9 @@ def committed_audit(store, tenant, project, identifier, audit):
 
 
 def verify_snapshot(store, tenant, project, snapshot, require_current_profile=True):
+    from .reservations import verify_snapshot as verify_reservation
+
+    verify_reservation(store, tenant, project, snapshot, require_current_profile)
     binding = snapshot.get("semantic_contract")
     profile = profile_for(tenant, project) if require_current_profile else None
     if not binding:

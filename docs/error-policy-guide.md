@@ -99,7 +99,7 @@ Reports need complete hard-confusion, normalized gold-mass confusion, label, cla
 
 ## Upgrade safely
 
-Back up and stop API, browser and worker services before upgrading. Workspace schema **7** protects frozen error gates and backup-alert semantics from older application versions. Do not run mixed versions against one workspace. Recovery accepts schema-3/4/5/6/7 backups and preserves frozen policy/report bindings. [Backup and recovery](recovery-guide.md)
+Back up and stop API, browser and worker services before upgrading. Workspace schema **8** protects frozen error gates, backup-alert semantics and explicit reservation plans from older application versions. Do not run mixed versions against one workspace. Recovery accepts schema-3/4/5/6/7/8 backups and preserves frozen policy/report bindings. [Backup and recovery](recovery-guide.md)
 
 An error policy adds evaluation and release gates. It does not change the training objective, calibrate a business decision threshold, optimize actions for minimum expected cost, or establish enterprise data quality. Owners must justify costs, representative independent gold, subgroup adequacy and the deployed action/review policy.
 

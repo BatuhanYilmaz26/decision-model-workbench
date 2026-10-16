@@ -398,7 +398,7 @@ class OperationsTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     create_app(self.home, self.keys)
 
-    def test_schema3_and_schema7_recovery_preserve_history_without_worker_ghosts(self):
+    def test_schema3_and_schema8_recovery_preserve_history_without_worker_ghosts(self):
         self.failure_job()
         incident = self.health()["incidents"][0]
         self.store.incident_action(
@@ -417,7 +417,7 @@ class OperationsTests(unittest.TestCase):
             ]
         backup = backup_workspace(self.home, self.folder / "backup4")
         manifest = verify_backup(backup["destination"], backup["manifest_sha256"])
-        self.assertEqual(manifest["schema_version"], 7)
+        self.assertEqual(manifest["schema_version"], 8)
         receipt = restore_workspace(
             backup["destination"], self.folder / "restored4", backup["manifest_sha256"]
         )
@@ -463,11 +463,11 @@ class OperationsTests(unittest.TestCase):
             prior["destination"], self.folder / "restored3", prior["manifest_sha256"]
         )
         self.assertEqual(restored["source_schema"], 3)
-        self.assertEqual(restored["restored_schema"], 7)
+        self.assertEqual(restored["restored_schema"], 8)
         upgraded = Store(restored["destination"])
         with upgraded.transaction() as db:
             self.assertEqual(
-                db.execute("SELECT max(version) FROM schema_version").fetchone()[0], 7
+                db.execute("SELECT max(version) FROM schema_version").fetchone()[0], 8
             )
             self.assertEqual(
                 [

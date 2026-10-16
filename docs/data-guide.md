@@ -80,7 +80,7 @@ The five-example warning in the dataset report is collection guidance, separate 
 
 For an actual study, first reserve time- or entity-separated validation, calibration and locked test sets. Generate only from approved training seeds and training policy examples. Do not send test examples to the teacher.
 
-The companion produces deterministic approximate 70/10/10/10 group splits over real-only families. Synthetic families and any included real seed ancestors go into training. Groups and normalized exact-state duplicates are joined transitively. All included labels must be approved. Explicitly rejected records are excluded; pending records still block preparation.
+Automatic preparation produces deterministic approximate 70/10/10/10 group splits over real-only families. Owners can also [assign groups or date cutoffs explicitly](reservation-guide.md), preview counts and confirm a source-bound plan. Synthetic families and any included real seed ancestors go into training. Groups and normalized exact-state duplicates are joined transitively. All included labels must be approved. Explicitly rejected records are excluded; pending records still block preparation. Later preparations cannot move known project families into different roles.
 
 Undated records retain these grouped random reservations. Dated operational studies support chronological roles and declared evidence/label availability checks through intake, preparation, training and restore. See the [temporal data guide](temporal-data-guide.md) for timestamp fields, CSV/XLSX mapping, role ordering and conservative interval joins. Semantic near-duplicates, undocumented lineage and domain adequacy remain separate checks. Inspect manifests and class counts.
 

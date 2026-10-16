@@ -36,7 +36,7 @@ class Store(DatasetStorage, OperationsStorage):
             current = db.execute("SELECT max(version) FROM schema_version").fetchone()[
                 0
             ]
-            if current not in (None, 1, 2, 3, 4, 5, 6, 7):
+            if current not in (None, 1, 2, 3, 4, 5, 6, 7, 8):
                 raise RuntimeError(
                     "Unsupported workspace schema version; restore a compatible application"
                 )
@@ -87,6 +87,7 @@ class Store(DatasetStorage, OperationsStorage):
             db.execute("INSERT OR IGNORE INTO schema_version VALUES (5)")
             db.execute("INSERT OR IGNORE INTO schema_version VALUES (6)")
             db.execute("INSERT OR IGNORE INTO schema_version VALUES (7)")
+            db.execute("INSERT OR IGNORE INTO schema_version VALUES (8)")
             db.execute(
                 "CREATE INDEX IF NOT EXISTS successor_request_lookup ON entities(tenant,json_extract(payload,'$.parent_project'),json_extract(payload,'$.successor.request_key_sha256')) WHERE kind='project'"
             )
@@ -263,7 +264,9 @@ class Store(DatasetStorage, OperationsStorage):
             "result": json.loads(row["result"]) if row["result"] else None,
         }
 
-    def submit(self, tenant, project, actor, kind, config, request_key):
+    def submit(
+        self, tenant, project, actor, kind, config, request_key, validate_db=None
+    ):
         if not isinstance(request_key, str) or not 8 <= len(request_key) <= 128:
             raise ValueError("Use an 8–128 character idempotency key")
         request_hash = digest({"kind": kind, "config": config})
@@ -285,6 +288,8 @@ class Store(DatasetStorage, OperationsStorage):
             ).fetchone()[0]
             if pending >= 4:
                 raise Conflict("Workspace already has four pending jobs")
+            if validate_db:
+                validate_db(db)
             if kind in ("train", "remote-study", "hosted-evaluate"):
                 policy_head = db.execute(
                     "SELECT policy_id FROM release_policy_heads WHERE tenant=? AND project=?",

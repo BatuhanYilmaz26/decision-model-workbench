@@ -48,12 +48,18 @@ LIMITS = {
 }
 
 
-def reserved(service, project, count=600):
+def reserved(service, project, count=600, *, cohort=""):
     """Reviewed positive internal fixture; negative history uses actual review CAS."""
     store = service.store
-    positive = service.save_dataset(
-        OWNER, project, fixture_rows(count), {"fictional_fixture": True}
-    )
+    rows = fixture_rows(count)
+    if cohort:
+        # Separate mechanism fixtures must not reshuffle existing heldout families.
+        # This disjoint fixture identity does not establish semantic independence.
+        for row in rows:
+            row["id"] = cohort + ":" + row["id"]
+            row["group_id"] = cohort + ":" + row["group_id"]
+            row["state"] += " Fictional cohort " + cohort
+    positive = service.save_dataset(OWNER, project, rows, {"fictional_fixture": True})
     job = service.submit(
         OWNER,
         project,
@@ -378,7 +384,7 @@ class VegaPlatformTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn("negative test rows", response.text)
         self.policy()
-        snapshot, gate = reserved(self.service, self.project, 180)
+        snapshot, gate = reserved(self.service, self.project, 180, cohort="small")
         response = self.submit(
             {"backend": "vega", "snapshot": snapshot, "gate_snapshot": gate},
             "small-calibration",
@@ -401,7 +407,7 @@ class VegaPlatformTests(unittest.TestCase):
             self.store.finish(job, error="Deliberately failed source-binding fixture")
         finally:
             worker.service.runtime.close()
-        other, _ = reserved(self.service, self.project, 180)
+        other, _ = reserved(self.service, self.project, 180, cohort="other")
         response = self.submit(
             {"backend": "vega", "snapshot": other, "gate_snapshot": self.gate},
             "crossed-reservation",
@@ -721,10 +727,21 @@ class VegaPlatformTests(unittest.TestCase):
             # that the test environment installed or executed Vega.
             availability = browser.session_state["runtime-capabilities"]
             if not availability["runtimes"]["training"]["packages"].get("vegaml"):
-                self.assertTrue(next(b for b in browser.button if b.label == "Queue training").disabled)
+                self.assertTrue(
+                    next(
+                        b for b in browser.button if b.label == "Queue training"
+                    ).disabled
+                )
             availability = copy.deepcopy(availability)
             for runtime in availability["runtimes"].values():
-                runtime.update(system="Fixture", python="fixture", error=None, cuda=True, mps=False, gpus=[])
+                runtime.update(
+                    system="Fixture",
+                    python="fixture",
+                    error=None,
+                    cuda=True,
+                    mps=False,
+                    gpus=[],
+                )
                 runtime["packages"].update(torch="fixture", vegaml="fixture")
             browser.session_state["runtime-capabilities"] = availability
             browser.run(timeout=30)

@@ -11,7 +11,6 @@ import threading
 import time
 import traceback
 import uuid
-from pathlib import Path
 from contextlib import contextmanager
 from decision_workbench.data import prepare, write_splits, jsonl, validate, state_key
 from decision_workbench.synthetic import generate
@@ -106,6 +105,10 @@ class Worker:
         tenant, project, actor = job["tenant"], job["project"], job["actor"]
         principal = {"tenant": tenant, "actor": actor, "role": "admin"}
         config = job["config"]
+        if job["kind"] == "schema-suggest":
+            from .schema_intake import run
+
+            return run(self, job, cancelled)
         spec = self.store.get(project, tenant, project, "project")["payload"]
         if job["kind"] == "gate-prepare":
             return self.service.gates.prepare(job, cancelled)
@@ -188,6 +191,9 @@ class Worker:
                 base = self.store.get(
                     config["base_snapshot"], tenant, project, "snapshot"
                 )["payload"]
+                from .semantic import verify_snapshot
+
+                verify_snapshot(self.store, tenant, project, base)
                 splits = copy.deepcopy(base["splits"])
                 all_ids = {r["id"] for rs in splits.values() for r in rs}
                 train_ids = {r["id"] for r in splits["train"]}
@@ -215,6 +221,20 @@ class Worker:
                             "Candidate seed lineage is outside the reserved training set"
                         )
                 splits["train"].extend(rows)
+            elif config.get("reservation_plan"):
+                from .reservations import load_plan
+
+                plan, splits = load_plan(
+                    self.store, tenant, project, config["reservation_plan"]
+                )
+                expected = plan["definition"]["configuration"]
+                if any(
+                    config.get(k) != expected[k]
+                    for k in ("datasets", "hashes", "semantic_contract")
+                ):
+                    raise ValueError(
+                        "Preparation differs from the approved reservation plan"
+                    )
             else:
                 from .taxonomy import training_only_ids
 
@@ -234,6 +254,13 @@ class Worker:
             from .taxonomy import lineage, refuse_exposed_holdouts
 
             taxonomy_projects = lineage(self.store, tenant, project)
+
+            def validate_reservation(db):
+                from .reservations import preserve_roles
+
+                refuse_exposed_holdouts(db, tenant, taxonomy_projects, splits)
+                preserve_roles(db, tenant, project, splits)
+
             snapshot = self.store.add(
                 "snapshot",
                 tenant,
@@ -243,6 +270,8 @@ class Worker:
                     "splits": splits,
                     "temporal_audit": temporal_report,
                     "semantic_contract": config.get("semantic_contract"),
+                    "reservation_plan": config.get("reservation_plan"),
+                    "reservation_protocol": "fixed-project-roles-v1",
                     "datasets": config["datasets"],
                     "excluded_records": exclusions,
                     "dataset_hashes": config["hashes"],
@@ -252,9 +281,7 @@ class Worker:
                     "schema_sha256": spec["schema_sha256"],
                 },
                 job=job,
-                validate_db=lambda db: refuse_exposed_holdouts(
-                    db, tenant, taxonomy_projects, splits
-                ),
+                validate_db=validate_reservation,
             )
             return {
                 "snapshot": snapshot["id"],

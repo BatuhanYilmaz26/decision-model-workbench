@@ -7,6 +7,7 @@ Follow [testing and compatibility](../docs/verification.md) to install the test 
 | Area | What is checked | Related guide |
 |---|---|---|
 | Data and domain contracts | Import, review, preparation, held-out roles and synthetic lineage | [Data](../docs/data-guide.md), [evaluation](../docs/evaluation-guide.md) |
+| Explicit reservations | Group/time policies, fixed historical roles, owner preview/approval and recovery integrity | [Reservation workflow](../docs/reservation-guide.md) |
 | Platform services | HTTP authorization, persistence, worker ownership, releases and inference | [Architecture](../docs/architecture.md), [authentication](../docs/authentication-guide.md) |
 | Browser workflows | Guided forms and API-backed state through Streamlit AppTest | [Testing scope](../docs/verification.md) |
 | Training and provider adapters | Frozen request construction, export contracts and failure handling | [Training](../docs/training-guide.md), [provider checks](../docs/verification.md#provider-compatibility-checks) |

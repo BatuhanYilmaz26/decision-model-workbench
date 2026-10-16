@@ -52,6 +52,8 @@ The maintenance CLI accepts `--split-strategy chronological`. Manually assigned 
 
 ## Inspect and preserve the audit
 
+To choose your own source-group assignments, explicit validation/calibration/test start dates or an elapsed-time embargo, use the [reservation workflow](reservation-guide.md). Automatic interval-based reservations remain available.
+
 New application snapshots contain a `declared-temporal-v1` audit: strategy, real timestamp coverage and each role's decision/label ranges. The preparation screen exposes this report. Dataset readiness reports coverage and incomplete-declaration blockers. Existing reservations remain immutable when adding approved synthetic candidates.
 
 The worker rechecks the complete split contract before synthetic generation, hosted evaluation, training, remote-study creation and remote admission. Restore validation also rechecks reservations. A correctly hashed but temporally contaminated snapshot is refused before training artifacts or provider calls are created. Existing snapshots without an audit remain readable; the rows are checked when used. Old dated snapshots that violate this new contract must be reconstructed as a successor study.
