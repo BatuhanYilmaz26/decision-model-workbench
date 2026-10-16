@@ -13,6 +13,7 @@ For the standard local CPU application, follow the [root quick start](../README.
 | [Windows CPU lock](platform-windows-py313.txt) | Windows/amd64, CPython 3.13.5 | 88 hash-locked external dependencies for API, UI, CPU training and five provider control clients |
 | [Windows model snapshot](models-windows-py312-cu126.txt) | CPython 3.12.13, CUDA 12.6 | Pinned native Laya and Unsloth encoder training/reload dependencies |
 | [Vega runtime pins](vega-runtime.txt) | Matching model environment | vegaml 0.8.0 and direct runtime pins; not a complete transitive lock |
+| [Liquid native-data profile](liquid-data.txt) | Separate CPU environment | Tokenizers 0.23.3 and project source for [d1-3B data preparation](../docs/models/liquid.md); no Torch, Transformers or weights |
 | [AWS client pins](aws-sdk.txt) | API/worker environment | Boto3/Botocore 1.43.113 control clients |
 | [Modal client pins](modal-transport.txt) | API/worker environment | SDK 1.6.1 Sandbox transport |
 | [Azure transport pins](azure-transport.txt) | API/worker environment | HTTP transport for the managed Azure controller |

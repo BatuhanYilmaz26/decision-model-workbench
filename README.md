@@ -59,6 +59,9 @@ Reference: [Python virtual environments](https://docs.python.org/3/library/venv.
 ## Choose your path
 
 Browse the [complete guide directory](docs/README.md), or choose a workflow below.
+The [model and workflow directory](docs/models/README.md) lists delivered training,
+hosted API and data-preparation routes, plus separate publisher references for
+models whose application adapters are still being built.
 
 | What you want to do | What you will use | Start here |
 |---|---|---|
@@ -67,6 +70,7 @@ Browse the [complete guide directory](docs/README.md), or choose a workflow belo
 | Generate additional training examples | A configured local or hosted teacher and your reviewed training seeds | [Synthetic data workflow](#generate-synthetic-training-data) |
 | Train when local VRAM is insufficient | A custom training container on one of five GPU providers | [Remote training](docs/remote-training-guide.md), [provider walkthroughs](#train-on-a-remote-gpu) |
 | Choose a model and compare results | Model contracts, dated benchmarks and primary sources | [Concepts](docs/concepts.md), [model landscape](docs/model-landscape.md), [benchmarks](docs/benchmarks.md) |
+| Prepare domain data for Liquid d1-3B | CPU export to the official TRL and Unsloth SFT formats | [Liquid guide](docs/models/liquid.md), [example specification and CSV](examples/liquid/README.md) |
 
 ## Where decision models can help
 
@@ -138,13 +142,13 @@ Follow [testing](docs/verification.md) and [runtime compatibility and upgrades](
 | Area | Guides |
 |---|---|
 | Data | [Preview and import](docs/import-guide.md), [collection and review](docs/data-guide.md), [review assignments](docs/review-workflow.md), [policy versions](docs/policy-versioning-guide.md), [temporal boundaries](docs/temporal-data-guide.md), [semantic relatives](docs/semantic-data-guide.md), [taxonomy](docs/taxonomy-guide.md), [applicability](docs/applicability-guide.md) |
-| Models | [Laya and Unsloth](docs/training-guide.md), [Vega](docs/vega-guide.md), [evaluation and calibration](docs/evaluation-guide.md), [error costs and critical outcomes](docs/error-policy-guide.md) |
+| Models | [All model workflows](docs/models/README.md), [Laya and Unsloth](docs/training-guide.md), [Vega](docs/vega-guide.md), [Liquid d1-3B native data](docs/models/liquid.md), [evaluation and calibration](docs/evaluation-guide.md), [error costs and critical outcomes](docs/error-policy-guide.md) |
 | APIs and remote runs | [Hosted studies](docs/hosted-decisions-guide.md), [provider selection](docs/remote-training/provider-selection.md), [remote artifact admission](docs/remote-admission-guide.md) |
 | Managed training | [AWS](docs/managed-cloud-training.md), [Azure](docs/managed-azure-training.md), [GCP](docs/managed-gcp-training.md), [Modal](docs/managed-modal-training.md), [RunPod](docs/managed-runpod-training.md) |
 | Operations | [Deployment](docs/deployment-guide.md), [CPU containers](docs/container-guide.md), [model containers](docs/model-container-guide.md), [Windows process ownership](docs/windows-process-guide.md), [authentication](docs/authentication-guide.md), [audit exports](docs/audit-export-guide.md), [backup and recovery](docs/recovery-guide.md), [encrypted recovery](docs/encrypted-recovery-guide.md), [scheduled backups](docs/scheduled-backups-guide.md), [backup monitoring](docs/backup-monitoring-guide.md) |
 | Research | [Primary sources](research/sources.md), [10 October comparison](research/decision-model-expansion-2026-10-10.md), [12 October refresh](research/decision-model-refresh-2026-10-12.md) |
 
-Model and benchmark references are dated **9–12 October 2026**; the [runtime and cloud API comparison](docs/compatibility-and-upgrades.md) is dated **14 October 2026**. Prices, aliases, APIs and rankings can change. Benchmark figures are attributed to their publishers; use the pinned versions and methods when comparing results.
+The existing model and benchmark comparison snapshots are dated **9–12 October 2026**; the [runtime and cloud API comparison](docs/compatibility-and-upgrades.md) is dated **14 October 2026**. The [Liquid preparation guide](docs/models/liquid.md) pins its model and notebook revisions separately. Prices, aliases, APIs and rankings can change. Benchmark figures are attributed to their publishers; use the pinned versions and methods when comparing results.
 
 ## Repository layout
 

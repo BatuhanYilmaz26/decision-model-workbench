@@ -1,0 +1,46 @@
+# Models and workflows
+
+[All guides](../README.md) · [Project overview](../../README.md)
+
+Choose a workflow by its delivered capability. Training, hosted API access and
+data preparation are separate features; a model appearing here does not mean
+every model, device or cloud combination is supported.
+
+| Model or route | Available workflow | Start here |
+|---|---|---|
+| CPU comparison baseline | Local domain training, evaluation, release and predictions | [Complete application workflow](../product-workflow.md) |
+| Laya | Native decision-head training and exported-model serving on compatible profiles | [Training](../training-guide.md#native-laya-adapter) |
+| Unsloth decision training | Compatible decision-head fine-tuning, export and serving | [Unsloth adapter](../training-guide.md#unsloth-adapter) |
+| Vega | Domain adapters, applicability data, evaluation and serving | [Vega workflow](../vega-guide.md) |
+| Jev / TypeSafe | Direct hosted requests and application-managed evaluation | [API integration](../api-integration-guide.md), [hosted studies](../hosted-decisions-guide.md) |
+| OpenRouter | Hosted decision requests through supported model routes | [OpenRouter integration](../api-integration-guide.md) |
+| Perplexity Decider | Hosted connector and integration guide; local training is not integrated | [API integration](../api-integration-guide.md), [model landscape](../model-landscape.md) |
+| Cloudflare Clef | Hosted connector and integration guide | [API integration](../api-integration-guide.md) |
+| Liquid d1-3B | CPU native-data export for the official TRL and Unsloth notebooks | [Liquid data and training guide](liquid.md) |
+| Local or hosted generative teacher | Reviewed synthetic candidates and optional schema assistance | [Synthetic generation](../synthetic-generation-guide.md), [schema assistant](../schema-assistant-guide.md) |
+| TypeLLM category discovery | Review proposed categories before adopting a schema | [Taxonomy workflow](../taxonomy-guide.md) |
+
+For every training workflow, use [reviewed data](../data-guide.md),
+[independent evaluation](../evaluation-guide.md) and a compatible
+[dependency profile](../../requirements/README.md). For rented GPUs, the
+[five-provider directory](../remote-training/README.md) distinguishes direct
+submission instructions from application-managed jobs. It does not establish
+that a newly listed model has a qualified cloud runner.
+
+## Additional model references
+
+These publisher resources are useful for investigation. Dedicated application
+training/serving adapters for the routes below are not delivered here yet.
+
+| Family | Official resources | Important distinction |
+|---|---|---|
+| Liquid hosted d1 / d1-ultra | [Decision models](https://docs.liquid.ai/lfm/models/decision-models), [d1-ultra](https://www.liquid.ai/blog/d1-ultra) | Hosted access does not imply an available fine-tuning checkpoint. |
+| Liquid d1-omni-600M | [Publisher guide](https://docs.liquid.ai/lfm/models/d1-omni-600m) | Its text/image/audio profile needs separate qualification from d1-3B. |
+| Perplexity open Decider | [v1 card](https://huggingface.co/perplexity-ai/pplx-decider-v1-27b), [v1.1 card](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b), [current hosted API](https://docs.perplexity.ai/docs/decisions/quickstart) | Downloadable checkpoint versions and hosted aliases can differ. |
+| Interfaze Lite | [Model card](https://huggingface.co/interfaze-ai/interfaze-1-lite) | A generative/perception companion, not an interchangeable typed-probability backend. |
+| Amos 1 | [Publisher models](https://amos.scira.ai/models/), [API documentation](https://amos.scira.ai/docs/) | Verify model identity, request-retention terms and availability of training artifacts. |
+| Decision 3.0 | [Official six-model collection](https://huggingface.co/collections/vllm-sr/decision-30) | D3, flash, mini, nano, lite and edge require their own runtime and training checks. |
+
+Use the [model landscape](../model-landscape.md) and
+[benchmark guide](../benchmarks.md) for dated comparisons. Check the publisher's
+current model identity and terms before selecting a route.

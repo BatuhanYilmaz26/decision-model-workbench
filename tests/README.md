@@ -14,6 +14,7 @@ Follow [testing and compatibility](../docs/verification.md) to install the test 
 | Platform services | HTTP authorization, persistence, worker ownership, releases and inference | [Architecture](../docs/architecture.md), [authentication](../docs/authentication-guide.md) |
 | Browser workflows | Guided forms and API-backed state through Streamlit AppTest | [Testing scope](../docs/verification.md) |
 | Training and provider adapters | Frozen request construction, export contracts and failure handling | [Training](../docs/training-guide.md), [provider checks](../docs/verification.md#provider-compatibility-checks) |
+| Liquid native-data export | Role/lineage retention, soft-target refusal, tokenizer/readout boundaries, asset identities and no-overwrite behavior | [Liquid preparation](../docs/models/liquid.md); offline fixtures check mechanics, not GPU training |
 | Recovery and operations | Backup integrity, cold recovery, ownership, monitoring and audit windows | [Recovery](../docs/recovery-guide.md), [audit exports](../docs/audit-export-guide.md) |
 | Public repository | Exclusion of private files and reusable source/configuration eligibility | [Contributing](../CONTRIBUTING.md) |
 

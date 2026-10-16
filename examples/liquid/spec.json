@@ -1,0 +1,23 @@
+{
+  "description": "Choose a permitted operation for an incoming request. Retrieve means look up supplied or external information; calculate means perform a calculation; clarify means required details are missing. The model only proposes an operation. Flag ambiguous requests for review. Rate completeness as missing, partial or sufficient evidence to select the operation. Add examples of missing inputs, mixed requests and policy boundaries when collecting domain data.",
+  "questions": {
+    "operation": {
+      "type": "choice",
+      "instructions": "Which permitted operation best fits the stated request? Use clarify when required inputs are missing.",
+      "criteria": {
+        "retrieve": "Look up or retrieve information",
+        "calculate": "Perform a calculation from supplied values",
+        "clarify": "Request missing or ambiguous information"
+      }
+    },
+    "needs_review": {
+      "type": "noul",
+      "instructions": "Does the request contain ambiguity that requires review before choosing an executable operation?"
+    },
+    "completeness": {
+      "type": "score",
+      "instructions": "How complete is the information needed to select an operation?",
+      "criteria": ["Required inputs missing", "Some context supplied but an essential detail is unclear", "Enough information to select an operation"]
+    }
+  }
+}

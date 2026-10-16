@@ -1,0 +1,7 @@
+id,group_id,state,operation,needs_review,completeness,reviewed,origin
+operation-001,request-001,"Find the release notes for version 2.1 of this library.",retrieve,false,2,false,synthetic
+operation-002,request-002,"Calculate 15 percent of 240.",calculate,false,2,false,synthetic
+operation-003,request-003,"Please process it.",clarify,true,0,false,synthetic
+operation-004,request-004,"Look up the maintenance procedure for pump P-42.",retrieve,false,2,false,synthetic
+operation-005,request-005,"Add 18.5 and 7.25.",calculate,false,2,false,synthetic
+operation-006,request-006,"Calculate the total using the earlier figures, which are not included here.",clarify,true,1,false,synthetic

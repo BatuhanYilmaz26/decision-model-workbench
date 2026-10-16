@@ -36,10 +36,14 @@ Configure the teacher in [setup](setup.md#configure-a-teacher), then follow [syn
 
 ## Train, evaluate and integrate
 
+Browse the [model and workflow directory](models/README.md) for delivered routes
+and separate references to models whose integrations are still in development.
+
 | Guide | Use it to |
 |---|---|
 | [Laya and Unsloth training](training-guide.md) | Select a compatible local model environment and produce a complete export |
 | [Vega training](vega-guide.md) | Use Vega's separate engine, domain-adapter and applicability contracts |
+| [Liquid d1-3B native data](models/liquid.md) | Prepare reviewed domain data for the official TRL and Unsloth notebooks on a CPU |
 | [Evaluation and calibration](evaluation-guide.md) | Assess class-level quality, probabilities, abstention and independent reload |
 | [Error costs and critical outcomes](error-policy-guide.md) | Freeze domain-specific release criteria before training |
 | [API integration](api-integration-guide.md) | Call decision providers, validate responses and handle failures |

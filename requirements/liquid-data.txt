@@ -1,0 +1,3 @@
+# CPU-only native d1-3B data preparation. No Torch, Transformers or weights.
+# Run from the repository root in a separate virtual environment.
+-e .[liquid-data]
