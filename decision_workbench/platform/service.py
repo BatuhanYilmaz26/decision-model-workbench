@@ -6,8 +6,7 @@ import json
 import math
 import re
 import uuid
-from pathlib import Path
-from decision_workbench.data import read_records, validate, validate_questions, dumps
+from decision_workbench.data import validate, validate_questions, dumps
 from .store import Conflict, digest
 
 
@@ -99,44 +98,69 @@ class Service:
         mapping=None,
         dataset=None,
         expected_hash=None,
+        worksheet=None,
+        preview_sha256=None,
     ):
         self.require(principal, ("admin", "editor"))
         spec = self.project(principal, project)["payload"]
-        from decision_workbench.intake import check_upload, map_table
+        from .imports import load_upload, preview_upload
 
-        check_upload(content, filename)
-        try:
-            rows = (
-                map_table(content, filename, spec["questions"], mapping)
-                if mapping is not None
-                else read_records(
-                    content, filename, spec, allow_missing_labels=True, max_rows=20000
-                )
+        rows, provenance = load_upload(
+            principal, spec, content, filename, mapping, worksheet
+        )
+        if preview_sha256 is not None:
+            preview = preview_upload(
+                self.store,
+                principal,
+                project,
+                spec,
+                rows,
+                provenance,
+                dataset,
+                expected_hash,
             )
-        except (KeyError, TypeError) as exc:
-            raise ValueError(
-                "Input does not match the project format; check column mappings and JSON records"
-            ) from exc
-        for row in rows:
-            if row["questions"] != spec["questions"]:
-                raise ValueError("Uploaded questions differ from the project schema")
-            if len(dumps(row["state"]).encode()) > 64000:
-                raise ValueError("Each input state is limited to 64 KB")
-            row["metadata"]["reviewed"] = False
-            row["metadata"]["review_status"] = "pending"
-            row["metadata"]["uploaded_by"] = principal["actor"]
+            if preview["preview_sha256"] != preview_sha256:
+                raise Conflict(
+                    "The file, mapping or collection differs from the preview; preview again before saving"
+                )
+            provenance["preview_sha256"] = preview_sha256
         return self.save_dataset(
             principal,
             project,
             rows,
-            {
-                "filename": Path(filename).name,
-                "upload_sha256": hashlib.sha256(content).hexdigest(),
-                "mapping": mapping,
-            },
+            provenance,
             allow_missing_labels=True,
             dataset=dataset,
             expected_hash=expected_hash,
+        )
+
+    def preview_upload(
+        self,
+        principal,
+        project,
+        content,
+        filename,
+        mapping=None,
+        dataset=None,
+        expected_hash=None,
+        worksheet=None,
+    ):
+        self.require(principal, ("admin", "editor"))
+        spec = self.project(principal, project)["payload"]
+        from .imports import load_upload, preview_upload
+
+        rows, provenance = load_upload(
+            principal, spec, content, filename, mapping, worksheet
+        )
+        return preview_upload(
+            self.store,
+            principal,
+            project,
+            spec,
+            rows,
+            provenance,
+            dataset,
+            expected_hash,
         )
 
     def save_examples(

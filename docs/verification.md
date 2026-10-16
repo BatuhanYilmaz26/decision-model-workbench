@@ -58,6 +58,8 @@ Direct provider walkthroughs are configurable examples, not account-certified de
 
 ## Validate your domain and deployment
 
+Import-preview tests exercise the complete file through the authenticated API, including all five formats, selected canonical worksheets, missing and soft targets, duplicates, capacity, malformed content and stale append versions. Streamlit AppTest injects files at the uploader boundary to check mapping, preview invalidation and save behavior against a live HTTP service. File-picker selection and rendered tables need a separate browser check.
+
 The guided criteria tests exercise the actual Streamlit application, a running local HTTP service and owner policy persistence. They also cover category/yes-no/rating builders, invalid input, unchanged-policy round trips, project isolation and retired-form refusal. AppTest currently has no table-cell interaction API, so table tests supply the documented data-editor widget state (`edited_rows`, `added_rows`, `deleted_rows`). Review pointer/keyboard behavior in your browser separately. [Streamlit data-editor state](https://docs.streamlit.io/develop/concepts/design/dataframes), [AppTest interfaces](https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest)
 
 Pagination tests enumerate every public GET route exposing `offset`. Oversized, negative and noninteger values are rejected before route storage work. Supported offsets are 0–2,147,483,647; each endpoint has its own bounded page size. Direct storage/incident page tests also refuse invalid values. These bounds prevent invalid SQL binding and do not establish acceptable latency for deep offsets or enterprise-scale datasets.

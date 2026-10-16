@@ -10,6 +10,7 @@ These modules provide the persistent local application and authenticated decisio
 | [local.py](local.py) | Owned personal API/worker startup, authentication and shutdown | [Personal workspace](../../docs/setup.md#personal-and-shared-workspaces) |
 | [capabilities.py](capabilities.py) | Bounded hardware/package inspection in configured model interpreters | [Model setup](../../docs/setup.md#configure-model-training-and-serving) |
 | [api.py](api.py) | Authenticated project, data, job, release and decision routes | [Workflow](../../docs/product-workflow.md), [authentication](../../docs/authentication-guide.md) |
+| [imports.py](imports.py) | Shared whole-file validation and content-bound import/append previews | [Import workflow](../../docs/import-guide.md) |
 | [worker.py](worker.py) | Process queued preparation, synthetic and training jobs | [Data workflow](../../docs/data-guide.md), [training](../../docs/training-guide.md) |
 | [generation.py](generation.py) | Inspect approved synthetic requests and reconcile unknown outcomes | [Synthetic generation](../../docs/synthetic-generation-guide.md) |
 | [store.py](store.py) | Single-host SQLite state and immutable history | [Architecture](../../docs/architecture.md), [recovery](../../docs/recovery-guide.md) |

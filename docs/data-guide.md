@@ -22,6 +22,8 @@ For incompatible combinations, apply deterministic constraints after prediction 
 
 ## Supply examples or upload real data
 
+Follow [preview and import](import-guide.md) for file upload, mapping and collection append. Validate the full batch, inspect its normalized preview and save it for review. Changed files, worksheets, mappings or collection versions require a fresh preview.
+
 Use the [review assignment workflow](review-workflow.md) to distribute examples to reviewers, track drafts/completion and preserve reassignment history.
 
 | Format | Expected contents |
@@ -106,7 +108,7 @@ A changed rubric is a data/model version change. Recalibrate and reevaluate afte
 
 ## Collection revision contracts
 
-The local store uses schema version 7. Upgrades from versions 1–6 retain existing dataset hashes, review histories and pinned references. Appends add only new membership/content and one compact revision; reviews still add one changed record. Reading an older version does not expose rows appended later. Appending requires the current immutable version and its SHA-256; concurrent stale writes return a conflict and require refresh. Assignment revisions coordinate review work separately from dataset revisions; see [review assignments and recovery](review-workflow.md).
+The local store uses schema version 9. Supported upgrades retain existing dataset hashes, review histories and pinned references. Appends add only new membership/content and one compact revision; reviews still add one changed record. Reading an older version does not expose rows appended later. Appending requires the current immutable version and its SHA-256; concurrent stale writes return a conflict and require refresh. Assignment revisions coordinate review work separately from dataset revisions; see [review assignments and recovery](review-workflow.md).
 
 - `POST /v1/projects/{project}/examples` creates a collection from 1–50 manual examples.
 - `POST /v1/projects/{project}/datasets/{dataset}/examples` accepts `examples` and `expected_hash`, appending a manual batch.

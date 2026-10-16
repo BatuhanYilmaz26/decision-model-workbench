@@ -640,6 +640,8 @@ def create_app(home=None, keys=None, hosted=None):
         mapping: str | None = Form(default=None),
         dataset: str | None = Form(default=None),
         expected_hash: str | None = Form(default=None),
+        worksheet: str | None = Form(default=None, max_length=256),
+        preview_sha256: str | None = Form(default=None, min_length=64, max_length=64),
         p=Depends(identity),
     ):
         service.require(p, ("admin", "editor"))
@@ -652,9 +654,50 @@ def create_app(home=None, keys=None, hosted=None):
             project,
             body,
             file.filename or "upload",
-            json.loads(mapping) if mapping is not None else None,
+            parse_import_mapping(mapping),
             dataset,
             expected_hash,
+            worksheet,
+            preview_sha256,
+        )
+
+    def parse_import_mapping(mapping):
+        if mapping is not None:
+            if len(mapping) > 32000:
+                raise ValueError("Mapping configuration is limited to 32 KB")
+            from decision_workbench.json_tools import strict_json
+
+            try:
+                parsed = strict_json(mapping)
+                if not isinstance(parsed, dict):
+                    raise ValueError("Mapping configuration must be a JSON object")
+                return parsed
+            except RecursionError as exc:
+                raise ValueError("Mapping JSON is nested too deeply") from exc
+        return None
+
+    @app.post("/v1/projects/{project}/imports/preview")
+    async def preview_upload(
+        project: str,
+        file: UploadFile,
+        mapping: str | None = Form(default=None),
+        dataset: str | None = Form(default=None),
+        expected_hash: str | None = Form(default=None),
+        worksheet: str | None = Form(default=None, max_length=256),
+        p=Depends(identity),
+    ):
+        service.require(p, ("admin", "editor"))
+        content = await file.read(10 * 1024 * 1024 + 1)
+        return await run_in_threadpool(
+            service.preview_upload,
+            p,
+            project,
+            content,
+            file.filename or "upload",
+            parse_import_mapping(mapping),
+            dataset,
+            expected_hash,
+            worksheet,
         )
 
     @app.post("/v1/projects/{project}/imports/inspect")

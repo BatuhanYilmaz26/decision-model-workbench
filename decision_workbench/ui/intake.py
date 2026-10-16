@@ -160,18 +160,32 @@ def render_examples(api, project, spec, principal, datasets):
 
 
 def render_upload(api, project, spec, principal, datasets):
+    st.write(
+        "Choose a file, map its fields, then validate the complete batch before saving it for review. "
+        "Previewing does not create or change a collection."
+    )
+    saved_key = "import-saved-" + project
+    if saved_key in st.session_state:
+        st.success(st.session_state.pop(saved_key))
     target = collection_target(api, project, datasets, "file import")
+    generation_key = "upload-generation-" + project
+    generation = st.session_state.get(generation_key, 0)
     uploaded = st.file_uploader(
         "Upload examples or operational data; labels may be missing",
         type=["csv", "tsv", "xlsx", "json", "jsonl"],
         max_upload_size=10,
+        key="upload-" + project + "-" + str(generation),
     )
-    mapping = None
+    mapping, worksheet = None, None
     if uploaded is not None and uploaded.name.lower().endswith(
         (".csv", ".tsv", ".xlsx")
     ):
         content = uploaded.getvalue()
-        key = project + "-" + hashlib.sha256(content).hexdigest()
+        key = (
+            project
+            + "-"
+            + hashlib.sha256(uploaded.name.encode() + b"\0" + content).hexdigest()
+        )
         initial_key = "inspect-" + key
         if initial_key not in st.session_state:
             st.session_state[initial_key] = api(
@@ -349,25 +363,99 @@ def render_upload(api, project, spec, principal, datasets):
             **(mapping or {}),
             "canonical": canonical,
         }
+    data = {
+        **({"mapping": json.dumps(mapping)} if mapping is not None else {}),
+        **({"worksheet": worksheet} if worksheet is not None else {}),
+        **(
+            {"dataset": target["id"], "expected_hash": target["payload"]["sha256"]}
+            if target
+            else {}
+        ),
+    }
+    request_key = hashlib.sha256(
+        json.dumps(
+            {
+                "project": project,
+                "actor": principal["actor"],
+                "tenant": principal["tenant"],
+                "questions": spec["questions"],
+                "filename": uploaded.name if uploaded is not None else None,
+                "upload_sha256": (
+                    hashlib.sha256(uploaded.getvalue()).hexdigest()
+                    if uploaded is not None
+                    else None
+                ),
+                "form": data,
+            },
+            sort_keys=True,
+        ).encode()
+    ).hexdigest()
+    preview_key = "import-preview-" + project
     if st.button(
-        "Append file to collection" if target else "Import as a new dataset version",
+        "Validate and preview import",
         disabled=uploaded is None or principal["role"] not in ("admin", "editor"),
+        key="preview-import-" + project,
     ):
+        st.session_state.pop(preview_key, None)
+        try:
+            preview = api(
+                "POST",
+                f"/v1/projects/{project}/imports/preview",
+                files={"file": (uploaded.name, uploaded.getvalue())},
+                data=data,
+            )
+        except ValueError as exc:
+            st.error(str(exc))
+        else:
+            st.session_state[preview_key] = {"request": request_key, "result": preview}
+    saved = st.session_state.get(preview_key)
+    preview = saved["result"] if saved and saved["request"] == request_key else None
+    if preview:
+        st.success(
+            f"All {preview['row_count']:,} records passed format validation. Nothing has been saved yet."
+        )
+        st.write(
+            f"{preview['rows_with_missing_outcomes']:,} records have unknown outcomes. "
+            "Every imported record will need review, including those with complete labels."
+        )
+        if preview["target"]:
+            st.caption(
+                f"Collection size: {preview['target']['existing_rows']:,} existing + {preview['row_count']:,} new = {preview['target']['resulting_rows']:,} records."
+            )
+        else:
+            st.caption("Save creates a new collection.")
+        for warning in preview["warnings"]:
+            st.warning(warning)
+        st.dataframe(preview["preview"], hide_index=True)
+        st.caption(
+            "First ten normalized records; input evidence is limited to 500 characters in this preview. Full input is preserved when saved. Outcomes show the highest-probability label; canonical probability distributions are preserved."
+        )
+    elif saved and uploaded is not None:
+        st.info(
+            "The file, mapping or collection changed. Validate and preview again before saving."
+        )
+    if st.button(
+        "Append file to collection" if target else "Save new collection for review",
+        disabled=preview is None or principal["role"] not in ("admin", "editor"),
+        key="save-import-" + project,
+    ):
+        if preview is None:
+            raise ValueError(
+                "The file, mapping or collection changed. Validate and preview again before saving."
+            )
         created = api(
             "POST",
             f"/v1/projects/{project}/datasets",
             files={"file": (uploaded.name, uploaded.getvalue())},
             data={
-                **({"mapping": json.dumps(mapping)} if mapping is not None else {}),
-                **(
-                    {
-                        "dataset": target["id"],
-                        "expected_hash": target["payload"]["sha256"],
-                    }
-                    if target
-                    else {}
-                ),
+                **data,
+                "preview_sha256": preview["preview_sha256"],
             },
+        )
+        st.session_state.pop(preview_key, None)
+        st.session_state[generation_key] = generation + 1
+        st.session_state[saved_key] = (
+            f"Saved {preview['row_count']:,} records for review. Open the collection below to review and label them."
         )
         st.session_state["next_dataset_" + project] = created["id"]
         st.rerun()

@@ -76,8 +76,9 @@ def read_table(content, filename, worksheet=None):
                 raise ValueError("Worksheet selection applies only to XLSX")
             sheets, chosen = [], None
             iterator = csv.reader(
-                io.StringIO(content.decode("utf-8-sig")),
+                io.StringIO(content.decode("utf-8-sig"), newline=""),
                 delimiter="\t" if extension == ".tsv" else ",",
+                strict=True,
             )
         else:
             raise ValueError("Column mapping supports CSV, TSV and XLSX")

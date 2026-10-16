@@ -149,21 +149,31 @@ def hard_gold(questions, labels):
 
 
 def read_records(
-    content, filename, spec=None, *, allow_missing_labels=False, max_rows=None
+    content,
+    filename,
+    spec=None,
+    *,
+    allow_missing_labels=False,
+    max_rows=None,
+    worksheet=None,
 ):
     """Accept canonical JSON/JSONL or a simple table with state and label columns."""
     extension = Path(filename).suffix.lower()
+    if worksheet is not None and extension != ".xlsx":
+        raise ValueError("Worksheet selection applies only to XLSX")
+    from .json_tools import strict_json
+
     if extension in (".xlsx", ".csv", ".tsv"):
         from .intake import read_table
 
-        raw = [row for _, row in read_table(content, filename)["rows"]]
+        raw = [row for _, row in read_table(content, filename, worksheet)["rows"]]
     elif extension == ".json":
-        raw = json.loads(content.decode("utf-8-sig"))
+        raw = strict_json(content.decode("utf-8-sig"))
         if not isinstance(raw, list):
             raise ValueError("JSON input must be an array of records")
     elif extension == ".jsonl":
         raw = [
-            json.loads(line)
+            strict_json(line)
             for line in content.decode("utf-8-sig").splitlines()
             if line.strip()
         ]
@@ -182,7 +192,7 @@ def read_records(
         if "questions" in item:
             for key in ("questions", "gold", "metadata"):
                 if isinstance(item.get(key), str):
-                    item[key] = json.loads(item[key])
+                    item[key] = strict_json(item[key])
             row = item
             if allow_missing_labels:
                 if not isinstance(row.get("metadata", {}), dict):
