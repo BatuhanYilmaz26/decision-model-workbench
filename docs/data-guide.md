@@ -41,6 +41,8 @@ Label columns can use different names from question IDs. Map source values such 
 
 Use **Enter a few examples without a file** for individual text/JSON records or a batch of up to 50 examples. Create a collection or append to an existing one. File imports can also append an accepted batch. IDs must be unique; duplicates, invalid rows or capacity failures roll back the batch. Each collection holds at most 20,000 rows, and an unsuccessful save retains the draft form input.
 
+Manual batches ignore entirely empty placeholders. Rows with an ID, source family, supplied outcome or operational-source selection require input evidence; incomplete rows are reported instead of silently dropped. See [batch entry](import-guide.md#enter-examples-without-a-file) for spreadsheet paste instructions.
+
 Hypothetical examples default to synthetic origin. Identify observed operational records explicitly. Imported labels and review flags do not approve a record: reviewers choose draft, approve or reject and record a reason. Partial annotations can be saved, but approval needs normalized targets for every question. Pending records block preparation.
 
 Drafts, appends and reviews create immutable versions. New preparations exclude rejected records and retain their reviewer, reason and dataset hash. Reopening a rejection creates another revision; an existing snapshot keeps its original membership.

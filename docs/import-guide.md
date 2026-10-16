@@ -26,6 +26,8 @@ The preview displays each target's highest-probability outcome; canonical soft-l
 
 Open **Enter a few examples without a file**. Choose one text/JSON example or **A batch of examples** of up to 50 records. Unknown outcomes can be completed during review. Hypothetical examples default to synthetic origin. Choose a new or existing collection. Failed saves retain your draft input.
 
+For a spreadsheet batch, copy cell values without the header row and paste into the first table cell. Match the displayed column order: evidence, ID, source family, source, then the outcome columns. Use the allowed outcome keys; leave unknown outcomes blank. Entirely empty placeholder rows are ignored. A row with an ID, source family, outcome or operational source needs evidence and is rejected if that evidence is blank. A successful save clears the table for the next batch; an error preserves it for correction.
+
 ## Resolve import errors
 
 | Situation | Action |

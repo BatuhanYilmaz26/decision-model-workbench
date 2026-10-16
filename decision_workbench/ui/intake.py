@@ -4,6 +4,46 @@ import hashlib
 import json
 import streamlit as st
 from decision_workbench.data import options
+from decision_workbench.json_tools import strict_json
+
+
+def batch_examples(entered, questions):
+    """Keep blank placeholders, incomplete rows and the batch limit unambiguous."""
+    examples = []
+    for number, row in enumerate(entered, 1):
+        evidence = row.get("Input evidence")
+        if evidence is not None and not isinstance(evidence, str):
+            raise ValueError(f"Example row {number}: input evidence must be text")
+        if not (evidence or "").strip():
+            other = (
+                "Example ID",
+                "Source family",
+                *("Outcome: " + name for name in questions),
+            )
+            if any(
+                row.get(field) is not None and str(row[field]).strip()
+                for field in other
+            ) or row.get("Source") not in (None, "", "synthetic"):
+                raise ValueError(
+                    f"Example row {number}: add input evidence or clear the entire row"
+                )
+            continue
+        examples.append(
+            {
+                "state": evidence,
+                "id": row.get("Example ID") or None,
+                "group_id": row.get("Source family") or None,
+                "origin": row.get("Source") or "synthetic",
+                "labels": {
+                    name: row["Outcome: " + name]
+                    for name in questions
+                    if row.get("Outcome: " + name) not in (None, "")
+                },
+            }
+        )
+    if not 1 <= len(examples) <= 50:
+        raise ValueError("Enter 1–50 examples with input evidence before saving")
+    return examples
 
 
 def collection_target(api, project, datasets, key):
@@ -49,7 +89,7 @@ def render_examples(api, project, spec, principal, datasets):
         with st.form("examples-" + project + "-" + str(generation)):
             if batch:
                 st.caption(
-                    "Enter up to 50 examples. Blank input rows are ignored. Each row can have unknown outcomes; source defaults to hypothetical/synthetic."
+                    "Enter up to 50 examples. Entirely empty rows are ignored; rows with IDs, outcomes or an operational source need input evidence. Outcomes may be unknown. Source defaults to hypothetical/synthetic."
                 )
                 empty = {
                     "Input evidence": "",
@@ -117,26 +157,10 @@ def render_examples(api, project, spec, principal, datasets):
             )
         if saved:
             if batch:
-                examples = []
-                for row in entered:
-                    if not (row.get("Input evidence") or "").strip():
-                        continue
-                    examples.append(
-                        {
-                            "state": row["Input evidence"],
-                            "id": row.get("Example ID") or None,
-                            "group_id": row.get("Source family") or None,
-                            "origin": row.get("Source") or "synthetic",
-                            "labels": {
-                                name: row["Outcome: " + name]
-                                for name in spec["questions"]
-                                if row.get("Outcome: " + name) is not None
-                            },
-                        }
-                    )
+                examples = batch_examples(entered, spec["questions"])
             else:
                 example = {
-                    "state": json.loads(evidence) if structured else evidence,
+                    "state": strict_json(evidence) if structured else evidence,
                     "labels": labels,
                     "origin": origin,
                 }

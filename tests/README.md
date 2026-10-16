@@ -8,6 +8,7 @@ Follow [testing and compatibility](../docs/verification.md) to install the test 
 |---|---|---|
 | Data and domain contracts | Import, review, preparation, held-out roles and synthetic lineage | [Data](../docs/data-guide.md), [evaluation](../docs/evaluation-guide.md) |
 | Import previews | Whole-file validation, worksheet/mapping selection, preview consistency, atomic append and pending review | [Import workflow](../docs/import-guide.md) |
+| Manual examples | Fifty-record append, draft retention after refusal, empty-row handling and strict JSON evidence | [Batch entry](../docs/import-guide.md#enter-examples-without-a-file) |
 | Explicit reservations | Group/time policies, fixed historical roles, owner preview/approval and recovery integrity | [Reservation workflow](../docs/reservation-guide.md) |
 | Synthetic generation | Server approvals, seed selection, usage/estimate accounting, supervised transport, explicit retry, review and recovery | [Generation workflow](../docs/synthetic-generation-guide.md) |
 | Platform services | HTTP authorization, persistence, worker ownership, releases and inference | [Architecture](../docs/architecture.md), [authentication](../docs/authentication-guide.md) |
