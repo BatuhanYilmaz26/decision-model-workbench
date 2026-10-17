@@ -12,13 +12,18 @@ import importlib.metadata as m
 import json
 import platform
 packages = {}
-for name in ("scikit-learn", "numpy", "torch", "laya", "unsloth", "unsloth_zoo", "vegaml", "transformers"):
+for name in ("scikit-learn", "numpy", "torch", "laya", "unsloth", "unsloth_zoo", "vegaml", "transformers", "trl", "peft", "datasets", "tokenizers", "triton", "triton-windows"):
     try:
         packages[name] = m.version(name)
     except m.PackageNotFoundError:
         packages[name] = None
 result = {"system": platform.system(), "python": platform.python_version(), "packages": packages,
-          "cuda": False, "mps": False, "gpus": [], "error": None}
+          "cuda": False, "mps": False, "gpus": [], "error": None, "ram_available_gib": None}
+try:
+    import psutil
+    result["ram_available_gib"] = round(psutil.virtual_memory().available / 1024**3, 1)
+except ImportError:
+    pass
 if packages["torch"]:
     try:
         import torch
@@ -40,14 +45,23 @@ def runtime_capabilities():
     global _cached
     worker = os.environ.get("DMT_WORKER_PYTHON") or sys.executable
     model = os.environ.get("DMT_MODEL_PYTHON") or worker
-    identity = (worker, model)
+    identity = (worker, model, os.environ.get("DMT_LIQUID_PYTHON"))
     with _lock:
         if _cached and _cached[0] == identity and time.monotonic() - _cached[1] < 30:
             return _cached[2]
-        runtimes = {}
-        for kind, executable in (("training", worker), ("serving", model)):
-            if kind == "serving" and model == worker:
-                runtimes[kind] = runtimes["training"]
+        from .model_environment import model_python
+
+        targets = [("training", worker), ("serving", model)]
+        for purpose in ("training", "serving"):
+            try:
+                executable = model_python("liquid-trl", purpose)
+            except ValueError:
+                executable = ""
+            targets.append(("liquid-" + purpose, executable))
+        runtimes, probed = {}, {}
+        for kind, executable in targets:
+            if executable in probed:
+                runtimes[kind] = probed[executable]
                 continue
             try:
                 process = subprocess.run(
@@ -65,14 +79,20 @@ def runtime_capabilities():
                 runtimes[kind] = value
             except (OSError, ValueError, subprocess.TimeoutExpired):
                 runtimes[kind] = {
-                    "error": "Model interpreter could not be inspected. Check DMT_WORKER_PYTHON / DMT_MODEL_PYTHON.",
+                    "error": "Model interpreter could not be inspected. Check the configured worker/model Python or DMT_LIQUID_PYTHON.",
                     "packages": {},
                     "cuda": False,
                     "mps": False,
                     "gpus": [],
                 }
+            probed[executable] = runtimes[kind]
+        liquid = {
+            purpose: runtimes.pop("liquid-" + purpose)
+            for purpose in ("training", "serving")
+        }
         result = {
             "runtimes": runtimes,
+            "model_profiles": {"liquid-trl": liquid},
             "teacher_configured": bool(
                 os.environ.get("DMT_TEACHER_BASE_URL")
                 and os.environ.get("DMT_TEACHER_MODEL")

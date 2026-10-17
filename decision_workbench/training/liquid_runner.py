@@ -108,6 +108,16 @@ def train_liquid(args):
     validate_settings(args)
     packages = runtime_identity()
     rows, bodies = load_inputs(args.data)
+    local_study_sha = None
+    if getattr(args, "local_study_request", None):
+        from .liquid_local import validate_request
+
+        local_study_sha = validate_request(
+            args.local_study_request,
+            args,
+            {name: sha(body) for name, body in bodies.items()},
+            source_fingerprint(),
+        )
     if len(rows["calibration"]) < 8:
         raise ValueError(
             "Reserve at least eight real calibration records before training"
@@ -334,6 +344,7 @@ def train_liquid(args):
         "model": MODEL,
         "revision": REVISION,
         "source_sha256": source,
+        "local_study_sha256": local_study_sha,
         "data_sha256": preparation["input_sha256"],
         "configuration": vars(args),
         "counts": {name: len(split) for name, split in rows.items()},
@@ -364,7 +375,7 @@ def train_liquid(args):
         "limitations": [
             "Local mechanics do not establish domain quality or a sufficient training budget",
             "Calibration was fitted exclusively on the reserved calibration role",
-            "Managed platform/cloud admission requires separate integration",
+            "Managed cloud admission requires separate qualification",
         ],
     }
     (out / "report.json").write_text(
@@ -378,6 +389,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", required=True)
     parser.add_argument("--out", required=True)
+    parser.add_argument(
+        "--local-study-request", help="Frozen application Liquid study request"
+    )
     parser.add_argument("--cache", default="data/model-cache/liquid-hub")
     parser.add_argument(
         "--download",

@@ -10,6 +10,7 @@ from pathlib import Path
 from decision_workbench.data import dumps, options, validate, validate_questions
 from .artifacts import file_sha
 from .liquid_data import ASSETS, MODEL, REVISION, LiquidPrompt
+from .liquid_local import PINNED_PACKAGES
 from .metrics import normalize_answers
 
 RUNTIME_ASSETS = {
@@ -24,13 +25,6 @@ RUNTIME_ASSETS = {
 }
 CONFIG_STRUCTURE = "e6b2fc30cd2b81aa23cc14693e8787b489420f7d43149e2fdb773df2fdfae8cf"
 BASE_WEIGHTS = "50e03317847caf6df9a9aee27ed40f20554a86a21e60d1d47ba41a422b546c0c"
-PINNED_PACKAGES = {
-    "transformers": "5.19.0",
-    "trl": "1.15.0",
-    "peft": "0.21.2",
-    "datasets": "4.8.5",
-    "tokenizers": "0.23.3",
-}
 TEMPERATURES = (0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0)
 
 

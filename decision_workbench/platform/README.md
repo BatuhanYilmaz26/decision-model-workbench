@@ -12,6 +12,7 @@ These modules provide the persistent local application and authenticated decisio
 | [api.py](api.py) | Authenticated project, data, job, release and decision routes | [Workflow](../../docs/product-workflow.md), [authentication](../../docs/authentication-guide.md) |
 | [imports.py](imports.py) | Shared whole-file validation and content-bound import/append previews | [Import workflow](../../docs/import-guide.md) |
 | [worker.py](worker.py) | Process queued preparation, synthetic and training jobs | [Data workflow](../../docs/data-guide.md), [training](../../docs/training-guide.md) |
+| [liquid_training.py](liquid_training.py), [model_environment.py](model_environment.py) | Bind Liquid jobs and releases to frozen inputs and a separate model environment | [Liquid application workflow](../../docs/models/liquid.md#train-and-release-through-the-localhost-application) |
 | [generation.py](generation.py) | Inspect approved synthetic requests and reconcile unknown outcomes | [Synthetic generation](../../docs/synthetic-generation-guide.md) |
 | [store.py](store.py) | Single-host SQLite state and immutable history | [Architecture](../../docs/architecture.md), [recovery](../../docs/recovery-guide.md) |
 

@@ -9,12 +9,71 @@ and JSON evidence with choice, yes/no and ordered-score questions. It downloads
 a pinned tokenizer, prompt builder and license, about 18 MB in total. The data
 export command does not download weights, start a paid job or train a model.
 
-The exporter and TRL trainer are standalone commands. Liquid training, registry
-admission and serving are not yet integrated into the application's training
-menu. The [official Unsloth notebook](https://github.com/Liquid4All/cookbook/blob/744c5b628a27adb4f219ff4a1d11e3d70259b369/finetuning/notebooks/sft_for_decision_models_with_unsloth.ipynb)
+Use the localhost application for reviewed project data, durable training jobs,
+evaluation, versioned releases and predictions. Standalone exporter/trainer
+commands are also available below. The [official Unsloth notebook](https://github.com/Liquid4All/cookbook/blob/744c5b628a27adb4f219ff4a1d11e3d70259b369/finetuning/notebooks/sft_for_decision_models_with_unsloth.ipynb)
 and [official TRL notebook](https://github.com/Liquid4All/cookbook/blob/744c5b628a27adb4f219ff4a1d11e3d70259b369/finetuning/notebooks/sft_for_decision_models_with_trl.ipynb)
 provide the upstream training routes. Treat those as separate GPU environments;
 do not add their packages to an existing Laya or Unsloth installation.
+
+## Train and release through the localhost application
+
+1. Follow the [root application setup](../../README.md#run-on-your-computer) and
+   install the separate [Liquid model environment](#train-with-the-local-trl-runner).
+   Keep the application's CPU environment and existing model environments intact.
+2. Configure **DMT_LIQUID_PYTHON** in the API/worker environment, then start
+   `domain-platform run` from the application's environment. Personal mode opens
+   without a pasted workspace credential. Alternatively, set **Liquid d1-3B
+   Python executable** in Streamlit's optional local settings before starting
+   its workspace. Restart the app to change those settings.
+3. Describe your policy and data requirements, enter or upload examples, review
+   labels, and reserve independent training/validation/calibration/test roles.
+   Synthetic candidates use the existing [teacher/review workflow](../synthetic-generation-guide.md).
+   Liquid SFT refuses soft training/validation targets and needs at least eight
+   real calibration records. Set your owner acceptance criteria before training.
+4. Under training, select **Liquid d1-3B (TRL)** and **This computer**. Check the
+   hardware/package panel. Choose the compute device and training budget. Permit
+   the 6.25 GB public checkpoint download only if its pinned assets are not cached.
+   Training records stay local; the download fetches weights and reviewed model code.
+5. Select **Queue training**. Monitor the persistent job and its evaluation
+   report. A run is registered only after parameter-update, frozen-study and
+   native export/reload checks pass. Cancellation retains the job history and
+   stops its supervised model process.
+6. Inspect held-out results, select the eligible model version, enter a release
+   reason and select **Activate selected version**. The server checks the frozen
+   owner criteria and loads the verified native runtime before activation.
+7. Enter evidence under the decision workflow and select **Make decision**.
+   Use the [authenticated decision API](../product-workflow.md#6-release-and-integrate)
+   from an application, or follow [standalone inference](#use-the-fine-tuned-export).
+   An earlier eligible release can be activated to roll back.
+
+Windows PowerShell, after creating `.venv-liquid-trl` as described below:
+
+```powershell
+$env:DMT_LIQUID_PYTHON = (Resolve-Path .\.venv-liquid-trl\Scripts\python.exe).Path
+domain-platform run
+```
+
+Linux/macOS shell, after preparing its compatible environment:
+
+```bash
+export DMT_LIQUID_PYTHON="$PWD/.venv-liquid-trl/bin/python"
+domain-platform run
+```
+
+For individually operated API and worker services, configure the same variable in
+both processes. It selects Liquid's interpreter for training **and** serving.
+`DMT_WORKER_PYTHON` / `DMT_MODEL_PYTHON` keep their existing behavior for other
+backends. Install project source from the same checkout in each environment;
+requests are bound to that source identity. Browser/API requests cannot select
+an executable or replace the frozen contract.
+
+`DMT_LIQUID_CACHE` optionally selects a private checkpoint cache. Otherwise it
+uses `model-cache/liquid-hub` beside the workspace, with separate native-module,
+CUDA and Triton caches. New artifacts contain only the exact approved model code;
+modified or additional Python code is refused before release/recovery loads it.
+Managed cloud training/import for Liquid remains unavailable. The application
+keeps those unsupported routes separate from its working local workflow.
 
 ## Install the CPU data tool
 

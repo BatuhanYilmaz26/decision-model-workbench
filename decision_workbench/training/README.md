@@ -10,7 +10,7 @@ These adapters consume reviewed domain data and produce complete model exports w
 | Unsloth | [unsloth_runner.py](unsloth_runner.py) | [Unsloth adapter](../../docs/training-guide.md#unsloth-adapter) |
 | Vega | [vega_runner.py](vega_runner.py) | [Vega data and execution profile](../../docs/vega-guide.md) |
 | Liquid native data | [liquid_data.py](liquid_data.py) | [CPU preparation for the official d1-3B notebooks](../../docs/models/liquid.md); standalone data export, not a managed trainer |
-| Liquid local training | [liquid_runner.py](liquid_runner.py), [liquid_runtime.py](liquid_runtime.py) | [Standalone d1-3B training and calibrated inference](../../docs/models/liquid.md#train-with-the-local-trl-runner); separate from application-managed jobs |
+| Liquid local training | [liquid_runner.py](liquid_runner.py), [liquid_runtime.py](liquid_runtime.py) | [d1-3B application training/release](../../docs/models/liquid.md#train-and-release-through-the-localhost-application) and [standalone training](../../docs/models/liquid.md#train-with-the-local-trl-runner) |
 | Semantic review | [semantic_runner.py](semantic_runner.py) | [Semantic audit](../../docs/semantic-data-guide.md) |
 | Exported model serving | [runtime.py](runtime.py) | [Platform setup](../../docs/setup.md#configure-model-training-and-serving), [deployment](../../docs/deployment-guide.md) |
 

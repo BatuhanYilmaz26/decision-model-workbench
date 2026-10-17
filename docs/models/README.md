@@ -16,7 +16,7 @@ every model, device or cloud combination is supported.
 | OpenRouter | Hosted decision requests through supported model routes | [OpenRouter integration](../api-integration-guide.md) |
 | Perplexity Decider | Hosted connector and integration guide; local training is not integrated | [API integration](../api-integration-guide.md), [model landscape](../model-landscape.md) |
 | Cloudflare Clef | Hosted connector and integration guide | [API integration](../api-integration-guide.md) |
-| Liquid d1-3B | CPU native-data export, standalone local LoRA training, calibrated export and inference | [Liquid data and training guide](liquid.md); application-managed training is not integrated |
+| Liquid d1-3B | CPU native-data export, application/standalone local LoRA training, calibrated release and inference | [Liquid data and training guide](liquid.md) |
 | Local or hosted generative teacher | Reviewed synthetic candidates and optional schema assistance | [Synthetic generation](../synthetic-generation-guide.md), [schema assistant](../schema-assistant-guide.md) |
 | TypeLLM category discovery | Review proposed categories before adopting a schema | [Taxonomy workflow](../taxonomy-guide.md) |
 

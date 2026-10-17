@@ -10,7 +10,6 @@ import sys
 import threading
 import time
 import uuid
-from pathlib import Path
 from decision_workbench.data import dumps
 from decision_workbench.training.resources import ResourceLease, ResourceBusy
 from decision_workbench.training.process_guard import leased_process_options
@@ -173,6 +172,14 @@ class RuntimeBroker:
                 or environment.get("DMT_WORKER_PYTHON")
                 or sys.executable
             )
+            runtime_cwd = None
+            if model["backend"] == "liquid-trl":
+                from .model_environment import liquid_environment, model_python
+
+                environment, runtime_cwd, _ = liquid_environment(
+                    self.store.folder, environment
+                )
+                python = model_python("liquid-trl", "serving", environment)
             argv = [
                 python,
                 "-m",
@@ -195,6 +202,7 @@ class RuntimeBroker:
                 encoding="utf-8",
                 bufsize=1,
                 shell=False,
+                **({"cwd": runtime_cwd} if runtime_cwd is not None else {}),
                 **leased_process_options(self.lease, environment),
             )
             self.messages = queue.Queue(maxsize=4)

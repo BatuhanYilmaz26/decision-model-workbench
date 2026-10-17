@@ -135,6 +135,9 @@ def render_connection(root):
                     settings.update(
                         DMT_WORKER_PYTHON=model_python, DMT_MODEL_PYTHON=model_python
                     )
+                liquid_python = st.session_state.get("local-liquid-python", "").strip()
+                if liquid_python:
+                    settings["DMT_LIQUID_PYTHON"] = liquid_python
                 teacher_url = st.session_state.get("local-teacher-url", "").strip()
                 teacher_model = st.session_state.get("local-teacher-model", "").strip()
                 if teacher_url or teacher_model:
@@ -213,6 +216,14 @@ def render_connection(root):
                 key="local-model-python",
                 help="Leave empty for CPU baseline. A compatible separate environment is required for Laya, Unsloth or Vega.",
             )
+            st.text_input(
+                "Liquid d1-3B Python executable (optional)",
+                key="local-liquid-python",
+                help="Absolute Python executable from the separate requirements/liquid-trl.txt environment. This keeps Liquid's Transformers 5.19 profile separate from Laya/Unsloth.",
+            )
+            st.link_button(
+                "Liquid installation and model setup", REPO + "docs/models/liquid.md"
+            )
             st.write(
                 "Synthetic generation uses a generative teacher; the trained decision model scores allowed answers. Use a local OpenAI-compatible server or an approved hosted endpoint supporting JSON object output."
             )
@@ -250,7 +261,12 @@ def render_runtime(api, principal):
                 )
         capability = st.session_state.get("runtime-capabilities")
         if capability:
-            for kind, runtime in capability["runtimes"].items():
+            displayed = dict(capability["runtimes"])
+            for purpose, value in (
+                capability.get("model_profiles", {}).get("liquid-trl", {}).items()
+            ):
+                displayed["Liquid " + purpose] = value
+            for kind, runtime in displayed.items():
                 st.markdown("**" + kind.capitalize() + " environment**")
                 if runtime.get("error"):
                     st.warning(runtime["error"])
@@ -281,9 +297,45 @@ def render_runtime(api, principal):
 def local_backend_available(backend, capabilities):
     """Availability hints; source/runtime qualification remains a separate gate."""
     if backend == "cpu-baseline":
-        return capabilities[
-            "cpu_baseline"
-        ], "Install the platform dependencies in the worker environment."
+        return (
+            capabilities["cpu_baseline"],
+            "Install the platform dependencies in the worker environment.",
+        )
+    if backend == "liquid-trl":
+        from decision_workbench.training.liquid_local import PINNED_PACKAGES
+
+        profiles = capabilities.get("model_profiles", {}).get("liquid-trl", {})
+        for purpose in ("training", "serving"):
+            value = profiles.get(purpose, {})
+            packages = value.get("packages", {})
+            if (
+                value.get("error")
+                or any(packages.get(k) != v for k, v in PINNED_PACKAGES.items())
+                or (packages.get("torch") or "").split("+")[0] != "2.10.0"
+            ):
+                return (
+                    False,
+                    "Configure DMT_LIQUID_PYTHON using the separate Liquid training profile. Both training and serving need that compatible environment.",
+                )
+            required = 20 if purpose == "training" else 16
+            if (
+                purpose == "training"
+                and value.get("cuda")
+                and not (packages.get("triton") or packages.get("triton-windows"))
+            ):
+                return (
+                    False,
+                    "Install the Liquid profile's compatible Triton package for CUDA SFT, then restart or recheck the model environment.",
+                )
+            if (
+                not value.get("cuda")
+                and (value.get("ram_available_gib") or 0) < required
+            ):
+                return (
+                    False,
+                    f"Liquid {purpose} needs a compatible CUDA GPU or at least {required} GiB available CPU RAM. Choose the CPU baseline or configure another model environment.",
+                )
+        return True, ""
     runtime = capabilities["runtimes"]["training"]
     package = {"laya-native": "laya", "unsloth": "unsloth", "vega": "vegaml"}[backend]
     if (

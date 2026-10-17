@@ -176,3 +176,7 @@ Before reserving a domain study, optionally configure the [local semantic audit 
 ## Reviewed category discovery
 
 Use the [taxonomy workflow](taxonomy-guide.md) for manual proposals or consented TypeLLM discovery. Configure scoped operator profiles and keep credentials in server/worker configuration. Review proposals and confirm a successor schema; discovery examples stay training-only, and existing labels/releases are not transferred. Evaluate category quality and provider costs on representative records before relying on discovery.
+
+## Separate Liquid model environment
+
+For d1-3B, install the separate [Liquid profile](models/liquid.md#train-with-the-local-trl-runner), set `DMT_LIQUID_PYTHON` in the API and worker environments, and restart the services. The [application workflow](models/liquid.md#train-and-release-through-the-localhost-application) uses that interpreter for training and resident serving while keeping the CPU application and existing Laya/Unsloth/Vega profiles separate. Optional `DMT_LIQUID_CACHE` selects its private checkpoint cache. Configure these before starting personal mode, or use its optional Liquid interpreter field.

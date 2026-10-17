@@ -631,13 +631,21 @@ try:
                 "Training snapshot", [s["id"] for s in snapshots]
             )
             backend = st.selectbox(
-                "Training backend", ["cpu-baseline", "laya-native", "unsloth", "vega"]
+                "Training backend",
+                ["cpu-baseline", "laya-native", "unsloth", "vega", "liquid-trl"],
+                format_func=lambda value: {
+                    "cpu-baseline": "CPU comparison baseline",
+                    "laya-native": "Laya",
+                    "unsloth": "Unsloth decision fine-tuning",
+                    "vega": "Vega domain adapter",
+                    "liquid-trl": "Liquid d1-3B (TRL)",
+                }[value],
             )
             training_location = st.radio(
                 "Training location",
                 (
                     ["This computer", "Cloud GPU"]
-                    if principal["role"] == "admin"
+                    if principal["role"] == "admin" and backend != "liquid-trl"
                     else ["This computer"]
                 ),
                 horizontal=True,
@@ -665,6 +673,14 @@ try:
                 st.info(
                     "This Unsloth profile needs a compatible CUDA model environment. It cannot use the CPU-only platform environment. Use a cloud GPU if your computer cannot run it."
                 )
+            elif backend == "liquid-trl":
+                st.info(
+                    "Liquid d1-3B trains in its separate model environment. The worker reserves the model resource, checks native labels and input budgets, then calibrates and reloads the export before registration. Cloud submission for this model is not available yet."
+                )
+                st.link_button(
+                    "Liquid installation, data and training guide",
+                    "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/models/liquid.md",
+                )
             else:
                 st.info(
                     "Vega uses its separate pinned model environment and applicability data. Follow the Vega guide to qualify the device and required cached assets."
@@ -687,7 +703,77 @@ try:
                         st.warning(reason)
             config = {"snapshot": training_snapshot, "backend": backend}
             vega_ready = True
-            if backend == "vega":
+            if backend == "liquid-trl":
+                from decision_workbench.training.liquid_local import PROFILE
+
+                config.update(PROFILE)
+                st.caption(
+                    "Pinned base: "
+                    + PROFILE["model"]
+                    + " · revision "
+                    + PROFILE["revision"]
+                )
+                config["device"] = st.selectbox(
+                    "Liquid compute device",
+                    ["auto", "cuda", "cpu"],
+                    format_func=lambda v: {
+                        "auto": "Automatic: CUDA if available, otherwise CPU",
+                        "cuda": "NVIDIA CUDA GPU",
+                        "cpu": "CPU (at least 20 GiB available RAM)",
+                    }[v],
+                )
+                config["epochs"] = int(
+                    st.number_input("Liquid training epochs", 1, 20, 1)
+                )
+                config["batch_size"] = int(
+                    st.number_input("Liquid examples per micro-batch", 1, 32, 1)
+                )
+                config["rank"] = int(st.number_input("Liquid LoRA rank", 1, 128, 4))
+                config["grad_accum"] = int(
+                    st.number_input("Liquid gradient accumulation", 1, 128, 4)
+                )
+                config["max_length"] = int(
+                    st.number_input(
+                        "Liquid complete input token budget", 64, 32768, 256
+                    )
+                )
+                maximum_steps = int(
+                    st.number_input(
+                        "Liquid maximum optimizer attempts (0 uses all epochs)",
+                        0,
+                        100000,
+                        0,
+                    )
+                )
+                if maximum_steps:
+                    config["max_steps"] = maximum_steps
+                config["download"] = st.checkbox(
+                    "Allow downloading the pinned public Liquid checkpoint (about 6.25 GB)",
+                    value=False,
+                )
+                st.caption(
+                    "This downloads model assets only; your training records stay local. Training/validation need one-hot labels. Reserve at least eight real calibration records. A small compatibility run does not establish domain quality."
+                )
+                if capabilities:
+                    hardware = (
+                        capabilities.get("model_profiles", {})
+                        .get("liquid-trl", {})
+                        .get("training", {})
+                    )
+                    if (
+                        config["device"] == "cpu"
+                        and (hardware.get("ram_available_gib") or 0) < 20
+                    ):
+                        local_ready = False
+                        st.warning(
+                            "CPU d1-3B training needs at least 20 GiB available RAM. Choose CUDA, another installed model or the CPU comparison baseline."
+                        )
+                    elif config["device"] == "cuda" and not hardware.get("cuda"):
+                        local_ready = False
+                        st.warning(
+                            "CUDA is unavailable in the configured Liquid environment."
+                        )
+            elif backend == "vega":
                 from decision_workbench.training.vega_local import PROFILE
 
                 gate_versions = api(

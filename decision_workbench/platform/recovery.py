@@ -375,6 +375,7 @@ def _validate_workspace(folder):
             "laya-native",
             "unsloth",
             "vega",
+            "liquid-trl",
             "hosted",
         ):
             raise ValueError("Model training configuration integrity check failed")

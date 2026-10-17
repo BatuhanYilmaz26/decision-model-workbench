@@ -318,6 +318,10 @@ class Worker:
             snapshot["splits"], spec["questions"], policy["criteria"]
         )
         gate = None
+        if config.get("backend") == "liquid-trl":
+            from .liquid_training import recheck
+
+            recheck(config, snapshot, spec["questions"])
         if config.get("backend") == "vega":
             from .vega_training import recheck, check_negative_floor
 
@@ -358,8 +362,9 @@ class Worker:
                     "laya-native": "laya",
                     "unsloth": "unsloth",
                     "vega": "vegaml",
+                    "liquid-trl": None,
                 }[config["backend"]]
-                if importlib.util.find_spec(dependency) is None:
+                if dependency and importlib.util.find_spec(dependency) is None:
                     raise ValueError(
                         "This worker lacks "
                         + dependency
@@ -381,6 +386,7 @@ class Worker:
                 "laya-native": "laya_runner",
                 "unsloth": "unsloth_runner",
                 "vega": "vega_runner",
+                "liquid-trl": "liquid_runner",
             }[config["backend"]]
             argv = [
                 sys.executable,
@@ -399,6 +405,36 @@ class Worker:
                 "--batch-size",
                 str(config["batch_size"]),
             ]
+            child_environment = None
+            child_cwd = None
+            if config["backend"] == "liquid-trl":
+                from .model_environment import liquid_environment, model_python
+                from decision_workbench.training.liquid_local import request_body
+
+                child_environment, child_cwd, cache = liquid_environment(
+                    self.store.folder
+                )
+                request_path = job_folder / "liquid-request.json"
+                request_path.write_bytes(request_body(config["liquid_study"]))
+                argv = [
+                    model_python("liquid-trl", "training"),
+                    "-m",
+                    "decision_workbench.training.liquid_runner",
+                    "--data",
+                    str(job_folder / "data"),
+                    "--out",
+                    str(artifact_folder),
+                    "--local-study-request",
+                    str(request_path),
+                    "--cache",
+                    str(cache),
+                ]
+                for name in ("epochs", "batch_size", "rank", "learning_rate", "device"):
+                    argv.extend(["--" + name.replace("_", "-"), str(config[name])])
+                if config["max_steps"] is not None:
+                    argv.extend(["--max-steps", str(config["max_steps"])])
+                if config["download"]:
+                    argv.append("--download")
             if config["backend"] == "vega":
                 from decision_workbench.training.vega_local import request_body
 
@@ -448,7 +484,8 @@ class Worker:
                     stdout=log,
                     stderr=subprocess.STDOUT,
                     shell=False,
-                    **leased_process_options(model_lease),
+                    **({"cwd": child_cwd} if child_cwd is not None else {}),
+                    **leased_process_options(model_lease, child_environment),
                 )
                 try:
                     while process.poll() is None:
@@ -497,6 +534,10 @@ class Worker:
                 from .vega_training import checked_report
 
                 checked_report(report, config)
+            elif config["backend"] == "liquid-trl":
+                from .liquid_training import checked_artifact
+
+                checked_artifact(artifact_folder, report, config, spec["questions"])
         self.store.heartbeat(
             job, "Registering immutable artifact and evaluation report"
         )
