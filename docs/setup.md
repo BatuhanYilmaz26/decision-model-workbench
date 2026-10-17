@@ -180,3 +180,5 @@ Use the [taxonomy workflow](taxonomy-guide.md) for manual proposals or consented
 ## Separate Liquid model environment
 
 For d1-3B, install the separate [Liquid profile](models/liquid.md#train-with-the-local-trl-runner), set `DMT_LIQUID_PYTHON` in the API and worker environments, and restart the services. The [application workflow](models/liquid.md#train-and-release-through-the-localhost-application) uses that interpreter for training and resident serving while keeping the CPU application and existing Laya/Unsloth/Vega profiles separate. Optional `DMT_LIQUID_CACHE` selects its private checkpoint cache. Configure these before starting personal mode, or use its optional Liquid interpreter field.
+
+For the separate FastVisionModel route, follow [Liquid Unsloth setup](models/liquid.md#train-with-fastvisionmodel-and-unsloth) and configure `DMT_LIQUID_UNSLOTH_PYTHON`. Both profiles can coexist; select the matching Liquid training backend.

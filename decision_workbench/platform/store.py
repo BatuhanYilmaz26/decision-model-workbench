@@ -512,7 +512,7 @@ class Store(DatasetStorage, OperationsStorage):
         with self.transaction() as db:
             return (
                 db.execute(
-                    "SELECT 1 FROM jobs WHERE kind IN ('train','remote-import') AND status IN ('queued','running','cancel_requested') AND json_extract(config,'$.backend') IN ('unsloth','laya-native','vega','liquid-trl') LIMIT 1"
+                    "SELECT 1 FROM jobs WHERE kind IN ('train','remote-import') AND status IN ('queued','running','cancel_requested') AND json_extract(config,'$.backend') IN ('unsloth','laya-native','vega','liquid-trl','liquid-unsloth') LIMIT 1"
                 ).fetchone()
                 is not None
             )

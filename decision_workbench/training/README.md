@@ -17,3 +17,5 @@ These adapters consume reviewed domain data and produce complete model exports w
 The [CPU comparison baseline](../platform/baseline.py) is available through the application without a GPU. Keep the selected [dependency profiles](../../requirements/README.md), [independent evaluation](../../docs/evaluation-guide.md) and [frozen error policy](../../docs/error-policy-guide.md) when selecting a decision-head backend.
 
 For rented GPUs, follow [remote training](../../docs/remote-training-guide.md) and its [provider directory](../../docs/remote-training/README.md). Returned exports require [remote admission](../../docs/remote-admission-guide.md). Vega's additional applicability data and study route are explained separately in its guide.
+
+For Liquid's separate Unsloth environment and `--trainer unsloth`, follow [FastVisionModel training](../../docs/models/liquid.md#train-with-fastvisionmodel-and-unsloth). It retains the native d1 readout and uses a different backend from the existing Unsloth decision-head adapter.

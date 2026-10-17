@@ -318,7 +318,7 @@ class Worker:
             snapshot["splits"], spec["questions"], policy["criteria"]
         )
         gate = None
-        if config.get("backend") == "liquid-trl":
+        if config.get("backend") in ("liquid-trl", "liquid-unsloth"):
             from .liquid_training import recheck
 
             recheck(config, snapshot, spec["questions"])
@@ -363,6 +363,7 @@ class Worker:
                     "unsloth": "unsloth",
                     "vega": "vegaml",
                     "liquid-trl": None,
+                    "liquid-unsloth": None,
                 }[config["backend"]]
                 if dependency and importlib.util.find_spec(dependency) is None:
                     raise ValueError(
@@ -387,6 +388,7 @@ class Worker:
                 "unsloth": "unsloth_runner",
                 "vega": "vega_runner",
                 "liquid-trl": "liquid_runner",
+                "liquid-unsloth": "liquid_runner",
             }[config["backend"]]
             argv = [
                 sys.executable,
@@ -407,17 +409,17 @@ class Worker:
             ]
             child_environment = None
             child_cwd = None
-            if config["backend"] == "liquid-trl":
+            if config["backend"] in ("liquid-trl", "liquid-unsloth"):
                 from .model_environment import liquid_environment, model_python
                 from decision_workbench.training.liquid_local import request_body
 
                 child_environment, child_cwd, cache = liquid_environment(
-                    self.store.folder
+                    self.store.folder, backend=config["backend"]
                 )
                 request_path = job_folder / "liquid-request.json"
                 request_path.write_bytes(request_body(config["liquid_study"]))
                 argv = [
-                    model_python("liquid-trl", "training"),
+                    model_python(config["backend"], "training"),
                     "-m",
                     "decision_workbench.training.liquid_runner",
                     "--data",
@@ -429,6 +431,8 @@ class Worker:
                     "--cache",
                     str(cache),
                 ]
+                if config["backend"] == "liquid-unsloth":
+                    argv.extend(["--trainer", "unsloth"])
                 for name in ("epochs", "batch_size", "rank", "learning_rate", "device"):
                     argv.extend(["--" + name.replace("_", "-"), str(config[name])])
                 if config["max_steps"] is not None:
@@ -534,7 +538,7 @@ class Worker:
                 from .vega_training import checked_report
 
                 checked_report(report, config)
-            elif config["backend"] == "liquid-trl":
+            elif config["backend"] in ("liquid-trl", "liquid-unsloth"):
                 from .liquid_training import checked_artifact
 
                 checked_artifact(artifact_folder, report, config, spec["questions"])

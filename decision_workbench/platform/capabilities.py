@@ -6,6 +6,7 @@ import subprocess
 import sys
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 PROBE = """
 import importlib.metadata as m
@@ -45,24 +46,27 @@ def runtime_capabilities():
     global _cached
     worker = os.environ.get("DMT_WORKER_PYTHON") or sys.executable
     model = os.environ.get("DMT_MODEL_PYTHON") or worker
-    identity = (worker, model, os.environ.get("DMT_LIQUID_PYTHON"))
+    identity = (
+        worker,
+        model,
+        os.environ.get("DMT_LIQUID_PYTHON"),
+        os.environ.get("DMT_LIQUID_UNSLOTH_PYTHON"),
+    )
     with _lock:
         if _cached and _cached[0] == identity and time.monotonic() - _cached[1] < 30:
             return _cached[2]
         from .model_environment import model_python
 
         targets = [("training", worker), ("serving", model)]
-        for purpose in ("training", "serving"):
-            try:
-                executable = model_python("liquid-trl", purpose)
-            except ValueError:
-                executable = ""
-            targets.append(("liquid-" + purpose, executable))
-        runtimes, probed = {}, {}
-        for kind, executable in targets:
-            if executable in probed:
-                runtimes[kind] = probed[executable]
-                continue
+        for backend in ("liquid-trl", "liquid-unsloth"):
+            for purpose in ("training", "serving"):
+                try:
+                    executable = model_python(backend, purpose)
+                except ValueError:
+                    executable = ""
+                targets.append((backend + "-" + purpose, executable))
+
+        def probe(executable):
             try:
                 process = subprocess.run(
                     [executable, "-c", PROBE],
@@ -76,23 +80,30 @@ def runtime_capabilities():
                 value = json.loads(process.stdout)
                 if not isinstance(value, dict) or "packages" not in value:
                     raise ValueError("Invalid probe result")
-                runtimes[kind] = value
+                return value
             except (OSError, ValueError, subprocess.TimeoutExpired):
-                runtimes[kind] = {
-                    "error": "Model interpreter could not be inspected. Check the configured worker/model Python or DMT_LIQUID_PYTHON.",
+                return {
+                    "error": "Model interpreter could not be inspected. Check the configured worker/model or per-profile Liquid Python executable.",
                     "packages": {},
                     "cuda": False,
                     "mps": False,
                     "gpus": [],
                 }
-            probed[executable] = runtimes[kind]
+
+        unique = list(dict.fromkeys(executable for _, executable in targets))
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            probed = dict(zip(unique, pool.map(probe, unique)))
+        runtimes = {kind: probed[executable] for kind, executable in targets}
         liquid = {
-            purpose: runtimes.pop("liquid-" + purpose)
-            for purpose in ("training", "serving")
+            backend: {
+                purpose: runtimes.pop(backend + "-" + purpose)
+                for purpose in ("training", "serving")
+            }
+            for backend in ("liquid-trl", "liquid-unsloth")
         }
         result = {
             "runtimes": runtimes,
-            "model_profiles": {"liquid-trl": liquid},
+            "model_profiles": liquid,
             "teacher_configured": bool(
                 os.environ.get("DMT_TEACHER_BASE_URL")
                 and os.environ.get("DMT_TEACHER_MODEL")

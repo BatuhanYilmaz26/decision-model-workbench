@@ -632,20 +632,29 @@ try:
             )
             backend = st.selectbox(
                 "Training backend",
-                ["cpu-baseline", "laya-native", "unsloth", "vega", "liquid-trl"],
+                [
+                    "cpu-baseline",
+                    "laya-native",
+                    "unsloth",
+                    "vega",
+                    "liquid-trl",
+                    "liquid-unsloth",
+                ],
                 format_func=lambda value: {
                     "cpu-baseline": "CPU comparison baseline",
                     "laya-native": "Laya",
                     "unsloth": "Unsloth decision fine-tuning",
                     "vega": "Vega domain adapter",
                     "liquid-trl": "Liquid d1-3B (TRL)",
+                    "liquid-unsloth": "Liquid d1-3B (Unsloth)",
                 }[value],
             )
             training_location = st.radio(
                 "Training location",
                 (
                     ["This computer", "Cloud GPU"]
-                    if principal["role"] == "admin" and backend != "liquid-trl"
+                    if principal["role"] == "admin"
+                    and backend not in ("liquid-trl", "liquid-unsloth")
                     else ["This computer"]
                 ),
                 horizontal=True,
@@ -673,7 +682,7 @@ try:
                 st.info(
                     "This Unsloth profile needs a compatible CUDA model environment. It cannot use the CPU-only platform environment. Use a cloud GPU if your computer cannot run it."
                 )
-            elif backend == "liquid-trl":
+            elif backend in ("liquid-trl", "liquid-unsloth"):
                 st.info(
                     "Liquid d1-3B trains in its separate model environment. The worker reserves the model resource, checks native labels and input budgets, then calibrates and reloads the export before registration. Cloud submission for this model is not available yet."
                 )
@@ -703,10 +712,10 @@ try:
                         st.warning(reason)
             config = {"snapshot": training_snapshot, "backend": backend}
             vega_ready = True
-            if backend == "liquid-trl":
+            if backend in ("liquid-trl", "liquid-unsloth"):
                 from decision_workbench.training.liquid_local import PROFILE
 
-                config.update(PROFILE)
+                config.update({**PROFILE, "backend": backend})
                 st.caption(
                     "Pinned base: "
                     + PROFILE["model"]
@@ -715,9 +724,17 @@ try:
                 )
                 config["device"] = st.selectbox(
                     "Liquid compute device",
-                    ["auto", "cuda", "cpu"],
+                    (
+                        ["auto", "cuda"]
+                        if backend == "liquid-unsloth"
+                        else ["auto", "cuda", "cpu"]
+                    ),
                     format_func=lambda v: {
-                        "auto": "Automatic: CUDA if available, otherwise CPU",
+                        "auto": (
+                            "Automatic CUDA"
+                            if backend == "liquid-unsloth"
+                            else "Automatic: CUDA if available, otherwise CPU"
+                        ),
                         "cuda": "NVIDIA CUDA GPU",
                         "cpu": "CPU (at least 20 GiB available RAM)",
                     }[v],
@@ -757,7 +774,7 @@ try:
                 if capabilities:
                     hardware = (
                         capabilities.get("model_profiles", {})
-                        .get("liquid-trl", {})
+                        .get(backend, {})
                         .get("training", {})
                     )
                     if (
@@ -970,6 +987,10 @@ try:
                 if backend == "cpu-baseline":
                     st.info(
                         "Select native Laya, Unsloth or Vega for remote GPU training."
+                    )
+                elif backend in ("liquid-trl", "liquid-unsloth"):
+                    st.info(
+                        "Managed cloud training for Liquid is not available yet. Use the local Liquid profile or the official notebook in your own compatible GPU environment. The Liquid guide explains the required data, runtime and export checks."
                     )
                 else:
                     if backend == "vega":

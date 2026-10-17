@@ -15,6 +15,7 @@ For the standard local CPU application, follow the [root quick start](../README.
 | [Vega runtime pins](vega-runtime.txt) | Matching model environment | vegaml 0.8.0 and direct runtime pins; not a complete transitive lock |
 | [Liquid native-data profile](liquid-data.txt) | Separate CPU environment | Tokenizers 0.23.3 and project source for [d1-3B data preparation](../docs/models/liquid.md); no Torch, Transformers or weights |
 | [Liquid training profile](liquid-trl.txt) | Separate Python 3.12 model environment | Pinned d1-3B SFT/readout dependencies; install matching Torch 2.10.0 and torchvision 0.25.0 first using the [Liquid guide](../docs/models/liquid.md#train-with-the-local-trl-runner) |
+| [Liquid Unsloth profile](liquid-unsloth.txt) | Separate Python 3.12 / NVIDIA CUDA environment | FastVisionModel d1-3B training and native serving with compatible Transformers 5.17 / TRL 1.13; [setup and use](../docs/models/liquid.md#train-with-fastvisionmodel-and-unsloth) |
 | [AWS client pins](aws-sdk.txt) | API/worker environment | Boto3/Botocore 1.43.113 control clients |
 | [Modal client pins](modal-transport.txt) | API/worker environment | SDK 1.6.1 Sandbox transport |
 | [Azure transport pins](azure-transport.txt) | API/worker environment | HTTP transport for the managed Azure controller |

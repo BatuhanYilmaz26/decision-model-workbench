@@ -1,0 +1,24 @@
+# Separate d1-3B FastVisionModel environment, Python 3.12 and NVIDIA CUDA.
+# Install matching Torch 2.10.0 / torchvision 0.25.0 accelerator wheels first.
+# Unsloth 2026.10.3 supports TRL <=1.13.0; keep its compatible trainer version.
+torch==2.10.0
+torchvision==0.25.0
+unsloth==2026.10.3
+unsloth-zoo==2026.10.3
+transformers==5.17.0
+trl==1.13.0
+peft==0.21.2
+datasets==4.8.5
+tokenizers==0.23.3
+huggingface-hub==1.33.0
+accelerate==1.15.0
+bitsandbytes==0.50.2
+torchao==0.18.0
+xformers==0.0.35
+safetensors==0.8.0
+numpy==2.5.2
+scikit-learn==1.9.1
+pillow==12.3.0
+triton==3.6.0; platform_system == "Linux"
+triton-windows==3.6.0.post26; platform_system == "Windows"
+-e .

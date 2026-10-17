@@ -17,6 +17,7 @@ import shutil
 from decision_workbench.data import dumps
 from .artifacts import compare_predictions, file_sha, write_manifest
 from .liquid_data import MODEL, REVISION, export_dataset, load_inputs, sha
+from .liquid_adapter import TARGET_MODULES, export_adapter
 from .liquid_runtime import (
     LiquidEngine,
     LiquidPrompt,
@@ -106,7 +107,12 @@ def optimizer_counter():
 
 def train_liquid(args):
     validate_settings(args)
-    packages = runtime_identity()
+    use_unsloth = getattr(args, "trainer", "trl") == "unsloth"
+    backend = "liquid-unsloth" if use_unsloth else "liquid-trl"
+    packages = runtime_identity(backend) if use_unsloth else runtime_identity()
+    if use_unsloth:
+        # Unsloth must patch Transformers/TRL before either is imported.
+        from unsloth import FastVisionModel
     rows, bodies = load_inputs(args.data)
     local_study_sha = None
     if getattr(args, "local_study_request", None):
@@ -140,6 +146,10 @@ def train_liquid(args):
             "CUDA is unavailable; use a compatible GPU environment or --device cpu"
         )
     if device == "cpu":
+        if use_unsloth:
+            raise ValueError(
+                "The Liquid Unsloth profile requires a compatible CUDA GPU"
+            )
         require_cpu_memory(training=True)
     print("Checking the pinned checkpoint and native data contract...", flush=True)
     checkpoint = resolve_checkpoint(args.cache, download=args.download)
@@ -193,26 +203,51 @@ def train_liquid(args):
     if device == "cuda":
         torch.cuda.reset_peak_memory_stats()
     print("Loading d1-3B for language-layer LoRA training...", flush=True)
-    model = AutoModelForImageTextToText.from_pretrained(
-        str(checkpoint),
-        local_files_only=True,
-        use_safetensors=True,
-        dtype=dtype,
-        device_map={"": device},
-        attn_implementation="sdpa",
-    )
-    model.config.use_cache = False
-    model = get_peft_model(
-        model,
-        LoraConfig(
+    if use_unsloth:
+        model, processor = FastVisionModel.from_pretrained(
+            model_name=str(checkpoint),
+            auto_model=AutoModelForImageTextToText,
+            max_seq_length=args.max_length,
+            load_in_4bit=False,
+            local_files_only=True,
+            trust_remote_code=False,
+            dtype=dtype,
+            device_map={"": device},
+            attn_implementation="sdpa",
+        )
+        model = FastVisionModel.get_peft_model(
+            model,
             r=args.rank,
             lora_alpha=2 * args.rank,
             lora_dropout=0,
             bias="none",
-            task_type="CAUSAL_LM",
-            target_modules=r".*language_model.*\.(q_proj|k_proj|v_proj|out_proj|in_proj|w1|w2|w3)",
-        ),
-    )
+            target_modules=TARGET_MODULES,
+            use_gradient_checkpointing="unsloth",
+            random_state=3407,
+        )
+        FastVisionModel.for_training(model)
+        del processor
+    else:
+        model = AutoModelForImageTextToText.from_pretrained(
+            str(checkpoint),
+            local_files_only=True,
+            use_safetensors=True,
+            dtype=dtype,
+            device_map={"": device},
+            attn_implementation="sdpa",
+        )
+        model = get_peft_model(
+            model,
+            LoraConfig(
+                r=args.rank,
+                lora_alpha=2 * args.rank,
+                lora_dropout=0,
+                bias="none",
+                task_type="CAUSAL_LM",
+                target_modules=TARGET_MODULES,
+            ),
+        )
+    model.config.use_cache = False
     parameters = {
         name: value.detach().float().cpu().clone()
         for name, value in model.named_parameters()
@@ -278,33 +313,49 @@ def train_liquid(args):
     if updates < 1 or not math.isfinite(delta) or delta <= 0:
         raise ValueError("Training did not make a finite parameter update")
     model.eval()
+    if use_unsloth:
+        FastVisionModel.for_inference(model)
     live = LiquidEngine.__new__(LiquidEngine)
     live.model, live.prompt, live.device = model, prompt, device
     live.metadata, live.max_length = None, args.max_length
     probes = rows["validation"][: min(8, len(rows["validation"]))]
     expected = [live.predict(row["state"], questions) for row in probes]
     model.save_pretrained(out / "adapter", safe_serialization=True)
-    merged = model.merge_and_unload()
-    merged.save_pretrained(out / "merged", safe_serialization=True)
-    tokenizer.save_pretrained(out / "merged")
+    checkpoint_name = "checkpoint" if use_unsloth else "merged"
+    exported = out / checkpoint_name
+    if use_unsloth:
+        exported.mkdir()
+        shutil.copyfile(
+            checkpoint / "model.safetensors", exported / "model.safetensors"
+        )
+        adapter_identity = export_adapter(out / "adapter", exported)
+        merged = None
+    else:
+        merged = model.merge_and_unload()
+        merged.save_pretrained(out / "merged", safe_serialization=True)
+    tokenizer.save_pretrained(exported)
     # Restore the publisher's reviewed native API/code/tokenizer assets, never
     # model Python written by a third-party trainer or uploaded by an end user.
     for name in RUNTIME_ASSETS:
-        shutil.copyfile(checkpoint / name, out / "merged" / name)
+        shutil.copyfile(checkpoint / name, exported / name)
     config = checked_runtime(checkpoint)
     for item in (config, config["text_config"], config["vision_config"]):
         item["dtype"] = str(dtype).removeprefix("torch.")
-    (out / "merged" / "config.json").write_text(dumps(config), encoding="utf-8")
+    (exported / "config.json").write_text(dumps(config), encoding="utf-8")
     metadata = {
         "format": "domain-liquid-runtime-v1",
+        "training_backend": backend,
         "model": MODEL,
         "revision": REVISION,
         "questions": questions,
         "max_length": args.max_length,
         "temperatures": {name: 1.0 for name in questions},
         "native_assets_sha256": RUNTIME_ASSETS,
+        "weights_mode": "base-plus-adapter" if use_unsloth else "merged",
     }
-    metadata_path = out / "merged" / "dmt_liquid.json"
+    if use_unsloth:
+        metadata["adapter"] = adapter_identity
+    metadata_path = exported / "dmt_liquid.json"
     metadata_path.write_text(json.dumps(metadata, ensure_ascii=False), encoding="utf-8")
     peak = int(torch.cuda.max_memory_allocated()) if device == "cuda" else None
     del parameters, live, trainer, model, merged, tokenizer, datasets
@@ -315,7 +366,7 @@ def train_liquid(args):
         "Reloading the exported native runtime and checking validation predictions...",
         flush=True,
     )
-    served = LiquidEngine(out / "merged", device=device)
+    served = LiquidEngine(exported, device=device, profile=backend)
     actual = [served.predict(row["state"], questions) for row in probes]
     equivalence = compare_predictions(expected, actual, questions, 0.005)
     calibration_predictions = [
@@ -339,7 +390,7 @@ def train_liquid(args):
         if file_sha(out / "data" / name) != expected_hash:
             raise ValueError("Native/canonical training data changed during the run")
     report = {
-        "backend": "liquid-trl",
+        "backend": backend,
         "schema_conditioned": True,
         "model": MODEL,
         "revision": REVISION,
@@ -357,6 +408,7 @@ def train_liquid(args):
         },
         "training": {
             "trainer": trainer_class.__name__,
+            "model_loader": "FastVisionModel" if use_unsloth else "Transformers",
             "optimizer_updates": updates,
             "optimizer_attempts": attempts,
             "optimizer_skipped": counter.skipped,
@@ -372,6 +424,7 @@ def train_liquid(args):
         "export_qualification": equivalence,
         "reload_equivalence": True,
         "export_precision": str(dtype).removeprefix("torch."),
+        "checkpoint_format": "base-plus-adapter" if use_unsloth else "merged",
         "limitations": [
             "Local mechanics do not establish domain quality or a sufficient training budget",
             "Calibration was fitted exclusively on the reserved calibration role",
@@ -381,13 +434,14 @@ def train_liquid(args):
     (out / "report.json").write_text(
         json.dumps(report, indent=2, allow_nan=False), encoding="utf-8"
     )
-    write_manifest(out, "liquid-trl", questions)
+    write_manifest(out, backend, questions, checkpoint_name)
     return report
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", required=True)
+    parser.add_argument("--trainer", choices=("trl", "unsloth"), default="trl")
     parser.add_argument("--out", required=True)
     parser.add_argument(
         "--local-study-request", help="Frozen application Liquid study request"

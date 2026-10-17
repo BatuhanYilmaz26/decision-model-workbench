@@ -48,6 +48,58 @@ class TokenizerFixture:
 
 
 class LiquidTrainingTests(unittest.TestCase):
+    def test_native_adapter_is_portable_and_refuses_changed_weights_or_vision_targets(
+        self,
+    ):
+        from decision_workbench.training.liquid_adapter import (
+            TARGET_MODULES,
+            checked_adapter,
+            export_adapter,
+        )
+        from decision_workbench.training.liquid_data import MODEL, REVISION
+
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            source, checkpoint = root / "source", root / "checkpoint"
+            source.mkdir()
+            config = {
+                "base_model_name_or_path": str(root / "private-original-cache"),
+                "revision": None,
+                "auto_mapping": {"parent_library": "unused.original.module"},
+                "task_type": "CAUSAL_LM",
+                "peft_type": "LORA",
+                "r": 4,
+                "lora_alpha": 8,
+                "lora_dropout": 0,
+                "bias": "none",
+                "target_modules": TARGET_MODULES,
+            }
+            (source / "adapter_config.json").write_text(
+                json.dumps(config), encoding="utf-8"
+            )
+            # Opaque bytes for identity checks only; never loaded as model weights.
+            (source / "adapter_model.safetensors").write_bytes(b"identity fixture")
+            identity = export_adapter(source, checkpoint)
+            folder, portable = checked_adapter(checkpoint, identity)
+            self.assertEqual(portable["base_model_name_or_path"], MODEL)
+            self.assertEqual(portable["revision"], REVISION)
+            self.assertIsNone(portable["auto_mapping"])
+            (folder / "unapproved.py").write_text(
+                "raise AssertionError('never execute')"
+            )
+            with self.assertRaisesRegex(ValueError, "inventory"):
+                checked_adapter(checkpoint, identity)
+            (folder / "unapproved.py").unlink()
+            (folder / "adapter_model.safetensors").write_bytes(b"changed")
+            with self.assertRaisesRegex(ValueError, "identity check"):
+                checked_adapter(checkpoint, identity)
+            config["target_modules"] = r".*vision.*"
+            (source / "adapter_config.json").write_text(
+                json.dumps(config), encoding="utf-8"
+            )
+            with self.assertRaisesRegex(ValueError, "language-only"):
+                export_adapter(source, root / "wrong-profile")
+
     def test_overflow_skips_are_not_counted_as_optimizer_updates(self):
         with patch.dict(
             "sys.modules", {"transformers": SimpleNamespace(TrainerCallback=object)}
@@ -223,8 +275,10 @@ class LiquidTrainingTests(unittest.TestCase):
             tempfile.TemporaryDirectory() as name,
             patch.object(runtime, "LiquidEngine", return_value="selected") as loader,
         ):
-            self.assertEqual(load_engine("liquid-trl", name), "selected")
-            loader.assert_called_once_with(Path(name))
+            for backend in ("liquid-trl", "liquid-unsloth"):
+                loader.reset_mock()
+                self.assertEqual(load_engine(backend, name), "selected")
+                loader.assert_called_once_with(Path(name), profile=backend)
 
     def test_input_change_during_checkpoint_resolution_is_refused_before_training(self):
         from decision_workbench.training import liquid_runner as runner

@@ -74,7 +74,7 @@ def recheck(config, snapshot, questions):
 def checked_report(report, config):
     study = config.get("liquid_study", {})
     if (
-        report.get("backend") != "liquid-trl"
+        report.get("backend") != config.get("backend")
         or report.get("model") != PROFILE["model"]
         or report.get("revision") != PROFILE["revision"]
         or report.get("source_sha256") != study.get("source_sha256")
@@ -86,11 +86,23 @@ def checked_report(report, config):
     ):
         raise ValueError("Liquid export does not match the frozen local study")
     if (
-        settings({key: report.get("configuration", {}).get(key) for key in DEFAULTS})
+        settings(
+            {
+                **{key: report.get("configuration", {}).get(key) for key in DEFAULTS},
+                "backend": report.get("backend"),
+            }
+        )
         != study["configuration"]
     ):
         raise ValueError("Liquid export used different training settings")
     training = report.get("training", {})
+    if config["backend"] == "liquid-unsloth" and (
+        training.get("model_loader") != "FastVisionModel"
+        or report.get("configuration", {}).get("trainer") != "unsloth"
+    ):
+        raise ValueError(
+            "Liquid Unsloth export lacks its native FastVisionModel training identity"
+        )
     updates, attempts, skipped = (
         training.get(k)
         for k in ("optimizer_updates", "optimizer_attempts", "optimizer_skipped")
@@ -120,15 +132,22 @@ def checked_artifact(folder, report, config, questions):
 
     checked_report(report, config)
     files = inventory(folder.resolve())
-    allowed_code = {"merged/" + name for name in RUNTIME_ASSETS if name.endswith(".py")}
+    checkpoint = "checkpoint" if config["backend"] == "liquid-unsloth" else "merged"
+    allowed_code = {
+        checkpoint + "/" + name for name in RUNTIME_ASSETS if name.endswith(".py")
+    }
     if {name for name in files if name.endswith(".py")} != allowed_code:
         raise ValueError("Liquid export contains missing or unapproved model code")
-    checked_runtime(folder / "merged")
+    manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+    if manifest.get("checkpoint") != checkpoint:
+        raise ValueError("Liquid manifest selects a different native checkpoint")
+    checked_runtime(folder / checkpoint, base=config["backend"] == "liquid-unsloth")
     metadata = json.loads(
-        (folder / "merged/dmt_liquid.json").read_text(encoding="utf-8")
+        (folder / checkpoint / "dmt_liquid.json").read_text(encoding="utf-8")
     )
     if (
         metadata.get("questions") != questions
+        or metadata.get("training_backend", "liquid-trl") != config["backend"]
         or metadata.get("temperatures")
         != {name: value["temperature"] for name, value in report["calibration"].items()}
         or metadata.get("max_length") != config["max_length"]
@@ -136,3 +155,14 @@ def checked_artifact(folder, report, config, questions):
         raise ValueError(
             "Liquid runtime schema, calibration or token budget differs from the registered study"
         )
+    if config["backend"] == "liquid-unsloth":
+        from decision_workbench.training.liquid_adapter import checked_adapter
+
+        _, adapter = checked_adapter(folder / checkpoint, metadata.get("adapter"))
+        if (
+            adapter["r"] != config["rank"]
+            or metadata.get("weights_mode") != "base-plus-adapter"
+        ):
+            raise ValueError(
+                "Liquid native adapter differs from the frozen training profile"
+            )

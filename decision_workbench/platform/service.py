@@ -545,7 +545,7 @@ class Service:
 
                 self.require(principal, ("admin",))
                 validate_location(config)
-                if config.get("backend") == "liquid-trl":
+                if config.get("backend") in ("liquid-trl", "liquid-unsloth"):
                     raise ValueError(
                         "Liquid managed cloud training is not available yet; use the local model profile"
                     )
@@ -558,11 +558,12 @@ class Service:
                 "laya-native",
                 "vega",
                 "liquid-trl",
+                "liquid-unsloth",
             ):
                 raise ValueError(
-                    "Select cpu-baseline, unsloth, laya-native, vega or liquid-trl"
+                    "Select cpu-baseline, unsloth, laya-native, vega, liquid-trl or liquid-unsloth"
                 )
-            if config["backend"] == "liquid-trl":
+            if config["backend"] in ("liquid-trl", "liquid-unsloth"):
                 from .liquid_training import freeze
 
                 config = freeze(self, principal, project, config)
@@ -597,14 +598,21 @@ class Service:
                 "offline",
             }:
                 raise ValueError("Vega options do not apply to this backend")
-            if config["backend"] != "liquid-trl" and set(config) & {
+            if config["backend"] not in ("liquid-trl", "liquid-unsloth") and set(
+                config
+            ) & {
                 "device",
                 "download",
             }:
                 raise ValueError(
                     "Device/download options apply only to the Liquid profile"
                 )
-            if config["backend"] not in ("cpu-baseline", "vega", "liquid-trl"):
+            if config["backend"] not in (
+                "cpu-baseline",
+                "vega",
+                "liquid-trl",
+                "liquid-unsloth",
+            ):
                 unsupported = (
                     {"rank", "max_steps", "full_precision"}
                     if config["backend"] == "laya-native"
@@ -703,6 +711,7 @@ class Service:
             "hosted",
             "vega",
             "liquid-trl",
+            "liquid-unsloth",
         ):
             raise ValueError("Unsupported serving backend")
         if model["schema_sha256"] != spec["schema_sha256"]:
@@ -832,7 +841,7 @@ class Service:
 
             checked_report(report, model["configuration"])
             checked_model(self, model, questions)
-        elif model["backend"] == "liquid-trl":
+        elif model["backend"] in ("liquid-trl", "liquid-unsloth"):
             from .liquid_training import checked_artifact
 
             checked_artifact(folder, report, model["configuration"], questions)
@@ -870,7 +879,13 @@ class Service:
             from .baseline import predict
 
             answers = predict(self.checked_bundle(model), state, threshold)
-        elif model["backend"] in ("unsloth", "laya-native", "vega", "liquid-trl"):
+        elif model["backend"] in (
+            "unsloth",
+            "laya-native",
+            "vega",
+            "liquid-trl",
+            "liquid-unsloth",
+        ):
             answers = self.runtime.predict(
                 active["model_id"], model, spec["questions"], state, threshold
             )

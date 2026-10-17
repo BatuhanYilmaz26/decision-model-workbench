@@ -9,11 +9,15 @@ def model_python(backend, purpose, environment=None):
     environment = os.environ if environment is None else environment
     if purpose not in ("training", "serving"):
         raise ValueError("Unknown model interpreter purpose")
-    if backend == "liquid-trl" and environment.get("DMT_LIQUID_PYTHON"):
-        path = Path(environment["DMT_LIQUID_PYTHON"])
+    variable = {
+        "liquid-trl": "DMT_LIQUID_PYTHON",
+        "liquid-unsloth": "DMT_LIQUID_UNSLOTH_PYTHON",
+    }.get(backend)
+    if variable and environment.get(variable):
+        path = Path(environment[variable])
         if not path.is_absolute() or not path.is_file():
             raise ValueError(
-                "DMT_LIQUID_PYTHON must name an installed absolute Python executable"
+                f"{variable} must name an installed absolute Python executable"
             )
         return str(path)
     if purpose == "serving":
@@ -25,7 +29,7 @@ def model_python(backend, purpose, environment=None):
     return environment.get("DMT_WORKER_PYTHON") or sys.executable
 
 
-def liquid_environment(home, environment=None):
+def liquid_environment(home, environment=None, *, backend="liquid-trl"):
     """Use writable private caches and the same source as the controlling service."""
     result = dict(os.environ if environment is None else environment)
     root = Path(__file__).resolve().parents[2]
@@ -39,4 +43,8 @@ def liquid_environment(home, environment=None):
     result.setdefault("CUDA_CACHE_PATH", str(cache.parent / "liquid-cuda"))
     result.setdefault("TOKENIZERS_PARALLELISM", "false")
     result.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
+    if backend == "liquid-unsloth":
+        result["UNSLOTH_COMPILE_LOCATION"] = str(
+            cache.parent / "liquid-unsloth-compiled"
+        )
     return result, root, cache

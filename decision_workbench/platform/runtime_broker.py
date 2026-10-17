@@ -173,13 +173,13 @@ class RuntimeBroker:
                 or sys.executable
             )
             runtime_cwd = None
-            if model["backend"] == "liquid-trl":
+            if model["backend"] in ("liquid-trl", "liquid-unsloth"):
                 from .model_environment import liquid_environment, model_python
 
                 environment, runtime_cwd, _ = liquid_environment(
-                    self.store.folder, environment
+                    self.store.folder, environment, backend=model["backend"]
                 )
-                python = model_python("liquid-trl", "serving", environment)
+                python = model_python(model["backend"], "serving", environment)
             argv = [
                 python,
                 "-m",

@@ -3,6 +3,7 @@
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -258,9 +259,18 @@ class LiquidPlatformTests(unittest.TestCase):
                 checked_report(bad, config)
 
     def test_browser_queues_liquid_with_a_separate_profile_and_native_controls(self):
+        self.browser_queue("liquid-trl")
+
+    def test_browser_keeps_the_selected_unsloth_backend_and_disallows_cpu(self):
+        self.browser_queue("liquid-unsloth")
+
+    def browser_queue(self, backend):
         from streamlit.testing.v1 import AppTest
         from http_server_fixture import LiveServer
-        from decision_workbench.training.liquid_local import PINNED_PACKAGES
+        from decision_workbench.training.liquid_local import (
+            PINNED_PACKAGES,
+            UNSLOTH_PACKAGES,
+        )
 
         cpu = {
             "system": "fixture",
@@ -276,7 +286,9 @@ class LiquidPlatformTests(unittest.TestCase):
             "python": "3.12",
             "cuda": True,
             "packages": {
-                **PINNED_PACKAGES,
+                **(
+                    UNSLOTH_PACKAGES if backend == "liquid-unsloth" else PINNED_PACKAGES
+                ),
                 "torch": "2.10.0+cu126",
                 "triton-windows": "3.6.0.post26",
             },
@@ -294,14 +306,22 @@ class LiquidPlatformTests(unittest.TestCase):
                 "cpu_baseline": True,
                 "teacher_configured": False,
                 "runtimes": {"training": cpu, "serving": cpu},
-                "model_profiles": {"liquid-trl": {"training": model, "serving": model}},
+                "model_profiles": {backend: {"training": model, "serving": model}},
             }
             app.run(timeout=30)
             self.assertEqual(len(app.exception), 0)
             next(w for w in app.selectbox if w.label == "Training backend").select(
-                "liquid-trl"
+                backend
             ).run(timeout=30)
             self.assertEqual(len(app.exception), 0)
+            self.assertFalse(
+                any(w.label == "Prepare remote training study" for w in app.button)
+            )
+            if backend == "liquid-unsloth":
+                devices = next(
+                    w for w in app.selectbox if w.label == "Liquid compute device"
+                )
+                self.assertNotIn("CPU (at least 20 GiB available RAM)", devices.options)
             self.assertEqual(
                 next(w for w in app.radio if w.label == "Training location").options,
                 ["This computer"],
@@ -322,14 +342,86 @@ class LiquidPlatformTests(unittest.TestCase):
                 ).fetchall()
             self.assertEqual(len(rows), 1)
             config = json.loads(rows[0]["config"])
-            self.assertEqual(config["backend"], "liquid-trl")
+            self.assertEqual(config["backend"], backend)
             self.assertEqual(config["rank"], 4)
             self.assertEqual(config["max_steps"], 8)
             self.assertFalse(config["download"])
             self.assertIn("liquid_study", config)
 
+    def test_unsloth_study_cannot_be_run_or_admitted_as_trl(self):
+        response = self.queue(
+            {**self.config, "backend": "liquid-unsloth", "device": "cuda"}
+        )
+        self.assertEqual(response.status_code, 202, response.text)
+        config = response.json()["config"]
+        self.assertEqual(
+            config["liquid_study"]["configuration"]["backend"], "liquid-unsloth"
+        )
+        self.assertTrue(self.store.has_model_training())
+        bad = self.queue(
+            {**self.config, "backend": "liquid-unsloth", "device": "cpu"},
+            key="unsloth-cpu-refusal",
+        )
+        self.assertEqual(bad.status_code, 400, bad.text)
+        with self.assertRaisesRegex(ValueError, "frozen local study"):
+            checked_report({"backend": "liquid-trl"}, config)
+
 
 class LiquidEnvironmentTests(unittest.TestCase):
+    def test_capability_probe_deduplicates_shared_interpreters_across_profiles(self):
+        from decision_workbench.platform import capabilities
+
+        value = {"packages": {"numpy": "fixture", "scikit-learn": "fixture"}}
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "DMT_WORKER_PYTHON": sys.executable,
+                    "DMT_MODEL_PYTHON": sys.executable,
+                    "DMT_LIQUID_PYTHON": sys.executable,
+                    "DMT_LIQUID_UNSLOTH_PYTHON": sys.executable,
+                },
+            ),
+            patch.object(capabilities, "_cached", None),
+            patch.object(
+                capabilities.subprocess,
+                "run",
+                return_value=SimpleNamespace(returncode=0, stdout=json.dumps(value)),
+            ) as probe,
+        ):
+            result = capabilities.runtime_capabilities()
+            self.assertEqual(probe.call_count, 1)
+            self.assertTrue(result["cpu_baseline"])
+            self.assertEqual(set(result["runtimes"]), {"training", "serving"})
+            self.assertEqual(
+                set(result["model_profiles"]), {"liquid-trl", "liquid-unsloth"}
+            )
+
+    def test_unsloth_interpreter_and_compile_cache_are_independent(self):
+        with tempfile.TemporaryDirectory() as name:
+            interpreter = Path(name) / "python.exe"
+            interpreter.touch()
+            env = {
+                "DMT_LIQUID_PYTHON": sys.executable,
+                "DMT_LIQUID_UNSLOTH_PYTHON": str(interpreter),
+            }
+            self.assertEqual(
+                model_python("liquid-unsloth", "training", env), str(interpreter)
+            )
+            self.assertEqual(
+                model_python("liquid-unsloth", "serving", env), str(interpreter)
+            )
+            self.assertEqual(
+                model_python("liquid-trl", "training", env), sys.executable
+            )
+            child, _, cache = liquid_environment(
+                Path(name) / "workspace", env, backend="liquid-unsloth"
+            )
+            self.assertEqual(
+                Path(child["UNSLOTH_COMPILE_LOCATION"]),
+                cache.parent / "liquid-unsloth-compiled",
+            )
+
     def test_liquid_interpreter_selection_does_not_replace_legacy_environments(self):
         env = {
             "DMT_LIQUID_PYTHON": sys.executable,

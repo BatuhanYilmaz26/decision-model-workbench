@@ -20,12 +20,20 @@ DEFAULTS = {
     "download": False,
 }
 PROFILE = {"backend": "liquid-trl", "model": MODEL, "revision": REVISION}
+BACKENDS = ("liquid-trl", "liquid-unsloth")
 PINNED_PACKAGES = {
     "transformers": "5.19.0",
     "trl": "1.15.0",
     "peft": "0.21.2",
     "datasets": "4.8.5",
     "tokenizers": "0.23.3",
+}
+UNSLOTH_PACKAGES = {
+    **PINNED_PACKAGES,
+    "transformers": "5.17.0",
+    "trl": "1.13.0",
+    "unsloth": "2026.10.3",
+    "unsloth_zoo": "2026.10.3",
 }
 INPUTS = {"snapshot"} | set(PROFILE) | set(DEFAULTS)
 
@@ -34,7 +42,9 @@ def settings(value):
     if set(value) - set(PROFILE) - set(DEFAULTS):
         raise ValueError("Unexpected Liquid training settings")
     result = {**PROFILE, **DEFAULTS, **value}
-    if any(result[key] != expected for key, expected in PROFILE.items()):
+    if result["backend"] not in BACKENDS or any(
+        result[key] != PROFILE[key] for key in ("model", "revision")
+    ):
         raise ValueError(
             "Select the pinned Liquid d1-3B model/revision for this profile"
         )
@@ -63,6 +73,8 @@ def settings(value):
         or type(result["download"]) is not bool
     ):
         raise ValueError("Choose auto/CPU/CUDA and an explicit boolean download choice")
+    if result["backend"] == "liquid-unsloth" and result["device"] == "cpu":
+        raise ValueError("The Liquid Unsloth profile requires a compatible CUDA GPU")
     return {key: result[key] for key in set(PROFILE) | set(DEFAULTS)}
 
 
@@ -86,7 +98,16 @@ def validate_request(path, args, hashes, source):
         "configuration",
     }:
         raise ValueError("Invalid frozen Liquid study request")
-    actual = settings({key: getattr(args, key) for key in DEFAULTS})
+    actual = settings(
+        {
+            **{key: getattr(args, key) for key in DEFAULTS},
+            "backend": (
+                "liquid-unsloth"
+                if getattr(args, "trainer", "trl") == "unsloth"
+                else "liquid-trl"
+            ),
+        }
+    )
     if (
         study["format"] != "domain-liquid-local-study-v1"
         or study["configuration"] != actual

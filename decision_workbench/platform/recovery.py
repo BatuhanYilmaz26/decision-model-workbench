@@ -376,6 +376,7 @@ def _validate_workspace(folder):
             "unsloth",
             "vega",
             "liquid-trl",
+            "liquid-unsloth",
             "hosted",
         ):
             raise ValueError("Model training configuration integrity check failed")

@@ -10,7 +10,7 @@ from pathlib import Path
 from decision_workbench.data import dumps, options, validate, validate_questions
 from .artifacts import file_sha
 from .liquid_data import ASSETS, MODEL, REVISION, LiquidPrompt
-from .liquid_local import PINNED_PACKAGES
+from .liquid_local import PINNED_PACKAGES, UNSLOTH_PACKAGES
 from .metrics import normalize_answers
 
 RUNTIME_ASSETS = {
@@ -39,13 +39,16 @@ def require_cpu_memory(*, training=False):
         )
 
 
-def runtime_identity():
-    installed = {name: importlib.metadata.version(name) for name in PINNED_PACKAGES}
-    if installed != PINNED_PACKAGES:
-        raise ValueError("Use the separate requirements/liquid-trl.txt environment")
+def runtime_identity(profile="liquid-trl"):
+    if profile not in ("liquid-trl", "liquid-unsloth"):
+        raise ValueError("Unknown Liquid runtime profile")
+    expected = UNSLOTH_PACKAGES if profile == "liquid-unsloth" else PINNED_PACKAGES
+    installed = {name: importlib.metadata.version(name) for name in expected}
+    if installed != expected:
+        raise ValueError(f"Use the separate requirements/{profile}.txt environment")
     installed["torch"] = importlib.metadata.version("torch")
     if installed["torch"].split("+")[0] != "2.10.0":
-        raise ValueError("The Liquid TRL profile requires Torch 2.10.0")
+        raise ValueError("The Liquid model profiles require Torch 2.10.0")
     return installed
 
 
@@ -170,10 +173,9 @@ def fit_temperatures(rows, predictions, questions):
 class LiquidEngine:
     """Native option-token scoring; no generated text or random replacement head."""
 
-    def __init__(self, checkpoint, device="auto", *, base=False):
-        runtime_identity()
+    def __init__(self, checkpoint, device="auto", *, base=False, profile="liquid-trl"):
+        runtime_identity(profile)
         checkpoint = Path(checkpoint)
-        checked_runtime(checkpoint, base=base)
         metadata_path = checkpoint / "dmt_liquid.json"
         if not base and metadata_path.stat().st_size > 16 * 1024 * 1024:
             raise ValueError("Liquid export metadata exceeds 16 MiB")
@@ -184,8 +186,16 @@ class LiquidEngine:
             if (
                 self.metadata.get("format") != "domain-liquid-runtime-v1"
                 or self.metadata.get("revision") != REVISION
+                or self.metadata.get("training_backend", "liquid-trl") != profile
             ):
                 raise ValueError("Liquid export metadata does not match this runtime")
+            mode = self.metadata.get("weights_mode", "merged")
+            if mode != (
+                "base-plus-adapter" if profile == "liquid-unsloth" else "merged"
+            ):
+                raise ValueError(
+                    "Liquid export weights do not match the selected runtime profile"
+                )
             validate_questions(self.metadata["questions"])
             if set(self.metadata["temperatures"]) != set(self.metadata["questions"]):
                 raise ValueError("Liquid calibration must cover every pinned question")
@@ -196,6 +206,14 @@ class LiquidEngine:
                 or not 16 <= self.metadata["max_length"] <= 32768
             ):
                 raise ValueError("Liquid export has an invalid input budget")
+        adapter_folder = None
+        if not base and profile == "liquid-unsloth":
+            from .liquid_adapter import checked_adapter
+
+            adapter_folder, _ = checked_adapter(
+                checkpoint, self.metadata.get("adapter")
+            )
+        checked_runtime(checkpoint, base=base or adapter_folder is not None)
         self.max_length = 32768 if base else self.metadata["max_length"]
         import torch
         from transformers import AutoModel
@@ -229,6 +247,16 @@ class LiquidEngine:
             device_map={"": self.device},
             attn_implementation="sdpa",
         ).eval()
+        if adapter_folder is not None:
+            from peft import PeftModel
+
+            self.model = PeftModel.from_pretrained(
+                self.model,
+                str(adapter_folder),
+                local_files_only=True,
+                is_trainable=False,
+                use_safetensors=True,
+            ).eval()
         self.prompt = LiquidPrompt(checkpoint)
 
     def predict(self, state, questions):

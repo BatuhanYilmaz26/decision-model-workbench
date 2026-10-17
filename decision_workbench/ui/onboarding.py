@@ -138,6 +138,11 @@ def render_connection(root):
                 liquid_python = st.session_state.get("local-liquid-python", "").strip()
                 if liquid_python:
                     settings["DMT_LIQUID_PYTHON"] = liquid_python
+                liquid_unsloth_python = st.session_state.get(
+                    "local-liquid-unsloth-python", ""
+                ).strip()
+                if liquid_unsloth_python:
+                    settings["DMT_LIQUID_UNSLOTH_PYTHON"] = liquid_unsloth_python
                 teacher_url = st.session_state.get("local-teacher-url", "").strip()
                 teacher_model = st.session_state.get("local-teacher-model", "").strip()
                 if teacher_url or teacher_model:
@@ -217,6 +222,11 @@ def render_connection(root):
                 help="Leave empty for CPU baseline. A compatible separate environment is required for Laya, Unsloth or Vega.",
             )
             st.text_input(
+                "Liquid d1-3B Unsloth Python executable (optional)",
+                key="local-liquid-unsloth-python",
+                help="Absolute Python executable from requirements/liquid-unsloth.txt. This CUDA profile uses FastVisionModel with its own compatible trainer versions.",
+            )
+            st.text_input(
                 "Liquid d1-3B Python executable (optional)",
                 key="local-liquid-python",
                 help="Absolute Python executable from the separate requirements/liquid-trl.txt environment. This keeps Liquid's Transformers 5.19 profile separate from Laya/Unsloth.",
@@ -262,10 +272,9 @@ def render_runtime(api, principal):
         capability = st.session_state.get("runtime-capabilities")
         if capability:
             displayed = dict(capability["runtimes"])
-            for purpose, value in (
-                capability.get("model_profiles", {}).get("liquid-trl", {}).items()
-            ):
-                displayed["Liquid " + purpose] = value
+            for backend, profiles in capability.get("model_profiles", {}).items():
+                for purpose, value in profiles.items():
+                    displayed[backend + " " + purpose] = value
             for kind, runtime in displayed.items():
                 st.markdown("**" + kind.capitalize() + " environment**")
                 if runtime.get("error"):
@@ -301,21 +310,36 @@ def local_backend_available(backend, capabilities):
             capabilities["cpu_baseline"],
             "Install the platform dependencies in the worker environment.",
         )
-    if backend == "liquid-trl":
-        from decision_workbench.training.liquid_local import PINNED_PACKAGES
+    if backend in ("liquid-trl", "liquid-unsloth"):
+        from decision_workbench.training.liquid_local import (
+            PINNED_PACKAGES,
+            UNSLOTH_PACKAGES,
+        )
 
-        profiles = capabilities.get("model_profiles", {}).get("liquid-trl", {})
+        profiles = capabilities.get("model_profiles", {}).get(backend, {})
+        expected = UNSLOTH_PACKAGES if backend == "liquid-unsloth" else PINNED_PACKAGES
         for purpose in ("training", "serving"):
             value = profiles.get(purpose, {})
             packages = value.get("packages", {})
             if (
                 value.get("error")
-                or any(packages.get(k) != v for k, v in PINNED_PACKAGES.items())
+                or any(packages.get(k) != v for k, v in expected.items())
                 or (packages.get("torch") or "").split("+")[0] != "2.10.0"
             ):
                 return (
                     False,
-                    "Configure DMT_LIQUID_PYTHON using the separate Liquid training profile. Both training and serving need that compatible environment.",
+                    "Configure "
+                    + (
+                        "DMT_LIQUID_UNSLOTH_PYTHON"
+                        if backend == "liquid-unsloth"
+                        else "DMT_LIQUID_PYTHON"
+                    )
+                    + " using the matching Liquid requirements profile. Both training and serving need that compatible environment.",
+                )
+            if backend == "liquid-unsloth" and not value.get("cuda"):
+                return (
+                    False,
+                    "The selected Liquid Unsloth profile requires CUDA for training and serving. Choose TRL with sufficient CPU RAM or the CPU baseline.",
                 )
             required = 20 if purpose == "training" else 16
             if (

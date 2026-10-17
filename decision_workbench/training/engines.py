@@ -169,8 +169,8 @@ def load_engine(backend, checkpoint):
         from .vega_engine import VegaEngine
 
         return VegaEngine(checkpoint)
-    if backend == "liquid-trl":
+    if backend in ("liquid-trl", "liquid-unsloth"):
         from .liquid_runtime import LiquidEngine
 
-        return LiquidEngine(checkpoint)
+        return LiquidEngine(checkpoint, profile=backend)
     raise ValueError("Unknown trained decision backend")

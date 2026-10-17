@@ -3,7 +3,7 @@
 [Model directory](README.md) · [All guides](../README.md) · [Project overview](../../README.md)
 
 Prepare reviewed domain examples on a CPU, then use the separate local TRL
-runner to train, calibrate and export a domain model. The CPU exporter produces
+or FastVisionModel/Unsloth runner to train, calibrate and export a domain model. The CPU exporter produces
 the native data formats used by Liquid's official fine-tuning notebooks. It supports text
 and JSON evidence with choice, yes/no and ordered-score questions. It downloads
 a pinned tokenizer, prompt builder and license, about 18 MB in total. The data
@@ -21,7 +21,8 @@ do not add their packages to an existing Laya or Unsloth installation.
 1. Follow the [root application setup](../../README.md#run-on-your-computer) and
    install the separate [Liquid model environment](#train-with-the-local-trl-runner).
    Keep the application's CPU environment and existing model environments intact.
-2. Configure **DMT_LIQUID_PYTHON** in the API/worker environment, then start
+2. Configure **DMT_LIQUID_PYTHON** for TRL, or **DMT_LIQUID_UNSLOTH_PYTHON**
+   for the [separate Unsloth profile](#train-with-fastvisionmodel-and-unsloth), in the API/worker environment, then start
    `domain-platform run` from the application's environment. Personal mode opens
    without a pasted workspace credential. Alternatively, set **Liquid d1-3B
    Python executable** in Streamlit's optional local settings before starting
@@ -31,7 +32,8 @@ do not add their packages to an existing Laya or Unsloth installation.
    Synthetic candidates use the existing [teacher/review workflow](../synthetic-generation-guide.md).
    Liquid SFT refuses soft training/validation targets and needs at least eight
    real calibration records. Set your owner acceptance criteria before training.
-4. Under training, select **Liquid d1-3B (TRL)** and **This computer**. Check the
+4. Under training, select **Liquid d1-3B (TRL)** or **Liquid d1-3B (Unsloth)**
+   to match the installed profile, then **This computer**. Check the
    hardware/package panel. Choose the compute device and training budget. Permit
    the 6.25 GB public checkpoint download only if its pinned assets are not cached.
    Training records stay local; the download fetches weights and reviewed model code.
@@ -62,7 +64,7 @@ domain-platform run
 ```
 
 For individually operated API and worker services, configure the same variable in
-both processes. It selects Liquid's interpreter for training **and** serving.
+both processes. Each Liquid variable selects that profile's interpreter for training **and** serving.
 `DMT_WORKER_PYTHON` / `DMT_MODEL_PYTHON` keep their existing behavior for other
 backends. Install project source from the same checkout in each environment;
 requests are bound to that source identity. Browser/API requests cannot select
@@ -241,9 +243,94 @@ training settings.
 |---|---|
 | `data/` | Native training data, byte-preserved canonical records and lineage manifest |
 | `adapter/` | LoRA parameters; retain the pinned base model when using this separately |
-| `merged/` | Complete safetensors model, exact native API/tokenizer assets, license and domain calibration metadata |
+| `merged/` (TRL), `checkpoint/` (Unsloth) | Native model assets and domain calibration; Unsloth retains a safetensors LoRA adapter beside the pinned base weights |
 | `report.json` | Source/data identities, optimizer updates, parameter delta, package/hardware details, calibration and held-out metrics |
 | `manifest.json` | File identities and schema/backend binding for the complete export |
+
+## Train with FastVisionModel and Unsloth
+
+Use this separate **Python 3.12 / NVIDIA CUDA** profile to train d1-3B through
+Unsloth's `FastVisionModel`. It keeps the native decision readout and freezes
+vision parameters while adapting the language layers. The current profile uses
+16-bit base weights and retains the adapter in its saved precision. CPU training, four-bit training and image training are not
+included in this route; use the TRL profile for the documented CPU preflight.
+
+The [pinned Liquid notebook](https://github.com/Liquid4All/cookbook/blob/744c5b628a27adb4f219ff4a1d11e3d70259b369/finetuning/notebooks/sft_for_decision_models_with_unsloth.ipynb)
+supplies the FastVisionModel and language-layer LoRA approach. This route keeps
+the trained adapter separate from the base weights to avoid rounding its updates
+into 16-bit weights during merging. This repository
+selects **Unsloth/Zoo 2026.10.3, Transformers 5.17.0 and TRL 1.13.0**, a compatible
+dependency set. That [Unsloth release](https://pypi.org/pypi/unsloth/2026.10.3/json) caps TRL at 1.13.0; do not copy the notebook's
+no-dependency installation of TRL 1.15.0 into this profile. Keep the TRL 5.19
+model environment separate. See [dependency compatibility](../compatibility-and-upgrades.md)
+when qualifying another release.
+
+Windows PowerShell:
+
+```powershell
+py -3.12 -m venv .venv-liquid-unsloth
+.\.venv-liquid-unsloth\Scripts\python.exe -m pip install torch==2.10.0+cu126 torchvision==0.25.0+cu126 --index-url https://download.pytorch.org/whl/cu126
+.\.venv-liquid-unsloth\Scripts\python.exe -m pip install -r requirements/liquid-unsloth.txt
+.\.venv-liquid-unsloth\Scripts\python.exe -m pip check
+.\.venv-liquid-unsloth\Scripts\python.exe -m decision_workbench.training.liquid_runner --trainer unsloth --data data/my-domain --out runs/my-domain-liquid-unsloth --device cuda --rank 16 --batch-size 1 --grad-accum 4 --max-length 2048 --epochs 1 --download
+```
+
+Linux shell with compatible NVIDIA drivers and CUDA wheels:
+
+```bash
+python3.12 -m venv .venv-liquid-unsloth
+.venv-liquid-unsloth/bin/python -m pip install torch==2.10.0+cu126 torchvision==0.25.0+cu126 --index-url https://download.pytorch.org/whl/cu126
+.venv-liquid-unsloth/bin/python -m pip install -r requirements/liquid-unsloth.txt
+.venv-liquid-unsloth/bin/python -m pip check
+.venv-liquid-unsloth/bin/python -m decision_workbench.training.liquid_runner --trainer unsloth --data data/my-domain --out runs/my-domain-liquid-unsloth --device cuda --rank 16 --batch-size 1 --grad-accum 4 --max-length 2048 --epochs 1 --download
+```
+
+The platform-specific accelerator profile needs qualification on your Linux
+host. Choose a token budget that fits your complete native inputs and available
+VRAM; the commands are training recipes, not a guarantee that 2,048 tokens fits
+every GPU. Later runs can omit `--download` and reuse the pinned private cache.
+
+Provide the same four reviewed canonical roles as the TRL runner. The shared
+converter checks native option aliases and token boundaries, then builds exact
+completion masks before SFT. Only the native decision token and end-of-turn
+receive loss; evidence and padding remain masked. The runner uses the ordinary
+Torch AdamW optimizer rather than requiring an 8-bit optimizer, checks actual
+parameter updates and exports a portable `checkpoint/` directory containing the
+pinned base weights, native runtime assets and a hash-bound `adapter/`. The loader
+applies the adapter before scoring, preserving its saved precision. Native reload,
+reserved calibration and held-out evaluation remain mandatory before a report
+and manifest are published.
+
+For the localhost application, set the profile's interpreter before startup:
+
+```powershell
+$env:DMT_LIQUID_UNSLOTH_PYTHON = (Resolve-Path .\.venv-liquid-unsloth\Scripts\python.exe).Path
+domain-platform run
+```
+
+In Bash, use `export DMT_LIQUID_UNSLOTH_PYTHON="$PWD/.venv-liquid-unsloth/bin/python"`.
+Run `domain-platform` in the application's CPU environment. Streamlit also offers
+**Liquid d1-3B Unsloth Python executable** in optional local settings. Select
+**Liquid d1-3B (Unsloth)** when queueing. Its supervised child keeps compiled
+Unsloth files in a private model cache, separate from other model environments.
+
+Use the same release workflow after training. For standalone inference, select
+the matching backend and use the exact schema you trained:
+
+```powershell
+.\.venv-liquid-unsloth\Scripts\python.exe -m decision_workbench.training.inference --backend liquid-unsloth --model runs/my-domain-liquid-unsloth/checkpoint --request data/my-domain-request.json
+```
+
+Python services can use `LiquidEngine("runs/my-domain-liquid-unsloth/checkpoint",
+profile="liquid-unsloth")`. This native serving path does not import Unsloth's
+training patches. Keep `dmt_liquid.json` with the export to retain the domain
+schema, input budget and fitted temperatures. The trainer profile is recorded
+in the metadata and is checked during registration and loading. Move the entire
+`checkpoint/` directory when deploying; it does not need to fetch base weights
+from the Hub. Bare `AutoModel.from_pretrained` does not apply the saved adapter
+or this project's domain temperatures. Use the shared engine or API for the
+fine-tuned, calibrated result. The same fixed reload tolerance applies to both
+profiles; an unsuccessful qualification is never registered.
 
 ## Use the fine-tuned export
 
