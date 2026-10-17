@@ -1,16 +1,17 @@
-# Prepare domain data for Liquid d1-3B
+# Train and use Liquid d1-3B
 
 [Model directory](README.md) · [All guides](../README.md) · [Project overview](../../README.md)
 
-Use the CPU exporter to turn reviewed domain examples into the native data
-formats used by Liquid's official d1-3B fine-tuning notebooks. It supports text
+Prepare reviewed domain examples on a CPU, then use the separate local TRL
+runner to train, calibrate and export a domain model. The CPU exporter produces
+the native data formats used by Liquid's official fine-tuning notebooks. It supports text
 and JSON evidence with choice, yes/no and ordered-score questions. It downloads
-a pinned tokenizer, prompt builder and license, about 18 MB in total. It does
-not download weights, start a paid job or train a model.
+a pinned tokenizer, prompt builder and license, about 18 MB in total. The data
+export command does not download weights, start a paid job or train a model.
 
-The exporter is a standalone data-preparation tool. Liquid training, calibration,
-registry admission and serving are not yet integrated into the application's
-training menu. The [official Unsloth notebook](https://github.com/Liquid4All/cookbook/blob/744c5b628a27adb4f219ff4a1d11e3d70259b369/finetuning/notebooks/sft_for_decision_models_with_unsloth.ipynb)
+The exporter and TRL trainer are standalone commands. Liquid training, registry
+admission and serving are not yet integrated into the application's training
+menu. The [official Unsloth notebook](https://github.com/Liquid4All/cookbook/blob/744c5b628a27adb4f219ff4a1d11e3d70259b369/finetuning/notebooks/sft_for_decision_models_with_unsloth.ipynb)
 and [official TRL notebook](https://github.com/Liquid4All/cookbook/blob/744c5b628a27adb4f219ff4a1d11e3d70259b369/finetuning/notebooks/sft_for_decision_models_with_trl.ipynb)
 provide the upstream training routes. Treat those as separate GPU environments;
 do not add their packages to an existing Laya or Unsloth installation.
@@ -121,6 +122,113 @@ per input, 64 MiB per input, 100,000 total decisions and a chosen token budget o
 fail, remove the incomplete output after inspecting it and retry with a new name;
 only a bundle with its final manifest is complete.
 
+## Train with the local TRL runner
+
+Use a **new Python 3.12 environment** for this model. The selected profile follows
+Liquid's TRL recipe with Transformers 5.19.0, TRL 1.15.0 and PEFT 0.21.2. Its
+Torch/torchvision versions match each other. CUDA SFT also needs Triton; the
+profile selects the matching Windows or Linux distribution. Do not install this profile over
+the application's environment or an existing Laya/Unsloth/Vega environment.
+
+Windows PowerShell with a compatible NVIDIA CUDA installation:
+
+```powershell
+py -3.12 -m venv .venv-liquid-trl
+.\.venv-liquid-trl\Scripts\python.exe -m pip install torch==2.10.0+cu126 torchvision==0.25.0+cu126 --index-url https://download.pytorch.org/whl/cu126
+.\.venv-liquid-trl\Scripts\python.exe -m pip install -r requirements/liquid-trl.txt
+.\.venv-liquid-trl\Scripts\python.exe -m pip check
+.\.venv-liquid-trl\Scripts\python.exe -m decision_workbench.training.liquid_runner --data data/my-domain --out runs/my-domain-liquid --device cuda --rank 16 --batch-size 1 --grad-accum 4 --max-length 2048 --epochs 1 --download
+```
+
+Linux uses the same requirements and runner arguments with its environment's
+`bin/python`. Install accelerator wheels matching your hardware from
+[PyTorch's official installation instructions](https://pytorch.org/get-started/locally/).
+Platform and accelerator support need their own runtime qualification; a working
+CPU exporter does not establish Linux CUDA or Apple training support.
+
+The first training run's `--download` permits downloading the pinned **6.25 GB
+checkpoint**, its tokenizer and reviewed runtime assets. Subsequent runs omit
+that flag to use the cached checkpoint offline. Weights and datasets remain
+under private `data/` and `runs/` directories. Downloading weights does not send
+your domain records to Hugging Face.
+
+Weight size alone is not a VRAM requirement: training also needs activations,
+adapters and optimizer memory. Batch size, sequence lengths and LoRA rank affect
+memory use. Lower them if appropriate for your data, or choose a larger GPU.
+Choose training duration from validation learning curves and independent domain
+results. `--max-steps` is available for bounded compatibility checks, not as a
+recommended training budget.
+
+Provide all four reviewed canonical files directly to `--data`; the runner
+builds its own native export. Training and validation require one-hot labels.
+Reserve at least eight reviewed real calibration records; this minimum is a
+mechanical gate, not evidence that calibration data is representative or
+statistically sufficient for your domain.
+
+The runner updates language-layer LoRA parameters while freezing the vision
+encoder. Only the native decision token and end-of-turn token contribute to
+loss. Evidence and padding are masked. It refuses a run with no finite parameter
+updates, merges the adapter, unloads the training model and independently reloads
+the native decision runtime. Validation probes must retain their decisions and
+stay within a fixed probability tolerance of 0.005. A failed qualification is a
+failed run, even if its training loss decreased.
+
+Calibration selects per-question temperatures from a fixed grid using only the
+reserved calibration role. Final validation/test metrics are computed from the
+exported runtime. The test role is never used to fit temperatures or tune
+training settings.
+
+| Output | Use |
+|---|---|
+| `data/` | Native training data, byte-preserved canonical records and lineage manifest |
+| `adapter/` | LoRA parameters; retain the pinned base model when using this separately |
+| `merged/` | Complete safetensors model, exact native API/tokenizer assets, license and domain calibration metadata |
+| `report.json` | Source/data identities, optimizer updates, parameter delta, package/hardware details, calibration and held-out metrics |
+| `manifest.json` | File identities and schema/backend binding for the complete export |
+
+## Use the fine-tuned export
+
+In the same model environment, call the shared inference helper with your
+original decision schema:
+
+```powershell
+.\.venv-liquid-trl\Scripts\python.exe -m decision_workbench.training.inference --backend liquid-trl --model runs/my-domain-liquid/merged --request data/my-domain-request.json
+```
+
+The request has `state` and `questions` fields, as in the
+[example request](../../examples/liquid/request.json). Replace its questions
+with the **exact policy/schema you trained**. The engine uses the saved option
+order, rejects schema changes and refuses inputs beyond the trained token budget.
+It returns canonical answers, probabilities, confidence and expected scores for
+rating questions. Use your validated thresholds and fallback before taking any
+action in an application.
+
+For Python integration:
+
+```python
+import json
+from pathlib import Path
+from decision_workbench.training.liquid_runtime import LiquidEngine
+
+request = json.loads(Path("data/my-domain-request.json").read_text(encoding="utf-8"))
+engine = LiquidEngine("runs/my-domain-liquid/merged", device="auto")
+answers = engine.predict(state=request["state"], questions=request["questions"])
+```
+
+Load the engine once in your own service, then reuse it. `device="cpu"` selects
+CPU inference with sufficient RAM; the float32 profile requires at least
+16 GiB available RAM before loading. CPU training uses ordinary PyTorch causal-LM
+loss with the same masked completions and requires at least 20 GiB available RAM.
+These CPU compute paths need separate execution/performance qualification from CUDA. Do not expose model paths or unbounded requests directly to untrusted
+clients. Follow [application integration](../application-blueprints.md) for
+routing, authorization and fallback responsibilities.
+
+Use this engine to apply the saved domain temperatures. Loading the export
+through raw `AutoModel.system_one` gives the publisher's native uncalibrated
+readout unless you separately apply the domain calibration; it does not read
+this project's `dmt_liquid.json` automatically. Neither standalone export nor
+this helper automatically registers a model in the application.
+
 ## Use the data in the official notebooks
 
 Review the notebook's package installation, GPU requirements, pinned model
@@ -175,7 +283,7 @@ release readiness. For the native loading/`system_one` interface, see the
 The [AWS, Azure, GCP, Modal and RunPod guides](../remote-training/README.md)
 explain the project's existing provider workflows. A d1-3B-specific managed
 runner/image and account-level training qualification are not available yet;
-do not submit this data bundle to a Laya/Vega runner. You can use a suitable
+do not submit a Liquid study to a Laya/Vega runner. You can use a suitable
 private GPU notebook environment for the official training recipe, subject to
 the provider's terms and your data-transfer policy.
 
@@ -183,4 +291,4 @@ This data profile is for **d1-3B**, not hosted d1-ultra or d1-omni-600M. The
 [Liquid model directory](https://docs.liquid.ai/lfm/models/decision-models)
 describes those separate routes. Image/audio/video training, quantized serving,
 Apple inference and fully managed d1-3B release remain separate compatibility
-work; this CPU exporter does not qualify them.
+work; this text/JSON profile does not qualify them.

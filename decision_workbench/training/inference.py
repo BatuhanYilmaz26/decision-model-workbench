@@ -27,7 +27,7 @@ def main():
     parser.add_argument("--model", required=True)
     parser.add_argument("--request", required=True)
     parser.add_argument(
-        "--backend", choices=["unsloth", "laya-native"], default="unsloth"
+        "--backend", choices=["unsloth", "laya-native", "liquid-trl"], default="unsloth"
     )
     args = parser.parse_args()
     try:

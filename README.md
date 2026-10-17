@@ -70,7 +70,7 @@ models whose application adapters are still being built.
 | Generate additional training examples | A configured local or hosted teacher and your reviewed training seeds | [Synthetic data workflow](#generate-synthetic-training-data) |
 | Train when local VRAM is insufficient | A custom training container on one of five GPU providers | [Remote training](docs/remote-training-guide.md), [provider walkthroughs](#train-on-a-remote-gpu) |
 | Choose a model and compare results | Model contracts, dated benchmarks and primary sources | [Concepts](docs/concepts.md), [model landscape](docs/model-landscape.md), [benchmarks](docs/benchmarks.md) |
-| Prepare domain data for Liquid d1-3B | CPU export to the official TRL and Unsloth SFT formats | [Liquid guide](docs/models/liquid.md), [example specification and CSV](examples/liquid/README.md) |
+| Train and use Liquid d1-3B | Native data export plus a separate local LoRA training and calibrated inference environment | [Liquid guide](docs/models/liquid.md), [example specification and CSV](examples/liquid/README.md) |
 
 ## Where decision models can help
 
@@ -142,7 +142,7 @@ Follow [testing](docs/verification.md) and [runtime compatibility and upgrades](
 | Area | Guides |
 |---|---|
 | Data | [Preview and import](docs/import-guide.md), [collection and review](docs/data-guide.md), [review assignments](docs/review-workflow.md), [policy versions](docs/policy-versioning-guide.md), [temporal boundaries](docs/temporal-data-guide.md), [semantic relatives](docs/semantic-data-guide.md), [taxonomy](docs/taxonomy-guide.md), [applicability](docs/applicability-guide.md) |
-| Models | [All model workflows](docs/models/README.md), [Laya and Unsloth](docs/training-guide.md), [Vega](docs/vega-guide.md), [Liquid d1-3B native data](docs/models/liquid.md), [evaluation and calibration](docs/evaluation-guide.md), [error costs and critical outcomes](docs/error-policy-guide.md) |
+| Models | [All model workflows](docs/models/README.md), [Laya and Unsloth](docs/training-guide.md), [Vega](docs/vega-guide.md), [Liquid d1-3B](docs/models/liquid.md), [evaluation and calibration](docs/evaluation-guide.md), [error costs and critical outcomes](docs/error-policy-guide.md) |
 | APIs and remote runs | [Hosted studies](docs/hosted-decisions-guide.md), [provider selection](docs/remote-training/provider-selection.md), [remote artifact admission](docs/remote-admission-guide.md) |
 | Managed training | [AWS](docs/managed-cloud-training.md), [Azure](docs/managed-azure-training.md), [GCP](docs/managed-gcp-training.md), [Modal](docs/managed-modal-training.md), [RunPod](docs/managed-runpod-training.md) |
 | Operations | [Deployment](docs/deployment-guide.md), [CPU containers](docs/container-guide.md), [model containers](docs/model-container-guide.md), [Windows process ownership](docs/windows-process-guide.md), [authentication](docs/authentication-guide.md), [audit exports](docs/audit-export-guide.md), [backup and recovery](docs/recovery-guide.md), [encrypted recovery](docs/encrypted-recovery-guide.md), [scheduled backups](docs/scheduled-backups-guide.md), [backup monitoring](docs/backup-monitoring-guide.md) |

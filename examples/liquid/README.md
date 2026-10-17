@@ -16,6 +16,10 @@ executes any action.
 4. Follow [native data export](../../docs/models/liquid.md#export-native-data) to
    produce the correct TRL and Unsloth representations for your reviewed study.
 
+The [prediction request](request.json) uses this example policy. For a model
+trained on your own policy, keep its original questions and replace the evidence;
+follow [fine-tuned inference](../../docs/models/liquid.md#use-the-fine-tuned-export).
+
 `operation` is a named choice; `needs_review` is true/false; `completeness` is a
 zero-based rubric level. Each `group_id` identifies the original evidence family.
 Keep repeated or derived examples from one family in one data role.

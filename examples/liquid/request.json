@@ -1,0 +1,27 @@
+{
+  "state": "Calculate 15 percent of 240.",
+  "questions": {
+    "operation": {
+      "type": "choice",
+      "instructions": "Which permitted operation best fits the stated request? Use clarify when required inputs are missing.",
+      "criteria": {
+        "retrieve": "Look up or retrieve information",
+        "calculate": "Perform a calculation from supplied values",
+        "clarify": "Request missing or ambiguous information"
+      }
+    },
+    "needs_review": {
+      "type": "noul",
+      "instructions": "Does the request contain ambiguity that requires review before choosing an executable operation?"
+    },
+    "completeness": {
+      "type": "score",
+      "instructions": "How complete is the information needed to select an operation?",
+      "criteria": [
+        "Required inputs missing",
+        "Some context supplied but an essential detail is unclear",
+        "Enough information to select an operation"
+      ]
+    }
+  }
+}
