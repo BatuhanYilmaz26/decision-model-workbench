@@ -376,7 +376,7 @@ class Service:
         from .vega_training import INPUTS as VEGA_INPUTS
 
         allowed["train"] |= VEGA_INPUTS
-        allowed["train"] |= {"device", "download"}
+        allowed["train"] |= {"device", "download", "training_method"}
         allowed["hosted-evaluate"] = {"snapshot", "profile_id", "data_approved"}
         allowed["taxonomy-discover"] = {
             "dataset",
@@ -545,7 +545,11 @@ class Service:
 
                 self.require(principal, ("admin",))
                 validate_location(config)
-                if config.get("backend") in ("liquid-trl", "liquid-unsloth"):
+                if config.get("backend") in (
+                    "liquid-trl",
+                    "liquid-unsloth",
+                    "liquid-omni",
+                ):
                     raise ValueError(
                         "Liquid managed cloud training is not available yet; use the local model profile"
                     )
@@ -559,11 +563,16 @@ class Service:
                 "vega",
                 "liquid-trl",
                 "liquid-unsloth",
+                "liquid-omni",
             ):
                 raise ValueError(
-                    "Select cpu-baseline, unsloth, laya-native, vega, liquid-trl or liquid-unsloth"
+                    "Select cpu-baseline, unsloth, laya-native, vega, liquid-trl, liquid-unsloth or liquid-omni"
                 )
-            if config["backend"] in ("liquid-trl", "liquid-unsloth"):
+            if config["backend"] == "liquid-omni":
+                from .liquid_omni_training import freeze
+
+                config = freeze(self, principal, project, config)
+            elif config["backend"] in ("liquid-trl", "liquid-unsloth"):
                 from .liquid_training import freeze
 
                 config = freeze(self, principal, project, config)
@@ -596,11 +605,14 @@ class Service:
                 "learning_rate",
                 "gate_weight",
                 "offline",
+                "training_method",
             }:
                 raise ValueError("Vega options do not apply to this backend")
-            if config["backend"] not in ("liquid-trl", "liquid-unsloth") and set(
-                config
-            ) & {
+            if config["backend"] not in (
+                "liquid-trl",
+                "liquid-unsloth",
+                "liquid-omni",
+            ) and set(config) & {
                 "device",
                 "download",
             }:
@@ -612,6 +624,7 @@ class Service:
                 "vega",
                 "liquid-trl",
                 "liquid-unsloth",
+                "liquid-omni",
             ):
                 unsupported = (
                     {"rank", "max_steps", "full_precision"}
@@ -712,6 +725,7 @@ class Service:
             "vega",
             "liquid-trl",
             "liquid-unsloth",
+            "liquid-omni",
         ):
             raise ValueError("Unsupported serving backend")
         if model["schema_sha256"] != spec["schema_sha256"]:
@@ -841,6 +855,10 @@ class Service:
 
             checked_report(report, model["configuration"])
             checked_model(self, model, questions)
+        elif model["backend"] == "liquid-omni":
+            from .liquid_omni_training import checked_artifact
+
+            checked_artifact(folder, report, model["configuration"], questions)
         elif model["backend"] in ("liquid-trl", "liquid-unsloth"):
             from .liquid_training import checked_artifact
 
@@ -885,6 +903,7 @@ class Service:
             "vega",
             "liquid-trl",
             "liquid-unsloth",
+            "liquid-omni",
         ):
             answers = self.runtime.predict(
                 active["model_id"], model, spec["questions"], state, threshold

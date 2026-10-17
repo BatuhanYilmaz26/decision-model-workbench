@@ -19,6 +19,13 @@ def predict_export(model_path, state, questions, backend="unsloth"):
         raise ValueError("Provide a local trained export directory")
     from .engines import load_engine
 
+    if backend == "liquid-omni":
+        from .artifacts import file_sha, verify_manifest
+
+        manifest = verify_manifest(
+            checkpoint, file_sha(checkpoint / "manifest.json"), backend, questions
+        )
+        checkpoint = checkpoint / manifest["checkpoint"]
     return load_engine(backend, checkpoint).predict(state, questions)
 
 
@@ -28,7 +35,13 @@ def main():
     parser.add_argument("--request", required=True)
     parser.add_argument(
         "--backend",
-        choices=["unsloth", "laya-native", "liquid-trl", "liquid-unsloth"],
+        choices=[
+            "unsloth",
+            "laya-native",
+            "liquid-trl",
+            "liquid-unsloth",
+            "liquid-omni",
+        ],
         default="unsloth",
     )
     args = parser.parse_args()

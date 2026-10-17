@@ -45,6 +45,7 @@ and separate references to models whose integrations are still in development.
 | [Vega training](vega-guide.md) | Use Vega's separate engine, domain-adapter and applicability contracts |
 | [Liquid hosted d1/d1-ultra](models/liquid-hosted.md) | Call the direct API or evaluate and release a hosted domain policy |
 | [Liquid d1-3B](models/liquid.md) | Prepare native domain data, run standalone local LoRA training and use a calibrated export |
+| [Liquid d1-omni-600M](models/liquid-omni.md) | Adapt the native decision head on text/JSON, calibrate and use a domain export in the local app |
 | [Evaluation and calibration](evaluation-guide.md) | Assess class-level quality, probabilities, abstention and independent reload |
 | [Error costs and critical outcomes](error-policy-guide.md) | Freeze domain-specific release criteria before training |
 | [API integration](api-integration-guide.md) | Call decision providers, validate responses and handle failures |

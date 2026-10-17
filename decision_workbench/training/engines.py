@@ -173,4 +173,8 @@ def load_engine(backend, checkpoint):
         from .liquid_runtime import LiquidEngine
 
         return LiquidEngine(checkpoint, profile=backend)
+    if backend == "liquid-omni":
+        from .liquid_omni_runtime import OmniEngine
+
+        return OmniEngine(checkpoint)
     raise ValueError("Unknown trained decision backend")

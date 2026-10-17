@@ -318,6 +318,10 @@ class Worker:
             snapshot["splits"], spec["questions"], policy["criteria"]
         )
         gate = None
+        if config.get("backend") == "liquid-omni":
+            from .liquid_omni_training import recheck
+
+            recheck(config, snapshot, spec["questions"])
         if config.get("backend") in ("liquid-trl", "liquid-unsloth"):
             from .liquid_training import recheck
 
@@ -364,6 +368,7 @@ class Worker:
                     "vega": "vegaml",
                     "liquid-trl": None,
                     "liquid-unsloth": None,
+                    "liquid-omni": None,
                 }[config["backend"]]
                 if dependency and importlib.util.find_spec(dependency) is None:
                     raise ValueError(
@@ -389,6 +394,7 @@ class Worker:
                 "vega": "vega_runner",
                 "liquid-trl": "liquid_runner",
                 "liquid-unsloth": "liquid_runner",
+                "liquid-omni": "liquid_omni_runner",
             }[config["backend"]]
             argv = [
                 sys.executable,
@@ -409,6 +415,34 @@ class Worker:
             ]
             child_environment = None
             child_cwd = None
+            if config["backend"] == "liquid-omni":
+                from .model_environment import liquid_environment, model_python
+                from decision_workbench.training.liquid_omni_local import request_body
+
+                child_environment, child_cwd, cache = liquid_environment(
+                    self.store.folder, backend="liquid-omni"
+                )
+                request_path = job_folder / "omni-request.json"
+                request_path.write_bytes(request_body(config["omni_study"]))
+                argv = [
+                    model_python("liquid-omni", "training"),
+                    "-m",
+                    "decision_workbench.training.liquid_omni_runner",
+                    "--data",
+                    str(job_folder / "data"),
+                    "--out",
+                    str(artifact_folder),
+                    "--local-study-request",
+                    str(request_path),
+                    "--cache",
+                    str(cache),
+                ]
+                for name in ("epochs", "batch_size", "learning_rate", "device"):
+                    argv.extend(["--" + name.replace("_", "-"), str(config[name])])
+                if config["max_steps"] is not None:
+                    argv.extend(["--max-steps", str(config["max_steps"])])
+                if config["download"]:
+                    argv.append("--download")
             if config["backend"] in ("liquid-trl", "liquid-unsloth"):
                 from .model_environment import liquid_environment, model_python
                 from decision_workbench.training.liquid_local import request_body
@@ -538,6 +572,10 @@ class Worker:
                 from .vega_training import checked_report
 
                 checked_report(report, config)
+            elif config["backend"] == "liquid-omni":
+                from .liquid_omni_training import checked_artifact
+
+                checked_artifact(artifact_folder, report, config, spec["questions"])
             elif config["backend"] in ("liquid-trl", "liquid-unsloth"):
                 from .liquid_training import checked_artifact
 

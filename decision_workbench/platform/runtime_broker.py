@@ -173,7 +173,7 @@ class RuntimeBroker:
                 or sys.executable
             )
             runtime_cwd = None
-            if model["backend"] in ("liquid-trl", "liquid-unsloth"):
+            if model["backend"] in ("liquid-trl", "liquid-unsloth", "liquid-omni"):
                 from .model_environment import liquid_environment, model_python
 
                 environment, runtime_cwd, _ = liquid_environment(

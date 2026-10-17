@@ -143,6 +143,9 @@ def render_connection(root):
                 ).strip()
                 if liquid_unsloth_python:
                     settings["DMT_LIQUID_UNSLOTH_PYTHON"] = liquid_unsloth_python
+                omni_python = st.session_state.get("local-omni-python", "").strip()
+                if omni_python:
+                    settings["DMT_OMNI_PYTHON"] = omni_python
                 teacher_url = st.session_state.get("local-teacher-url", "").strip()
                 teacher_model = st.session_state.get("local-teacher-model", "").strip()
                 if teacher_url or teacher_model:
@@ -231,6 +234,11 @@ def render_connection(root):
                 key="local-liquid-python",
                 help="Absolute Python executable from the separate requirements/liquid-trl.txt environment. This keeps Liquid's Transformers 5.19 profile separate from Laya/Unsloth.",
             )
+            st.text_input(
+                "Liquid omni model Python (optional)",
+                key="local-omni-python",
+                help="Absolute Python executable from requirements/liquid-omni.txt. Native text/JSON head adaptation runs in this separate CPU/CUDA environment.",
+            )
             st.link_button(
                 "Liquid installation and model setup", REPO + "docs/models/liquid.md"
             )
@@ -310,6 +318,28 @@ def local_backend_available(backend, capabilities):
             capabilities["cpu_baseline"],
             "Install the platform dependencies in the worker environment.",
         )
+    if backend == "liquid-omni":
+        from decision_workbench.training.liquid_omni_runtime import PACKAGES
+
+        profiles = capabilities.get("model_profiles", {}).get(backend, {})
+        for purpose in ("training", "serving"):
+            value = profiles.get(purpose, {})
+            packages = value.get("packages", {})
+            if (
+                value.get("error")
+                or any(packages.get(k) != v for k, v in PACKAGES.items())
+                or (packages.get("torch") or "").split("+")[0] != "2.10.0"
+            ):
+                return (
+                    False,
+                    "Configure DMT_OMNI_PYTHON with the separate requirements/liquid-omni.txt environment for both training and serving.",
+                )
+            if not value.get("cuda") and (value.get("ram_available_gib") or 0) < 6:
+                return (
+                    False,
+                    "Omni needs a compatible CUDA GPU or at least 6 GiB available CPU RAM. Input length and batch size can require more memory.",
+                )
+        return True, ""
     if backend in ("liquid-trl", "liquid-unsloth"):
         from decision_workbench.training.liquid_local import (
             PINNED_PACKAGES,

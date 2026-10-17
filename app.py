@@ -639,6 +639,7 @@ try:
                     "vega",
                     "liquid-trl",
                     "liquid-unsloth",
+                    "liquid-omni",
                 ],
                 format_func=lambda value: {
                     "cpu-baseline": "CPU comparison baseline",
@@ -647,6 +648,7 @@ try:
                     "vega": "Vega domain adapter",
                     "liquid-trl": "Liquid d1-3B (TRL)",
                     "liquid-unsloth": "Liquid d1-3B (Unsloth)",
+                    "liquid-omni": "Liquid d1-omni-600M (native head, text/JSON)",
                 }[value],
             )
             training_location = st.radio(
@@ -654,7 +656,7 @@ try:
                 (
                     ["This computer", "Cloud GPU"]
                     if principal["role"] == "admin"
-                    and backend not in ("liquid-trl", "liquid-unsloth")
+                    and backend not in ("liquid-trl", "liquid-unsloth", "liquid-omni")
                     else ["This computer"]
                 ),
                 horizontal=True,
@@ -681,6 +683,14 @@ try:
             elif backend == "unsloth":
                 st.info(
                     "This Unsloth profile needs a compatible CUDA model environment. It cannot use the CPU-only platform environment. Use a cloud GPU if your computer cannot run it."
+                )
+            elif backend == "liquid-omni":
+                st.info(
+                    "Adapt the original omni decision head while keeping its text trunk and media encoders frozen. This local CPU/CUDA profile accepts text and JSON. Images, audio and managed cloud submission are not available through this adapter."
+                )
+                st.link_button(
+                    "Omni installation, data and training guide",
+                    "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/models/liquid-omni.md",
                 )
             elif backend in ("liquid-trl", "liquid-unsloth"):
                 st.info(
@@ -712,7 +722,11 @@ try:
                         st.warning(reason)
             config = {"snapshot": training_snapshot, "backend": backend}
             vega_ready = True
-            if backend in ("liquid-trl", "liquid-unsloth"):
+            if backend == "liquid-omni":
+                from decision_workbench.ui.liquid_omni import training_options
+
+                local_ready = training_options(config, capabilities) and local_ready
+            elif backend in ("liquid-trl", "liquid-unsloth"):
                 from decision_workbench.training.liquid_local import PROFILE
 
                 config.update({**PROFILE, "backend": backend})
@@ -988,9 +1002,9 @@ try:
                     st.info(
                         "Select native Laya, Unsloth or Vega for remote GPU training."
                     )
-                elif backend in ("liquid-trl", "liquid-unsloth"):
+                elif backend in ("liquid-trl", "liquid-unsloth", "liquid-omni"):
                     st.info(
-                        "Managed cloud training for Liquid is not available yet. Use the local Liquid profile or the official notebook in your own compatible GPU environment. The Liquid guide explains the required data, runtime and export checks."
+                        "Managed cloud training for this Liquid profile is not available yet. Use its local model profile and corresponding model guide for data, runtime and export requirements. No provider training job is submitted here."
                     )
                 else:
                     if backend == "vega":

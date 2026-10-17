@@ -13,7 +13,7 @@ import importlib.metadata as m
 import json
 import platform
 packages = {}
-for name in ("scikit-learn", "numpy", "torch", "laya", "unsloth", "unsloth_zoo", "vegaml", "transformers", "trl", "peft", "datasets", "tokenizers", "triton", "triton-windows"):
+for name in ("scikit-learn", "numpy", "torch", "laya", "unsloth", "unsloth_zoo", "vegaml", "transformers", "trl", "peft", "datasets", "tokenizers", "triton", "triton-windows", "huggingface-hub", "safetensors"):
     try:
         packages[name] = m.version(name)
     except m.PackageNotFoundError:
@@ -51,6 +51,7 @@ def runtime_capabilities():
         model,
         os.environ.get("DMT_LIQUID_PYTHON"),
         os.environ.get("DMT_LIQUID_UNSLOTH_PYTHON"),
+        os.environ.get("DMT_OMNI_PYTHON"),
     )
     with _lock:
         if _cached and _cached[0] == identity and time.monotonic() - _cached[1] < 30:
@@ -58,7 +59,7 @@ def runtime_capabilities():
         from .model_environment import model_python
 
         targets = [("training", worker), ("serving", model)]
-        for backend in ("liquid-trl", "liquid-unsloth"):
+        for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni"):
             for purpose in ("training", "serving"):
                 try:
                     executable = model_python(backend, purpose)
@@ -99,7 +100,7 @@ def runtime_capabilities():
                 purpose: runtimes.pop(backend + "-" + purpose)
                 for purpose in ("training", "serving")
             }
-            for backend in ("liquid-trl", "liquid-unsloth")
+            for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni")
         }
         result = {
             "runtimes": runtimes,
