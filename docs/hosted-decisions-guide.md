@@ -12,12 +12,9 @@ For Liquid d1/d1-ultra setup, Python/TypeScript calls and model-specific limits,
 
 Copy [the profile template](../examples/hosted-profiles.json) to a private operator directory, and keep only the providers you intend to enable. Replace `tenants` with your configured workspace identities. Configure each provider credential in the dedicated environment variable named by `key_env`; the profile contains no credential values. Both API and worker processes need the profile path and their provider keys. Python commands do not automatically load `.env` files.
 
-For PowerShell, set the profile location before starting the existing launcher:
-
-```powershell
-$env:DMT_DECISION_PROFILES_FILE = (Resolve-Path data/config/decision-profiles.json).Path
-domain-platform run --keys-file data/operator-keys.json
-```
+For personal localhost mode, use `tenants: ["local"]`. The key-entry examples below
+set the profile path and start the launcher. For a shared operator workspace,
+use its configured tenants and add `--keys-file data/operator-keys.json`.
 
 Inject the selected `DMT_PROVIDER_TYPESAFE_API_KEY`, `DMT_PROVIDER_OPENROUTER_API_KEY`, `DMT_PROVIDER_PERPLEXITY_API_KEY`, `DMT_PROVIDER_LIQUID_API_KEY` or `DMT_PROVIDER_CLOUDFLARE_API_KEY` through your operator secret mechanism. Do not place a key in a URL, repository file, command example or browser form. The local launcher removes provider/teacher credentials from its Streamlit child; Compose passes provider credentials only to API/worker services. Compose's existing read-only configuration-directory mount allows a profile at `/run/config/decision-profiles.json`; set that container path through `DMT_DECISION_PROFILES_FILE`. Container execution still needs qualification.
 
@@ -38,6 +35,42 @@ There is no client-supplied URL or credential field. Direct providers use fixed 
 Changing a public profile field disables serving/release for earlier policy artifacts until the exact profile is restored or a successor study is qualified. Credential rotation and tenant revocation do not require putting a secret in an artifact. Removing a profile or tenant disables both fresh calls and cached result delivery. Live operator profile files and credential values are outside portable model/backup artifacts. The public evaluated profile snapshot remains inside policy artifacts and the call ledger.
 
 Cloudflare uses its account-scoped REST envelope, not the Workers binding envelope. Its initial text/JSON profile conservatively caps the entire request at 1,024 UTF-8 bytes and constrains question IDs. This is an application byte bound, not a tokenizer/context guarantee: qualify the actual provider's truncation and usable context before enterprise release. Media/generation fields are not supported by these adapters. [Clef Flash contract](https://developers.cloudflare.com/workers-ai/models/clef-flash/)
+
+## Enter your provider API key
+
+Create your own key in the selected provider's dashboard. Match its environment
+variable to `key_env` in your private profile. The example below uses Liquid;
+replace `DMT_PROVIDER_LIQUID_API_KEY` with the selected provider's variable for
+TypeSafe, OpenRouter, Perplexity or Cloudflare. Setting a variable does not make
+a paid call. Evaluation and released predictions use your account and can incur
+charges after you approve the workflow.
+
+In PowerShell, enter the key at a masked prompt, then start from the activated
+application environment:
+
+```powershell
+$decisionKey = Read-Host "Provider API key" -AsSecureString
+$env:DMT_PROVIDER_LIQUID_API_KEY = [System.Net.NetworkCredential]::new("", $decisionKey).Password
+Remove-Variable decisionKey
+$env:DMT_DECISION_PROFILES_FILE = (Resolve-Path data/config/decision-profiles.json).Path
+domain-platform run
+```
+
+In Bash or Zsh, Python's masked prompt keeps the key out of shell history:
+
+```bash
+export DMT_PROVIDER_LIQUID_API_KEY="$(python -c 'import getpass; print(getpass.getpass("Provider API key: "))')"
+export DMT_DECISION_PROFILES_FILE="$PWD/data/config/decision-profiles.json"
+domain-platform run
+```
+
+The value applies to this terminal and its API/worker children. Close the terminal
+or unset the variable when finished. Restart services after changing credentials.
+Do not put real keys in the public profile template, dataset or Git. Hosted
+profiles use provider credentials, separately from the workspace login key.
+For deployed services, inject the same variable through your platform's secret
+manager. Select the approved profile in the app; credentials are not entered in
+the shared browser's workspace-login form.
 
 ## Run an owner-approved study
 

@@ -33,8 +33,9 @@ Hosted access does not provide a customer-training checkpoint.
    `data/config/decision-profiles.json`. Keep the `liquid-d1` and/or
    `liquid-d1-ultra` entries you want. Set their `tenants` to `["local"]` for
    personal mode, or your approved workspace tenants for shared use.
-3. Supply `DMT_PROVIDER_LIQUID_API_KEY` through the API/worker environment or
-   operator secret manager. Set the profile path before starting the launcher:
+3. Enter your own `DMT_PROVIDER_LIQUID_API_KEY` using the
+   [masked terminal prompts](../hosted-decisions-guide.md#enter-your-provider-api-key),
+   or supply it through your operator secret manager. Set the profile path before starting the launcher:
 
    ```powershell
    $env:DMT_DECISION_PROFILES_FILE = (Resolve-Path data/config/decision-profiles.json).Path
