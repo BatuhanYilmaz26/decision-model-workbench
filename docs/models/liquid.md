@@ -74,8 +74,9 @@ an executable or replace the frozen contract.
 uses `model-cache/liquid-hub` beside the workspace, with separate native-module,
 CUDA and Triton caches. New artifacts contain only the exact approved model code;
 modified or additional Python code is refused before release/recovery loads it.
-Managed cloud training/import for Liquid remains unavailable. The application
-keeps those unsupported routes separate from its working local workflow.
+For rented GPUs, use the [Liquid remote-training workflow](../remote-training/liquid.md).
+It prepares frozen studies for all five providers and independently admits returned
+exports. Its container recipe is experimental and needs qualification on your chosen GPU.
 
 ## Install the CPU data tool
 

@@ -243,20 +243,39 @@ def validate_export(folder, expected_sha, request):
     config = request["configuration"]
     questions = request["questions"]
     manifest = verify_manifest(folder, expected_sha, config["backend"], questions)
+    from decision_workbench.training.liquid_remote import BACKENDS
+
+    liquid = config["backend"] in BACKENDS
+    report = json.loads((folder / "report.json").read_text(encoding="utf-8"))
+    if not isinstance(report, dict):
+        raise ValueError("Remote export report must be a JSON object")
+    allowed_native = set()
+    if liquid:
+        from decision_workbench.training.liquid_remote import (
+            checked_artifact,
+            export_files,
+        )
+
+        checked_artifact(folder, report, config, questions)
+        allowed_native = export_files(config["backend"], manifest["checkpoint"])
     for name in manifest["files"]:
         allowed_vega_asset = config["backend"] == "vega" and (
             Path(name).suffix.lower() == ".jinja"
             or Path(name).name in ("LICENSE", "README.md")
         )
-        if not allowed_vega_asset and Path(name).suffix.lower() not in (
-            ".json",
-            ".safetensors",
-            ".txt",
-            ".model",
-            ".tiktoken",
+        if (
+            name not in allowed_native
+            and not allowed_vega_asset
+            and Path(name).suffix.lower()
+            not in (
+                ".json",
+                ".safetensors",
+                ".txt",
+                ".model",
+                ".tiktoken",
+            )
         ):
             raise ValueError("Remote export contains an unsupported/executable file")
-    report = json.loads((folder / "report.json").read_text(encoding="utf-8"))
     if config["backend"] == "vega":
         from .vega_training import checked_report
 

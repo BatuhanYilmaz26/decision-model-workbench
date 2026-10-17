@@ -4,14 +4,14 @@ import streamlit as st
 from decision_workbench.training.liquid_omni_local import PROFILE
 
 
-def training_options(config, capabilities):
+def training_options(config, capabilities, *, cloud=False):
     config.update(PROFILE)
     st.caption(
         "Pinned base: " + PROFILE["model"] + " · revision " + PROFILE["revision"]
     )
     config["device"] = st.selectbox(
         "Omni compute device",
-        ["auto", "cuda", "cpu"],
+        ["cuda"] if cloud else ["auto", "cuda", "cpu"],
         format_func=lambda value: {
             "auto": "Automatic: CUDA if available, otherwise CPU",
             "cuda": "NVIDIA CUDA GPU",
@@ -40,13 +40,20 @@ def training_options(config, capabilities):
     )
     if steps:
         config["max_steps"] = steps
-    config["download"] = st.checkbox(
+    checkpoint_download = st.checkbox(
         "Allow downloading the pinned public omni checkpoint (about 2.35 GB)",
         value=False,
+        disabled=cloud,
     )
+    config["download"] = checkpoint_download if not cloud else False
     st.caption(
         "Model download does not upload your records. Use reviewed examples and at least eight reserved real calibration records. Soft target distributions are preserved. Long inputs and large batches require additional RAM/VRAM; unsupported native prompt lengths are refused."
     )
+    if cloud:
+        st.caption(
+            "The approved cloud image must include this exact pinned checkpoint and its compatible runtime. Training downloads are disabled, including on offline providers."
+        )
+        return True
     hardware = (
         (capabilities or {})
         .get("model_profiles", {})

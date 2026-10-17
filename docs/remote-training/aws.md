@@ -2,6 +2,8 @@
 
 [Provider directory](README.md) · [All guides](../README.md) · [Project overview](../../README.md)
 
+For Liquid d1-3B or omni, use the [Liquid model-specific cloud workflow](liquid.md) with this provider's compatible image and admission path.
+
 Run the repository's Laya trainer in a SageMaker AI custom GPU container, with reviewed data staged in S3 and a complete model export returned to S3. Prepare the four data splits and training image using the [shared remote-training guide](../remote-training-guide.md).
 
 Use the commands below for direct operator submission. For application-managed approvals, durable job history and local validation of returned weights, follow [managed AWS training](../managed-cloud-training.md). The standalone script does not create the application's cloud ledger or frozen-study request.

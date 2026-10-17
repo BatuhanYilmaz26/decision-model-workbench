@@ -1,4 +1,4 @@
-# Vega and semantic model image
+# GPU model images
 
 [Container directory](../README.md) · [All guides](../../docs/README.md) · [Project overview](../../README.md)
 
@@ -6,6 +6,7 @@
 
 | Task | Guide or file |
 |---|---|
+| Prepare a Liquid training image | [Dockerfile.liquid](Dockerfile.liquid), [Liquid cloud workflow](../../docs/remote-training/liquid.md); experimental until qualified on your selected GPU/provider |
 | Train or serve a Vega domain model | [Vega workflow](../../docs/vega-guide.md) |
 | Audit possible related examples | [Semantic data workflow](../../docs/semantic-data-guide.md) |
 | Inspect dependencies and advisories | [Dependency profiles](../../requirements/README.md), [runtime compatibility](../../docs/compatibility-and-upgrades.md) |

@@ -1,6 +1,7 @@
 """Bounded regular-file USTAR/GNU-short-name extraction for managed training outputs."""
 
 import gzip
+import hashlib
 import re
 import shutil
 import time
@@ -22,9 +23,20 @@ def octal(field):
     return int(value, 8)
 
 
-def extract_model(archive, output, max_bytes):
-    """Reject links/devices, PAX/long-name/sparse metadata and executable export files."""
+def extract_model(archive, output, max_bytes, *, backend=None):
+    """Extract regular files; native assets require a selected pinned profile."""
     output = ordinary(output)
+    from decision_workbench.training.liquid_remote import (
+        BACKENDS,
+        export_files,
+        export_assets,
+    )
+
+    native_files, native_hashes = set(), {}
+    if backend in BACKENDS:
+        checkpoint = "merged" if backend == "liquid-trl" else "checkpoint"
+        native_files = export_files(backend, checkpoint)
+        native_hashes = export_assets(backend, checkpoint)
     output.mkdir(parents=True, exist_ok=False)
     reserved = {
         "CON",
@@ -109,7 +121,7 @@ def extract_model(archive, output, max_bytes):
                 if kind == b"5":
                     target.mkdir(parents=True, exist_ok=True)
                     continue
-                if target.suffix.lower() not in (
+                if name not in native_files and target.suffix.lower() not in (
                     ".json",
                     ".safetensors",
                     ".txt",
@@ -123,6 +135,7 @@ def extract_model(archive, output, max_bytes):
                 if total > max_bytes:
                     raise ValueError("Cloud archive exceeds its expanded byte bound")
                 target.parent.mkdir(parents=True, exist_ok=True)
+                asset_hash = hashlib.sha256() if name in native_hashes else None
                 with target.open("xb") as writer:
                     remaining = size
                     while remaining:
@@ -132,7 +145,14 @@ def extract_model(archive, output, max_bytes):
                             )
                         chunk = exact(stream, min(1024**2, remaining))
                         writer.write(chunk)
+                        if asset_hash is not None:
+                            asset_hash.update(chunk)
                         remaining -= len(chunk)
+                if (
+                    asset_hash is not None
+                    and asset_hash.hexdigest() != native_hashes[name]
+                ):
+                    raise ValueError("Cloud archive changes a reviewed native asset")
                 padding = (-size) % 512
                 if any(exact(stream, padding)):
                     raise ValueError("Cloud archive file padding differs")

@@ -207,7 +207,7 @@ class LiquidPlatformTests(unittest.TestCase):
         job = self.store.job(queued["id"], "A", self.project)
         self.assertEqual(job["status"], "failed", job)
         self.assertIn("changed after queueing", job["error"])
-        self.assertEqual(self.store.list("model", "A", self.project), [])
+        self.assertEqual(self.store.list("A", self.project, "model"), [])
         self.assertFalse(self.store.has_model_training())
 
     def test_queued_cancellation_releases_training_priority_without_registering_a_model(
@@ -218,7 +218,7 @@ class LiquidPlatformTests(unittest.TestCase):
         cancelled = self.client.post(self.prefix + "/jobs/" + queued["id"] + "/cancel")
         self.assertEqual(cancelled.status_code, 200, cancelled.text)
         self.assertFalse(self.store.has_model_training())
-        self.assertEqual(self.store.list("model", "A", self.project), [])
+        self.assertEqual(self.store.list("A", self.project, "model"), [])
 
     def test_report_must_match_request_and_successful_optimizer_accounting(self):
         study = study_for(self.config, self.snapshot, QUESTIONS)
@@ -314,8 +314,10 @@ class LiquidPlatformTests(unittest.TestCase):
                 backend
             ).run(timeout=30)
             self.assertEqual(len(app.exception), 0)
-            self.assertFalse(
-                any(w.label == "Prepare remote training study" for w in app.button)
+            self.assertTrue(
+                next(
+                    w for w in app.button if w.label == "Prepare remote training study"
+                ).disabled
             )
             if backend == "liquid-unsloth":
                 devices = next(
@@ -324,7 +326,7 @@ class LiquidPlatformTests(unittest.TestCase):
                 self.assertNotIn("CPU (at least 20 GiB available RAM)", devices.options)
             self.assertEqual(
                 next(w for w in app.radio if w.label == "Training location").options,
-                ["This computer"],
+                ["This computer", "Cloud GPU"],
             )
             next(
                 w

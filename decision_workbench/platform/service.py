@@ -550,9 +550,15 @@ class Service:
                     "liquid-unsloth",
                     "liquid-omni",
                 ):
-                    raise ValueError(
-                        "Liquid managed cloud training is not available yet; use the local model profile"
-                    )
+                    if config.get("device", "cuda") != "cuda":
+                        raise ValueError(
+                            "Remote Liquid GPU studies require the CUDA device profile"
+                        )
+                    if config.get("download", False) is not False:
+                        raise ValueError(
+                            "Remote Liquid images must include their pinned checkpoint; downloads are disabled"
+                        )
+                    config["device"] = "cuda"
                 if config.get("backend") == "cpu-baseline":
                     raise ValueError("Remote studies require native Laya or Unsloth")
             self.store.get(config["snapshot"], principal["tenant"], project, "snapshot")
@@ -571,11 +577,43 @@ class Service:
             if config["backend"] == "liquid-omni":
                 from .liquid_omni_training import freeze
 
-                config = freeze(self, principal, project, config)
+                location = (
+                    {
+                        k: config[k]
+                        for k in ("provider", "region", "gpu", "image_digest")
+                    }
+                    if kind == "remote-study"
+                    else {}
+                )
+                config = {
+                    **freeze(
+                        self,
+                        principal,
+                        project,
+                        {k: v for k, v in config.items() if k not in location},
+                    ),
+                    **location,
+                }
             elif config["backend"] in ("liquid-trl", "liquid-unsloth"):
                 from .liquid_training import freeze
 
-                config = freeze(self, principal, project, config)
+                location = (
+                    {
+                        k: config[k]
+                        for k in ("provider", "region", "gpu", "image_digest")
+                    }
+                    if kind == "remote-study"
+                    else {}
+                )
+                config = {
+                    **freeze(
+                        self,
+                        principal,
+                        project,
+                        {k: v for k, v in config.items() if k not in location},
+                    ),
+                    **location,
+                }
             elif config["backend"] == "vega":
                 from .vega_training import freeze, INPUTS
 

@@ -2,6 +2,8 @@
 
 [Provider directory](README.md) · [All guides](../README.md) · [Project overview](../../README.md)
 
+For Liquid d1-3B or omni, use the [Liquid model-specific cloud workflow](liquid.md) with this provider's compatible image and admission path.
+
 Run the repository's decision-model trainer in a Modal GPU Function, using a prepared container image and a persistent Volume for data and exports. Modal's [Unsloth example](https://modal.com/docs/examples/unsloth_finetune) shows the platform's fine-tuning infrastructure; the command below selects the decision-head trainer rather than the example's generative trainer.
 
 ## Stage immutable input on a Volume

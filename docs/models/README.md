@@ -29,6 +29,10 @@ For every training workflow, use [reviewed data](../data-guide.md),
 submission instructions from application-managed jobs. It does not establish
 that a newly listed model has a qualified cloud runner.
 
+Liquid's [shared cloud workflow](../remote-training/liquid.md) covers its three
+text/JSON trainer profiles, explicit image capability and independent admission.
+Its image recipe requires qualification on your selected GPU/provider.
+
 ## Additional model references
 
 These publisher resources are useful for investigation. Dedicated application

@@ -73,6 +73,7 @@ models whose application adapters are still being built.
 | Use hosted Liquid d1 or d1-ultra | Evaluate, calibrate and release a provider-backed policy, or call the API from an existing application | [Liquid hosted guide](docs/models/liquid-hosted.md) |
 | Train and use Liquid d1-3B | Native data export, local TRL or FastVisionModel/Unsloth training, calibrated releases and predictions with isolated model environments | [Liquid guide](docs/models/liquid.md), [example specification and CSV](examples/liquid/README.md) |
 | Train and use Liquid d1-omni-600M | Native text/JSON decision-head adaptation on CPU/CUDA, reviewed soft labels, calibrated exports, releases and predictions | [Omni guide](docs/models/liquid-omni.md), [model environment](requirements/liquid-omni.txt) |
+| Train Liquid on a rented GPU | Frozen studies for AWS, Azure, GCP, Modal and RunPod, explicit image compatibility and independent returned-model admission | [Liquid cloud guide](docs/remote-training/liquid.md), [experimental image recipe](docker/models/Dockerfile.liquid) |
 
 ## Where decision models can help
 

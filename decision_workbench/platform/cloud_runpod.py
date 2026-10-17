@@ -39,6 +39,9 @@ ACTIVE = frozenset(("PROVISIONING", "STARTING", "RUNNING", "EXITED", "ERROR"))
 
 
 def validate_profile(p):
+    from .cloud_training_profile import provider_fields
+
+    p = provider_fields(p)
     fields = {
         "id",
         "provider",

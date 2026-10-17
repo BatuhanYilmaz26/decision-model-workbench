@@ -656,7 +656,6 @@ try:
                 (
                     ["This computer", "Cloud GPU"]
                     if principal["role"] == "admin"
-                    and backend not in ("liquid-trl", "liquid-unsloth", "liquid-omni")
                     else ["This computer"]
                 ),
                 horizontal=True,
@@ -686,7 +685,7 @@ try:
                 )
             elif backend == "liquid-omni":
                 st.info(
-                    "Adapt the original omni decision head while keeping its text trunk and media encoders frozen. This local CPU/CUDA profile accepts text and JSON. Images, audio and managed cloud submission are not available through this adapter."
+                    "Adapt the original omni decision head while keeping its text trunk and media encoders frozen. This profile accepts text and JSON. Cloud studies require a compatible image with the pinned checkpoint already cached. Images and audio are not supported by this adapter."
                 )
                 st.link_button(
                     "Omni installation, data and training guide",
@@ -694,7 +693,7 @@ try:
                 )
             elif backend in ("liquid-trl", "liquid-unsloth"):
                 st.info(
-                    "Liquid d1-3B trains in its separate model environment. The worker reserves the model resource, checks native labels and input budgets, then calibrates and reloads the export before registration. Cloud submission for this model is not available yet."
+                    "Liquid d1-3B uses its separate model environment. Local training reserves the model resource and qualifies the export before registration. Cloud GPU studies require an approved compatible image; returned exports are independently measured before release."
                 )
                 st.link_button(
                     "Liquid installation, data and training guide",
@@ -725,7 +724,12 @@ try:
             if backend == "liquid-omni":
                 from decision_workbench.ui.liquid_omni import training_options
 
-                local_ready = training_options(config, capabilities) and local_ready
+                local_ready = (
+                    training_options(
+                        config, capabilities, cloud=training_location == "Cloud GPU"
+                    )
+                    and local_ready
+                )
             elif backend in ("liquid-trl", "liquid-unsloth"):
                 from decision_workbench.training.liquid_local import PROFILE
 
@@ -739,9 +743,13 @@ try:
                 config["device"] = st.selectbox(
                     "Liquid compute device",
                     (
-                        ["auto", "cuda"]
-                        if backend == "liquid-unsloth"
-                        else ["auto", "cuda", "cpu"]
+                        ["cuda"]
+                        if training_location == "Cloud GPU"
+                        else (
+                            ["auto", "cuda"]
+                            if backend == "liquid-unsloth"
+                            else ["auto", "cuda", "cpu"]
+                        )
                     ),
                     format_func=lambda v: {
                         "auto": (
@@ -778,9 +786,15 @@ try:
                 )
                 if maximum_steps:
                     config["max_steps"] = maximum_steps
-                config["download"] = st.checkbox(
+                checkpoint_download = st.checkbox(
                     "Allow downloading the pinned public Liquid checkpoint (about 6.25 GB)",
                     value=False,
+                    disabled=training_location == "Cloud GPU",
+                )
+                config["download"] = (
+                    checkpoint_download
+                    if training_location == "This computer"
+                    else False
                 )
                 st.caption(
                     "This downloads model assets only; your training records stay local. Training/validation need one-hot labels. Reserve at least eight real calibration records. A small compatibility run does not establish domain quality."
@@ -1002,10 +1016,6 @@ try:
                     st.info(
                         "Select native Laya, Unsloth or Vega for remote GPU training."
                     )
-                elif backend in ("liquid-trl", "liquid-unsloth", "liquid-omni"):
-                    st.info(
-                        "Managed cloud training for this Liquid profile is not available yet. Use its local model profile and corresponding model guide for data, runtime and export requirements. No provider training job is submitted here."
-                    )
                 else:
                     if backend == "vega":
                         st.info(
@@ -1028,6 +1038,7 @@ try:
                         prepare_remote = st.form_submit_button(
                             "Prepare remote training study",
                             disabled=not approved
+                            or training_location != "Cloud GPU"
                             or acceptance["policy"] is None
                             or not vega_ready,
                         )

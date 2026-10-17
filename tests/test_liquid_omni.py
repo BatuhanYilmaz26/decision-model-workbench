@@ -226,7 +226,7 @@ class OmniPlatformTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(ValueError):
                 validate(changed)
 
-    def test_unsupported_options_tenant_access_and_remote_training_are_refused(self):
+    def test_unsupported_options_tenant_access_and_remote_devices_are_refused(self):
         for extra in (
             {"rank": 4},
             {"python": sys.executable},
@@ -253,6 +253,7 @@ class OmniPlatformTests(unittest.TestCase):
                 "kind": "remote-study",
                 "config": {
                     **self.config,
+                    "device": "cpu",
                     "provider": "aws",
                     "region": "us-east-1",
                     "gpu": "ml.g5.xlarge",
@@ -285,7 +286,7 @@ class OmniPlatformTests(unittest.TestCase):
             200,
         )
         self.assertFalse(self.store.has_model_training())
-        self.assertEqual(self.store.list("model", "A", self.project), [])
+        self.assertEqual(self.store.list("A", self.project, "model"), [])
 
     def test_worker_uses_selected_native_child_and_never_passes_lora_options(self):
         queued = self.queue().json()
@@ -378,7 +379,7 @@ class OmniPlatformTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 checked_report(bad, config)
 
-    def test_browser_queues_native_head_settings_without_provider_keys_or_cloud_controls(
+    def test_browser_queues_local_head_settings_and_keeps_cloud_separate(
         self,
     ):
         from streamlit.testing.v1 import AppTest
@@ -435,7 +436,7 @@ class OmniPlatformTests(unittest.TestCase):
             self.assertEqual(len(app.exception), 0)
             self.assertEqual(
                 next(w for w in app.radio if w.label == "Training location").options,
-                ["This computer"],
+                ["This computer", "Cloud GPU"],
             )
             self.assertFalse(any("LoRA rank" in w.label for w in app.number_input))
             next(

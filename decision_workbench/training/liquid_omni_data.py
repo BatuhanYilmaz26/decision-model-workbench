@@ -36,8 +36,9 @@ def checked_asset(folder, name):
     path = Path(folder) / name
     if not path.is_file() or path.stat().st_size > 16 * 1024**2:
         raise ValueError(f"Missing or oversized pinned omni asset: {name}")
-    body = path.read_bytes()
-    if sha(body) != ASSETS[name]:
+    with path.open("rb") as stream:
+        body = stream.read(16 * 1024**2 + 1)
+    if len(body) > 16 * 1024**2 or sha(body) != ASSETS[name]:
         raise ValueError(f"Omni asset differs from the reviewed revision: {name}")
     return body
 
@@ -69,9 +70,9 @@ class OmniPrompt:
         from tokenizers import Tokenizer
 
         body = checked_asset(folder, "prompt.py")
-        checked_asset(folder, "tokenizer.json")
+        tokenizer_body = checked_asset(folder, "tokenizer.json")
         checked_asset(folder, "tokenizer_config.json")
-        self.tokenizer = Tokenizer.from_file(str(Path(folder) / "tokenizer.json"))
+        self.tokenizer = Tokenizer.from_str(tokenizer_body.decode("utf-8"))
         self.tokenizer.no_truncation()
         self.tokenizer.no_padding()
         self.bos_token_id = self.convert_tokens_to_ids("<|startoftext|>")

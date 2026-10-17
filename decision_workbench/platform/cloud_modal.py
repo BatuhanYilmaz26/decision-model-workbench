@@ -37,6 +37,9 @@ GPUS = frozenset(("T4", "L4", "A10", "L40S", "A100-40GB", "A100-80GB", "H100!", 
 
 
 def validate_profile(p):
+    from .cloud_training_profile import provider_fields
+
+    p = provider_fields(p)
     fields = {
         "id",
         "provider",

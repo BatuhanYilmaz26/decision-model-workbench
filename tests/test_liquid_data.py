@@ -71,6 +71,22 @@ class PromptFixture:
 
 
 class LiquidDataTests(unittest.TestCase):
+    def test_content_addressed_cache_links_require_exact_reviewed_bytes(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            body = b"fictional pinned asset"
+            (root / "prompt.py").write_bytes(body)
+            with (
+                patch.dict(
+                    liquid.ASSETS, {"prompt.py": hashlib.sha256(body).hexdigest()}
+                ),
+                patch.object(Path, "is_symlink", return_value=True),
+            ):
+                self.assertEqual(liquid.checked_asset(root, "prompt.py"), body)
+                (root / "prompt.py").write_bytes(b"changed cache target")
+                with self.assertRaisesRegex(ValueError, "reviewed revision"):
+                    liquid.checked_asset(root, "prompt.py")
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

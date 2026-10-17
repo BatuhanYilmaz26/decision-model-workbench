@@ -44,10 +44,13 @@ def sha(body):
 def checked_asset(folder, name):
     """Verify bytes before parsing the tokenizer or executing the prompt builder."""
     path = Path(folder) / name
-    if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_ASSET_BYTES:
+    # Hugging Face uses content-addressed cache links on Linux. Verify the
+    # resolved bytes; exported domain bundles reject links in their inventory.
+    if not path.is_file() or path.stat().st_size > MAX_ASSET_BYTES:
         raise ValueError(f"Missing or invalid Liquid asset: {name}")
-    body = path.read_bytes()
-    if sha(body) != ASSETS[name]:
+    with path.open("rb") as stream:
+        body = stream.read(MAX_ASSET_BYTES + 1)
+    if len(body) > MAX_ASSET_BYTES or sha(body) != ASSETS[name]:
         raise ValueError(
             f"Liquid asset hash differs from the reviewed revision: {name}"
         )

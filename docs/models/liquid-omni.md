@@ -12,8 +12,12 @@ The workbench trains the original head with soft-target cross-entropy and freeze
 the text trunk, vision encoder and audio encoder. This is a workbench adaptation
 method based on the publisher's native implementation. Liquid's d1-3B SFT
 notebooks are not an omni training recipe. Image/audio preparation, media
-fine-tuning, quantized exports, MLX and managed cloud training are not available
+fine-tuning, quantized exports and MLX are not available
 through this adapter.
+
+For rented GPUs, use the [Liquid remote-training workflow](../remote-training/liquid.md)
+with a compatible image and independent returned-model admission. Its container
+recipe is experimental and requires qualification on your selected GPU/provider.
 
 ## Prepare the model environment
 

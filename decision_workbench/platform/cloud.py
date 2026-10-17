@@ -167,6 +167,12 @@ class Cloud:
                 "Managed cloud launch requires a qualified Vega eight-file runner/image; use operator training and admission"
             )
         p = self.profile(principal, profile_id)
+        from .cloud_training_profile import training_backends
+
+        if config["backend"] not in training_backends(p):
+            raise ValueError(
+                "The approved image profile does not declare this training backend"
+            )
         regional = [
             x
             for x in profiles()
@@ -541,8 +547,14 @@ class Cloud:
                             run, result["artifact_uri"], target / "model.tar.gz"
                         )
                         output = target / "export"
+                        selected_study = study_entity(
+                            self.store, principal["tenant"], project, run["study"]
+                        )["payload"]["request"]
                         extract_model(
-                            target / "model.tar.gz", output, p["max_artifact_bytes"]
+                            target / "model.tar.gz",
+                            output,
+                            p["max_artifact_bytes"],
+                            backend=selected_study["configuration"]["backend"],
                         )
                         checksum = file_sha(output / "manifest.json")
                         receipt = {

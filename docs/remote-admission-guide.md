@@ -6,6 +6,8 @@ Bring a remotely trained model into the local platform using **frozen study → 
 
 Use this workflow **before training**. A pre-existing checkpoint without the frozen study request cannot enter this route by relabeling it or changing its report. Local training remains available through the normal worker. The current transfer route requires an authenticated operator with filesystem access to the workspace; a browser upload of multi-gigabyte weights is not implemented.
 
+Liquid d1-3B TRL/Unsloth and omni use the [Liquid remote-training workflow](remote-training/liquid.md). Their returned native model code is accepted only at its reviewed hashes and approved configuration; arbitrary uploaded Python remains prohibited. Configure the matching isolated model interpreter before admission.
+
 ## 1. Freeze an owner-approved remote study
 
 For Vega, follow [the eight-file route below](#vega-eight-file-studies-and-independent-admission). Its request, trainer settings and uncertainty measurements differ from the native Laya/Unsloth examples in this section.
@@ -104,13 +106,13 @@ domain-platform import-remote \
 
 For enterprise access tokens use the matching trusted `--sso-file` configuration instead of an unrelated key file. Staging checks the initial identity and reauthenticates before durable submission. A server-scoped project, prepared study and frozen owner policy are mandatory. The CLI queues work and prints the job ID; it does not activate a model.
 
-The input directory must be private and stable while copied. The importer rejects linked/nonregular content, unsupported executable/pickle formats, extra/missing/modified files, wrong schema/backend/model/data/source/request identity and mismatched receipts. Staging is bounded to 2,048 files, 32 GiB and ten minutes. Manifest JSON is capped at 1 MiB and report JSON at 16 MiB before parsing. It copies into a fresh private workspace location, then verifies the copy. Failed staging removes that partial copy. Identical idempotency keys/receipts return the same job; changed requests conflict.
+The input directory must be private and stable while copied. The importer rejects linked/nonregular content, unapproved executable/pickle formats, extra/missing/modified files, wrong schema/backend/model/data/source/request identity and mismatched receipts. Staging is bounded to 2,048 files, 32 GiB and ten minutes. Manifest JSON is capped at 1 MiB and report JSON at 16 MiB before parsing. It copies into a fresh private workspace location, then verifies the copy. Failed staging removes that partial copy. Identical idempotency keys/receipts return the same job; changed requests conflict.
 
 Inspect the current job before retrying an interrupted command. A successful queued intake remains durable if the operator disconnects. Incoming copies and private logs currently require operator retention/cleanup; automated cleanup, distributed storage and browser weight transfers require separate operational validation.
 
 ## 5. Qualify, review and release
 
-Run the worker in the qualified model environment. Admission acquires the same GPU lease as local training, pauses resident inference through the existing scheduler, launches a bounded offline model subprocess and preserves private logs. The local checkpoint loader does not accept executable model configuration. Qualification loads the actual export, measures **all reserved validation/calibration/test records**, then loads it again and checks validation probabilities and decisions at the fixed backend tolerance. It does not refit calibration or change training/holdout membership.
+Run the worker in the qualified model environment. Admission acquires the same GPU lease as local training, pauses resident inference through the existing scheduler, launches a bounded offline model subprocess and preserves private logs. Native Laya/Unsloth loaders reject executable model configuration; Liquid accepts only its hash-verified publisher code and approved native configuration. Qualification loads the actual export, measures **all reserved validation/calibration/test records**, then loads it again and checks validation probabilities and decisions at the fixed backend tolerance. It does not refit calibration or change training/holdout membership.
 
 The supplied validation/test metrics are replaced by measured local metrics. The original report is retained as `training_report.json`; the resulting portable bundle receives a new exact manifest. Registration preserves both source and admitted checksums, study/job identities, frozen policy and provider attestation. Failed/cancelled or expired-owner jobs cannot register an eligible model. An admission failure retains the incoming source for operator investigation and removes its unregistered model copy.
 

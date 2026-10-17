@@ -2,6 +2,8 @@
 
 [Provider directory](README.md) · [All guides](../README.md) · [Project overview](../../README.md)
 
+For Liquid d1-3B or omni, use the [Liquid model-specific cloud workflow](liquid.md) with this provider's compatible image and admission path.
+
 Create a GPU Pod through RunPod REST v2, connect over SSH and run the decision-model trainer. This route provides interactive control over the container and export. For application-managed approvals, frozen studies and job history, follow [managed RunPod training](../managed-runpod-training.md).
 
 RunPod REST v1 is deprecated and the current docs schedule retirement on **15 November 2026**. The examples below use REST v2 request/response shapes and the new host; replacing only the URL of a v1 payload is insufficient. [Official migration guide](https://docs.runpod.io/api-reference-v2/migrate-from-v1)

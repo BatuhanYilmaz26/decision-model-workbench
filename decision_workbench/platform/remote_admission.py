@@ -70,6 +70,16 @@ def admit(worker, job, snapshot, questions, coverage, cancelled):
         ]
         environment = os.environ.copy()
         environment.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1")
+        from decision_workbench.training.liquid_remote import BACKENDS
+
+        child_cwd = None
+        if config["backend"] in BACKENDS:
+            from .model_environment import liquid_environment, model_python
+
+            environment, child_cwd, _ = liquid_environment(
+                store.folder, environment, backend=config["backend"]
+            )
+            argv[0] = model_python(config["backend"], "serving", environment)
         deadline = time.monotonic() + 4 * 60 * 60
         store.heartbeat(job, "Waiting for exclusive exported-runtime qualification")
         with (
@@ -83,6 +93,7 @@ def admit(worker, job, snapshot, questions, coverage, cancelled):
                 stdout=log,
                 stderr=subprocess.STDOUT,
                 shell=False,
+                **({"cwd": child_cwd} if child_cwd is not None else {}),
                 **leased_process_options(model_lease, environment),
             )
             try:

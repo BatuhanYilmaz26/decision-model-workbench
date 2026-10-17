@@ -4,6 +4,9 @@
 
 Train a decision model on a rented GPU when local memory is insufficient. Start with the [shared data and container protocol](../remote-training-guide.md), then use [provider selection](provider-selection.md) to compare GPU sizing, identity, storage and total cost.
 
+For d1-3B TRL/Unsloth or d1-omni-600M, follow the [Liquid cloud workflow](liquid.md)
+for native formats, image compatibility, cached checkpoints and independent admission.
+
 | Provider | Direct walkthrough | Application-managed workflow | Configuration template |
 |---|---|---|---|
 | AWS | [SageMaker AI training](aws.md) | [Managed AWS](../managed-cloud-training.md) | [AWS profile](../../examples/cloud/aws-profiles.json) |

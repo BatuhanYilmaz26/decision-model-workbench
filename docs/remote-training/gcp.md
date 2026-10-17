@@ -2,6 +2,8 @@
 
 [Provider directory](README.md) · [All guides](../README.md) · [Project overview](../../README.md)
 
+For Liquid d1-3B or omni, use the [Liquid model-specific cloud workflow](liquid.md) with this provider's compatible image and admission path.
+
 Run the repository's Laya trainer on a Google Cloud GPU using a custom container. This walkthrough stages four reviewed data splits in Cloud Storage, submits a CustomJob with `gcloud ai custom-jobs`, and downloads the complete trained model export. [Google Cloud custom training](https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/training/create-custom-job)
 
 Use the commands below for direct operator submission. For application-managed approvals, job history, cancellation and local validation of returned weights, follow [managed GCP training](../managed-gcp-training.md).

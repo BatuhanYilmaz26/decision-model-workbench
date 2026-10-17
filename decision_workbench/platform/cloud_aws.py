@@ -19,6 +19,9 @@ class CloudUnavailable(RuntimeError):
 
 
 def validate_profile(p):
+    from .cloud_training_profile import provider_fields
+
+    p = provider_fields(p)
     required = {
         "id",
         "provider",

@@ -36,12 +36,26 @@ def qualify(folder, data, expected_sha, request, engine_factory=None):
     manifest = verify_manifest(folder, expected_sha, config["backend"], questions)
     folder = Path(folder)
     source_report = json.loads((folder / "report.json").read_text(encoding="utf-8"))
+    from .liquid_remote import BACKENDS
+
+    allowed_native_configs = set()
+    if config["backend"] in BACKENDS:
+        from decision_workbench.platform.remote import validate_export
+        from .liquid_remote import approved_configs, check_inputs
+
+        check_inputs(request, rows, hashes, questions)
+        validate_export(folder, expected_sha, request)
+        allowed_native_configs = approved_configs(
+            config["backend"], manifest["checkpoint"]
+        )
     for path in folder.rglob("*.json"):
         if path.stat().st_size > 16 * 1024**2:
             raise ValueError("Model JSON configuration/report exceeds 16 MiB")
         obj = json.loads(path.read_text(encoding="utf-8"))
-        if isinstance(obj, dict) and (
-            obj.get("auto_map") or obj.get("trust_remote_code") is True
+        if (
+            path.relative_to(folder).as_posix() not in allowed_native_configs
+            and isinstance(obj, dict)
+            and (obj.get("auto_map") or obj.get("trust_remote_code") is True)
         ):
             raise ValueError("Remote executable model configuration is not accepted")
     factory = engine_factory or load_engine
@@ -131,6 +145,10 @@ def qualify(folder, data, expected_sha, request, engine_factory=None):
             "note": "Local exported-runtime measurements replace supplied validation/test metrics. Cloud receipt remains operator-attested.",
         },
     }
+    if config["backend"] == "liquid-omni":
+        report["calibration_metrics"] = report["admission"][
+            "calibration_runtime_metrics"
+        ]
     (folder / "training_report.json").write_text(
         json.dumps(source_report, indent=2, allow_nan=False), encoding="utf-8"
     )
