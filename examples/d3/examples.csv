@@ -1,0 +1,7 @@
+id,group_id,state,route,conflict,sufficiency,reviewed,origin
+evidence-001,source-001,"{""query"": ""When can a booking be cancelled?"", ""passages"": [""Bookings may be cancelled until 24 hours before departure.""]}",answer,false,2,false,synthetic
+evidence-002,source-002,"{""query"": ""What is the refund period?"", ""passages"": []}",search,false,0,false,synthetic
+evidence-003,source-003,"{""query"": ""Is the site open on Sunday?"", ""passages"": [""The site opens at 09:00 on weekdays.""]}",search,false,1,false,synthetic
+evidence-004,source-004,"{""query"": ""How long is the warranty?"", ""passages"": [""The warranty lasts one year."", ""The warranty lasts three years.""]}",review,true,0,false,synthetic
+evidence-005,source-005,"{""query"": ""Which file format is supported?"", ""passages"": [""The importer accepts CSV and XLSX files.""]}",answer,false,2,false,synthetic
+evidence-006,source-006,"{""query"": ""What is the delivery fee?"", ""passages"": [""Delivery is available in selected cities.""]}",search,false,1,false,synthetic

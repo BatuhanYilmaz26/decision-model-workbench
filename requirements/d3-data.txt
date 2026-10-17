@@ -1,0 +1,4 @@
+# CPU-only D3 native-data export; does not install Torch or model weights.
+-e .
+tokenizers==0.23.3
+huggingface-hub==1.33.0

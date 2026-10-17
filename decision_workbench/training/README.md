@@ -11,6 +11,8 @@ These adapters consume reviewed domain data and produce complete model exports w
 | Vega | [vega_runner.py](vega_runner.py) | [Vega data and execution profile](../../docs/vega-guide.md) |
 | Liquid native data | [liquid_data.py](liquid_data.py) | [CPU preparation for the official d1-3B notebooks](../../docs/models/liquid.md); standalone data export, not a managed trainer |
 | Liquid local training | [liquid_runner.py](liquid_runner.py), [liquid_runtime.py](liquid_runtime.py) | [d1-3B application training/release](../../docs/models/liquid.md#train-and-release-through-the-localhost-application) and [standalone training](../../docs/models/liquid.md#train-with-the-local-trl-runner) |
+| Liquid omni | [liquid_omni_runner.py](liquid_omni_runner.py), [liquid_omni_runtime.py](liquid_omni_runtime.py) | [Native head adaptation, calibration and application use](../../docs/models/liquid-omni.md) |
+| D3 Edge | [d3_data.py](d3_data.py), [d3_runner.py](d3_runner.py), [d3_runtime.py](d3_runtime.py) | [Experimental native-readout CLI workflow](../../docs/models/d3.md); application/managed-cloud integration is unavailable |
 | Semantic review | [semantic_runner.py](semantic_runner.py) | [Semantic audit](../../docs/semantic-data-guide.md) |
 | Exported model serving | [runtime.py](runtime.py) | [Platform setup](../../docs/setup.md#configure-model-training-and-serving), [deployment](../../docs/deployment-guide.md) |
 

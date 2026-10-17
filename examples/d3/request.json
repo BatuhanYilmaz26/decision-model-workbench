@@ -1,0 +1,32 @@
+{
+  "state": {
+    "query": "When can a booking be cancelled?",
+    "passages": [
+      "Bookings may be cancelled until 24 hours before departure."
+    ]
+  },
+  "questions": {
+    "route": {
+      "type": "choice",
+      "instructions": "Which route fits the evidence? Choose review for contradictions, answer for direct support, and search for missing or insufficient evidence.",
+      "criteria": {
+        "answer": "Passages directly support answering the query",
+        "search": "Additional evidence is needed",
+        "review": "Conflicting evidence requires review"
+      }
+    },
+    "conflict": {
+      "type": "noul",
+      "instructions": "Do the supplied passages explicitly contradict each other about the queried fact?"
+    },
+    "sufficiency": {
+      "type": "score",
+      "instructions": "How much non-conflicting support do the supplied passages provide for the query?",
+      "criteria": [
+        "No usable support",
+        "Partial support",
+        "Direct support"
+      ]
+    }
+  }
+}

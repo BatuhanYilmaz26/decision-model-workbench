@@ -177,4 +177,8 @@ def load_engine(backend, checkpoint):
         from .liquid_omni_runtime import OmniEngine
 
         return OmniEngine(checkpoint)
+    if backend == "d3-edge":
+        from .d3_runtime import D3Engine
+
+        return D3Engine(checkpoint)
     raise ValueError("Unknown trained decision backend")

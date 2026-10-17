@@ -19,7 +19,7 @@ def predict_export(model_path, state, questions, backend="unsloth"):
         raise ValueError("Provide a local trained export directory")
     from .engines import load_engine
 
-    if backend == "liquid-omni":
+    if backend in ("liquid-omni", "d3-edge"):
         from .artifacts import file_sha, verify_manifest
 
         manifest = verify_manifest(
@@ -41,6 +41,7 @@ def main():
             "liquid-trl",
             "liquid-unsloth",
             "liquid-omni",
+            "d3-edge",
         ],
         default="unsloth",
     )

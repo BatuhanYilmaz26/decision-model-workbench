@@ -1,0 +1,14 @@
+# Separate Python 3.12 eager-native D3 Edge text/JSON environment.
+# Use the Torch/torchvision wheel index matching your CPU or CUDA driver.
+-e .
+torch==2.10.0
+torchvision==0.25.0
+transformers==5.17.0
+tokenizers==0.23.3
+huggingface-hub==1.33.0
+safetensors==0.8.0
+numpy==2.5.2
+scikit-learn==1.9.1
+accelerate==1.15.0
+pillow==12.3.0
+psutil==7.2.2

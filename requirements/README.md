@@ -17,6 +17,8 @@ For the standard local CPU application, follow the [root quick start](../README.
 | [Liquid training profile](liquid-trl.txt) | Separate Python 3.12 model environment | Pinned d1-3B SFT/readout dependencies; install matching Torch 2.10.0 and torchvision 0.25.0 first using the [Liquid guide](../docs/models/liquid.md#train-with-the-local-trl-runner) |
 | [Liquid Unsloth profile](liquid-unsloth.txt) | Separate Python 3.12 / NVIDIA CUDA environment | FastVisionModel d1-3B training and native serving with compatible Transformers 5.17 / TRL 1.13; [setup and use](../docs/models/liquid.md#train-with-fastvisionmodel-and-unsloth) |
 | [Liquid omni profile](liquid-omni.txt) | Separate Python 3.12 CPU/CUDA environment | Native text/JSON decision-head adaptation and serving, without TRL/Unsloth; [setup and use](../docs/models/liquid-omni.md) |
+| [D3 native-data profile](d3-data.txt) | Separate CPU environment | Pinned tokenizers/Hub assets for [native answer-code export](../docs/models/d3.md#export-native-training-data); no Torch or weights |
+| [D3 Edge profile](d3-edge.txt) | Separate Python 3.12 CPU/CUDA environment | Eager native BF16 backbone and FP32 readout adaptation, calibration and inference; [setup and limits](../docs/models/d3.md) |
 | [AWS client pins](aws-sdk.txt) | API/worker environment | Boto3/Botocore 1.43.113 control clients |
 | [Modal client pins](modal-transport.txt) | API/worker environment | SDK 1.6.1 Sandbox transport |
 | [Azure transport pins](azure-transport.txt) | API/worker environment | HTTP transport for the managed Azure controller |
