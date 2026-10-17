@@ -43,6 +43,7 @@ and separate references to models whose integrations are still in development.
 |---|---|
 | [Laya and Unsloth training](training-guide.md) | Select a compatible local model environment and produce a complete export |
 | [Vega training](vega-guide.md) | Use Vega's separate engine, domain-adapter and applicability contracts |
+| [Liquid hosted d1/d1-ultra](models/liquid-hosted.md) | Call the direct API or evaluate and release a hosted domain policy |
 | [Liquid d1-3B](models/liquid.md) | Prepare native domain data, run standalone local LoRA training and use a calibrated export |
 | [Evaluation and calibration](evaluation-guide.md) | Assess class-level quality, probabilities, abstention and independent reload |
 | [Error costs and critical outcomes](error-policy-guide.md) | Freeze domain-specific release criteria before training |

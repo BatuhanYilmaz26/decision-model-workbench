@@ -424,6 +424,8 @@ An SFT loss curve alone does not establish calibrated decisions or application
 release readiness. For the native loading/`system_one` interface, see the
 [publisher's d1-3B guide](https://docs.liquid.ai/lfm/models/d1-3b).
 
+For hosted d1 or d1-ultra, use the separate [Liquid API workflow](liquid-hosted.md).
+
 ## Remote training and other Liquid models
 
 The [AWS, Azure, GCP, Modal and RunPod guides](../remote-training/README.md)

@@ -436,6 +436,7 @@ class CapabilityTests(unittest.TestCase):
                 )
         env = {
             "DMT_TEACHER_API_KEY": "teacher-secret",
+            "DMT_PROVIDER_LIQUID_API_KEY": "liquid-secret",
             "DMT_CLOUD_AWS_KEY": "cloud-secret",
             "DMT_LOCAL_TOKEN": "local-secret",
             "DMT_KEYS_FILE": "private.json",

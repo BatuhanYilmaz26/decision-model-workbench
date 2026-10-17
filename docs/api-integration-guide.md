@@ -11,6 +11,7 @@ Follow the [support-routing example](domain-adoption-guide.md) to connect hosted
 | Route | Actual interface | Authentication / model selector | Important distinction |
 |---|---|---|---|
 | TypeSafe Jev, direct | `POST https://api.typesafe.ai/v1/systemone` | Bearer TypeSafe key; `jev-1.13.0` | Text/JSON state; `choice`, `noul`, `score` |
+| Liquid d1 / d1-ultra, direct | `POST https://api.liquid.ai/decisions/v1/systemone` | Bearer Liquid key; `d1` or `d1-ultra` | [Direct calls and evaluated application policy](models/liquid-hosted.md); text/JSON adapter, separate from open d1-3B training |
 | OpenRouter decision models | `POST https://openrouter.ai/api/alpha/decisions` | Bearer OpenRouter key; e.g. `typesafe/jev-1.13` | Alpha Decisions endpoint; provider routing and response model/provider identity matter |
 | Perplexity Decider, direct | `POST https://api.perplexity.ai/v1/decisions` | Bearer Perplexity key; `pplx-decider-v1.1-27b` | Its own limits and modality contract; preserve the exact path without a trailing slash |
 | Cloudflare Clef Flash, direct | Workers AI binding `env.AI.run("@cf/cloudflare/clef-flash", payload)` or account-scoped REST | Scoped Cloudflare token; payload model `clef-flash` | HTTP envelope differs from the Workers binding; text-state truncation needs explicit qualification |

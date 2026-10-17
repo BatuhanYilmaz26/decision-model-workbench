@@ -8,13 +8,17 @@ import os
 import re
 import socket
 import time
-import uuid
 from pathlib import Path
 import httpx
 from decision_workbench.data import options, validate_questions
 from decision_workbench.training.metrics import normalize_answers
 from .store import Conflict, digest, encode
-from .hosted_transport import TransportFailure, endpoint, receive, run_process
+from .hosted_transport import (
+    TransportFailure,
+    endpoint as endpoint,
+    receive,
+    run_process,
+)
 
 
 class HostedUnavailable(RuntimeError):
@@ -85,7 +89,13 @@ def validate_profile(p):
         r"[A-Za-z0-9_-]{1,64}", p["id"]
     ):
         raise ValueError("Invalid profile identifier")
-    if p["provider"] not in ("typesafe", "openrouter", "perplexity", "cloudflare"):
+    if p["provider"] not in (
+        "typesafe",
+        "openrouter",
+        "perplexity",
+        "cloudflare",
+        "liquid",
+    ):
         raise ValueError("Unsupported decision provider")
     for name in ("model", "response_model"):
         if not isinstance(p[name], str) or not re.fullmatch(
@@ -135,6 +145,10 @@ def validate_profile(p):
             )
     elif "account_id" in p:
         raise ValueError("Unexpected account identifier")
+    if p["provider"] == "liquid" and (
+        p["model"] not in ("d1", "d1-ultra") or p["response_model"] != p["model"]
+    ):
+        raise ValueError("Liquid profiles must select d1 or d1-ultra explicitly")
 
 
 def public_profile(profile):
@@ -256,6 +270,10 @@ def decode_response(body, profile, questions):
                 if type(usage[key]) is not int or not 0 <= usage[key] <= 100000000:
                     raise ValueError()
                 safe_usage[key] = usage[key]
+        if profile["provider"] == "liquid" and (
+            "input_tokens" not in safe_usage or safe_usage.get("output_tokens") != 0
+        ):
+            raise ValueError()
         if "cost" in usage:
             if not number(usage["cost"], 0, 10000):
                 raise ValueError()
@@ -610,7 +628,10 @@ def credential(profile):
 
 def checked_hosted(store, model, questions):
     folder = store.folder / "artifacts" / model["artifact_id"]
-    linked = lambda p: p.is_symlink() or getattr(p, "is_junction", lambda: False)()
+
+    def linked(path):
+        return path.is_symlink() or getattr(path, "is_junction", lambda: False)()
+
     if (
         not re.fullmatch(r"[a-f0-9]{32}", model["artifact_id"])
         or linked(folder.parent)

@@ -59,6 +59,34 @@
       "timeout_seconds": 15,
       "max_request_bytes": 1024,
       "account_id": "00000000000000000000000000000000"
+    },
+    {
+      "id": "liquid-d1",
+      "provider": "liquid",
+      "model": "d1",
+      "response_model": "d1",
+      "key_env": "DMT_PROVIDER_LIQUID_API_KEY",
+      "tenants": [
+        "my-enterprise"
+      ],
+      "max_calls_day": 1000,
+      "max_inflight": 2,
+      "timeout_seconds": 15,
+      "max_request_bytes": 64000
+    },
+    {
+      "id": "liquid-d1-ultra",
+      "provider": "liquid",
+      "model": "d1-ultra",
+      "response_model": "d1-ultra",
+      "key_env": "DMT_PROVIDER_LIQUID_API_KEY",
+      "tenants": [
+        "my-enterprise"
+      ],
+      "max_calls_day": 1000,
+      "max_inflight": 2,
+      "timeout_seconds": 15,
+      "max_request_bytes": 64000
     }
   ]
 }

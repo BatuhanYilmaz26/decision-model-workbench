@@ -2,9 +2,11 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-The platform supports TypeSafe, OpenRouter, Perplexity and Cloudflare decision adapters. An owner evaluates a fixed project schema against reserved domain records, fits a local temperature policy, and releases the eligible version through the same authenticated decision endpoint as local models. This study does not train, download or export the provider's weights.
+The platform supports TypeSafe, Liquid, OpenRouter, Perplexity and Cloudflare decision adapters. An owner evaluates a fixed project schema against reserved domain records, fits a local temperature policy, and releases the eligible version through the same authenticated decision endpoint as local models. This study does not train, download or export the provider's weights.
 
 Start with the [API guide](api-integration-guide.md) for provider contracts and application integration. Configure an operator profile and check it with the selected account before running a domain study. [Provider compatibility checks](verification.md#provider-compatibility-checks)
+
+For Liquid d1/d1-ultra setup, Python/TypeScript calls and model-specific limits, see the [Liquid hosted guide](models/liquid-hosted.md).
 
 ## Configure operator-owned profiles
 
@@ -17,7 +19,7 @@ $env:DMT_DECISION_PROFILES_FILE = (Resolve-Path data/config/decision-profiles.js
 domain-platform run --keys-file data/operator-keys.json
 ```
 
-Inject the selected `DMT_PROVIDER_TYPESAFE_API_KEY`, `DMT_PROVIDER_OPENROUTER_API_KEY`, `DMT_PROVIDER_PERPLEXITY_API_KEY` or `DMT_PROVIDER_CLOUDFLARE_API_KEY` through your operator secret mechanism. Do not place a key in a URL, repository file, command example or browser form. The local launcher removes provider/teacher credentials from its Streamlit child; Compose passes provider credentials only to API/worker services. Compose's existing read-only configuration-directory mount allows a profile at `/run/config/decision-profiles.json`; set that container path through `DMT_DECISION_PROFILES_FILE`. Container execution still needs qualification.
+Inject the selected `DMT_PROVIDER_TYPESAFE_API_KEY`, `DMT_PROVIDER_OPENROUTER_API_KEY`, `DMT_PROVIDER_PERPLEXITY_API_KEY`, `DMT_PROVIDER_LIQUID_API_KEY` or `DMT_PROVIDER_CLOUDFLARE_API_KEY` through your operator secret mechanism. Do not place a key in a URL, repository file, command example or browser form. The local launcher removes provider/teacher credentials from its Streamlit child; Compose passes provider credentials only to API/worker services. Compose's existing read-only configuration-directory mount allows a profile at `/run/config/decision-profiles.json`; set that container path through `DMT_DECISION_PROFILES_FILE`. Container execution still needs qualification.
 
 | Field | Meaning |
 |---|---|

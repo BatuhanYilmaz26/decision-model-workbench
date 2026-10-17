@@ -1,7 +1,6 @@
 """Hosted lifecycle and adverse contracts using an actual local HTTP fixture provider."""
 
 import copy
-import hashlib
 import json
 import os
 import tempfile
@@ -77,6 +76,8 @@ def profile(provider="openrouter"):
         result["provider_slug"] = "typesafe"
     if provider == "cloudflare":
         result["account_id"] = "a" * 32
+    if provider == "liquid":
+        result.update(model="d1", response_model="d1")
     return result
 
 
@@ -123,6 +124,9 @@ def answer(payload, provider):
     }
     if provider == "openrouter":
         result["provider"] = "TypeSafe"
+    if provider == "liquid":
+        result["model"] = payload["model"]
+        result["usage"]["output_tokens"] = 0
     return (
         {"success": True, "errors": [], "result": result}
         if provider == "cloudflare"
@@ -191,7 +195,11 @@ class HostedTests(unittest.TestCase):
                         else (
                             "perplexity"
                             if self.path == "/v1/decisions"
-                            else "openrouter"
+                            else (
+                                "liquid"
+                                if self.path == "/decisions/v1/systemone"
+                                else "openrouter"
+                            )
                         )
                     )
                 )
@@ -295,14 +303,26 @@ class HostedTests(unittest.TestCase):
             json={"state": state, "threshold": 0.8, "request_key": key},
         )
 
-    def test_all_four_provider_http_paths_and_three_primitives(self):
+    def test_all_five_provider_http_paths_and_three_primitives(self):
         self.write_profiles(
             [
                 profile(provider)
-                for provider in ("typesafe", "openrouter", "perplexity", "cloudflare")
+                for provider in (
+                    "typesafe",
+                    "openrouter",
+                    "perplexity",
+                    "cloudflare",
+                    "liquid",
+                )
             ]
         )
-        for provider in ("typesafe", "openrouter", "perplexity", "cloudflare"):
+        for provider in (
+            "typesafe",
+            "openrouter",
+            "perplexity",
+            "cloudflare",
+            "liquid",
+        ):
             p = profile(provider)
             result = self.hosted.call(
                 OWNER,
@@ -320,7 +340,7 @@ class HostedTests(unittest.TestCase):
                 result["identity"]["provider_confidence"]["team"],
                 result["answers"]["team"]["confidence"],
             )
-        self.assertEqual(len(self.requests), 4)
+        self.assertEqual(len(self.requests), 5)
         for request in self.requests:
             self.assertLessEqual(
                 set(request["payload"]), {"model", "state", "questions", "provider"}
@@ -331,6 +351,148 @@ class HostedTests(unittest.TestCase):
                     request["payload"]["provider"],
                     {"allow_fallbacks": False, "only": ["typesafe"]},
                 )
+
+    def test_liquid_models_study_release_cold_inference_and_rollback(self):
+        profiles = []
+        for model in ("d1", "d1-ultra"):
+            p = profile("liquid")
+            p.update(id="liquid-" + model, model=model, response_model=model)
+            profiles.append(p)
+        self.write_profiles(profiles)
+        models = []
+        for revision, p in enumerate(profiles):
+            self.profile = p
+            model = self.study("liquid-study-" + p["model"])
+            models.append(model)
+            self.release(model, revision)
+            key = "liquid-decision-" + p["model"]
+            response = self.decision(key)
+            self.assertEqual(response.status_code, 200, response.text)
+            self.assertEqual(response.json()["model_id"], model)
+            self.assertTrue(response.json()["answers"]["refund"]["answer"])
+            self.assertEqual(response.json()["answers"]["team"]["answer"], "billing")
+            self.assertEqual(response.json()["answers"]["urgency"]["answer"], 2)
+            self.assertTrue(self.decision(key).json()["provider"]["cached"])
+            bundle = self.store.get(model, "A", self.project, "model")["payload"]
+            self.assertEqual(bundle["configuration"]["profile"]["provider"], "liquid")
+            self.assertEqual(bundle["report"]["provider_usage"]["calls"], 54)
+        self.assertEqual(len(self.requests), 110)
+        self.assertTrue(
+            all(r["path"] == "/decisions/v1/systemone" for r in self.requests)
+        )
+        self.assertEqual(
+            {r["payload"]["model"] for r in self.requests}, {"d1", "d1-ultra"}
+        )
+        self.release(models[0], 2)
+        cold_store = Store(self.store.folder)
+        cold = Service(
+            cold_store,
+            hosted=Hosted(cold_store, FixtureTransport(self.server.server_port)),
+        )
+        try:
+            response = cold.predict(
+                OWNER,
+                self.project,
+                "invoice refund requested urgent",
+                0.8,
+                "liquid-after-restart",
+            )
+            self.assertEqual(response["model_id"], models[0])
+            self.assertEqual(response["release_revision"], 3)
+        finally:
+            cold.runtime.close()
+        self.assertNotIn("fictional-provider-credential", json.dumps(self.requests))
+
+    def test_liquid_contract_profiles_and_response_drift(self):
+        from decision_workbench.platform.hosted import request_body
+        from decision_workbench.platform.hosted_transport import endpoint, receive
+
+        for model in ("d1", "d1-ultra"):
+            p = profile("liquid")
+            p.update(model=model, response_model=model)
+            validate_profile(p)
+            self.assertEqual(
+                endpoint(p), "https://api.liquid.ai/decisions/v1/systemone"
+            )
+            for field, value in (
+                ("model", "d1-3B"),
+                ("model", "d1-latest"),
+                ("response_model", "different"),
+                ("provider_slug", "liquid"),
+                ("account_id", "a" * 32),
+            ):
+                with (
+                    self.subTest(model=model, field=field, value=value),
+                    self.assertRaises(ValueError),
+                ):
+                    validate_profile({**p, field: value})
+            body = request_body(p, {"evidence": "Fictional test"}, fixtures.QUESTIONS)
+            self.assertEqual(set(json.loads(body)), {"model", "state", "questions"})
+            good = answer(
+                {
+                    "state": "invoice refund requested urgent",
+                    "questions": fixtures.QUESTIONS,
+                    "model": model,
+                },
+                "liquid",
+            )
+            self.assertEqual(
+                decode_response(good, p, fixtures.QUESTIONS)["identity"]["usage"][
+                    "output_tokens"
+                ],
+                0,
+            )
+            for bad in (
+                {**good, "model": "wrong"},
+                {**good, "usage": {"input_tokens": 1, "output_tokens": 1}},
+                {**good, "usage": {"input_tokens": 1}},
+                {**good, "usage": {"output_tokens": 0}},
+                {**good, "usage": {"input_tokens": 1, "output_tokens": False}},
+            ):
+                with (
+                    self.subTest(model=model, response=bad["usage"]),
+                    self.assertRaises(HostedUnavailable),
+                ):
+                    decode_response(bad, p, fixtures.QUESTIONS)
+            observed = []
+
+            def handler(request):
+                observed.append(
+                    (
+                        str(request.url),
+                        request.headers.get("Authorization"),
+                        set(json.loads(request.content)),
+                    )
+                )
+                return httpx.Response(
+                    200, stream=httpx.ByteStream(json.dumps(good).encode())
+                )
+
+            response = receive(
+                p, body, "fictional-liquid-key", httpx.MockTransport(handler)
+            )
+            decode_response(json.loads(response), p, fixtures.QUESTIONS)
+            self.assertEqual(
+                observed,
+                [
+                    (
+                        endpoint(p),
+                        "Bearer fictional-liquid-key",
+                        {"model", "state", "questions"},
+                    )
+                ],
+            )
+
+    def test_liquid_isolated_http_transport_and_recovery(self):
+        self.profile = profile("liquid")
+        self.write_profiles()
+        self.test_actual_isolated_process_http_and_default_hosted_wiring()
+
+    def test_liquid_browser_consent_study_release_and_prediction(self):
+        self.profile = profile("liquid")
+        self.profile.update(model="d1-ultra", response_model="d1-ultra")
+        self.write_profiles()
+        self.test_hosted_browser_consent_queue_release_and_inference_over_http()
 
     def test_evaluate_release_idempotent_inference_cold_service_and_scope(self):
         model = self.study()
@@ -1280,7 +1442,8 @@ class HostedTests(unittest.TestCase):
         self.assertEqual(self.requests, [])
 
     def test_independent_process_crash_leaves_durable_held_reservation(self):
-        import subprocess, sys
+        import subprocess
+        import sys
 
         code = "import os,sys;from decision_workbench.platform.store import Store,digest;from decision_workbench.platform.hosted import profiles,reserve;s=Store(sys.argv[1]);reserve(s,{'tenant':'A','actor':'owner','role':'admin'},sys.argv[2],profiles()[0],'crashed-before-send',digest('crashed'),'inference');os._exit(17)"
         proc = subprocess.run(

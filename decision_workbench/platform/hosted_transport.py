@@ -24,6 +24,7 @@ def endpoint(profile):
         "typellm": "https://api.typellm.ai/v1/generate",
         "openrouter": "https://openrouter.ai/api/alpha/decisions",
         "perplexity": "https://api.perplexity.ai/v1/decisions",
+        "liquid": "https://api.liquid.ai/decisions/v1/systemone",
         "cloudflare": "https://api.cloudflare.com/client/v4/accounts/"
         + profile.get("account_id", "")
         + "/ai/run/@cf/cloudflare/"

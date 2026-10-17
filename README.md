@@ -70,6 +70,7 @@ models whose application adapters are still being built.
 | Generate additional training examples | A configured local or hosted teacher and your reviewed training seeds | [Synthetic data workflow](#generate-synthetic-training-data) |
 | Train when local VRAM is insufficient | A custom training container on one of five GPU providers | [Remote training](docs/remote-training-guide.md), [provider walkthroughs](#train-on-a-remote-gpu) |
 | Choose a model and compare results | Model contracts, dated benchmarks and primary sources | [Concepts](docs/concepts.md), [model landscape](docs/model-landscape.md), [benchmarks](docs/benchmarks.md) |
+| Use hosted Liquid d1 or d1-ultra | Evaluate, calibrate and release a provider-backed policy, or call the API from an existing application | [Liquid hosted guide](docs/models/liquid-hosted.md) |
 | Train and use Liquid d1-3B | Native data export, local TRL or FastVisionModel/Unsloth training, calibrated releases and predictions with isolated model environments | [Liquid guide](docs/models/liquid.md), [example specification and CSV](examples/liquid/README.md) |
 
 ## Where decision models can help
@@ -111,7 +112,7 @@ Follow the [synthetic-generation guide](docs/synthetic-generation-guide.md) for 
 
 ## Use an existing model through its API
 
-Follow [API integration](docs/api-integration-guide.md) for Python and TypeScript request examples, provider-specific contracts, probability validation, timeouts and fallback handling. The guide covers TypeSafe/Jev, OpenRouter, Perplexity, Cloudflare and TypeLLM, with separate local Vega examples. You need the selected provider's credentials; hosted calls can incur charges and transmit the submitted state.
+Follow [API integration](docs/api-integration-guide.md) for Python and TypeScript request examples, provider-specific contracts, probability validation, timeouts and fallback handling. The guide covers TypeSafe/Jev, Liquid d1/d1-ultra, OpenRouter, Perplexity, Cloudflare and TypeLLM, with separate local Vega examples. You need the selected provider's credentials; hosted calls can incur charges and transmit the submitted state.
 
 Use [application blueprints](docs/application-blueprints.md) to add a decision boundary to an existing project. For provider evaluation, calibration and release through this application's UI, follow [hosted decision studies](docs/hosted-decisions-guide.md) and adapt the [hosted profile template](examples/hosted-profiles.json).
 

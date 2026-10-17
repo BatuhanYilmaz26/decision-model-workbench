@@ -8,7 +8,7 @@ Use these fictional records to understand the data format and adapt the template
 |---|---|
 | [Support-routing data and request](support/README.md) | [Data preparation](../docs/data-guide.md) and the [domain walkthrough](../docs/domain-adoption-guide.md) |
 | [Liquid operation-selection specification and CSV](liquid/README.md) | [Native d1-3B data preparation](../docs/models/liquid.md); fictional pending examples, not evaluation gold |
-| [Hosted decision profiles](hosted-profiles.json) | [Hosted decision studies](../docs/hosted-decisions-guide.md) |
+| [Hosted decision profiles](hosted-profiles.json) | [Hosted studies](../docs/hosted-decisions-guide.md), including [Liquid d1/d1-ultra](../docs/models/liquid-hosted.md) |
 | [Category-discovery profiles](taxonomy-profiles.json) | [Reviewed taxonomy discovery](../docs/taxonomy-guide.md) |
 | [Five cloud training profiles](cloud/README.md) | The corresponding [remote training workflow](../docs/remote-training/README.md) |
 
