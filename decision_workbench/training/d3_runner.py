@@ -137,6 +137,7 @@ def train_d3(args):
         "training_method": "native-readout",
         "questions": questions,
         "max_length": args.max_length,
+        "device": runtime.device.type,
         "temperatures": {name: 1.0 for name in questions},
     }
     engine.metadata = metadata

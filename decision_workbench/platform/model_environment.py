@@ -13,6 +13,7 @@ def model_python(backend, purpose, environment=None):
         "liquid-trl": "DMT_LIQUID_PYTHON",
         "liquid-unsloth": "DMT_LIQUID_UNSLOTH_PYTHON",
         "liquid-omni": "DMT_OMNI_PYTHON",
+        "d3-edge": "DMT_D3_PYTHON",
     }.get(backend)
     if variable and environment.get(variable):
         path = Path(environment[variable])
@@ -30,14 +31,16 @@ def model_python(backend, purpose, environment=None):
     return environment.get("DMT_WORKER_PYTHON") or sys.executable
 
 
-def liquid_environment(home, environment=None, *, backend="liquid-trl"):
+def native_environment(home, environment=None, *, backend="liquid-trl"):
     """Use writable private caches and the same source as the controlling service."""
     result = dict(os.environ if environment is None else environment)
     root = Path(__file__).resolve().parents[2]
-    family = "liquid-omni" if backend == "liquid-omni" else "liquid"
+    family = {"liquid-omni": "liquid-omni", "d3-edge": "d3"}.get(backend, "liquid")
+    variable = {"liquid-omni": "DMT_OMNI_CACHE", "d3-edge": "DMT_D3_CACHE"}.get(
+        backend, "DMT_LIQUID_CACHE"
+    )
     cache = Path(
-        result.get("DMT_OMNI_CACHE" if backend == "liquid-omni" else "DMT_LIQUID_CACHE")
-        or Path(home).parent / "model-cache" / (family + "-hub")
+        result.get(variable) or Path(home).parent / "model-cache" / (family + "-hub")
     ).absolute()
     result["PYTHONPATH"] = str(root)
     result.setdefault("HF_MODULES_CACHE", str(cache.parent / (family + "-modules")))
@@ -45,8 +48,17 @@ def liquid_environment(home, environment=None, *, backend="liquid-trl"):
     result.setdefault("CUDA_CACHE_PATH", str(cache.parent / (family + "-cuda")))
     result.setdefault("TOKENIZERS_PARALLELISM", "false")
     result.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
+    if backend == "d3-edge":
+        result["D3_FAST"] = "0"
+        result.setdefault("OMP_NUM_THREADS", "4")
+        result.setdefault("MKL_NUM_THREADS", "4")
     if backend == "liquid-unsloth":
         result["UNSLOTH_COMPILE_LOCATION"] = str(
             cache.parent / "liquid-unsloth-compiled"
         )
     return result, root, cache
+
+
+def liquid_environment(home, environment=None, *, backend="liquid-trl"):
+    """Compatibility entry point for existing Liquid operator integrations."""
+    return native_environment(home, environment, backend=backend)

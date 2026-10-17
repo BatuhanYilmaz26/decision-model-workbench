@@ -182,3 +182,11 @@ Use the [taxonomy workflow](taxonomy-guide.md) for manual proposals or consented
 For d1-3B, install the separate [Liquid profile](models/liquid.md#train-with-the-local-trl-runner), set `DMT_LIQUID_PYTHON` in the API and worker environments, and restart the services. The [application workflow](models/liquid.md#train-and-release-through-the-localhost-application) uses that interpreter for training and resident serving while keeping the CPU application and existing Laya/Unsloth/Vega profiles separate. Optional `DMT_LIQUID_CACHE` selects its private checkpoint cache. Configure these before starting personal mode, or use its optional Liquid interpreter field.
 
 For the separate FastVisionModel route, follow [Liquid Unsloth setup](models/liquid.md#train-with-fastvisionmodel-and-unsloth) and configure `DMT_LIQUID_UNSLOTH_PYTHON`. Both profiles can coexist; select the matching Liquid training backend.
+
+For D3 Edge, install the separate [D3 profile](models/d3.md#install-a-separate-environment),
+set `DMT_D3_PYTHON` to its absolute Python executable in the API/worker environment,
+and restart the services. Personal mode also offers a D3 interpreter field before
+startup. Optional `DMT_D3_CACHE` selects its public checkpoint cache. Follow
+[D3 application training](models/d3.md#train-and-release-in-the-app) for review,
+CPU/CUDA selection, frozen studies, release and prediction. The CPU application
+process does not import or install the model runtime.

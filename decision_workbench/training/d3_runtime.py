@@ -1,7 +1,6 @@
 """Hash-checked native D3 Edge inference and frozen text features."""
 
 import importlib.metadata
-import importlib.util
 import hashlib
 import math
 import os
@@ -73,7 +72,7 @@ def resolve_checkpoint(cache, *, download=False):
 
 
 def publisher_module(folder):
-    """Load reviewed relative imports in an isolated package after checking all assets."""
+    """Execute pinned source bytes; never read/write a Python bytecode cache."""
     for name in ASSETS:
         if name.endswith(".py"):
             checked_asset(folder, name)
@@ -82,15 +81,19 @@ def publisher_module(folder):
     module_name = package_name + ".d3_runtime"
     if module_name not in sys.modules:
         package = types.ModuleType(package_name)
-        package.__path__ = [str(folder)]
+        # Only the reviewed modules below are importable under this package.
+        package.__path__ = []
         sys.modules[package_name] = package
-        spec = importlib.util.spec_from_file_location(
-            module_name, folder / "d3_runtime.py"
-        )
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[module_name] = module
         try:
-            spec.loader.exec_module(module)
+            for name in ("d3_format", "d3_fast", "d3_runtime"):
+                qualified = package_name + "." + name
+                module = types.ModuleType(qualified)
+                module.__file__ = str(folder / (name + ".py"))
+                module.__package__ = package_name
+                sys.modules[qualified] = module
+                setattr(package, name, module)
+                body = checked_asset(folder, name + ".py")
+                exec(compile(body, module.__file__, "exec"), module.__dict__)
         except BaseException:
             for name in list(sys.modules):
                 if name == package_name or name.startswith(package_name + "."):
@@ -183,6 +186,10 @@ class D3Engine:
             ):
                 raise ValueError("D3 domain temperatures are invalid")
             self.max_length = m["max_length"]
+            if m.get("device") not in (None, "cpu", "cuda"):
+                raise ValueError("D3 calibrated serving device is invalid")
+            if device == "auto" and m.get("device"):
+                device = m["device"]
         if device not in ("auto", "cpu", "cuda"):
             raise ValueError("Choose auto, CPU or CUDA for this D3 profile")
         picked = torch.device(

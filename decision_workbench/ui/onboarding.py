@@ -146,6 +146,9 @@ def render_connection(root):
                 omni_python = st.session_state.get("local-omni-python", "").strip()
                 if omni_python:
                     settings["DMT_OMNI_PYTHON"] = omni_python
+                d3_python = st.session_state.get("local-d3-python", "").strip()
+                if d3_python:
+                    settings["DMT_D3_PYTHON"] = d3_python
                 teacher_url = st.session_state.get("local-teacher-url", "").strip()
                 teacher_model = st.session_state.get("local-teacher-model", "").strip()
                 if teacher_url or teacher_model:
@@ -242,6 +245,14 @@ def render_connection(root):
             st.link_button(
                 "Liquid installation and model setup", REPO + "docs/models/liquid.md"
             )
+            st.text_input(
+                "D3 Edge model Python (optional)",
+                key="local-d3-python",
+                help="Absolute Python executable from the separate requirements/d3-edge.txt environment. Both training and serving use this pinned native profile.",
+            )
+            st.link_button(
+                "D3 installation and model setup", REPO + "docs/models/d3.md"
+            )
             st.write(
                 "Synthetic generation uses a generative teacher; the trained decision model scores allowed answers. Use a local OpenAI-compatible server or an approved hosted endpoint supporting JSON object output."
             )
@@ -318,8 +329,20 @@ def local_backend_available(backend, capabilities):
             capabilities["cpu_baseline"],
             "Install the platform dependencies in the worker environment.",
         )
-    if backend == "liquid-omni":
-        from decision_workbench.training.liquid_omni_runtime import PACKAGES
+    if backend in ("liquid-omni", "d3-edge"):
+        if backend == "d3-edge":
+            from decision_workbench.training.d3_runtime import PACKAGES
+
+            variable, filename, label, memory = "DMT_D3_PYTHON", "d3-edge", "D3", 3
+        else:
+            from decision_workbench.training.liquid_omni_runtime import PACKAGES
+
+            variable, filename, label, memory = (
+                "DMT_OMNI_PYTHON",
+                "liquid-omni",
+                "Omni",
+                6,
+            )
 
         profiles = capabilities.get("model_profiles", {}).get(backend, {})
         for purpose in ("training", "serving"):
@@ -332,12 +355,12 @@ def local_backend_available(backend, capabilities):
             ):
                 return (
                     False,
-                    "Configure DMT_OMNI_PYTHON with the separate requirements/liquid-omni.txt environment for both training and serving.",
+                    f"Configure {variable} with the separate requirements/{filename}.txt environment for both training and serving.",
                 )
-            if not value.get("cuda") and (value.get("ram_available_gib") or 0) < 6:
+            if not value.get("cuda") and (value.get("ram_available_gib") or 0) < memory:
                 return (
                     False,
-                    "Omni needs a compatible CUDA GPU or at least 6 GiB available CPU RAM. Input length and batch size can require more memory.",
+                    f"{label} needs a compatible CUDA GPU or at least {memory} GiB available CPU RAM. Input length and batch size can require more memory.",
                 )
         return True, ""
     if backend in ("liquid-trl", "liquid-unsloth"):

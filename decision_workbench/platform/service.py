@@ -536,6 +536,10 @@ class Service:
             )
             config["backend"] = "hosted"
         elif kind in ("train", "remote-study"):
+            if kind == "remote-study" and config.get("backend") == "d3-edge":
+                raise ValueError(
+                    "D3 cloud studies are not available yet; use local training or its standalone operated-host guide"
+                )
             if config.get("backend") == "vega":
                 from .vega_training import validate_references
 
@@ -570,11 +574,16 @@ class Service:
                 "liquid-trl",
                 "liquid-unsloth",
                 "liquid-omni",
+                "d3-edge",
             ):
                 raise ValueError(
-                    "Select cpu-baseline, unsloth, laya-native, vega, liquid-trl, liquid-unsloth or liquid-omni"
+                    "Select cpu-baseline, unsloth, laya-native, vega, liquid-trl, liquid-unsloth, liquid-omni or d3-edge"
                 )
-            if config["backend"] == "liquid-omni":
+            if config["backend"] == "d3-edge":
+                from .d3_training import freeze
+
+                config = freeze(self, principal, project, config)
+            elif config["backend"] == "liquid-omni":
                 from .liquid_omni_training import freeze
 
                 location = (
@@ -650,12 +659,13 @@ class Service:
                 "liquid-trl",
                 "liquid-unsloth",
                 "liquid-omni",
+                "d3-edge",
             ) and set(config) & {
                 "device",
                 "download",
             }:
                 raise ValueError(
-                    "Device/download options apply only to the Liquid profile"
+                    "Device/download options apply only to the supported native profiles"
                 )
             if config["backend"] not in (
                 "cpu-baseline",
@@ -663,6 +673,7 @@ class Service:
                 "liquid-trl",
                 "liquid-unsloth",
                 "liquid-omni",
+                "d3-edge",
             ):
                 unsupported = (
                     {"rank", "max_steps", "full_precision"}
@@ -764,6 +775,7 @@ class Service:
             "liquid-trl",
             "liquid-unsloth",
             "liquid-omni",
+            "d3-edge",
         ):
             raise ValueError("Unsupported serving backend")
         if model["schema_sha256"] != spec["schema_sha256"]:
@@ -893,6 +905,10 @@ class Service:
 
             checked_report(report, model["configuration"])
             checked_model(self, model, questions)
+        elif model["backend"] == "d3-edge":
+            from .d3_training import checked_artifact
+
+            checked_artifact(folder, report, model["configuration"], questions)
         elif model["backend"] == "liquid-omni":
             from .liquid_omni_training import checked_artifact
 
@@ -942,6 +958,7 @@ class Service:
             "liquid-trl",
             "liquid-unsloth",
             "liquid-omni",
+            "d3-edge",
         ):
             answers = self.runtime.predict(
                 active["model_id"], model, spec["questions"], state, threshold

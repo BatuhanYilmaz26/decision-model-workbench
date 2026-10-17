@@ -52,6 +52,7 @@ def runtime_capabilities():
         os.environ.get("DMT_LIQUID_PYTHON"),
         os.environ.get("DMT_LIQUID_UNSLOTH_PYTHON"),
         os.environ.get("DMT_OMNI_PYTHON"),
+        os.environ.get("DMT_D3_PYTHON"),
     )
     with _lock:
         if _cached and _cached[0] == identity and time.monotonic() - _cached[1] < 30:
@@ -59,7 +60,7 @@ def runtime_capabilities():
         from .model_environment import model_python
 
         targets = [("training", worker), ("serving", model)]
-        for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni"):
+        for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni", "d3-edge"):
             for purpose in ("training", "serving"):
                 try:
                     executable = model_python(backend, purpose)
@@ -84,7 +85,7 @@ def runtime_capabilities():
                 return value
             except (OSError, ValueError, subprocess.TimeoutExpired):
                 return {
-                    "error": "Model interpreter could not be inspected. Check the configured worker/model or per-profile Liquid Python executable.",
+                    "error": "Model interpreter could not be inspected. Check the configured worker/model or native-profile Python executable.",
                     "packages": {},
                     "cuda": False,
                     "mps": False,
@@ -95,16 +96,16 @@ def runtime_capabilities():
         with ThreadPoolExecutor(max_workers=4) as pool:
             probed = dict(zip(unique, pool.map(probe, unique)))
         runtimes = {kind: probed[executable] for kind, executable in targets}
-        liquid = {
+        model_profiles = {
             backend: {
                 purpose: runtimes.pop(backend + "-" + purpose)
                 for purpose in ("training", "serving")
             }
-            for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni")
+            for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni", "d3-edge")
         }
         result = {
             "runtimes": runtimes,
-            "model_profiles": liquid,
+            "model_profiles": model_profiles,
             "teacher_configured": bool(
                 os.environ.get("DMT_TEACHER_BASE_URL")
                 and os.environ.get("DMT_TEACHER_MODEL")

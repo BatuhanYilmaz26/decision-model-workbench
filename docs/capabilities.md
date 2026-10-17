@@ -23,6 +23,6 @@ Use the workflows below to create a domain project, review examples, train a mod
 
 ## Other documented paths
 
-For additional backends, follow [Unsloth](training-guide.md#unsloth-adapter), [Vega](vega-guide.md), [hosted decision studies](hosted-decisions-guide.md) or [remote training](remote-training-guide.md). Match the selected backend's dependency, data, provider and approval requirements.
+Use the [model directory](models/README.md) for the complete backend list, including [Liquid](models/liquid.md), [D3 Edge](models/d3.md), [hosted decision studies](hosted-decisions-guide.md) and [remote training](remote-training-guide.md). Match the selected backend's dependency, data, provider and approval requirements.
 
 Use [testing and compatibility](verification.md) for installation checks, provider checks and domain evaluation before deployment.

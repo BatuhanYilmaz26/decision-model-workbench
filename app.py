@@ -640,6 +640,7 @@ try:
                     "liquid-trl",
                     "liquid-unsloth",
                     "liquid-omni",
+                    "d3-edge",
                 ],
                 format_func=lambda value: {
                     "cpu-baseline": "CPU comparison baseline",
@@ -649,17 +650,20 @@ try:
                     "liquid-trl": "Liquid d1-3B (TRL)",
                     "liquid-unsloth": "Liquid d1-3B (Unsloth)",
                     "liquid-omni": "Liquid d1-omni-600M (native head, text/JSON)",
+                    "d3-edge": "D3 Edge (native readout, text/JSON)",
                 }[value],
             )
             training_location = st.radio(
                 "Training location",
                 (
                     ["This computer", "Cloud GPU"]
-                    if principal["role"] == "admin"
+                    if principal["role"] == "admin" and backend != "d3-edge"
                     else ["This computer"]
                 ),
                 horizontal=True,
-                key="training-location-" + project,
+                key="training-location-"
+                + project
+                + ("-d3" if backend == "d3-edge" else ""),
             )
             if principal["role"] != "admin":
                 st.caption(
@@ -682,6 +686,14 @@ try:
             elif backend == "unsloth":
                 st.info(
                     "This Unsloth profile needs a compatible CUDA model environment. It cannot use the CPU-only platform environment. Use a cloud GPU if your computer cannot run it."
+                )
+            elif backend == "d3-edge":
+                st.info(
+                    "Adapt D3 Edge's original answer-code readout while keeping its native backbone frozen. Use reviewed text/JSON and independent calibration data. The exported device is retained for serving; managed D3 cloud training is not yet available."
+                )
+                st.link_button(
+                    "D3 installation, data and training guide",
+                    "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/models/d3.md",
                 )
             elif backend == "liquid-omni":
                 st.info(
@@ -721,7 +733,11 @@ try:
                         st.warning(reason)
             config = {"snapshot": training_snapshot, "backend": backend}
             vega_ready = True
-            if backend == "liquid-omni":
+            if backend == "d3-edge":
+                from decision_workbench.ui.d3 import training_options
+
+                local_ready = training_options(config, capabilities) and local_ready
+            elif backend == "liquid-omni":
                 from decision_workbench.ui.liquid_omni import training_options
 
                 local_ready = (
@@ -1014,7 +1030,11 @@ try:
                 )
                 if backend == "cpu-baseline":
                     st.info(
-                        "Select native Laya, Unsloth or Vega for remote GPU training."
+                        "Select a compatible native model and cloud image for remote GPU training."
+                    )
+                elif backend == "d3-edge":
+                    st.info(
+                        "D3 managed cloud studies are not available yet. Use this computer or follow the D3 guide for an operated GPU host."
                     )
                 else:
                     if backend == "vega":

@@ -318,6 +318,10 @@ class Worker:
             snapshot["splits"], spec["questions"], policy["criteria"]
         )
         gate = None
+        if config.get("backend") == "d3-edge":
+            from .d3_training import recheck
+
+            recheck(config, snapshot, spec["questions"])
         if config.get("backend") == "liquid-omni":
             from .liquid_omni_training import recheck
 
@@ -369,6 +373,7 @@ class Worker:
                     "liquid-trl": None,
                     "liquid-unsloth": None,
                     "liquid-omni": None,
+                    "d3-edge": None,
                 }[config["backend"]]
                 if dependency and importlib.util.find_spec(dependency) is None:
                     raise ValueError(
@@ -395,6 +400,7 @@ class Worker:
                 "liquid-trl": "liquid_runner",
                 "liquid-unsloth": "liquid_runner",
                 "liquid-omni": "liquid_omni_runner",
+                "d3-edge": "d3_runner",
             }[config["backend"]]
             argv = [
                 sys.executable,
@@ -415,19 +421,33 @@ class Worker:
             ]
             child_environment = None
             child_cwd = None
-            if config["backend"] == "liquid-omni":
-                from .model_environment import liquid_environment, model_python
-                from decision_workbench.training.liquid_omni_local import request_body
+            if config["backend"] in ("liquid-omni", "d3-edge"):
+                from .model_environment import native_environment, model_python
 
-                child_environment, child_cwd, cache = liquid_environment(
-                    self.store.folder, backend="liquid-omni"
+                if config["backend"] == "d3-edge":
+                    from decision_workbench.training.d3_local import request_body
+
+                    prefix, study_key, native_runner = "d3", "d3_study", "d3_runner"
+                else:
+                    from decision_workbench.training.liquid_omni_local import (
+                        request_body,
+                    )
+
+                    prefix, study_key, native_runner = (
+                        "omni",
+                        "omni_study",
+                        "liquid_omni_runner",
+                    )
+
+                child_environment, child_cwd, cache = native_environment(
+                    self.store.folder, backend=config["backend"]
                 )
-                request_path = job_folder / "omni-request.json"
-                request_path.write_bytes(request_body(config["omni_study"]))
+                request_path = job_folder / (prefix + "-request.json")
+                request_path.write_bytes(request_body(config[study_key]))
                 argv = [
-                    model_python("liquid-omni", "training"),
+                    model_python(config["backend"], "training"),
                     "-m",
-                    "decision_workbench.training.liquid_omni_runner",
+                    "decision_workbench.training." + native_runner,
                     "--data",
                     str(job_folder / "data"),
                     "--out",
@@ -572,6 +592,10 @@ class Worker:
                 from .vega_training import checked_report
 
                 checked_report(report, config)
+            elif config["backend"] == "d3-edge":
+                from .d3_training import checked_artifact
+
+                checked_artifact(artifact_folder, report, config, spec["questions"])
             elif config["backend"] == "liquid-omni":
                 from .liquid_omni_training import checked_artifact
 

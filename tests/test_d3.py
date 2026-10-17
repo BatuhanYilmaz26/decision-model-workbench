@@ -3,11 +3,14 @@
 import copy
 import hashlib
 import json
+import importlib.util
+import marshal
 from pathlib import Path
+import struct
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from decision_workbench.data import dumps, options, jsonl, read_records, prepare
 from decision_workbench.training import d3_data as data
@@ -15,6 +18,7 @@ from decision_workbench.training.d3_local import DEFAULTS, settings, validate_re
 from decision_workbench.training.artifacts import write_manifest
 from decision_workbench.training.inference import predict_export
 from decision_workbench.training.d3_runtime import D3Engine
+from decision_workbench.training.d3_runtime import publisher_module
 from test_liquid_data import example
 
 
@@ -28,6 +32,91 @@ class PromptFixture:
 
 
 class D3Tests(unittest.TestCase):
+    def test_auto_serving_keeps_calibrated_cpu_on_a_cuda_host(self):
+        metadata = {
+            "format": "domain-d3-runtime-v1",
+            "model": data.MODEL,
+            "revision": data.REVISION,
+            "training_method": "native-readout",
+            "max_length": 256,
+            "questions": {"supported": {"type": "noul", "instructions": "Is this supported?"}},
+            "temperatures": {"supported": 1.0},
+            "device": "cpu",
+        }
+        class Device:
+            def __init__(self, value):
+                self.value = value
+                self.type = value.split(":")[0]
+
+            def __str__(self):
+                return self.value
+
+        native = SimpleNamespace(D3=Mock(return_value=SimpleNamespace(
+            temperature=1.0, readout_dtype="float32",
+            attention_mode="noncausal_full_attention",
+        )))
+        torch = SimpleNamespace(device=Device, cuda=SimpleNamespace(is_available=lambda: True))
+        with tempfile.TemporaryDirectory() as name:
+            folder = Path(name)
+            (folder / "dmt_d3.json").write_text(json.dumps(metadata), encoding="utf-8")
+            with (
+                patch.dict("sys.modules", {"torch": torch}),
+                patch("decision_workbench.training.d3_runtime.runtime_identity"),
+                patch("decision_workbench.training.d3_runtime.checked_runtime", return_value=folder),
+                patch("decision_workbench.training.d3_runtime.memory_guard") as guard,
+                patch("decision_workbench.training.d3_runtime.D3Prompt"),
+                patch("decision_workbench.training.d3_runtime.publisher_module", return_value=native),
+            ):
+                D3Engine(folder)
+                self.assertEqual(native.D3.call_args.kwargs["device"], "cpu")
+                self.assertEqual(guard.call_args.args[0].type, "cpu")
+
+    def test_timestamp_valid_bytecode_cannot_override_pinned_source(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            sources = {
+                "d3_format.py": b"VALUE = 'reviewed'\n",
+                "d3_fast.py": b"from .d3_format import VALUE\n",
+                "d3_runtime.py": b"from .d3_format import VALUE\nfrom . import d3_fast\nRESULT = VALUE\n",
+            }
+            for filename, body in sources.items():
+                (root / filename).write_bytes(body)
+            path = root / "d3_format.py"
+            cache = Path(importlib.util.cache_from_source(str(path)))
+            cache.parent.mkdir()
+            marker = root / "unapproved-execution.txt"
+            code = compile(
+                "from pathlib import Path\nPath("
+                + repr(str(marker))
+                + ").write_text('must not execute')\nVALUE='unapproved'\n",
+                str(path),
+                "exec",
+            )
+            cache.write_bytes(
+                struct.pack(
+                    "<4sIII",
+                    importlib.util.MAGIC_NUMBER,
+                    0,
+                    int(path.stat().st_mtime),
+                    path.stat().st_size,
+                )
+                + marshal.dumps(code)
+            )
+            pins = {
+                filename: hashlib.sha256(body).hexdigest()
+                for filename, body in sources.items()
+            }
+            with patch.dict(data.ASSETS, pins, clear=True):
+                module = publisher_module(root)
+                self.assertEqual(module.RESULT, "reviewed")
+                self.assertFalse(marker.exists())
+                self.assertEqual(list(cache.parent.iterdir()), [cache])
+                (root / "d3_runtime.py").write_text(
+                    "raise AssertionError('changed source')"
+                )
+                with self.assertRaises(ValueError):
+                    publisher_module(root)
+
     def test_reordered_choice_keys_cannot_silently_change_the_calibrated_prompt(self):
         original = {
             "route": {

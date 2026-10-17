@@ -19,7 +19,7 @@ every model, device or cloud combination is supported.
 | Liquid hosted d1 / d1-ultra | Direct text/JSON API adapter, domain evaluation/calibration and released-policy predictions using your API key | [Liquid hosted guide](liquid-hosted.md) |
 | Liquid d1-3B | CPU native-data export, separate TRL and FastVisionModel/Unsloth training profiles, calibrated release and inference | [Liquid data and training guide](liquid.md) |
 | Liquid d1-omni-600M | Native text/JSON head adaptation on CPU/CUDA, soft labels, native data export, calibration, release and inference | [Omni guide](liquid-omni.md) |
-| D3 Edge | Experimental native-readout CLI training, soft targets, calibrated complete exports and inference; application/cloud integration remains unavailable | [D3 workflow](d3.md), [examples](../../examples/d3/README.md) |
+| D3 Edge | Local application and CLI native-readout training, soft targets, calibrated exports, release and inference; managed cloud integration remains unavailable | [D3 workflow](d3.md), [examples](../../examples/d3/README.md) |
 | Local or hosted generative teacher | Reviewed synthetic candidates and optional schema assistance | [Synthetic generation](../synthetic-generation-guide.md), [schema assistant](../schema-assistant-guide.md) |
 | TypeLLM category discovery | Review proposed categories before adopting a schema | [Taxonomy workflow](../taxonomy-guide.md) |
 
@@ -44,7 +44,7 @@ training/serving adapters for the routes below are not delivered here yet.
 | Perplexity open Decider | [v1 card](https://huggingface.co/perplexity-ai/pplx-decider-v1-27b), [v1.1 card](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b), [current hosted API](https://docs.perplexity.ai/docs/decisions/quickstart) | Downloadable checkpoint versions and hosted aliases can differ. |
 | Interfaze Lite | [Model card](https://huggingface.co/interfaze-ai/interfaze-1-lite) | A generative/perception companion, not an interchangeable typed-probability backend. |
 | Amos 1 | [Publisher models](https://amos.scira.ai/models/), [API documentation](https://amos.scira.ai/docs/) | Verify model identity, request-retention terms and availability of training artifacts. |
-| Decision 3.0 | [Official six-model collection](https://huggingface.co/collections/vllm-sr/decision-30) | [D3 Edge's CLI profile](d3.md) is separate from D3, flash, mini, nano and lite; each runtime/training path needs its own checks. |
+| Decision 3.0 | [Official six-model collection](https://huggingface.co/collections/vllm-sr/decision-30) | [D3 Edge's local profile](d3.md) is separate from D3, flash, mini, nano and lite; each runtime/training path needs its own checks. |
 
 Use the [model landscape](../model-landscape.md) and
 [benchmark guide](../benchmarks.md) for dated comparisons. Check the publisher's

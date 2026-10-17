@@ -382,6 +382,7 @@ class LiquidEnvironmentTests(unittest.TestCase):
                     "DMT_MODEL_PYTHON": sys.executable,
                     "DMT_LIQUID_PYTHON": sys.executable,
                     "DMT_LIQUID_UNSLOTH_PYTHON": sys.executable,
+                    "DMT_D3_PYTHON": sys.executable,
                 },
             ),
             patch.object(capabilities, "_cached", None),
@@ -397,7 +398,7 @@ class LiquidEnvironmentTests(unittest.TestCase):
             self.assertEqual(set(result["runtimes"]), {"training", "serving"})
             self.assertEqual(
                 set(result["model_profiles"]),
-                {"liquid-trl", "liquid-unsloth", "liquid-omni"},
+                {"liquid-trl", "liquid-unsloth", "liquid-omni", "d3-edge"},
             )
 
     def test_unsloth_interpreter_and_compile_cache_are_independent(self):

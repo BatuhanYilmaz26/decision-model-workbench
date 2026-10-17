@@ -74,7 +74,7 @@ models whose application adapters are still being built.
 | Train and use Liquid d1-3B | Native data export, local TRL or FastVisionModel/Unsloth training, calibrated releases and predictions with isolated model environments | [Liquid guide](docs/models/liquid.md), [example specification and CSV](examples/liquid/README.md) |
 | Train and use Liquid d1-omni-600M | Native text/JSON decision-head adaptation on CPU/CUDA, reviewed soft labels, calibrated exports, releases and predictions | [Omni guide](docs/models/liquid-omni.md), [model environment](requirements/liquid-omni.txt) |
 | Train Liquid on a rented GPU | Frozen studies for AWS, Azure, GCP, Modal and RunPod, explicit image compatibility and independent returned-model admission | [Liquid cloud guide](docs/remote-training/liquid.md), [experimental image recipe](docker/models/Dockerfile.liquid) |
-| Train and use D3 Edge | Experimental native-readout CLI training, reviewed soft targets, calibration and complete-bundle inference | [D3 guide](docs/models/d3.md), [retrieval-evidence examples](examples/d3/README.md), [model environment](requirements/d3-edge.txt) |
+| Train and use D3 Edge | Local application or CLI native-readout training, reviewed soft targets, calibrated versions, release and inference | [D3 guide](docs/models/d3.md), [retrieval-evidence examples](examples/d3/README.md), [model environment](requirements/d3-edge.txt) |
 
 ## Where decision models can help
 
@@ -94,7 +94,7 @@ These are application ideas, not prebuilt domain solutions or domain-accuracy gu
 
 ## Train your own domain model
 
-Start with [local setup](docs/setup.md#install-and-start). Install the application and run `domain-platform run` to open a personal localhost workspace without an account or pasted credential. You can also run `streamlit run app.py --server.address 127.0.0.1` and select **Start local workspace**. CPU baseline training needs no GPU; Laya, Unsloth, Vega and Liquid need their compatible model environments. Use a [shared workspace](docs/setup.md#personal-and-shared-workspaces) for team roles and stable application API credentials.
+Start with [local setup](docs/setup.md#install-and-start). Install the application and run `domain-platform run` to open a personal localhost workspace without an account or pasted credential. You can also run `streamlit run app.py --server.address 127.0.0.1` and select **Start local workspace**. CPU baseline training needs no GPU; Laya, Unsloth, Vega, Liquid and D3 need their compatible model environments. Use a [shared workspace](docs/setup.md#personal-and-shared-workspaces) for team roles and stable application API credentials.
 
 1. **Describe your use case.** Create a project with your domain, decision policy and data requirements in natural language. Define category, yes/no or rating questions manually, or review and edit a teacher draft using the optional [schema assistant](docs/schema-assistant-guide.md). Confirm the policy and allowed outcomes before collecting examples. Follow the [project workflow](docs/product-workflow.md#1-describe-the-decision).
 2. **Supply examples.** Enter a few examples or upload CSV, XLSX, TSV, JSON or JSONL. Preview the data, map its columns to the decision format and review the labels. The [data guide](docs/data-guide.md) explains the format and review controls.
