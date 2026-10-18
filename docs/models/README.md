@@ -14,7 +14,7 @@ every model, device or cloud combination is supported.
 | Vega | Domain adapters, applicability data, evaluation and serving | [Vega workflow](../vega-guide.md) |
 | Jev / TypeSafe | Direct hosted requests and application-managed evaluation | [API integration](../api-integration-guide.md), [hosted studies](../hosted-decisions-guide.md) |
 | OpenRouter | Hosted decision requests through supported model routes | [OpenRouter integration](../api-integration-guide.md) |
-| Perplexity Decider v1.2 / Flash v1.2 | Hosted text/JSON evaluation, local calibration, release and predictions; open v1.1 training is separate and not integrated | [Perplexity guide](perplexity.md), [runnable API example](../../examples/perplexity/README.md) |
+| Perplexity Decider v1.2 / Flash v1.2 | Hosted text/JSON evaluation, local calibration, release and predictions; open v1.1 has a separate CPU data exporter, with native app training/serving still unavailable | [Hosted guide](perplexity.md), [native data guide](perplexity-native.md), [API example](../../examples/perplexity/README.md) |
 | Cloudflare Clef | Hosted connector and integration guide | [API integration](../api-integration-guide.md) |
 | Liquid hosted d1 / d1-ultra | Direct text/JSON API adapter, domain evaluation/calibration and released-policy predictions using your API key | [Liquid hosted guide](liquid-hosted.md) |
 | Liquid d1-3B | CPU native-data export, separate TRL and FastVisionModel/Unsloth training profiles, calibrated release and inference | [Liquid data and training guide](liquid.md) |

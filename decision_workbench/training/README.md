@@ -10,6 +10,7 @@ These adapters consume reviewed domain data and produce complete model exports w
 | Unsloth | [unsloth_runner.py](unsloth_runner.py) | [Unsloth adapter](../../docs/training-guide.md#unsloth-adapter) |
 | Vega | [vega_runner.py](vega_runner.py) | [Vega data and execution profile](../../docs/vega-guide.md) |
 | Liquid native data | [liquid_data.py](liquid_data.py) | [CPU preparation for the official d1-3B notebooks](../../docs/models/liquid.md); standalone data export, not a managed trainer |
+| Perplexity native data | [perplexity_data.py](perplexity_data.py) | [Choice/Noul preparation and publisher training handoff](../../docs/models/perplexity-native.md); standalone export, not a managed trainer |
 | Liquid local training | [liquid_runner.py](liquid_runner.py), [liquid_runtime.py](liquid_runtime.py) | [d1-3B application training/release](../../docs/models/liquid.md#train-and-release-through-the-localhost-application) and [standalone training](../../docs/models/liquid.md#train-with-the-local-trl-runner) |
 | Liquid omni | [liquid_omni_runner.py](liquid_omni_runner.py), [liquid_omni_runtime.py](liquid_omni_runtime.py) | [Native head adaptation, calibration and application use](../../docs/models/liquid-omni.md) |
 | D3 family | [Pinned variants](d3_profiles.py), [native data](d3_data.py), [trainer](d3_runner.py), [runtime](d3_runtime.py) | [Model/resource selection](../../docs/models/d3-family.md), [local application and CLI](../../docs/models/d3.md), [five-provider cloud workflow](../../docs/remote-training/d3.md) |

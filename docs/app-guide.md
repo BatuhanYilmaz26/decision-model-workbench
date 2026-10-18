@@ -240,6 +240,22 @@ Use **Reserve train / validation / calibration / test**, then follow the prepara
 job in **Training jobs**. Select the resulting **Reserved data snapshot** to inspect
 counts and any temporal audit. [Reservations](reservation-guide.md)
 
+### Download reserved study data
+
+With a **Reserved data snapshot** selected, expand **Download reserved study
+data**. Confirm **I approve downloading this snapshot's evidence and reviewed
+labels**, choose **Prepare reserved study download**, then **Download reserved
+canonical study**. Owners, editors and reviewers can prepare this download.
+
+The ZIP contains `train.jsonl`, `validation.jsonl`, `calibration.jsonl`,
+`test.jsonl` and a checksum manifest. Extract them together for a compatible
+standalone workflow, such as [Perplexity native preparation](models/perplexity-native.md).
+The download preserves roles and reviewed labels; it does not train a model or
+start cloud compute. Store it privately because it includes evidence and gold
+labels. The archive is limited to 64 MiB. If integrity/reservation checks fail,
+inspect the preparation result instead of editing the saved snapshot. Preparing
+records an audit event; it does not prove that the browser saved the file.
+
 ### Choose source groups or date cutoffs
 
 Owners can enable **Choose holdout groups or date cutoffs yourself**, then

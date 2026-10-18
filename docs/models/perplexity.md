@@ -117,5 +117,7 @@ tests. These do not establish account availability, actual billing or domain
 accuracy. Before using sensitive records, check your organization's provider
 terms and evaluate representative data. The separate
 [open v1.1 checkpoint](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b)
-is not hosted v1.2. Its local training, serving and cloud-training integration
-are not available in this workbench yet.
+is not hosted v1.2. Use [native data preparation](perplexity-native.md) to export
+reviewed Choice/Noul datasets and continue with the publisher runtime.
+App-managed native training, serving and cloud admission remain unavailable for
+that checkpoint.

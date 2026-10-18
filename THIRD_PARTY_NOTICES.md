@@ -16,7 +16,9 @@ Apache-2.0 applies to this project's original code and documentation. It does no
 | Other decision models | Check the exact checkpoint and base-model licenses in the [model landscape](docs/model-landscape.md). Open weights, hosted access and permission to retrain are separate properties. |
 | Decision 3.0 family | The [six pinned profiles](docs/models/d3-family.md) retain their publisher LICENSE files declaring Apache-2.0. Prompt rendering follows the publisher's `d3_format.py`, copyright 2026 vLLM Semantic Router Team. Downloaded runtime code, LICENSE and NOTICE remain in domain exports; weights are not distributed in this repository. See the [D3 guide](docs/models/d3.md). |
 
-License declarations above were checked on **13–17 October 2026**. Links to `main` may change; preserve the license and notices from the exact installed artifact for a distribution.
+Prompt construction in `perplexity_data.py` is adapted from Perplexity's Apache-2.0 [native formatter](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b/blob/14c9d90137962d300f3de95633f7b6535e80c5ce/source/src/autojev/model.py), revision `14c9d90137962d300f3de95633f7b6535e80c5ce`. Its optional tokenizer/source download retains the exact publisher LICENSE and NOTICE and downloads no weights. See [native preparation](docs/models/perplexity-native.md).
+
+License declarations above were checked on **13–18 October 2026**. Links to `main` may change; preserve the license and notices from the exact installed artifact for a distribution.
 
 ## Libraries, schemas and research
 

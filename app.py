@@ -485,6 +485,40 @@ try:
             )
             snapshot = next(s for s in snapshots if s["id"] == snapshot_id)
             st.json(snapshot["payload"]["counts"])
+            with st.expander("Download reserved study data"):
+                st.caption(
+                    "Download all four canonical JSONL roles and their checksum manifest for a standalone model workflow. This includes evidence and gold labels; store it privately. Downloading does not train a model or submit cloud compute."
+                )
+                export_key = "snapshot-export-" + project + "-" + snapshot_id
+                export_approved = st.checkbox(
+                    "I approve downloading this snapshot's evidence and reviewed labels",
+                    key=export_key + "-approved",
+                )
+                if st.button(
+                    "Prepare reserved study download",
+                    disabled=not export_approved,
+                    key=export_key + "-prepare",
+                ):
+                    study_body = api(
+                        "GET",
+                        f"/v1/projects/{project}/snapshots/{snapshot_id}/download",
+                        binary=True,
+                    )
+                    for old_key in list(st.session_state):
+                        if old_key.startswith("snapshot-export-bytes-"):
+                            del st.session_state[old_key]
+                    st.session_state["snapshot-export-bytes-" + export_key] = study_body
+                download_body = st.session_state.get(
+                    "snapshot-export-bytes-" + export_key
+                )
+                if download_body is not None and export_approved:
+                    st.download_button(
+                        "Download reserved canonical study",
+                        download_body,
+                        "reserved-study.zip",
+                        "application/zip",
+                        key=export_key + "-save",
+                    )
             if snapshot["payload"].get("temporal_audit"):
                 with st.expander("Declared temporal reservation audit"):
                     st.json(snapshot["payload"]["temporal_audit"])

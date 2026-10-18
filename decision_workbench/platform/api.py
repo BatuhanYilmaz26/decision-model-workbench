@@ -1008,6 +1008,23 @@ def create_app(home=None, keys=None, hosted=None):
             headers={"Content-Disposition": "attachment; filename=dataset.jsonl"},
         )
 
+    @app.get("/v1/projects/{project}/snapshots/{snapshot}/download")
+    def snapshot_inputs(
+        project: str,
+        snapshot: str,
+        authorization: str | None = Header(default=None),
+        p=Depends(identity),
+    ):
+        from .snapshot_export import study_archive
+
+        body = study_archive(service, p, project, snapshot)
+        authorize_again(authorization, p)
+        return Response(
+            body,
+            media_type="application/zip",
+            headers={"Content-Disposition": "attachment; filename=reserved-study.zip"},
+        )
+
     @app.get("/v1/projects/{project}/remote-studies/{study}/download")
     def remote_inputs(
         project: str,

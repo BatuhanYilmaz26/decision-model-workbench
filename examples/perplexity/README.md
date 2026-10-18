@@ -2,6 +2,9 @@
 
 [Project overview](../../README.md) · [Example directory](../README.md) · [Perplexity guide](../../docs/models/perplexity.md)
 
+For training data rather than hosted calls, follow [open Decider preparation](../../docs/models/perplexity-native.md).
+Its Choice/Noul training contract differs from the hosted API request example.
+
 Use [request.json](request.json) as a fictional single-question text/JSON request.
 Replace its state, question and criteria with your domain. Install the
 [local application requirements](../../requirements.txt) in a virtual environment

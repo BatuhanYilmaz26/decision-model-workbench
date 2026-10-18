@@ -1,0 +1,3 @@
+# CPU-only Perplexity native-data preparation; no Torch, Transformers or weights.
+# Run from the repository root in a separate virtual environment.
+-e .[perplexity-data]
