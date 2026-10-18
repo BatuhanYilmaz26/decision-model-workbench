@@ -179,7 +179,9 @@ class NativePerplexityPlatformTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "changed after queueing"):
             recheck(changed, self.snapshot, self.questions)
 
-    def test_paths_downloads_wrong_profiles_roles_and_managed_cloud_are_refused(self):
+    def test_paths_downloads_wrong_profiles_roles_and_incomplete_cloud_are_refused(
+        self,
+    ):
         for extra in (
             {"python": sys.executable},
             {"checkpoint": str(self.native.base)},
@@ -211,7 +213,6 @@ class NativePerplexityPlatformTests(unittest.TestCase):
             },
         )
         self.assertEqual(response.status_code, 400, response.text)
-        self.assertIn("managed cloud", response.text)
         self.assertFalse(self.store.has_model_training())
 
     def test_actual_worker_produces_and_validates_fictional_native_export(self):
@@ -357,7 +358,7 @@ class NativePerplexityPlatformTests(unittest.TestCase):
         runtime = {
             "system": "Linux",
             "python": "3.12.15",
-            "packages": PACKAGES,
+            "packages": {**PACKAGES, "scikit-learn": "1.9.1"},
             "cuda": True,
             "gpus": [{"free_vram_gib": 190}],
             "ram_available_gib": 1024,
@@ -374,6 +375,7 @@ class NativePerplexityPlatformTests(unittest.TestCase):
             {"python": "3.11.15"},
             {"gpus": [{"vram_gib": 192, "free_vram_gib": 1}]},
             {"ram_available_gib": 16},
+            {"packages": dict(PACKAGES)},
             {"packages": {**PACKAGES, "torch": "2.10.0"}},
         ):
             value = copy.deepcopy(capabilities)
@@ -514,7 +516,7 @@ class NativePerplexityPlatformTests(unittest.TestCase):
             profile = {
                 "system": "Linux",
                 "python": "3.12.15",
-                "packages": PACKAGES,
+                "packages": {**PACKAGES, "scikit-learn": "1.9.1"},
                 "cuda": True,
                 "mps": False,
                 "gpus": [
@@ -548,7 +550,7 @@ class NativePerplexityPlatformTests(unittest.TestCase):
                 self.assertFalse(at.exception)
                 self.assertEqual(
                     next(r for r in at.radio if r.label == "Training location").options,
-                    ["This computer"],
+                    ["This computer", "Cloud GPU"],
                 )
                 button = next(b for b in at.button if b.label == "Queue training")
                 self.assertFalse(button.disabled)

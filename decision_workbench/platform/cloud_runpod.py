@@ -68,8 +68,16 @@ def validate_profile(p):
         "max_artifact_bytes",
         "source_sha256",
     }
-    if not isinstance(p, dict) or set(p) != fields or p["provider"] != "runpod":
+    if (
+        not isinstance(p, dict)
+        or set(p) - {"min_memory_gb"} != fields
+        or p["provider"] != "runpod"
+    ):
         raise ValueError("Invalid RunPod profile fields")
+    if "min_memory_gb" in p and (
+        type(p["min_memory_gb"]) is not int or not 1 <= p["min_memory_gb"] <= 4096
+    ):
+        raise ValueError("RunPod min_memory_gb must be an integer from 1 to 4096")
     patterns = {
         "id": r"[A-Za-z0-9_-]{1,64}",
         "credential_prefix": r"DMT_CLOUD_[A-Z0-9_]{1,64}",
@@ -153,7 +161,12 @@ def plan(run):
     return {
         "name": pod_name(run),
         "cloud": "SECURE",
-        "gpu": {"id": p["gpu"], "count": 1, "allowedCudaVersions": [p["cuda_version"]]},
+        "gpu": {
+            "id": p["gpu"],
+            "count": 1,
+            "allowedCudaVersions": [p["cuda_version"]],
+            **({"minRamPerGpu": p["min_memory_gb"]} if "min_memory_gb" in p else {}),
+        },
         "dataCenterIds": [p["region"]],
         "image": p["image_digest"],
         "entrypoint": ["python", "-m", "decision_workbench.training.runpod_runner"],
@@ -460,6 +473,14 @@ class RunPodGateway:
             or gpu["count"] != 1
         ):
             raise CloudUnavailable("RunPod GPU configuration differs")
+        if "min_memory_gb" in run["profile"] and (
+            type(gpu.get("memory")) not in (int, float)
+            or not math.isfinite(gpu["memory"])
+            or gpu["memory"] < run["profile"]["min_memory_gb"]
+        ):
+            raise CloudUnavailable(
+                "RunPod allocated host RAM is below the approved placement minimum"
+            )
         # Readback args encodes the same explicit exec-form command, with whitespace varying.
         try:
             encoded = json.loads(value["args"])

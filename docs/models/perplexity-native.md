@@ -9,8 +9,9 @@ four data roles, source lineage and file checksums.
 This profile targets `perplexity-ai/pplx-decider-v1.1-27b`, revision
 `14c9d90137962d300f3de95633f7b6535e80c5ce`. It is separate from hosted v1.2.
 The CPU exporter connects to an **experimental Linux/CUDA native profile** for
-application or standalone training, calibrated releases and prediction. Managed
-cloud training/admission is not yet available for this checkpoint.
+application or standalone training, calibrated releases and prediction. Its
+[five-provider cloud workflow](../remote-training/perplexity.md) uses a separate
+experimental image, H200 resource declarations and independent admission.
 Use the [hosted workflow](perplexity.md) for provider-hosted Perplexity decisions.
 
 ## Prepare compatible reviewed records
@@ -381,8 +382,8 @@ domain quality or deployment readiness.
 The [AWS](../remote-training/aws.md), [Azure](../remote-training/azure.md),
 [GCP](../remote-training/gcp.md), [Modal](../remote-training/modal.md) and
 [RunPod](../remote-training/runpod.md) guides explain GPU job/storage primitives.
-For native Perplexity, provision the publisher runtime as your own custom job and
-transfer only approved data. Managed trainers, result admission and serving in
-this workbench do not yet support this profile. Another model's managed image
-does not add that support. Retain model/data/runtime identities and stop paid
-resources explicitly.
+For native Perplexity, follow the [five-provider native cloud workflow](../remote-training/perplexity.md)
+for the compatible image, H200 resource declarations, study submission and
+independent returned-model admission. Transfer only approved data. An image for
+another model does not supply this runtime. Retain model/data/runtime identities
+and stop paid resources explicitly.

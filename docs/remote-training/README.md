@@ -7,6 +7,8 @@ Train a decision model on a rented GPU when local memory is insufficient. Start 
 For d1-3B TRL/Unsloth or d1-omni-600M, follow the [Liquid cloud workflow](liquid.md)
 for native formats, image compatibility, cached checkpoints and independent admission.
 For the six D3 variants, use the separate [D3 cloud workflow](d3.md) and its compatible native image.
+For open Perplexity v1.1, follow [native full-weight cloud training](perplexity.md)
+for the H200/RAM requirements, experimental image and returned-model admission.
 
 | Provider | Direct walkthrough | Application-managed workflow | Configuration template |
 |---|---|---|---|

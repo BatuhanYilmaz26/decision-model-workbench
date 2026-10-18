@@ -185,6 +185,16 @@ class Cloud:
                 raise ValueError(
                     "Cloud artifact limit cannot hold this D3 variant's frozen weights and readout"
                 )
+        if config["backend"] == "perplexity-native":
+            from decision_workbench.training.perplexity_profile import WEIGHT_BYTES
+
+            if p["max_artifact_bytes"] < WEIGHT_BYTES + 128 * 1024**2:
+                raise ValueError(
+                    "Cloud artifact limit cannot hold the complete native Perplexity export"
+                )
+            from .cloud_training_profile import require_perplexity_resources
+
+            require_perplexity_resources(p)
         regional = [
             x
             for x in profiles()

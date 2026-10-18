@@ -70,13 +70,18 @@ def validate_profile(p):
         "bucket": r"[a-z0-9][a-z0-9-]{1,61}[a-z0-9]",
         "prefix": r"[A-Za-z0-9_-]{1,80}",
         "source_sha256": r"[a-f0-9]{64}",
-        "machine_type": r"n1-standard-(4|8|16|32)",
+        "machine_type": r"(?:n1-standard-(4|8|16|32)|a3-ultragpu-8g)",
     }
     for key, pattern in patterns.items():
         if not isinstance(p[key], str) or not re.fullmatch(pattern, p[key]):
             raise ValueError("Invalid GCP resource identity: " + key)
-    if p["gpu"] != "NVIDIA_TESLA_T4":
-        raise ValueError("Initial GCP profile supports one T4 on n1-standard compute")
+    expected_gpu = (
+        "NVIDIA_H200_141GB"
+        if p["machine_type"] == "a3-ultragpu-8g"
+        else "NVIDIA_TESLA_T4"
+    )
+    if p["gpu"] != expected_gpu:
+        raise ValueError("Match n1-standard/T4 or a3-ultragpu-8g/eight H200 GPUs")
     for key in ("operator_service_account", "training_service_account"):
         if not isinstance(p[key], str) or not re.fullmatch(
             r"[a-z][a-z0-9-]{4,28}[a-z0-9]@"
@@ -179,10 +184,16 @@ def plan(run):
                     "machineSpec": {
                         "machineType": p["machine_type"],
                         "acceleratorType": p["gpu"],
-                        "acceleratorCount": 1,
+                        "acceleratorCount": (
+                            8 if p["machine_type"] == "a3-ultragpu-8g" else 1
+                        ),
                     },
                     "diskSpec": {
-                        "bootDiskType": "pd-ssd",
+                        "bootDiskType": (
+                            "hyperdisk-balanced"
+                            if p["machine_type"] == "a3-ultragpu-8g"
+                            else "pd-ssd"
+                        ),
                         "bootDiskSizeGb": p["volume_gb"],
                     },
                     "containerSpec": {

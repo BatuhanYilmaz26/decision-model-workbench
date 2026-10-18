@@ -268,6 +268,8 @@ def checked_artifact(folder, report, config, questions):
         | {"checkpoint/" + n for n in names}
         | {"checkpoint/dmt_perplexity.json"}
     )
+    if report.get("admission"):
+        allowed.add("training_report.json")
     if (
         set(found) != allowed
         or strict_json((folder / "manifest.json").read_bytes()).get("checkpoint")

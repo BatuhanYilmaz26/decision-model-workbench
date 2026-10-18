@@ -11,7 +11,13 @@ from .provenance import source_fingerprint
 
 def prepare(backend, cache):
     local, _, _ = profile(backend)
-    if backend in D3_BACKENDS:
+    if backend == "perplexity-native":
+        from .perplexity_runtime import runtime_identity
+        from .perplexity_checkpoint import download_checkpoint
+
+        packages = runtime_identity()
+        checkpoint = download_checkpoint(cache)
+    elif backend in D3_BACKENDS:
         from .d3_runtime import resolve_checkpoint, runtime_identity
 
         packages = runtime_identity()
@@ -23,9 +29,12 @@ def prepare(backend, cache):
         from .liquid_runtime import resolve_checkpoint, runtime_identity
 
         packages = runtime_identity(backend)
-    checkpoint = resolve_checkpoint(
-        cache, download=True, **({"backend": backend} if backend in D3_BACKENDS else {})
-    )
+    if backend != "perplexity-native":
+        checkpoint = resolve_checkpoint(
+            cache,
+            download=True,
+            **({"backend": backend} if backend in D3_BACKENDS else {}),
+        )
     selected = get_profile(backend).fields if backend in D3_BACKENDS else local.PROFILE
     return {
         "backend": backend,

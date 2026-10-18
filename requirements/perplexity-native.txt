@@ -17,5 +17,6 @@ kernels==0.16.1
 flash-linear-attention==0.5.2
 safetensors==0.8.0
 numpy==2.5.3
+scikit-learn==1.9.1
 huggingface-hub==1.31.0
 imageio-ffmpeg>=0.6

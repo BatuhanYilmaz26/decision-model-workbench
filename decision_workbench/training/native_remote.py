@@ -11,11 +11,22 @@ from decision_workbench.data import dumps
 from decision_workbench.json_tools import strict_json
 from .provenance import source_fingerprint
 
-BACKENDS = ("liquid-trl", "liquid-unsloth", "liquid-omni", *D3_BACKENDS)
+BACKENDS = (
+    "liquid-trl",
+    "liquid-unsloth",
+    "liquid-omni",
+    "perplexity-native",
+    *D3_BACKENDS,
+)
 LOCATION = {"provider", "region", "gpu", "image_digest"}
 
 
 def profile(backend):
+    if backend == "perplexity-native":
+        from . import perplexity_local as local
+        from decision_workbench.platform import perplexity_training as platform
+
+        return local, platform, "perplexity_study"
     if backend in D3_BACKENDS:
         from . import d3_local as local
         from decision_workbench.platform import d3_training as platform
@@ -72,7 +83,12 @@ def check_inputs(request, rows, hashes, questions):
     config = core["configuration"]
     if not isinstance(config, dict):
         raise ValueError("Native remote configuration must be a JSON object")
-    if config.get("device") != "cuda" or config.get("download") is not False:
+    offline = (
+        "download" not in config
+        if config.get("backend") == "perplexity-native"
+        else config.get("download") is False
+    )
+    if config.get("device") != "cuda" or not offline:
         raise ValueError(
             "Remote native training requires CUDA and a pre-cached offline checkpoint"
         )
@@ -93,6 +109,7 @@ def check_inputs(request, rows, hashes, questions):
             "splits": rows,
             "sha256": hashlib.sha256(dumps(rows).encode()).hexdigest(),
             "schema_sha256": hashlib.sha256(dumps(questions).encode()).hexdigest(),
+            "counts": {role: len(records) for role, records in rows.items()},
         },
         questions,
     )
@@ -139,6 +156,18 @@ def checked_artifact(folder, report, config, questions):
 
 
 def approved_configs(backend, checkpoint):
+    if backend == "perplexity-native":
+        from .perplexity_profile import ASSETS
+
+        return {"publisher/" + name for name in ASSETS if name.endswith(".json")} | {
+            checkpoint + "/" + name
+            for name in (
+                "config.json",
+                "processor_config.json",
+                "tokenizer.json",
+                "tokenizer_config.json",
+            )
+        }
     if backend in D3_BACKENDS:
         assets = get_profile(backend).assets
     elif backend == "liquid-omni":
@@ -152,6 +181,23 @@ def approved_configs(backend, checkpoint):
 
 
 def export_assets(backend, checkpoint):
+    if backend == "perplexity-native":
+        from .perplexity_profile import ASSETS
+
+        result = {"publisher/" + name: info["sha256"] for name, info in ASSETS.items()}
+        result.update(
+            {
+                checkpoint + "/" + name: ASSETS[name]["sha256"]
+                for name in (
+                    "config.json",
+                    "processor_config.json",
+                    "tokenizer.json",
+                    "tokenizer_config.json",
+                    "chat_template.jinja",
+                )
+            }
+        )
+        return result
     if backend in D3_BACKENDS:
         assets = get_profile(backend).assets
     elif backend == "liquid-omni":

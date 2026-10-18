@@ -376,6 +376,7 @@ def local_backend_available(backend, capabilities):
                 or not python_ok
                 or value.get("system") != "Linux"
                 or not value.get("cuda")
+                or not packages.get("scikit-learn")
                 or any(
                     (packages.get(k) or "").split("+")[0] != v
                     for k, v in PACKAGES.items()

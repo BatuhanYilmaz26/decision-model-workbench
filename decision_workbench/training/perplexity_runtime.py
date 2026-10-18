@@ -51,11 +51,9 @@ def available_ram():
         raise ValueError(
             "This native execution profile requires Linux; use WSL2 or a Linux GPU host"
         )
-    lines = Path("/proc/meminfo").read_text().splitlines()
-    return (
-        int(next(line.split()[1] for line in lines if line.startswith("MemAvailable:")))
-        * 1024
-    )
+    from .memory_limits import available_linux_memory
+
+    return available_linux_memory()
 
 
 def memory_guard(device, *, training=False):

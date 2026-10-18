@@ -56,7 +56,31 @@ def execute(request_path, data, output):
         cache=cache,
         local_study_request=str(local_path),
     )
-    if backend in D3_BACKENDS:
+    if backend == "perplexity-native":
+        from .perplexity_runner import train_perplexity
+
+        checkpoint = Path(os.environ.get("DMT_PERPLEXITY_CHECKPOINT", ""))
+        if not checkpoint.is_absolute() or not checkpoint.is_dir():
+            raise ValueError(
+                "Configure the image's preinstalled DMT_PERPLEXITY_CHECKPOINT"
+            )
+        args.checkpoint = str(checkpoint)
+        args.data = str(ordinary(data))
+        previous_cwd = Path.cwd()
+        try:
+            # Azure ML and other launchers may start outside the image's source
+            # checkout. The publisher logger requires its real Git metadata.
+            os.chdir(Path(__file__).resolve().parents[2])
+            result = train_perplexity(args)
+        finally:
+            os.chdir(previous_cwd)
+        native = ordinary(native / "export")
+        if Path(result["export"]).resolve() != native.resolve():
+            raise ValueError(
+                "Native Perplexity returned an export outside its owned run"
+            )
+        report = result["report"]
+    elif backend in D3_BACKENDS:
         from .d3_runner import train_d3
 
         args.backend = backend

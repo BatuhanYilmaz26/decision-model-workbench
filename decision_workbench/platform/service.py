@@ -379,7 +379,10 @@ class Service:
 
         allowed["train"] |= VEGA_INPUTS
         allowed["train"] |= {"device", "download", "training_method"}
-        if kind == "train" and config.get("backend") == "perplexity-native":
+        if (
+            kind in ("train", "remote-study")
+            and config.get("backend") == "perplexity-native"
+        ):
             from decision_workbench.training.perplexity_local import (
                 INPUTS as PERPLEXITY_INPUTS,
             )
@@ -544,10 +547,6 @@ class Service:
             )
             config["backend"] = "hosted"
         elif kind in ("train", "remote-study"):
-            if config.get("backend") == "perplexity-native" and kind != "train":
-                raise ValueError(
-                    "Native Perplexity managed cloud studies are not available; use its custom Linux job guide"
-                )
             if config.get("backend") == "vega":
                 from .vega_training import validate_references
 
@@ -591,7 +590,23 @@ class Service:
             if config["backend"] == "perplexity-native":
                 from .perplexity_training import freeze
 
-                config = freeze(self, principal, project, config)
+                location = (
+                    {
+                        k: config[k]
+                        for k in ("provider", "region", "gpu", "image_digest")
+                    }
+                    if kind == "remote-study"
+                    else {}
+                )
+                config = {
+                    **freeze(
+                        self,
+                        principal,
+                        project,
+                        {k: v for k, v in config.items() if k not in location},
+                    ),
+                    **location,
+                }
             elif config["backend"] in (*D3_BACKENDS, "liquid-omni"):
                 if config["backend"] in D3_BACKENDS:
                     from .d3_training import freeze

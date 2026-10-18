@@ -4,19 +4,29 @@ import streamlit as st
 from decision_workbench.training.perplexity_local import PROFILE, DEFAULTS
 
 
-def training_options(config, questions):
+def training_options(config, questions, *, remote=False):
     config.update(PROFILE)
     config["device"] = "cuda"
     st.info(
-        "Perplexity open v1.1 uses full-weight training on the workspace's Linux CUDA host. It needs about 107 GiB free VRAM, 428 GiB available RAM and 150 GiB free output storage beyond the preinstalled 52.2 GB checkpoint. These are startup floors; longer inputs may need more. No model download or paid API call is started by this form."
+        "Perplexity open v1.1 uses full-weight training on the selected Linux CUDA host. It needs about 107 GiB free VRAM, 428 GiB available RAM and 150 GiB free output storage beyond the preinstalled 52.2 GB checkpoint. These are startup floors; longer inputs may need more. No model download or paid API call is started by this form."
     )
     st.caption(
-        "An owner configures DMT_PERPLEXITY_PYTHON and DMT_PERPLEXITY_CHECKPOINT on the API/worker host. This is separate from a Perplexity API key. The final-epoch checkpoint uses a global temperature fitted on reserved calibration data; optimizer-state resume is unavailable."
+        (
+            "Cloud studies need a compatible image with the pinned checkpoint already installed; preparation needs no local GPU. Independent admission and local serving still require the native runtime. "
+            if remote
+            else "An owner configures DMT_PERPLEXITY_PYTHON and DMT_PERPLEXITY_CHECKPOINT on the API/worker host. "
+        )
+        + "This is separate from a Perplexity API key. The final-epoch checkpoint uses a global temperature fitted on reserved calibration data; optimizer-state resume is unavailable."
     )
     st.link_button(
         "Set up native Perplexity training",
         "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/models/perplexity-native.md#train-through-the-application",
     )
+    if remote:
+        st.link_button(
+            "Set up native Perplexity cloud training",
+            "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/remote-training/perplexity.md",
+        )
     st.link_button(
         "Use hosted Perplexity without a local GPU",
         "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/models/perplexity.md#evaluate-and-release-in-the-localhost-application",

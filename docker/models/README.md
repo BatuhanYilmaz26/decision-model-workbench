@@ -6,6 +6,7 @@
 
 | Task | Guide or file |
 |---|---|
+| Prepare native Perplexity full-weight training | [Dockerfile.perplexity](Dockerfile.perplexity), [five-provider cloud guide](../../docs/remote-training/perplexity.md); experimental Linux/CUDA image with large memory/storage requirements |
 | Prepare a selected D3 training image | [Dockerfile.d3](Dockerfile.d3), [D3 cloud workflow](../../docs/remote-training/d3.md); experimental until qualified on your selected GPU/provider |
 | Prepare a Liquid training image | [Dockerfile.liquid](Dockerfile.liquid), [Liquid cloud workflow](../../docs/remote-training/liquid.md); experimental until qualified on your selected GPU/provider |
 | Train or serve a Vega domain model | [Vega workflow](../../docs/vega-guide.md) |

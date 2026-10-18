@@ -99,7 +99,7 @@ def validate_profile(p):
         raise ValueError("Modal profile must name approved tenants")
     for k, low, high in (
         ("cpu", 1, 16),
-        ("memory_mb", 2048, 131072),
+        ("memory_mb", 2048, 524288),
         ("max_runtime_seconds", 300, 14400),
         ("max_runs_day", 1, 100),
         ("max_inflight", 1, 4),

@@ -2,11 +2,17 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-Bring a remotely trained model into the local platform using **frozen study → operator staging → runtime validation → owner release**. Native Laya and Unsloth use four data files; Vega uses eight, including applicability negatives. Choose a [provider workflow](remote-training-guide.md) to train the frozen inputs. Managed cloud controllers accept Laya/Unsloth studies; Vega requires its separate operator route and is rejected by those managed launchers.
+Bring a remotely trained model into the local platform using **frozen study → operator staging → runtime validation → owner release**. Native Laya and Unsloth use four data files; Vega uses eight, including applicability negatives. Choose a [provider workflow](remote-training-guide.md) to train the frozen inputs. Managed controllers accept compatible Laya, Unsloth, Liquid, D3 and native Perplexity studies with matching declared images. Vega requires its separate operator route and is rejected by those managed launchers.
 
 Use this workflow **before training**. A pre-existing checkpoint without the frozen study request cannot enter this route by relabeling it or changing its report. Local training remains available through the normal worker. The current transfer route requires an authenticated operator with filesystem access to the workspace; a browser upload of multi-gigabyte weights is not implemented.
 
 Liquid d1-3B TRL/Unsloth and omni use the [Liquid remote-training workflow](remote-training/liquid.md). Their returned native model code is accepted only at its reviewed hashes and approved configuration; arbitrary uploaded Python remains prohibited. Configure the matching isolated model interpreter before admission. [D3 Edge cloud exports](remote-training/d3.md) use `DMT_D3_PYTHON`, pinned native source and the calibrated CUDA device; bytecode caches are rejected.
+
+[Native Perplexity cloud exports](remote-training/perplexity.md) use
+`DMT_PERPLEXITY_PYTHON` for independent admission and CUDA serving. They retain
+the complete backbone/readout, pinned publisher source and global temperature.
+Provision the serving host's RAM/VRAM and artifact storage before retrieval;
+cloud training alone does not provide an inference endpoint.
 
 ## 1. Freeze an owner-approved remote study
 
@@ -112,7 +118,7 @@ Inspect the current job before retrying an interrupted command. A successful que
 
 ## 5. Qualify, review and release
 
-Run the worker in the qualified model environment. Admission acquires the same GPU lease as local training, pauses resident inference through the existing scheduler, launches a bounded offline model subprocess and preserves private logs. Native Laya/Unsloth loaders reject executable model configuration; Liquid accepts only its hash-verified publisher code and approved native configuration. Qualification loads the actual export, measures **all reserved validation/calibration/test records**, then loads it again and checks validation probabilities and decisions at the fixed backend tolerance. It does not refit calibration or change training/holdout membership.
+Run the worker with the compatible model interpreter configured. Admission acquires the same GPU lease as local training, pauses resident inference through the existing scheduler, launches a bounded offline model subprocess and preserves private logs. Native Laya/Unsloth loaders reject executable model configuration; Liquid, D3 and native Perplexity accept only their hash-verified source and approved native configurations. Qualification loads the actual export, measures **all reserved validation/calibration/test records**, then loads it again and checks validation probabilities and decisions at the fixed backend tolerance. It does not refit calibration or change training/holdout membership.
 
 The supplied validation/test metrics are replaced by measured local metrics. The original report is retained as `training_report.json`; the resulting portable bundle receives a new exact manifest. Registration preserves both source and admitted checksums, study/job identities, frozen policy and provider attestation. Failed/cancelled or expired-owner jobs cannot register an eligible model. An admission failure retains the incoming source for operator investigation and removes its unregistered model copy.
 

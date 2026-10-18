@@ -146,7 +146,7 @@ def qualify(folder, data, expected_sha, request, engine_factory=None):
             "note": "Local exported-runtime measurements replace supplied validation/test metrics. Cloud receipt remains operator-attested.",
         },
     }
-    if config["backend"] in ("liquid-omni", *D3_BACKENDS):
+    if config["backend"] in ("liquid-omni", "perplexity-native", *D3_BACKENDS):
         report["calibration_metrics"] = report["admission"][
             "calibration_runtime_metrics"
         ]

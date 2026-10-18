@@ -95,7 +95,7 @@ def validate_profile(p):
         "datastore": r"[a-z][a-z0-9_]{1,254}",
         "prefix": r"[A-Za-z0-9_-]{1,80}",
         "source_sha256": r"[a-f0-9]{64}",
-        "gpu": r"Standard_NC(4|8|16)as_T4_v3",
+        "gpu": r"(?:Standard_NC(4|8|16)as_T4_v3|Standard_ND96isr_H200_v5)",
     }
     patterns.update(
         {

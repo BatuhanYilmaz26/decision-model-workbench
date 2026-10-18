@@ -14,7 +14,17 @@ python -m pip install -e '.[ui,platform,gcp]'
 
 Start from [the illustrative GCP profile](../examples/cloud/gcp-profiles.json). Replace its project number (`account_id`), project ID, regional bucket, service-account emails, image digest, tenant allowlist and package source hash. The zero hashes deliberately cannot approve a current study. Add the profile to the same `domain-cloud-profiles-v1` file used for AWS, and set `DMT_CLOUD_PROFILES_FILE` in the API/worker processes. Profile IDs must be unique across providers. These entry points read process variables; they do not load `.env.example` automatically.
 
-This profile supports one `NVIDIA_TESLA_T4` on `n1-standard-4/8/16/32`, an SSD boot volume, on-demand scheduling and a running timeout up to four hours. It requires an Artifact Registry digest in the same project/region and a regional bucket owned by that project. Check regional quota and measure memory with your image and longest inputs. Distributed jobs, spot/resume, persistent resources, VPC/PSC, CMEK, cross-project resources and other accelerators are outside this adapter's supported profile. [CustomJobSpec and scheduling](https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/rest/Shared.Types/CustomJobSpec)
+This profile supports one `NVIDIA_TESLA_T4` on `n1-standard-4/8/16/32`, or eight
+`NVIDIA_H200_141GB` accelerators on `a3-ultragpu-8g` with a Hyperdisk Balanced
+boot disk. The latter is the declared profile for [native Perplexity](remote-training/perplexity.md),
+whose current trainer uses one GPU process while the allocated machine has eight.
+The adapter uses standard scheduling and a timeout up to four hours. It requires
+an Artifact Registry digest in the same project/region and a regional bucket
+owned by that project. Check quota, scheduling availability and actual free
+memory/storage. Distributed launch, spot/resume, persistent resources, VPC/PSC,
+CMEK, cross-project resources and other machine/accelerator combinations remain
+outside this profile. [Compute and disk combinations](https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/training/configure-compute)
+· [CustomJobSpec and scheduling](https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/rest/Shared.Types/CustomJobSpec)
 
 Configure an operator service-account JSON key privately through `<credential_prefix>_CREDENTIALS_FILE`; the example prefix is `DMT_CLOUD_GCP`. The adapter requires the JSON project and email to match the profile, pins the standard OAuth token endpoint and refuses another Google universe. It does not select ambient operator credentials, browser credentials or an arbitrary endpoint. The key is loaded for each action, and Google-auth refreshes its scoped access token when needed. Keyless workload identity, impersonation, secret-store integration and enterprise credential lifecycle qualification remain required work. Do not commit the key or place it in a model/study export.
 

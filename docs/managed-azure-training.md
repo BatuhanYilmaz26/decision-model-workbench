@@ -10,6 +10,12 @@ Use an existing approved Azure ML workspace, storage account/container, identity
 
 The first profile supports one dedicated Linux `Standard_NC4as_T4_v3`, `Standard_NC8as_T4_v3` or `Standard_NC16as_T4_v3` node. These approved sizes each have one T4 with 16 GB advertised accelerator memory; measured usable VRAM, driver/CUDA and trainer limits still need image qualification. [Microsoft size specifications](https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/gpu-accelerated/ncast4v3-series)
 
+For [native Perplexity training](remote-training/perplexity.md), the adapter also
+accepts `Standard_ND96isr_H200_v5`. This dedicated node has eight H200 GPUs and
+1,850 GiB host RAM; the current native trainer uses only one GPU process. Verify
+the image, quota and free container scratch space before submitting.
+[H200 specifications](https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/gpu-accelerated/nd-h200-v5-series)
+
 It requires a cluster minimum of zero, maximum of one, explicitly disabled public SSH and the exact configured idle scale-down duration (1â€“300 seconds). Workspace and compute use their approved system-assigned managed identities. The environment version must reference the approved ACR image digest directly, with no automatic rebuild, build context or Conda overlay. The GPU image contains this exact package source and the separately qualified native Laya/Unsloth dependencies; the CPU API Dockerfile is a different image. Regional availability, quota, measured VRAM and image ABI remain real-provider acceptance tasks.
 
 The workspace, compute and storage account must match the profile region and subscription/resource group. The workspace storage/registry IDs and datastore account/container must match the approved resources. Datastore credentials must be `None`, its protocol HTTPS, endpoint `core.windows.net`, and service data access must use the workspace system-assigned identity. The approved storage account disables public Blob access and requires TLS 1.2. Profile identifiers describe resources; they are not storage keys or SAS tokens. [Identity-based datastore access](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-read-write-data-v2?view=azureml-api-2)

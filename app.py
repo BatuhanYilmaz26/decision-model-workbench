@@ -722,7 +722,7 @@ try:
                 "Training location",
                 (
                     ["This computer", "Cloud GPU"]
-                    if principal["role"] == "admin" and backend != "perplexity-native"
+                    if principal["role"] == "admin"
                     else ["This computer"]
                 ),
                 horizontal=True,
@@ -806,7 +806,12 @@ try:
                 from decision_workbench.ui.perplexity_native import training_options
 
                 local_ready = (
-                    training_options(config, spec["questions"]) and local_ready
+                    training_options(
+                        config,
+                        spec["questions"],
+                        remote=training_location == "Cloud GPU",
+                    )
+                    and local_ready
                 )
             elif backend in D3_BACKENDS:
                 from decision_workbench.ui.d3 import training_options
@@ -1118,11 +1123,9 @@ try:
                 st.write(
                     "Prepare an immutable study using the model settings above, then follow the provider guide. This action allocates no paid resources."
                 )
-                if backend in ("cpu-baseline", "perplexity-native"):
+                if backend == "cpu-baseline":
                     st.info(
-                        "Native Perplexity managed cloud studies are not available yet. Follow its guide to operate a custom Linux GPU job."
-                        if backend == "perplexity-native"
-                        else "Select a compatible native model and cloud image for remote GPU training."
+                        "Select a compatible native model and cloud image for remote GPU training."
                     )
                 else:
                     if backend == "vega":

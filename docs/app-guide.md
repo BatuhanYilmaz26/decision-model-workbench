@@ -393,9 +393,9 @@ to the selected model's limits; do not silently remove evidence to obtain a pass
 For a shared workspace, **This computer** means the workspace's training host,
 which can differ from your browser's computer. Native Perplexity checkpoint and
 interpreter paths are configured by an owner before startup, not in the job
-request. The app offers its local native route; managed native Perplexity cloud
-studies/admission remain unavailable. Use its linked custom Linux GPU guide for
-separately operated jobs.
+request. Cloud study preparation does not require a local GPU or model environment;
+follow the [native cloud guide](remote-training/perplexity.md) for compatible
+images, provider resources and independent admission.
 
 ### Evaluate a hosted decision API
 

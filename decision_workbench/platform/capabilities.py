@@ -33,6 +33,13 @@ except ImportError:
             result["ram_available_gib"] = round(int(memory.split()[1]) * 1024 / 1024**3, 1)
         except (OSError, ValueError, StopIteration):
             pass
+if platform.system() == "Linux":
+    try:
+        from decision_workbench.training.memory_limits import available_linux_memory
+        bounded = round(available_linux_memory() / 1024**3, 1)
+        result["ram_available_gib"] = min(result.get("ram_available_gib", bounded), bounded)
+    except (ImportError, OSError, ValueError, StopIteration):
+        result["ram_available_gib"] = None
 if packages["torch"]:
     try:
         import torch
