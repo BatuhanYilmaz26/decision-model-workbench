@@ -399,7 +399,7 @@ class LiquidEnvironmentTests(unittest.TestCase):
             self.assertEqual(set(result["runtimes"]), {"training", "serving"})
             self.assertEqual(
                 set(result["model_profiles"]),
-                {"liquid-trl", "liquid-unsloth", "liquid-omni", *D3_BACKENDS},
+                {"liquid-trl", "liquid-unsloth", "liquid-omni", "perplexity-native", *D3_BACKENDS},
             )
 
     def test_unsloth_interpreter_and_compile_cache_are_independent(self):

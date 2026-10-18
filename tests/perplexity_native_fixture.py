@@ -7,11 +7,12 @@ import struct
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from decision_workbench.data import hard_gold, prepare
+from decision_workbench.data import hard_gold, prepare, options
 from decision_workbench.training.liquid_data import dumps
 from decision_workbench.training import perplexity_checkpoint as checkpoint
 from decision_workbench.training import perplexity_runner as runner
 from decision_workbench.training.perplexity_assets import BASE_MODEL, BASE_REVISION
+from decision_workbench.training.perplexity_runtime import PACKAGES
 from test_perplexity_data import PromptFixture
 
 QUESTIONS = {
@@ -182,9 +183,11 @@ class NativeFixture:
         )
         predictions = []
         for row in self.rows["validation"]:
-            for name, question in QUESTIONS.items():
-                positive = row["state"]["ready"]
-                probabilities = [0.2, 0.8] if positive else [0.8, 0.2]
+            for name, question in row["questions"].items():
+                probabilities = [
+                    0.8 if row["gold"][name]["probabilities"][key] == 1 else 0.2
+                    for key in options(question)
+                ]
                 predictions.append(
                     {
                         "id": hashlib.sha256(
@@ -211,7 +214,9 @@ class NativeFixture:
         stack.enter_context(patch.object(runner, "ASSETS", self.assets))
         stack.enter_context(
             patch.object(
-                runner, "runtime_identity", return_value={"fixture": "fictional"}
+                runner,
+                "runtime_identity",
+                return_value={**PACKAGES, "fixture": "fictional"},
             )
         )
         stack.enter_context(patch.object(runner, "memory_guard"))
@@ -220,7 +225,7 @@ class NativeFixture:
         )
         stack.enter_context(patch.object(runner, "invoke", side_effect=self.invoke))
         stack.enter_context(patch.object(runner, "PerplexityEngine", FakeEngine))
-        stack.enter_context(patch.object(runner.sys, "platform", "linux"))
+        stack.enter_context(patch.object(runner, "require_linux"))
         stack.enter_context(
             patch.object(
                 runner.shutil, "disk_usage", return_value=SimpleNamespace(free=10**13)
@@ -251,19 +256,16 @@ class FakeEngine:
         )
 
     def predict(self, state, questions):
-        values = [0.2, 0.8] if state["ready"] else [0.8, 0.2]
-        return {
-            name: {
-                "probabilities": dict(
-                    zip(
-                        (
-                            list(q["criteria"])
-                            if q["type"] == "choice"
-                            else ["false", "true"]
-                        ),
-                        values,
-                    )
-                )
+        result = {}
+        for name, question in questions.items():
+            answer = (
+                ("continue" if state["ready"] else "review")
+                if question["type"] == "choice"
+                else ("true" if state["ready"] else "false")
+            )
+            result[name] = {
+                "probabilities": {
+                    key: 0.8 if key == answer else 0.2 for key in options(question)
+                }
             }
-            for name, q in questions.items()
-        }
+        return result

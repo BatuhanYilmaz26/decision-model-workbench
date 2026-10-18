@@ -183,4 +183,8 @@ def load_engine(backend, checkpoint):
         from .d3_runtime import D3Engine
 
         return D3Engine(checkpoint, backend=backend)
+    if backend == "perplexity-native":
+        from .perplexity_runtime import PerplexityEngine
+
+        return PerplexityEngine(checkpoint, device="cuda")
     raise ValueError("Unknown trained decision backend")

@@ -22,6 +22,7 @@ from perplexity_native_fixture import NativeFixture, FakeEngine, QUESTIONS, tens
 from test_perplexity_data import PromptFixture
 
 INVOKE_PUBLISHER = runner.invoke
+REQUIRE_LINUX = runner.require_linux
 
 
 class NativePerplexityTests(unittest.TestCase):
@@ -276,6 +277,7 @@ class NativePerplexityTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 runner.settings(changed)
         with (
+            patch.object(runner, "require_linux", REQUIRE_LINUX),
             patch.object(runner.sys, "platform", "win32"),
             self.assertRaisesRegex(ValueError, "Linux"),
         ):

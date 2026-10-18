@@ -151,6 +151,13 @@ def render_connection(root):
                 d3_python = st.session_state.get("local-d3-python", "").strip()
                 if d3_python:
                     settings["DMT_D3_PYTHON"] = d3_python
+                for key, variable in (
+                    ("local-perplexity-python", "DMT_PERPLEXITY_PYTHON"),
+                    ("local-perplexity-checkpoint", "DMT_PERPLEXITY_CHECKPOINT"),
+                ):
+                    value = st.session_state.get(key, "").strip()
+                    if value:
+                        settings[variable] = value
                 teacher_url = st.session_state.get("local-teacher-url", "").strip()
                 teacher_model = st.session_state.get("local-teacher-model", "").strip()
                 if teacher_url or teacher_model:
@@ -255,6 +262,20 @@ def render_connection(root):
             st.link_button(
                 "D3 installation and model setup", REPO + "docs/models/d3.md"
             )
+            st.text_input(
+                "Perplexity native Python executable (optional)",
+                key="local-perplexity-python",
+                help="Separate Linux requirements/perplexity-native.txt environment. Run the workspace itself on that Linux host; a Windows Python process cannot launch a Linux executable.",
+            )
+            st.text_input(
+                "Perplexity pinned checkpoint directory (optional)",
+                key="local-perplexity-checkpoint",
+                help="Absolute directory containing the complete preinstalled native v1.1 checkpoint. This field downloads no weights.",
+            )
+            st.link_button(
+                "Perplexity native installation",
+                REPO + "docs/models/perplexity-native.md",
+            )
             st.write(
                 "Synthetic generation uses a generative teacher; the trained decision model scores allowed answers. Use a local OpenAI-compatible server or an approved hosted endpoint supporting JSON object output."
             )
@@ -331,6 +352,49 @@ def local_backend_available(backend, capabilities):
             capabilities["cpu_baseline"],
             "Install the platform dependencies in the worker environment.",
         )
+    if backend == "perplexity-native":
+        from decision_workbench.training.perplexity_runtime import PACKAGES
+
+        if not capabilities.get("perplexity_checkpoint_configured"):
+            return (
+                False,
+                "Ask an owner to configure the preinstalled DMT_PERPLEXITY_CHECKPOINT on the API/worker host; the app does not download this model.",
+            )
+        for purpose in ("training", "serving"):
+            value = (
+                capabilities.get("model_profiles", {}).get(backend, {}).get(purpose, {})
+            )
+            packages = value.get("packages", {})
+            try:
+                python_ok = tuple(
+                    int(n) for n in value.get("python", "").split(".")[:2]
+                ) >= (3, 12)
+            except (TypeError, ValueError, AttributeError):
+                python_ok = False
+            if (
+                value.get("error")
+                or not python_ok
+                or value.get("system") != "Linux"
+                or not value.get("cuda")
+                or any(
+                    (packages.get(k) or "").split("+")[0] != v
+                    for k, v in PACKAGES.items()
+                )
+            ):
+                return (
+                    False,
+                    "Configure DMT_PERPLEXITY_PYTHON with the separate Linux Python 3.12+ CUDA requirements/perplexity-native.txt environment for training and serving.",
+                )
+            vram = (value.get("gpus") or [{}])[0].get("free_vram_gib", 0)
+            ram = value.get("ram_available_gib") or 0
+            if vram < (107 if purpose == "training" else 59) or ram < (
+                428 if purpose == "training" else 59
+            ):
+                return (
+                    False,
+                    "Native Perplexity full-weight training needs roughly 107 GiB free VRAM and 428 GiB available host RAM; native CUDA serving also needs host staging RAM. Choose a smaller model or hosted API if this host is insufficient.",
+                )
+        return True, ""
     if backend in ("liquid-omni", *D3_BACKENDS):
         if backend in D3_BACKENDS:
             from decision_workbench.training.d3_runtime import PACKAGES

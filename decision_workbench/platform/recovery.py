@@ -380,6 +380,7 @@ def _validate_workspace(folder):
             "liquid-trl",
             "liquid-unsloth",
             "liquid-omni",
+            "perplexity-native",
             *D3_BACKENDS,
             "hosted",
         ):

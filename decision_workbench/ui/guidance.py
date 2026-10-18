@@ -26,7 +26,7 @@ HINTS = {
     ),
     "training": (
         "train-or-evaluate-a-model",
-        "Choose one path: train weights on this computer, evaluate an existing hosted decision API, or prepare a cloud GPU study. Start with the CPU baseline to check your data workflow; it needs no downloaded model weights.",
+        "Choose a path: train a compatible local model, evaluate an existing hosted decision API, or prepare a cloud GPU study. This computer means the workspace host. Start with the CPU baseline to check your data workflow without downloaded model weights.",
     ),
     "hosted": (
         "evaluate-a-hosted-decision-api",
@@ -50,7 +50,7 @@ HINTS = {
     ),
     "decisions": (
         "make-decisions-and-export-audit-history",
-        "Predictions use the active release, not whichever model is selected elsewhere. Inspect every answer's abstained flag and use your fallback when the model declines or fails; increasing the cutoff does not retrain it.",
+        "Predictions use the active release. Choose Text or JSON to match your reviewed evidence. Inspect every answer's abstained flag and use your fallback when the model declines or fails; changing the confidence cutoff does not retrain it.",
     ),
     "applicability": (
         "prepare-vega-applicability-data",

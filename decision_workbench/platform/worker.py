@@ -328,6 +328,10 @@ class Worker:
             from .liquid_omni_training import recheck
 
             recheck(config, snapshot, spec["questions"])
+        if config.get("backend") == "perplexity-native":
+            from .perplexity_training import recheck
+
+            recheck(config, snapshot, spec["questions"])
         if config.get("backend") in ("liquid-trl", "liquid-unsloth"):
             from .liquid_training import recheck
 
@@ -375,6 +379,7 @@ class Worker:
                     "liquid-trl": None,
                     "liquid-unsloth": None,
                     "liquid-omni": None,
+                    "perplexity-native": None,
                     **{name: None for name in D3_BACKENDS},
                 }[config["backend"]]
                 if dependency and importlib.util.find_spec(dependency) is None:
@@ -402,6 +407,7 @@ class Worker:
                 "liquid-trl": "liquid_runner",
                 "liquid-unsloth": "liquid_runner",
                 "liquid-omni": "liquid_omni_runner",
+                "perplexity-native": "perplexity_runner",
                 **{name: "d3_runner" for name in D3_BACKENDS},
             }[config["backend"]]
             argv = [
@@ -531,6 +537,13 @@ class Worker:
             elif config.get("train_encoder"):
                 argv.append("--train-encoder")
             deadline = time.monotonic() + 4 * 60 * 60
+            if config["backend"] == "perplexity-native":
+                from .perplexity_training import command, job_timeout
+
+                argv, child_environment, child_cwd = command(
+                    self.store, config, job_folder
+                )
+                deadline = time.monotonic() + job_timeout()
             from decision_workbench.training.resources import ResourceLease
             from decision_workbench.training.process_guard import leased_process_options
 
@@ -560,7 +573,9 @@ class Worker:
                             raise Conflict("Cancelled")
                         if time.monotonic() > deadline:
                             raise ValueError(
-                                "Training exceeded the four-hour local job limit"
+                                "Native training exceeded its configured local deadline"
+                                if config["backend"] == "perplexity-native"
+                                else "Training exceeded the four-hour local job limit"
                             )
                         cancelled.wait(1)
                     if process.returncode:
@@ -576,6 +591,10 @@ class Worker:
                         except subprocess.TimeoutExpired:
                             process.kill()
                             process.wait()
+            if config["backend"] == "perplexity-native":
+                from .perplexity_training import move_export
+
+                move_export(self.store, job_folder, artifact_folder)
             report = json.loads(
                 (artifact_folder / "report.json").read_text(encoding="utf-8")
             )
@@ -598,6 +617,10 @@ class Worker:
                 checked_report(report, config)
             elif config["backend"] in D3_BACKENDS:
                 from .d3_training import checked_artifact
+
+                checked_artifact(artifact_folder, report, config, spec["questions"])
+            elif config["backend"] == "perplexity-native":
+                from .perplexity_training import checked_artifact
 
                 checked_artifact(artifact_folder, report, config, spec["questions"])
             elif config["backend"] == "liquid-omni":

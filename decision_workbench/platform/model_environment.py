@@ -15,6 +15,7 @@ def model_python(backend, purpose, environment=None):
         "liquid-trl": "DMT_LIQUID_PYTHON",
         "liquid-unsloth": "DMT_LIQUID_UNSLOTH_PYTHON",
         "liquid-omni": "DMT_OMNI_PYTHON",
+        "perplexity-native": "DMT_PERPLEXITY_PYTHON",
         **{name: "DMT_D3_PYTHON" for name in D3_BACKENDS},
     }.get(backend)
     if variable and environment.get(variable):
@@ -37,11 +38,14 @@ def native_environment(home, environment=None, *, backend="liquid-trl"):
     """Use writable private caches and the same source as the controlling service."""
     result = dict(os.environ if environment is None else environment)
     root = Path(__file__).resolve().parents[2]
-    family = {"liquid-omni": "liquid-omni", **{name: "d3" for name in D3_BACKENDS}}.get(
-        backend, "liquid"
-    )
+    family = {
+        "liquid-omni": "liquid-omni",
+        "perplexity-native": "perplexity",
+        **{name: "d3" for name in D3_BACKENDS},
+    }.get(backend, "liquid")
     variable = {
         "liquid-omni": "DMT_OMNI_CACHE",
+        "perplexity-native": "DMT_PERPLEXITY_CACHE",
         **{name: "DMT_D3_CACHE" for name in D3_BACKENDS},
     }.get(backend, "DMT_LIQUID_CACHE")
     cache = Path(

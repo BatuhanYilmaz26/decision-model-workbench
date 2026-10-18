@@ -18,5 +18,6 @@ Use the [complete application manual](../../docs/app-guide.md) for every screen 
 | Change a domain policy | [Policy successors](../../docs/policy-versioning-guide.md) |
 | Prepare Vega applicability data | [Vega workflow](../../docs/vega-guide.md), [applicability data](../../docs/applicability-guide.md) |
 | Download a verified project audit | [Audit exports](../../docs/audit-export-guide.md) |
+| Submit text or structured evidence to a release | [Prediction input](prediction_input.py), [decision walkthrough](../../docs/app-guide.md#make-decisions-and-export-audit-history) |
 
 The API enforces the domain and authorization contracts. Use [architecture](../../docs/architecture.md) and [testing](../../docs/verification.md) when changing browser behavior.

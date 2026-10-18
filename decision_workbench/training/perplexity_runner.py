@@ -33,39 +33,13 @@ from .perplexity_checkpoint import (
 from .perplexity_profile import MODEL, REVISION, WEIGHT_BYTES
 from .perplexity_runtime import PerplexityEngine, memory_guard, runtime_identity
 from .provenance import source_fingerprint
+from .perplexity_local import settings as profile_settings, DEFAULTS, validate_request
 
 
 def settings(args):
-    result = {
-        name: getattr(args, name)
-        for name in (
-            "epochs",
-            "batch_size",
-            "grad_accum",
-            "max_length",
-            "learning_rate",
-            "cpu_threads",
-            "eval_every",
-        )
-    }
-    for name, low, high in (
-        ("epochs", 1, 20),
-        ("batch_size", 1, 4),
-        ("grad_accum", 1, 128),
-        ("max_length", 64, 8192),
-        ("cpu_threads", 1, 128),
-        ("eval_every", 1, 10000),
-    ):
-        if type(result[name]) is not int or not low <= result[name] <= high:
-            raise ValueError(f"{name} must be a whole number from {low} to {high}")
-    rate = result["learning_rate"]
-    if (
-        type(rate) not in (int, float)
-        or not math.isfinite(rate)
-        or not 0 < rate <= 1e-4
-    ):
-        raise ValueError("Native learning rate must be finite and in (0, 0.0001]")
-    return result
+    return profile_settings(
+        {name: getattr(args, name, default) for name, default in DEFAULTS.items()}
+    )
 
 
 def invoke(publisher, phase, arguments, log):
@@ -131,12 +105,22 @@ def saved_validation(path, rows, questions, temperature):
     return result
 
 
-def train_perplexity(args):
-    configuration = settings(args)
+def require_linux():
     if sys.platform != "linux":
         raise ValueError(
             "The pinned publisher training logger requires Linux; use WSL2 or a Linux GPU host"
         )
+
+
+def train_perplexity(args):
+    configuration = settings(args)
+    rows, bodies = load_inputs(args.data)
+    hashes = {role: hashlib.sha256(body).hexdigest() for role, body in bodies.items()}
+    source = source_fingerprint()
+    local_study = validate_request(
+        getattr(args, "local_study_request", None), configuration, hashes, source, rows
+    )
+    require_linux()
     packages = runtime_identity()
     memory_guard("cuda", training=True)
     if any(
@@ -152,8 +136,6 @@ def train_perplexity(args):
     if not git:
         raise ValueError("Install Git and run training from the cloned repository")
     commit = subprocess.check_output([git, "rev-parse", "HEAD"], text=True).strip()
-    source = source_fingerprint()
-    rows, bodies = load_inputs(args.data)
     if len(rows["calibration"]) < 8:
         raise ValueError(
             "Native calibration requires at least eight reserved real records"
@@ -350,10 +332,12 @@ def train_perplexity(args):
         "data_sha256": hashes,
         "counts": {role: len(records) for role, records in rows.items()},
         "configuration": configuration,
+        "local_study_sha256": local_study,
         "packages": packages,
         "schema_conditioned": True,
         "training": {
             "method": "publisher-full-weight",
+            "device": "cuda:0",
             "optimizer_updates": summary["steps"],
             "checkpoint_policy": "final_only",
             "backbone_updated": True,
@@ -409,6 +393,8 @@ def main():
     ):
         parser.add_argument("--" + name, type=int, default=default)
     parser.add_argument("--learning-rate", type=float, default=2e-6)
+    parser.add_argument("--device", choices=("cuda",), default="cuda")
+    parser.add_argument("--local-study-request")
     args = parser.parse_args()
     try:
         print(dumps(train_perplexity(args)), flush=True)

@@ -119,5 +119,5 @@ terms and evaluate representative data. The separate
 [open v1.1 checkpoint](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b)
 is not hosted v1.2. Use [native data preparation](perplexity-native.md) to export
 reviewed Choice/Noul datasets and continue with the publisher runtime.
-App-managed native training, serving and cloud admission remain unavailable for
-that checkpoint.
+Its experimental Linux/CUDA [application training and serving](perplexity-native.md#train-through-the-application)
+uses a separate model environment. Native managed cloud training/admission remains unavailable.

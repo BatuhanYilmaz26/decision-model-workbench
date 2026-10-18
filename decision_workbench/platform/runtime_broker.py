@@ -179,6 +179,7 @@ class RuntimeBroker:
                 "liquid-trl",
                 "liquid-unsloth",
                 "liquid-omni",
+                "perplexity-native",
                 *D3_BACKENDS,
             ):
                 from .model_environment import native_environment, model_python

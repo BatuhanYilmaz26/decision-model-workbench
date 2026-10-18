@@ -6,7 +6,7 @@ A decision model maps supplied evidence to defined outcomes: a category, a yes/n
 
 Current integrations cover specific [model backends](docs/model-landscape.md), [hosted APIs](docs/api-integration-guide.md) and [remote training providers](docs/remote-training-guide.md). Model and provider contracts differ; using an additional backend requires a compatible integration and evaluation. The agnostic design does not mean every model or provider works automatically.
 
-**Using the browser app?** Follow the [complete Streamlit user guide](docs/app-guide.md), starting with the [first project walkthrough](docs/app-guide.md#first-project-walkthrough). It covers every tab, optional tools, workspace roles and [what to do when a control is unavailable](docs/app-guide.md#when-a-control-is-unavailable).
+**Using the browser app?** Open the [complete Streamlit user guide](docs/app-guide.md). [Choose a workflow](docs/app-guide.md#choose-a-workflow) or follow the [first project walkthrough](docs/app-guide.md#first-project-walkthrough). The guide explains the app's terminology, every tab, optional tools, workspace roles and [what to do when a control is unavailable](docs/app-guide.md#when-a-control-is-unavailable). Short explanations and guide links also appear beside the relevant app controls.
 
 ## Run on your computer
 
@@ -72,7 +72,7 @@ models whose application adapters are still being built.
 | Generate additional training examples | A configured local or hosted teacher and your reviewed training seeds | [Synthetic data workflow](#generate-synthetic-training-data) |
 | Train when local VRAM is insufficient | A custom training container on one of five GPU providers | [Remote training](docs/remote-training-guide.md), [provider walkthroughs](#train-on-a-remote-gpu) |
 | Choose a model and compare results | Model contracts, dated benchmarks and primary sources | [Concepts](docs/concepts.md), [model landscape](docs/model-landscape.md), [benchmarks](docs/benchmarks.md) |
-| Train open Perplexity Decider | Reviewed Choice/Noul data export on CPU, experimental Linux/CUDA full-weight CLI and offline domain prediction; native app/cloud integration is separate | [Perplexity native workflow](docs/models/perplexity-native.md) |
+| Train open Perplexity Decider | Reviewed Choice/Noul data export, experimental Linux/CUDA app or CLI training, calibrated releases and predictions; managed cloud admission is separate | [Perplexity native workflow](docs/models/perplexity-native.md), [app setup](docs/models/perplexity-native.md#train-through-the-application) |
 | Use hosted Liquid d1 or d1-ultra | Evaluate, calibrate and release a provider-backed policy, or call the API from an existing application | [Liquid hosted guide](docs/models/liquid-hosted.md) |
 | Train and use Liquid d1-3B | Native data export, local TRL or FastVisionModel/Unsloth training, calibrated releases and predictions with isolated model environments | [Liquid guide](docs/models/liquid.md), [example specification and CSV](examples/liquid/README.md) |
 | Train and use Liquid d1-omni-600M | Native text/JSON decision-head adaptation on CPU/CUDA, reviewed soft labels, calibrated exports, releases and predictions | [Omni guide](docs/models/liquid-omni.md), [model environment](requirements/liquid-omni.txt) |

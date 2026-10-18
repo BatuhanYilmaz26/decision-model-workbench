@@ -8,6 +8,36 @@ and make predictions. Projects, reviewed versions and jobs are saved by the
 workspace service. The sidebar's **Complete app user guide** opens this manual;
 short explanations beside the controls link to the relevant step.
 
+Start the app with the [installation instructions](../README.md#run-on-your-computer),
+then open the localhost address printed in the terminal, normally
+`http://127.0.0.1:8501`. Keep that terminal running. You can use the CPU baseline
+without a GPU, model download, cloud account or workspace credential. Other
+models and external services have separate requirements below.
+
+## Choose a workflow
+
+| Your goal | Start with | What you get |
+|---|---|---|
+| Learn the local workflow | [First project walkthrough](#first-project-walkthrough) and the CPU comparison baseline | A reviewed dataset, evaluated local model version and, if eligible, an active release |
+| Train your own domain model | [Define questions](#create-a-project), [review examples](#add-and-review-examples), [reserve data](#reserve-data-and-generate-candidates), then [choose a compatible backend](#train-on-this-computer) | A separately evaluated version of your trained model |
+| Use an existing hosted model | [Configure a provider profile](hosted-decisions-guide.md), then [evaluate its API](#evaluate-a-hosted-decision-api) against your reserved data | A calibrated hosted policy that can be released without training provider weights |
+| Train without enough local VRAM | [Cloud GPU training](#train-on-a-cloud-gpu) | A frozen study and, for supported configured profiles, a managed training run and independently admitted model |
+| Expand a small training set | [Synthetic candidate generation](#generate-and-review-training-candidates), after reserving real evaluation data | Candidates to review and add to training; generation does not release or retrain a model |
+| Use a released model | [Make decisions](#make-decisions-and-export-audit-history) or [connect your application](api-integration-guide.md) | Answers, probabilities and abstention flags for new evidence |
+
+### Terms used in the app
+
+| Term | Meaning |
+|---|---|
+| Project | Your domain, decision policy and allowed questions/outcomes |
+| Evidence or state | Information available when the decision must be made; text or structured data |
+| Gold labels | Reviewed expected outcomes used for training or evaluation |
+| Collection and revision | A set of examples and a saved version of that set; an edit creates a new revision |
+| Reserved snapshot | Fixed train, validation, calibration and test roles prepared from reviewed revisions |
+| Job or study | Saved work such as preparation, generation, training or hosted evaluation; follow its status and result |
+| Model version | An evaluated local artifact or hosted policy; registration alone does not make it active |
+| Release | The version currently used for project predictions; an owner activates or rolls back a release |
+
 ## Find the right screen
 
 | Screen or control | What you do there |
@@ -335,6 +365,7 @@ training**.
 | Liquid d1-3B TRL / Unsloth | Separate runtime profiles, supported compute device, LoRA/batch/length/step settings and explicit checkpoint download choice. [Liquid guide](models/liquid.md) |
 | Liquid omni | Native text/JSON decision-head adaptation and its own resource requirements. [Omni guide](models/liquid-omni.md) |
 | D3 family | Variant-specific native readout, memory/storage/context settings; larger runtime profiles remain experimental. [Family guide](models/d3-family.md) |
+| Perplexity open v1.1 | Experimental Linux/CUDA full-weight profile with a preinstalled checkpoint and large RAM/VRAM requirements. [Native app setup](models/perplexity-native.md#train-through-the-application); separate from hosted Perplexity. |
 
 The controls vary by backend. Start with its documented settings and use the
 validation role to compare changes:
@@ -348,6 +379,7 @@ validation role to compare changes:
 | Gradient accumulation | Combines micro-batches before an update without the same increase in per-batch memory. |
 | Complete input token budget | Limits the rendered input, including the question and options. It is not a character count or evidence-only limit. |
 | Learning rate | Size of parameter updates; use the selected trainer's supported range. |
+| CPU threads / evaluation interval | Native Perplexity host thread budget and the number of optimizer updates between development/calibration checks. Its final-epoch checkpoint is not selected using test data. |
 | Adapter/LoRA rank | Capacity of a compatible adapter; native-readout training has a different parameterization. |
 | Maximum steps/updates/attempts | Caps work according to that trainer's displayed label. A value of 0 uses the configured epochs. |
 | Offline or checkpoint download choice | Controls whether missing pinned assets may be fetched. Check storage requirements first; model downloads do not upload training records. |
@@ -357,6 +389,13 @@ Other model paths need their documented packages, cached weights or explicit
 download permission and enough disk/RAM/VRAM. An available queue button does not
 establish domain quality or universal hardware support. Long inputs are subject
 to the selected model's limits; do not silently remove evidence to obtain a pass.
+
+For a shared workspace, **This computer** means the workspace's training host,
+which can differ from your browser's computer. Native Perplexity checkpoint and
+interpreter paths are configured by an owner before startup, not in the job
+request. The app offers its local native route; managed native Perplexity cloud
+studies/admission remain unavailable. Use its linked custom Linux GPU guide for
+separately operated jobs.
 
 ### Evaluate a hosted decision API
 
@@ -432,6 +471,13 @@ version in the dropdown alone does not change predictions.
 
 ## Make decisions and export audit history
 
+Choose **Text** or **JSON** under **Evidence format**. Text sends exactly what
+you type. JSON parses an object, array or JSON string, preserving structured
+evidence for the released model. Match the evidence structure used in reviewed
+examples. Malformed JSON, duplicate keys, empty values, JSON numbers/booleans/null and oversized
+inputs are refused; they are not silently sent as text. Inference-only users
+have the same choice in their prediction screen.
+
 In **Decisions and audit**, enter evidence for the active release and choose
 **Abstain below confidence** before **Make decision**. The slider changes the
 request's abstention cutoff, not model weights or the frozen acceptance policy.
@@ -441,8 +487,9 @@ review/fallback path. Confidence is not a correctness guarantee or permission to
 perform a consequential action.
 
 Inference-role users get a simpler **Input evidence → Decide** view with a fixed
-0.8 cutoff. The full decision form accepts text; send structured JSON state and
-application idempotency keys through the [decision API](api-integration-guide.md).
+0.8 cutoff and the same Text/JSON input choice. Use the
+[decision API](api-integration-guide.md) to supply application idempotency keys
+or automate predictions within your own workflow.
 Repeated browser predictions are fresh calls and may incur hosted charges; the
 browser does not expose an inference request-key field. Keep secrets and unnecessary
 personal information out of evidence.

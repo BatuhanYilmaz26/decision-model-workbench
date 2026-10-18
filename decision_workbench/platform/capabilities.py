@@ -15,7 +15,7 @@ import importlib.metadata as m
 import json
 import platform
 packages = {}
-for name in ("scikit-learn", "numpy", "torch", "laya", "unsloth", "unsloth_zoo", "vegaml", "transformers", "trl", "peft", "datasets", "tokenizers", "triton", "triton-windows", "huggingface-hub", "safetensors"):
+for name in ("scikit-learn", "numpy", "torch", "laya", "unsloth", "unsloth_zoo", "vegaml", "transformers", "trl", "peft", "datasets", "tokenizers", "triton", "triton-windows", "huggingface-hub", "safetensors", "torchvision", "accelerate", "pillow", "jinja2", "flash-linear-attention"):
     try:
         packages[name] = m.version(name)
     except m.PackageNotFoundError:
@@ -26,7 +26,13 @@ try:
     import psutil
     result["ram_available_gib"] = round(psutil.virtual_memory().available / 1024**3, 1)
 except ImportError:
-    pass
+    if platform.system() == "Linux":
+        from pathlib import Path
+        try:
+            memory = next(line for line in Path("/proc/meminfo").read_text().splitlines() if line.startswith("MemAvailable:"))
+            result["ram_available_gib"] = round(int(memory.split()[1]) * 1024 / 1024**3, 1)
+        except (OSError, ValueError, StopIteration):
+            pass
 if packages["torch"]:
     try:
         import torch
@@ -35,7 +41,7 @@ if packages["torch"]:
         if result["cuda"]:
             for i in range(min(torch.cuda.device_count(), 16)):
                 p = torch.cuda.get_device_properties(i)
-                result["gpus"].append({"name": p.name, "vram_gib": round(p.total_memory / 1024**3, 1)})
+                result["gpus"].append({"name": p.name, "vram_gib": round(p.total_memory / 1024**3, 1), "free_vram_gib": round(torch.cuda.mem_get_info(i)[0] / 1024**3, 1)})
     except Exception:
         result["error"] = "Torch could not inspect devices; check the model environment and drivers"
 print(json.dumps(result))
@@ -55,6 +61,8 @@ def runtime_capabilities():
         os.environ.get("DMT_LIQUID_UNSLOTH_PYTHON"),
         os.environ.get("DMT_OMNI_PYTHON"),
         os.environ.get("DMT_D3_PYTHON"),
+        os.environ.get("DMT_PERPLEXITY_PYTHON"),
+        os.environ.get("DMT_PERPLEXITY_CHECKPOINT"),
     )
     with _lock:
         if _cached and _cached[0] == identity and time.monotonic() - _cached[1] < 30:
@@ -62,7 +70,13 @@ def runtime_capabilities():
         from .model_environment import model_python
 
         targets = [("training", worker), ("serving", model)]
-        for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni", *D3_BACKENDS):
+        for backend in (
+            "liquid-trl",
+            "liquid-unsloth",
+            "liquid-omni",
+            "perplexity-native",
+            *D3_BACKENDS,
+        ):
             for purpose in ("training", "serving"):
                 try:
                     executable = model_python(backend, purpose)
@@ -103,7 +117,13 @@ def runtime_capabilities():
                 purpose: runtimes.pop(backend + "-" + purpose)
                 for purpose in ("training", "serving")
             }
-            for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni", *D3_BACKENDS)
+            for backend in (
+                "liquid-trl",
+                "liquid-unsloth",
+                "liquid-omni",
+                "perplexity-native",
+                *D3_BACKENDS,
+            )
         }
         result = {
             "runtimes": runtimes,
@@ -111,6 +131,9 @@ def runtime_capabilities():
             "teacher_configured": bool(
                 os.environ.get("DMT_TEACHER_BASE_URL")
                 and os.environ.get("DMT_TEACHER_MODEL")
+            ),
+            "perplexity_checkpoint_configured": bool(
+                os.environ.get("DMT_PERPLEXITY_CHECKPOINT")
             ),
             "cpu_baseline": bool(
                 runtimes["training"]["packages"].get("scikit-learn")

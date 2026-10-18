@@ -258,13 +258,23 @@ try:
     if principal["role"] == "inference":
         st.subheader("Make a decision")
         render_hint("decisions")
-        state = st.text_area("Input evidence")
+        from decision_workbench.ui.prediction_input import (
+            evidence_input,
+            parsed_evidence,
+        )
+
+        evidence_mode, evidence_body = evidence_input(
+            "Input evidence", "inference-evidence-" + project
+        )
         if st.button("Decide"):
             st.json(
                 api(
                     "POST",
                     f"/v1/projects/{project}/decisions",
-                    json={"state": state, "threshold": 0.8},
+                    json={
+                        "state": parsed_evidence(evidence_mode, evidence_body),
+                        "threshold": 0.8,
+                    },
                 )
             )
         st.stop()
@@ -690,6 +700,7 @@ try:
                     "liquid-trl",
                     "liquid-unsloth",
                     "liquid-omni",
+                    "perplexity-native",
                     *D3_BACKENDS,
                 ],
                 format_func=lambda value: {
@@ -700,6 +711,7 @@ try:
                     "liquid-trl": "Liquid d1-3B (TRL)",
                     "liquid-unsloth": "Liquid d1-3B (Unsloth)",
                     "liquid-omni": "Liquid d1-omni-600M (native head, text/JSON)",
+                    "perplexity-native": "Perplexity open v1.1 (native CUDA, experimental)",
                     **{
                         name: get_profile(name).label + " (native readout, text/JSON)"
                         for name in D3_BACKENDS
@@ -710,13 +722,17 @@ try:
                 "Training location",
                 (
                     ["This computer", "Cloud GPU"]
-                    if principal["role"] == "admin"
+                    if principal["role"] == "admin" and backend != "perplexity-native"
                     else ["This computer"]
                 ),
                 horizontal=True,
                 key="training-location-"
                 + project
-                + ("-d3" if backend in D3_BACKENDS else ""),
+                + (
+                    "-d3"
+                    if backend in D3_BACKENDS
+                    else "-perplexity" if backend == "perplexity-native" else ""
+                ),
             )
             if principal["role"] != "admin":
                 st.caption(
@@ -786,7 +802,13 @@ try:
                         st.warning(reason)
             config = {"snapshot": training_snapshot, "backend": backend}
             vega_ready = True
-            if backend in D3_BACKENDS:
+            if backend == "perplexity-native":
+                from decision_workbench.ui.perplexity_native import training_options
+
+                local_ready = (
+                    training_options(config, spec["questions"]) and local_ready
+                )
+            elif backend in D3_BACKENDS:
                 from decision_workbench.ui.d3 import training_options
 
                 local_ready = (
@@ -1096,9 +1118,11 @@ try:
                 st.write(
                     "Prepare an immutable study using the model settings above, then follow the provider guide. This action allocates no paid resources."
                 )
-                if backend == "cpu-baseline":
+                if backend in ("cpu-baseline", "perplexity-native"):
                     st.info(
-                        "Select a compatible native model and cloud image for remote GPU training."
+                        "Native Perplexity managed cloud studies are not available yet. Follow its guide to operate a custom Linux GPU job."
+                        if backend == "perplexity-native"
+                        else "Select a compatible native model and cloud image for remote GPU training."
                     )
                 else:
                     if backend == "vega":
@@ -1489,14 +1513,24 @@ try:
             )
     with tabs[4]:
         render_hint("decisions")
-        state = st.text_area("Evidence for the released model")
+        from decision_workbench.ui.prediction_input import (
+            evidence_input,
+            parsed_evidence,
+        )
+
+        evidence_mode, evidence_body = evidence_input(
+            "Evidence for the released model", "decision-evidence-" + project
+        )
         threshold = st.slider("Abstain below confidence", 0.0, 1.0, 0.8)
         if st.button("Make decision"):
             st.json(
                 api(
                     "POST",
                     f"/v1/projects/{project}/decisions",
-                    json={"state": state, "threshold": threshold},
+                    json={
+                        "state": parsed_evidence(evidence_mode, evidence_body),
+                        "threshold": threshold,
+                    },
                 )
             )
         st.code(f"POST /v1/projects/{project}/decisions")

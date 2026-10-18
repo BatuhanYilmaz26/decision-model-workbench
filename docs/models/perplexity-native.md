@@ -8,10 +8,10 @@ four data roles, source lineage and file checksums.
 
 This profile targets `perplexity-ai/pplx-decider-v1.1-27b`, revision
 `14c9d90137962d300f3de95633f7b6535e80c5ce`. It is separate from hosted v1.2.
-The CPU exporter is separate from an **experimental Linux/CUDA native CLI** for
-training and prediction. Native app-managed training, release, serving and cloud
-admission are not yet available for this checkpoint.
-Use the [hosted workflow](perplexity.md) for app-managed Perplexity decisions.
+The CPU exporter connects to an **experimental Linux/CUDA native profile** for
+application or standalone training, calibrated releases and prediction. Managed
+cloud training/admission is not yet available for this checkpoint.
+Use the [hosted workflow](perplexity.md) for provider-hosted Perplexity decisions.
 
 ## Prepare compatible reviewed records
 
@@ -89,7 +89,7 @@ plus question. Reserved control-token markers are refused.
 |---|---|
 | `canonical/*.jsonl` | Byte-preserved original records in their four roles |
 | `native/train.jsonl` | Native targets, one question per row |
-| `native/validation.jsonl` | Development evaluation and selection |
+| `native/validation.jsonl` | Development evaluation and reload comparison |
 | `native/calibration.jsonl` | Separate temperature fitting |
 | `native/test.jsonl` | Final evaluation after freezing the model and policy |
 | `lineage/*.jsonl` | Original IDs, family, metadata, gold, option order and prompt/native hashes |
@@ -267,10 +267,82 @@ weights in FP32. GPU inference has a lower startup floor than training, roughly
 58 GiB free device memory and 58 GiB available host RAM for the publisher's CPU
 staging before moving the model to CUDA. These guards are not latency benchmarks.
 
-The native CLI has source, integrity and fictional orchestration checks. Its
+The native workflow has source, integrity and fictional orchestration checks. Its
 complete Torch 2.14 training and inference paths remain experimental until
-exercised on compatible hardware. App registration/release and managed cloud admission for
-this native model remain separate work; the hosted app path is available now.
+exercised on compatible hardware. Managed cloud admission remains separate;
+the hosted app path is available without native model hardware.
+
+## Train through the application
+
+Run the workspace API/worker on the Linux host with the required resources.
+Your browser can be on another computer. A Windows-hosted worker cannot launch
+a Linux model interpreter simply by entering a WSL path.
+
+Install the separate native environment and obtain the pinned checkpoint as
+described above. In the **CPU application environment**, set the model paths
+before starting the workspace:
+
+```bash
+export DMT_PERPLEXITY_PYTHON="$PWD/.venv-perplexity-native/bin/python"
+export DMT_PERPLEXITY_CHECKPOINT="/absolute/path/to/pinned/checkpoint"
+export DMT_PERPLEXITY_TRAINING_TIMEOUT_SECONDS=86400
+export DMT_MODEL_LOAD_TIMEOUT_SECONDS=900
+export DMT_UI_MODEL_TIMEOUT_SECONDS=1200
+domain-platform run
+```
+
+Replace the checkpoint path with the actual directory printed by the explicit
+download command. The interpreter and checkpoint are operator configuration;
+HTTP job requests cannot choose executable or checkpoint paths. Direct personal
+Streamlit startup also offers optional Perplexity path fields before starting
+the workspace. Neither path entry installs packages or downloads weights.
+For a shared workspace, configure the API/worker environment and connect with
+your normal workspace credential. A Perplexity API key is unnecessary here.
+
+1. Define a Choice/Noul project, enter or upload examples, and complete review.
+   Optional reviewed synthetic data can extend training only. Use adjudicated
+   discrete gold for all heldouts; do not round soft targets into evaluation gold.
+2. Reserve the four roles. The native trainer needs at least eight real
+   calibration records; the owner's release policy may require much more data.
+   The app defaults to 100 real test records per question and additional coverage
+   checks. Collect adequate data instead of lowering gates merely to release.
+3. An owner saves acceptance criteria before the first study. In **Training
+   jobs**, choose **Perplexity open v1.1 (native CUDA, experimental)** and
+   **This computer**. Here, the computer is the workspace host, not the browser.
+4. Use **Check available hardware and model packages** to inspect the configured
+   training/serving interpreter. The app checks Linux, versions, available RAM
+   and free GPU memory. Inspection is a snapshot, not a model integrity or
+   hardware qualification certificate; the child checks resources and all pinned
+   checkpoint identities again. Restart services after configuration changes.
+5. Set epochs, micro-batch size, gradient accumulation, complete input token
+   budget and learning rate. The advanced controls set CPU threads and the
+   evaluation interval. Settings, source, schema and all four data hashes are
+   frozen in the queued study. Unsupported Score questions disable this route.
+6. Choose **Queue training**. The worker owns the GPU lease, records progress
+   and retains private logs. It runs the publisher's full-weight stage and
+   compares its saved validation predictions with the exported runtime. No
+   provider API request or model download occurs. Refresh to see completion.
+7. In **Models and releases**, inspect metrics, the local-reference identity,
+   fitted global temperature and limitations. An owner can activate an eligible
+   version and later reactivate an earlier eligible version to roll back.
+8. In **Decisions and audit**, choose **Text** or **JSON** evidence format. JSON
+   preserves an object/array/string as structured input rather than sending its
+   serialization as plain text. Use your domain's original evidence structure,
+   select an abstention threshold and **Make decision**. Route abstentions to
+   your fallback. Inference-only users have the same evidence-format choice.
+
+The native job deadline defaults to 24 hours; operators can set 600–604,800
+seconds using `DMT_PERPLEXITY_TRAINING_TIMEOUT_SECONDS`. A timeout or cancellation
+stops the owned model child and produces no releasable partial version. This
+profile does not resume optimizer state; retain logs and submit a fresh study
+after resolving a failure. Closing the browser does not cancel the job.
+
+The load/UI timeouts above allow large model verification and cold loading.
+Choose finite values appropriate to your host and gateway. Application serving
+uses CUDA to match training and reload; standalone CPU inference remains an explicit
+CLI choice. Standalone exports are not automatically registered app versions.
+Native managed cloud studies and external-export admission are unavailable;
+use the custom-job guidance below when operating rented hardware yourself.
 
 ## Use the publisher commands directly
 

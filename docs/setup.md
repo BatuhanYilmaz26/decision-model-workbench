@@ -106,9 +106,22 @@ The API and browser stay in the lightweight platform environment. `DMT_MODEL_PYT
 
 Unsloth generates optimized trainer modules when its runtime is imported. Its default `unsloth_compiled_cache` location is relative to the process's working directory, so imports from the repository root can create that folder beside the source. These are generated library files and are excluded from Git. The setting above directs future generation into the private model cache; set it before importing Unsloth or launching the model services. You do not need to edit or commit those generated modules. [Upstream cache setting](https://github.com/unslothai/unsloth-zoo/blob/main/unsloth_zoo/compiler.py)
 
-Each job needs a Hub model ID, an exact 40-character revision, bounded training settings and a prepared snapshot. The worker runs the adapter in a child process with a four-hour ceiling, stores private logs and registers the completed export. Use the pinned profile for frozen-encoder Laya or Unsloth encoder LoRA. Check memory, export/reload and inference on your GPU before changing the encoder, backbone or precision. Optimizer resume is not supported.
+Laya/Unsloth jobs need a Hub model ID, an exact 40-character revision, bounded settings and a prepared snapshot. Their worker child has a four-hour ceiling, retains private logs and registers the completed export. Use the pinned frozen-encoder Laya or Unsloth encoder-LoRA profile; check memory, export/reload and inference before changing the encoder, backbone or precision. Other native profiles use their linked settings and deadlines. Optimizer resume is not supported.
 
 One resident model process serves head requests. Its OS resource lease is shared with training within the workspace. Queued/running GPU work unloads inference and returns HTTP 503 with a retry hint; inference resumes when that work finishes or is cancelled. Idle models unload after 30 seconds by default. Operator variables `DMT_INFERENCE_IDLE_SECONDS`, `DMT_INFERENCE_TIMEOUT_SECONDS` and `DMT_MODEL_LOAD_TIMEOUT_SECONDS` bound residency/request/loading. The browser allows 420 seconds for release/decision requests, covering the default 240-second model load and 120-second inference deadlines plus response overhead. Set `DMT_UI_MODEL_TIMEOUT_SECONDS` in the web process when changing those deadlines. If a client/network timeout occurs, refresh and inspect the active version before retrying: an in-flight release may commit after the client disconnects. This is single-host coordination; multiple workspaces and multi-host capacity scheduling need separate qualification.
+
+### Configure native Perplexity training and serving
+
+The open v1.1 profile uses a separate Linux/CUDA environment and a complete
+preinstalled checkpoint. Set `DMT_PERPLEXITY_PYTHON` and
+`DMT_PERPLEXITY_CHECKPOINT` in the API/worker environment before starting the
+workspace. These are operator paths, not fields accepted from training requests.
+The app never downloads this large checkpoint. Follow the [native application
+setup](models/perplexity-native.md#train-through-the-application) for requirements,
+resource floors and model-load/UI deadlines. Native full-weight jobs use a
+24-hour default deadline; `DMT_PERPLEXITY_TRAINING_TIMEOUT_SECONDS` accepts
+600–604800 seconds. Managed native cloud training/admission is not available yet.
+The [hosted API workflow](models/perplexity.md) needs no native GPU.
 
 ## Run services individually
 

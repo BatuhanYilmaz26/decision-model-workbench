@@ -379,6 +379,12 @@ class Service:
 
         allowed["train"] |= VEGA_INPUTS
         allowed["train"] |= {"device", "download", "training_method"}
+        if kind == "train" and config.get("backend") == "perplexity-native":
+            from decision_workbench.training.perplexity_local import (
+                INPUTS as PERPLEXITY_INPUTS,
+            )
+
+            allowed["train"] |= PERPLEXITY_INPUTS
         allowed["hosted-evaluate"] = {"snapshot", "profile_id", "data_approved"}
         allowed["taxonomy-discover"] = {
             "dataset",
@@ -538,6 +544,10 @@ class Service:
             )
             config["backend"] = "hosted"
         elif kind in ("train", "remote-study"):
+            if config.get("backend") == "perplexity-native" and kind != "train":
+                raise ValueError(
+                    "Native Perplexity managed cloud studies are not available; use its custom Linux job guide"
+                )
             if config.get("backend") == "vega":
                 from .vega_training import validate_references
 
@@ -551,6 +561,7 @@ class Service:
                     "liquid-trl",
                     "liquid-unsloth",
                     "liquid-omni",
+                    "perplexity-native",
                     *D3_BACKENDS,
                 ):
                     if config.get("device", "cuda") != "cuda":
@@ -573,10 +584,15 @@ class Service:
                 "liquid-trl",
                 "liquid-unsloth",
                 "liquid-omni",
+                "perplexity-native",
                 *D3_BACKENDS,
             ):
                 raise ValueError("Select a compatible backend from the model directory")
-            if config["backend"] in (*D3_BACKENDS, "liquid-omni"):
+            if config["backend"] == "perplexity-native":
+                from .perplexity_training import freeze
+
+                config = freeze(self, principal, project, config)
+            elif config["backend"] in (*D3_BACKENDS, "liquid-omni"):
                 if config["backend"] in D3_BACKENDS:
                     from .d3_training import freeze
                 else:
@@ -655,6 +671,7 @@ class Service:
                 "liquid-trl",
                 "liquid-unsloth",
                 "liquid-omni",
+                "perplexity-native",
                 *D3_BACKENDS,
             ) and set(config) & {
                 "device",
@@ -669,6 +686,7 @@ class Service:
                 "liquid-trl",
                 "liquid-unsloth",
                 "liquid-omni",
+                "perplexity-native",
                 *D3_BACKENDS,
             ):
                 unsupported = (
@@ -771,6 +789,7 @@ class Service:
             "liquid-trl",
             "liquid-unsloth",
             "liquid-omni",
+            "perplexity-native",
             *D3_BACKENDS,
         ):
             raise ValueError("Unsupported serving backend")
@@ -905,6 +924,10 @@ class Service:
             from .d3_training import checked_artifact
 
             checked_artifact(folder, report, model["configuration"], questions)
+        elif model["backend"] == "perplexity-native":
+            from .perplexity_training import checked_artifact
+
+            checked_artifact(folder, report, model["configuration"], questions)
         elif model["backend"] == "liquid-omni":
             from .liquid_omni_training import checked_artifact
 
@@ -954,6 +977,7 @@ class Service:
             "liquid-trl",
             "liquid-unsloth",
             "liquid-omni",
+            "perplexity-native",
             *D3_BACKENDS,
         ):
             answers = self.runtime.predict(
