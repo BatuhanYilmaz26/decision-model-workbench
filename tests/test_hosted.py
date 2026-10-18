@@ -44,11 +44,7 @@ def profile(provider="openrouter"):
             else (
                 "clef-flash"
                 if provider == "cloudflare"
-                else (
-                    "pplx-decider-v1.1-27b"
-                    if provider == "perplexity"
-                    else "jev-1.13.0"
-                )
+                else ("pplx-decider-v1.2" if provider == "perplexity" else "jev-1.13.0")
             )
         ),
         "response_model": (
@@ -57,11 +53,7 @@ def profile(provider="openrouter"):
             else (
                 "clef-flash"
                 if provider == "cloudflare"
-                else (
-                    "pplx-decider-v1.1-27b"
-                    if provider == "perplexity"
-                    else "jev-1.13.0"
-                )
+                else ("pplx-decider-v1.2" if provider == "perplexity" else "jev-1.13.0")
             )
         ),
         "key_env": "DMT_PROVIDER_FIXTURE",
@@ -124,8 +116,9 @@ def answer(payload, provider):
     }
     if provider == "openrouter":
         result["provider"] = "TypeSafe"
-    if provider == "liquid":
+    if provider in ("liquid", "perplexity"):
         result["model"] = payload["model"]
+    if provider == "liquid":
         result["usage"]["output_tokens"] = 0
     return (
         {"success": True, "errors": [], "result": result}

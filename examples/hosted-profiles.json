@@ -34,15 +34,27 @@
     {
       "id": "perplexity",
       "provider": "perplexity",
-      "model": "pplx-decider-v1.1-27b",
-      "response_model": "pplx-decider-v1.1-27b",
+      "model": "pplx-decider-v1.2",
+      "response_model": "pplx-decider-v1.2",
       "key_env": "DMT_PROVIDER_PERPLEXITY_API_KEY",
       "tenants": [
         "my-enterprise"
       ],
       "max_calls_day": 1000,
       "max_inflight": 2,
-      "timeout_seconds": 15,
+      "timeout_seconds": 30,
+      "max_request_bytes": 64000
+    },
+    {
+      "id": "perplexity-flash",
+      "provider": "perplexity",
+      "model": "pplx-decider-flash-v1.2",
+      "response_model": "pplx-decider-flash-v1.2",
+      "key_env": "DMT_PROVIDER_PERPLEXITY_API_KEY",
+      "tenants": ["my-enterprise"],
+      "max_calls_day": 1000,
+      "max_inflight": 2,
+      "timeout_seconds": 30,
       "max_request_bytes": 64000
     },
     {

@@ -1,0 +1,12 @@
+{
+  "state": {
+    "change": "The proposal would replace the primary database.",
+    "evidence": "The rollback plan and required owner approval are missing."
+  },
+  "questions": {
+    "needs_review": {
+      "type": "noul",
+      "instructions": "Does the evidence explicitly identify missing approval or recovery information?"
+    }
+  }
+}

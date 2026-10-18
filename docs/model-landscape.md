@@ -34,13 +34,19 @@ USD per million input tokens, retrieved on the review date. These rates are not 
 | Service | Input tariff | Source |
 |---|---:|---|
 | Jev | $0.042 | [TypeSafe models](https://docs.typesafe.ai/models) |
-| Perplexity Decider v1.1 | $0.02 | [Current API documentation](https://docs.perplexity.ai/docs/decisions/quickstart) |
+| Perplexity hosted Full v1.2 / Flash v1.2 | $0.02 / $0.01, refreshed 18 October 2026 | [Current API documentation](https://docs.perplexity.ai/docs/decisions/quickstart) |
 | Liquid hosted d1 | $0.04 in October 5 evaluation methodology | [Liquid methodology](https://www.liquid.ai/blog/d1-decision-model) |
 | Clef | $0.24 | [Cloudflare model page](https://developers.cloudflare.com/workers-ai/models/clef/) |
 | Clef-flash | $0.09 | [Cloudflare model page](https://developers.cloudflare.com/workers-ai/models/clef-flash/) |
 | OpenAI Luna Decisions | $0.10; regional and long-context modifiers apply | [Decisions pricing](https://developers.openai.com/api/docs/guides/decisions) |
 
 Perplexity is about **52.4% lower** than Jev per input token: `1 - 0.02 / 0.042`. Older $0.04 Perplexity writeups are not the current tariff. This comparison does not resolve tokenization, per-question billing, retries, fallback or accuracy.
+
+The Perplexity price refresh concerns its hosted v1.2 models, not the older open
+v1.1 checkpoint or benchmark rows. Retired hosted names now select v1.2 while the
+response echoes the requested name. Follow the [Perplexity integration guide](models/perplexity.md)
+for the supported application workflow and migration; do not transfer old
+benchmark scores or calibration thresholds to hosted v1.2.
 
 Open weights eliminate a vendor inference tariff, not hardware and operating cost. A small specialist may be much cheaper at steady utilization; a lightly used cloud GPU can cost more than an API.
 

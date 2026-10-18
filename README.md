@@ -118,6 +118,8 @@ Follow the [synthetic-generation guide](docs/synthetic-generation-guide.md) for 
 
 Follow [API integration](docs/api-integration-guide.md) for Python and TypeScript request examples, provider-specific contracts, probability validation, timeouts and fallback handling. The guide covers TypeSafe/Jev, Liquid d1/d1-ultra, OpenRouter, Perplexity, Cloudflare and TypeLLM, with separate local Vega examples. You need the selected provider's credentials; hosted calls can incur charges and transmit the submitted state.
 
+For Perplexity Full and Flash v1.2, follow the [key setup and application guide](docs/models/perplexity.md) or the [runnable direct-call example](examples/perplexity/README.md). The guide explains joint-question evaluation, retired model names and why the response name does not pin provider weights.
+
 Use [application blueprints](docs/application-blueprints.md) to add a decision boundary to an existing project. For provider evaluation, calibration and release through this application's UI, follow [hosted decision studies](docs/hosted-decisions-guide.md) and adapt the [hosted profile template](examples/hosted-profiles.json).
 
 ## Train on a remote GPU

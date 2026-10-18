@@ -149,15 +149,24 @@ def validate_profile(p):
         p["model"] not in ("d1", "d1-ultra") or p["response_model"] != p["model"]
     ):
         raise ValueError("Liquid profiles must select d1 or d1-ultra explicitly")
+    if p["provider"] == "perplexity":
+        from .perplexity import validate_profile as validate_perplexity
+
+        validate_perplexity(p)
 
 
 def public_profile(profile):
     # Credential locations and approved tenant identities are operator configuration.
-    return {
+    value = {
         k: copy.deepcopy(v)
         for k, v in profile.items()
         if k not in ("key_env", "tenants")
     }
+    if profile["provider"] == "perplexity":
+        from .perplexity import binding
+
+        value["api_contract"] = binding(profile)
+    return value
 
 
 def profile_for(tenant, identifier, expected=None):
@@ -193,6 +202,10 @@ def request_body(profile, state, questions):
         raise ValueError(
             "Decision input exceeds the qualified provider byte budget; no truncation is performed"
         )
+    if profile["provider"] == "perplexity":
+        from .perplexity import validate_request
+
+        validate_request(state, questions)
     return body
 
 
@@ -274,6 +287,11 @@ def decode_response(body, profile, questions):
             "input_tokens" not in safe_usage or safe_usage.get("output_tokens") != 0
         ):
             raise ValueError()
+        if profile["provider"] == "perplexity" and set(safe_usage) != {
+            "input_tokens",
+            "output_tokens",
+        }:
+            raise ValueError()
         if "cost" in usage:
             if not number(usage["cost"], 0, 10000):
                 raise ValueError()
@@ -287,6 +305,10 @@ def decode_response(body, profile, questions):
         }
         if profile["provider"] == "openrouter":
             identity["routed_provider"] = body["provider"]
+        if profile["provider"] == "perplexity":
+            from .perplexity import binding
+
+            identity["api_contract"] = binding(profile)
         if "id" in body:
             if not isinstance(body["id"], str) or len(body["id"]) > 256:
                 raise ValueError()
@@ -732,6 +754,10 @@ def validate_call_history(store):
                 or (
                     profile["provider"] == "openrouter"
                     and identity.get("routed_provider") != profile["response_provider"]
+                )
+                or (
+                    profile["provider"] == "perplexity"
+                    and identity.get("api_contract") != profile.get("api_contract")
                 )
             ):
                 raise ValueError(

@@ -44,6 +44,7 @@ and separate references to models whose integrations are still in development.
 | [Laya and Unsloth training](training-guide.md) | Select a compatible local model environment and produce a complete export |
 | [Vega training](vega-guide.md) | Use Vega's separate engine, domain-adapter and applicability contracts |
 | [Liquid hosted d1/d1-ultra](models/liquid-hosted.md) | Call the direct API or evaluate and release a hosted domain policy |
+| [Perplexity Full/Flash v1.2](models/perplexity.md) | Configure your key, evaluate joint-question decisions and release a calibrated hosted policy |
 | [Liquid d1-3B](models/liquid.md) | Prepare native domain data, run standalone local LoRA training and use a calibrated export |
 | [Liquid d1-omni-600M](models/liquid-omni.md) | Adapt the native decision head on text/JSON, calibrate and use a domain export in the local app |
 | [Liquid remote GPU training](remote-training/liquid.md) | Prepare model-specific images/studies for five providers and independently admit returned exports |

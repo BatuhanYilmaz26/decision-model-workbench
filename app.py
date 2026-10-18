@@ -963,6 +963,14 @@ try:
                     )
                     selected_profile = next(p for p in profiles if p["id"] == chosen)
                     st.json(selected_profile)
+                    if selected_profile["provider"] == "perplexity":
+                        st.info(
+                            "Perplexity evaluates all questions together. Keep the same question group when evaluating and serving. Flash is more sensitive to grouping; start with one question per project unless a related group is validated. The returned model name echoes your request and does not pin remote weights."
+                        )
+                        st.link_button(
+                            "Configure Perplexity Decider and your API key",
+                            "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/models/perplexity.md",
+                        )
                     st.write(
                         "This evaluates provider answers and fits local calibration; it does not train the provider's weights. Calibration, validation and test states are sent to the provider. Calls may incur charges."
                     )

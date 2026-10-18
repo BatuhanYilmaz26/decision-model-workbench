@@ -8,6 +8,9 @@ Start with the [API guide](api-integration-guide.md) for provider contracts and 
 
 For Liquid d1/d1-ultra setup, Python/TypeScript calls and model-specific limits, see the [Liquid hosted guide](models/liquid-hosted.md).
 
+For Perplexity Full/Flash v1.2, user-owned keys, joint-question behavior and
+retired-name migration, see the [Perplexity guide](models/perplexity.md).
+
 ## Configure operator-owned profiles
 
 Copy [the profile template](../examples/hosted-profiles.json) to a private operator directory, and keep only the providers you intend to enable. Replace `tenants` with your configured workspace identities. Configure each provider credential in the dedicated environment variable named by `key_env`; the profile contains no credential values. Both API and worker processes need the profile path and their provider keys. Python commands do not automatically load `.env` files.
@@ -21,7 +24,7 @@ Inject the selected `DMT_PROVIDER_TYPESAFE_API_KEY`, `DMT_PROVIDER_OPENROUTER_AP
 | Field | Meaning |
 |---|---|
 | `id`, `provider`, `model` | Operator-selected route and request model |
-| `response_model` | Exact model identity observed during qualification; a request alias can resolve to a different dated response |
+| `response_model` | Exact expected response name; OpenRouter can resolve to a dated response, while Perplexity echoes the request without attesting weights |
 | `response_provider`, `provider_slug` | OpenRouter response identity and approved routing slug; the request restricts `provider.only` and disables fallback |
 | `account_id` | Cloudflare account; replace the template's all-zero example |
 | `tenants` | Explicit permitted workspace identities |
