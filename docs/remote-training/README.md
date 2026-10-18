@@ -6,7 +6,7 @@ Train a decision model on a rented GPU when local memory is insufficient. Start 
 
 For d1-3B TRL/Unsloth or d1-omni-600M, follow the [Liquid cloud workflow](liquid.md)
 for native formats, image compatibility, cached checkpoints and independent admission.
-For D3 Edge, use the separate [D3 cloud workflow](d3.md) and its compatible native image.
+For the six D3 variants, use the separate [D3 cloud workflow](d3.md) and its compatible native image.
 
 | Provider | Direct walkthrough | Application-managed workflow | Configuration template |
 |---|---|---|---|

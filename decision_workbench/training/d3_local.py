@@ -8,6 +8,7 @@ import re
 from decision_workbench.data import dumps
 from decision_workbench.json_tools import strict_json
 from .d3_assets import MODEL, REVISION
+from .d3_profiles import get_profile
 
 PROFILE = {
     "backend": "d3-edge",
@@ -31,9 +32,10 @@ INPUTS = {"snapshot"} | set(PROFILE) | set(DEFAULTS)
 def settings(value):
     if not isinstance(value, dict) or set(value) - set(PROFILE) - set(DEFAULTS):
         raise ValueError("Unexpected D3 training settings")
-    result = {**PROFILE, **DEFAULTS, **value}
-    if any(result[name] != expected for name, expected in PROFILE.items()):
-        raise ValueError("Choose the pinned D3 Edge native-readout profile")
+    profile = get_profile(value.get("backend", "d3-edge")).fields
+    result = {**profile, **DEFAULTS, **value}
+    if any(result[name] != expected for name, expected in profile.items()):
+        raise ValueError("Choose the matching pinned D3 native-readout profile")
     for name, low, high in (
         ("epochs", 1, 20),
         ("batch_size", 1, 16),
@@ -71,7 +73,12 @@ def validate_request(path, args, hashes, source, rows):
     if len(body) > 65536:
         raise ValueError("D3 frozen request exceeds 64 KB")
     value = strict_json(body)
-    expected = settings({name: getattr(args, name) for name in DEFAULTS})
+    expected = settings(
+        {
+            "backend": getattr(args, "backend", "d3-edge"),
+            **{name: getattr(args, name) for name in DEFAULTS},
+        }
+    )
     if (
         not isinstance(value, dict)
         or set(value)

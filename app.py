@@ -1,5 +1,7 @@
 """Browser client for durable projects, review, jobs, models and decisions."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS, get_profile
+
 import csv
 import io
 import json
@@ -640,7 +642,7 @@ try:
                     "liquid-trl",
                     "liquid-unsloth",
                     "liquid-omni",
-                    "d3-edge",
+                    *D3_BACKENDS,
                 ],
                 format_func=lambda value: {
                     "cpu-baseline": "CPU comparison baseline",
@@ -650,7 +652,10 @@ try:
                     "liquid-trl": "Liquid d1-3B (TRL)",
                     "liquid-unsloth": "Liquid d1-3B (Unsloth)",
                     "liquid-omni": "Liquid d1-omni-600M (native head, text/JSON)",
-                    "d3-edge": "D3 Edge (native readout, text/JSON)",
+                    **{
+                        name: get_profile(name).label + " (native readout, text/JSON)"
+                        for name in D3_BACKENDS
+                    },
                 }[value],
             )
             training_location = st.radio(
@@ -663,7 +668,7 @@ try:
                 horizontal=True,
                 key="training-location-"
                 + project
-                + ("-d3" if backend == "d3-edge" else ""),
+                + ("-d3" if backend in D3_BACKENDS else ""),
             )
             if principal["role"] != "admin":
                 st.caption(
@@ -687,13 +692,13 @@ try:
                 st.info(
                     "This Unsloth profile needs a compatible CUDA model environment. It cannot use the CPU-only platform environment. Use a cloud GPU if your computer cannot run it."
                 )
-            elif backend == "d3-edge":
+            elif backend in D3_BACKENDS:
                 st.info(
-                    "Adapt D3 Edge's original answer-code readout while keeping its native backbone frozen. Use reviewed text/JSON and independent calibration data. The exported device is retained for serving; cloud training requires a compatible pinned image and an approved provider profile."
+                    "Adapt the selected D3 model's original answer-code readout while keeping its native backbone frozen. Use reviewed text/JSON and independent calibration data. The exported device is retained for serving; cloud training requires a compatible pinned image and an approved provider profile."
                 )
                 st.link_button(
                     "D3 installation, data and training guide",
-                    "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/models/d3.md",
+                    "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/models/d3-family.md",
                 )
             elif backend == "liquid-omni":
                 st.info(
@@ -733,10 +738,15 @@ try:
                         st.warning(reason)
             config = {"snapshot": training_snapshot, "backend": backend}
             vega_ready = True
-            if backend == "d3-edge":
+            if backend in D3_BACKENDS:
                 from decision_workbench.ui.d3 import training_options
 
-                local_ready = (training_options(config, capabilities, cloud=training_location == "Cloud GPU") and local_ready)
+                local_ready = (
+                    training_options(
+                        config, capabilities, cloud=training_location == "Cloud GPU"
+                    )
+                    and local_ready
+                )
             elif backend == "liquid-omni":
                 from decision_workbench.ui.liquid_omni import training_options
 

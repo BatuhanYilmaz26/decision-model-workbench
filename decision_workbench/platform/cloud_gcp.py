@@ -3,6 +3,11 @@
 No ambient operator credentials, endpoint overrides, automatic replay or cloud SDK retries.
 """
 
+from decision_workbench.training.transfer_limits import (
+    MAX_ARTIFACT_BYTES,
+    transfer_seconds,
+)
+
 import base64
 import copy
 import hashlib
@@ -100,7 +105,7 @@ def validate_profile(p):
         ("max_runtime_seconds", 60, 14400),
         ("max_runs_day", 1, 100),
         ("max_inflight", 1, 4),
-        ("max_artifact_bytes", 1024, 32 * 1024**3),
+        ("max_artifact_bytes", 1024, MAX_ARTIFACT_BYTES),
     ):
         if type(p[key]) is not int or not low <= p[key] <= high:
             raise ValueError("Invalid GCP limit: " + key)
@@ -411,7 +416,7 @@ class GcpGateway:
             ),
             "Content-Length": str(size),
         }
-        deadline = time.monotonic() + 600
+        deadline = time.monotonic() + transfer_seconds(size)
 
         def content():
             sent_sha = hashlib.sha256()
@@ -600,7 +605,7 @@ class GcpGateway:
         ):
             raise CloudUnavailable("GCP object metadata is outside the approved bounds")
         md5, actual = hashlib.md5(usedforsecurity=False), 0
-        deadline = time.monotonic() + 600
+        deadline = time.monotonic() + transfer_seconds(int(size))
         with self.client.stream(
             "GET",
             self.object_url(run, kind),

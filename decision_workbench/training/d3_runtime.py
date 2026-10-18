@@ -11,7 +11,7 @@ import types
 from decision_workbench.data import options, validate_questions
 from decision_workbench.json_tools import strict_json
 from .artifacts import file_sha
-from .d3_assets import ASSETS, MODEL, REVISION, WEIGHTS, BASE_WEIGHTS, BASE_READOUT
+from .d3_profiles import get_profile
 from .d3_data import D3Prompt, checked_asset, resolve_assets
 from .liquid_runtime import apply_temperature
 from .metrics import normalize_answers
@@ -32,50 +32,62 @@ def runtime_identity():
         or values["torch"].split("+")[0] != "2.10.0"
     ):
         raise ValueError(
-            "Use the compatible requirements/d3-edge.txt model environment"
+            "Use the compatible requirements/d3-native.txt model environment"
         )
     return values
 
 
-def checked_runtime(folder, *, base=False):
+def checked_runtime(folder, *, base=False, backend="d3-edge"):
+    profile = get_profile(backend)
     folder = Path(folder)
-    for name in ASSETS:
-        checked_asset(folder, name)
-    if (folder / WEIGHTS).stat().st_size != 1188677968 or file_sha(
-        folder / WEIGHTS
-    ) != BASE_WEIGHTS:
-        raise ValueError("D3 frozen backbone weights differ from the pinned checkpoint")
+    for name in profile.assets:
+        checked_asset(folder, name, backend)
+    for name, expected in profile.weights.items():
+        if (folder / name).stat().st_size != expected["bytes"] or file_sha(
+            folder / name
+        ) != expected["sha256"]:
+            raise ValueError(
+                "D3 frozen backbone weights differ from the pinned checkpoint"
+            )
     head = folder / "readout.safetensors"
-    if not head.is_file() or not 1 <= head.stat().st_size <= 2 * 1024**2:
+    if (
+        not head.is_file()
+        or not 1 <= head.stat().st_size <= profile.readout_bytes + 16384
+    ):
         raise ValueError("D3 readout is missing or exceeds this profile")
-    if base and file_sha(head) != BASE_READOUT:
+    if base and file_sha(head) != profile.readout_sha256:
         raise ValueError("D3 base readout differs from the pinned checkpoint")
     return folder
 
 
-def resolve_checkpoint(cache, *, download=False):
+def resolve_checkpoint(cache, *, download=False, backend="d3-edge"):
     from huggingface_hub import snapshot_download
 
-    # resolve_assets also supports a small, CPU-only data preparation install.
-    resolve_assets(cache, download=download)
+    profile = get_profile(backend)
+    if download:
+        from .d3_storage import cache_storage
+
+        cache_storage(cache, profile)
+    resolve_assets(cache, download=download, backend=backend)
     folder = Path(
         snapshot_download(
-            MODEL,
-            revision=REVISION,
+            profile.model,
+            revision=profile.revision,
             token=False,
             cache_dir=str(cache),
             local_files_only=not download,
-            allow_patterns=[*ASSETS, WEIGHTS, "readout.safetensors"],
+            allow_patterns=[*profile.assets, *profile.weights, "readout.safetensors"],
         )
     )
-    return checked_runtime(folder, base=True)
+    return checked_runtime(folder, base=True, backend=backend)
 
 
-def publisher_module(folder):
+def publisher_module(folder, backend="d3-edge"):
     """Execute pinned source bytes; never read/write a Python bytecode cache."""
-    for name in ASSETS:
+    profile = get_profile(backend)
+    for name in profile.assets:
         if name.endswith(".py"):
-            checked_asset(folder, name)
+            checked_asset(folder, name, backend)
     folder = Path(folder).absolute()
     package_name = "dmt_d3_" + hashlib.sha256(str(folder).encode()).hexdigest()[:24]
     module_name = package_name + ".d3_runtime"
@@ -92,7 +104,7 @@ def publisher_module(folder):
                 module.__package__ = package_name
                 sys.modules[qualified] = module
                 setattr(package, name, module)
-                body = checked_asset(folder, name + ".py")
+                body = checked_asset(folder, name + ".py", backend)
                 exec(compile(body, module.__file__, "exec"), module.__dict__)
         except BaseException:
             for name in list(sys.modules):
@@ -102,7 +114,7 @@ def publisher_module(folder):
     return sys.modules[module_name]
 
 
-def memory_guard(device, *, batch=1, length=0, startup=False):
+def memory_guard(device, *, batch=1, length=0, startup=False, profile=None):
     import torch
     import psutil
 
@@ -111,10 +123,16 @@ def memory_guard(device, *, batch=1, length=0, startup=False):
         if device.type == "cuda"
         else psutil.virtual_memory().available
     )
+    profile = profile or get_profile()
     minimum = (
-        (2 if device.type == "cuda" else 3) * 1024**3 if startup else 256 * 1024**2
+        (profile.cuda_gib if device.type == "cuda" else profile.cpu_gib) * 1024**3
+        if startup
+        else 256 * 1024**2
     )
-    estimate = batch * (16 * length**2 * 4 + 64 * length * 1024 * 2)
+    estimate = batch * (
+        max(16, profile.heads) * length**2 * 4
+        + max(64, profile.layers) * length * profile.hidden * 2
+    )
     if available < minimum + estimate:
         raise ValueError(
             "D3 needs more available memory; reduce context/batch or choose a larger CPU/GPU host"
@@ -126,7 +144,12 @@ def features(runtime, records):
     import torch
 
     width = max(len(record["input_ids"]) for record in records)
-    memory_guard(runtime.device, batch=len(records), length=width)
+    memory_guard(
+        runtime.device,
+        batch=len(records),
+        length=width,
+        profile=getattr(runtime, "dmt_profile", None),
+    )
     ids = torch.full(
         (len(records), width), runtime.pad_id, dtype=torch.long, device=runtime.device
     )
@@ -146,11 +169,12 @@ def features(runtime, records):
 
 
 class D3Engine:
-    def __init__(self, checkpoint, device="auto", *, base=False):
+    def __init__(self, checkpoint, device="auto", *, base=False, backend="d3-edge"):
         import torch
 
         runtime_identity()
-        folder = checked_runtime(checkpoint, base=base)
+        self.profile = get_profile(backend)
+        folder = Path(checkpoint)
         self.metadata = None
         self.max_length = 32768
         if not base:
@@ -164,8 +188,8 @@ class D3Engine:
             if (
                 not isinstance(m, dict)
                 or m.get("format") != "domain-d3-runtime-v1"
-                or m.get("model") != MODEL
-                or m.get("revision") != REVISION
+                or m.get("model") != self.profile.model
+                or m.get("revision") != self.profile.revision
                 or m.get("training_method") != "native-readout"
                 or type(m.get("max_length")) is not int
                 or not 64 <= m["max_length"] <= 32768
@@ -199,9 +223,10 @@ class D3Engine:
         )
         if picked.type == "cuda" and not torch.cuda.is_available():
             raise ValueError("CUDA is unavailable; use CPU or a compatible cloud GPU")
-        memory_guard(picked, startup=True)
-        native = publisher_module(folder)
-        self.prompt = D3Prompt(folder)
+        memory_guard(picked, startup=True, profile=self.profile)
+        folder = checked_runtime(folder, base=base, backend=backend)
+        native = publisher_module(folder, backend)
+        self.prompt = D3Prompt(folder, backend)
         # The original model manifest remains a publisher artifact; a domain
         # export uses the workbench's independently checked bundle manifest.
         previous = os.environ.get("D3_FAST")
@@ -219,6 +244,7 @@ class D3Engine:
                 os.environ.pop("D3_FAST", None)
             else:
                 os.environ["D3_FAST"] = previous
+        self.runtime.dmt_profile = self.profile
         if (
             self.runtime.temperature != 1.0
             or self.runtime.readout_dtype != "float32"
@@ -241,7 +267,11 @@ class D3Engine:
         answers = {}
         for name, question in questions.items():
             record = self.prompt.prepare(state, question, self.max_length)
-            memory_guard(self.runtime.device, length=len(record["input_ids"]))
+            memory_guard(
+                self.runtime.device,
+                length=len(record["input_ids"]),
+                profile=self.profile,
+            )
             values = self.runtime.probabilities(
                 [record["input_ids"]], [len(record["option_keys"])]
             )[0]

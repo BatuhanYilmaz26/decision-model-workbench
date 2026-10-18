@@ -1,5 +1,10 @@
 """SageMaker/S3 boundary. Called only by the durable owner-approved cloud controller."""
 
+from decision_workbench.training.transfer_limits import (
+    MAX_ARTIFACT_BYTES,
+    transfer_seconds,
+)
+
 import base64
 import copy
 import hashlib
@@ -88,7 +93,7 @@ def validate_profile(p):
         ("max_runtime_seconds", 60, 14400),
         ("max_runs_day", 1, 100),
         ("max_inflight", 1, 4),
-        ("max_artifact_bytes", 1024, 32 * 1024**3),
+        ("max_artifact_bytes", 1024, MAX_ARTIFACT_BYTES),
     ):
         if type(p[key]) is not int or not low <= p[key] <= high:
             raise ValueError("Invalid cloud limit: " + key)
@@ -382,7 +387,7 @@ class AwsGateway:
         try:
             if response.get("ContentLength") != size:
                 raise CloudUnavailable("Cloud artifact size changed")
-            deadline = time.monotonic() + 600
+            deadline = time.monotonic() + transfer_seconds(size)
             total, checksum = 0, hashlib.sha256()
             with Path(destination).open("xb") as writer:
                 while chunk := reader.read(1024**2):

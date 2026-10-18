@@ -32,7 +32,7 @@ The transport requests scoped client-credentials tokens from the fixed directory
 
 The operator application needs approved subscription/resource inspection, ML job read/write/cancel and private input/output Blob access. The workspace/compute identities need appropriate datastore, image and platform access. Assign effective least-privilege roles through the enterprise administrator and validate them on real resources; a broad Owner role is not a prerequisite prescribed by the project. Client-secret mode is an implemented starting route, not completion of enterprise workload-identity support.
 
-Limits include a 60â€“14,400-second running timeout, 1â€“100 locally reserved runs per rolling day, 1â€“4 unresolved local runs and a bounded artifact size up to 32 GiB. Shared local quotas group tenant/profile aliases by provider, subscription and region. They do not cover other workspaces/direct submissions or enforce a global monetary budget.
+Limits include a 60â€“14,400-second running timeout, 1â€“100 locally reserved runs per rolling day, 1â€“4 unresolved local runs and a bounded artifact size up to 64 GiB. Shared local quotas group tenant/profile aliases by provider, subscription and region. They do not cover other workspaces/direct submissions or enforce a global monetary budget.
 
 ## Freeze, approve and submit
 

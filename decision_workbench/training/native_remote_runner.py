@@ -17,6 +17,7 @@ from .artifacts import file_sha, write_manifest
 from .cloud_runner import ordinary
 from .contracts import load_splits
 from .native_remote import check_inputs, profile, read_request
+from .d3_profiles import BACKENDS as D3_BACKENDS
 
 
 def execute(request_path, data, output):
@@ -36,11 +37,17 @@ def execute(request_path, data, output):
     if native.exists() or local_path.exists():
         raise ValueError("Choose a fresh work directory for each remote native attempt")
     local_path.write_bytes(local.request_body(study))
-    cache_name = {"d3-edge": "DMT_D3_CACHE", "liquid-omni": "DMT_OMNI_CACHE"}.get(backend, "DMT_LIQUID_CACHE")
+    cache_name = {
+        **{name: "DMT_D3_CACHE" for name in D3_BACKENDS},
+        "liquid-omni": "DMT_OMNI_CACHE",
+    }.get(backend, "DMT_LIQUID_CACHE")
     cache = os.environ.get(cache_name) or str(
         Path.cwd()
         / "data/model-cache"
-        / {"d3-edge": "d3-hub", "liquid-omni": "liquid-omni-hub"}.get(backend, "liquid-hub")
+        / {
+            **{name: "d3-hub" for name in D3_BACKENDS},
+            "liquid-omni": "liquid-omni-hub",
+        }.get(backend, "liquid-hub")
     )
     args = SimpleNamespace(
         **{name: study["configuration"][name] for name in local.DEFAULTS},
@@ -49,9 +56,10 @@ def execute(request_path, data, output):
         cache=cache,
         local_study_request=str(local_path),
     )
-    if backend == "d3-edge":
+    if backend in D3_BACKENDS:
         from .d3_runner import train_d3
 
+        args.backend = backend
         report = train_d3(args)
     elif backend == "liquid-omni":
         from .liquid_omni_runner import train_omni

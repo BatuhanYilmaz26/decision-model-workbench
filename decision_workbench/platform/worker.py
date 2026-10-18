@@ -1,5 +1,7 @@
 """Independent durable worker; long GPU work runs in a child process."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
+
 import argparse
 import copy
 import hashlib
@@ -318,7 +320,7 @@ class Worker:
             snapshot["splits"], spec["questions"], policy["criteria"]
         )
         gate = None
-        if config.get("backend") == "d3-edge":
+        if config.get("backend") in D3_BACKENDS:
             from .d3_training import recheck
 
             recheck(config, snapshot, spec["questions"])
@@ -373,7 +375,7 @@ class Worker:
                     "liquid-trl": None,
                     "liquid-unsloth": None,
                     "liquid-omni": None,
-                    "d3-edge": None,
+                    **{name: None for name in D3_BACKENDS},
                 }[config["backend"]]
                 if dependency and importlib.util.find_spec(dependency) is None:
                     raise ValueError(
@@ -400,7 +402,7 @@ class Worker:
                 "liquid-trl": "liquid_runner",
                 "liquid-unsloth": "liquid_runner",
                 "liquid-omni": "liquid_omni_runner",
-                "d3-edge": "d3_runner",
+                **{name: "d3_runner" for name in D3_BACKENDS},
             }[config["backend"]]
             argv = [
                 sys.executable,
@@ -421,10 +423,10 @@ class Worker:
             ]
             child_environment = None
             child_cwd = None
-            if config["backend"] in ("liquid-omni", "d3-edge"):
+            if config["backend"] in ("liquid-omni", *D3_BACKENDS):
                 from .model_environment import native_environment, model_python
 
-                if config["backend"] == "d3-edge":
+                if config["backend"] in D3_BACKENDS:
                     from decision_workbench.training.d3_local import request_body
 
                     prefix, study_key, native_runner = "d3", "d3_study", "d3_runner"
@@ -457,6 +459,8 @@ class Worker:
                     "--cache",
                     str(cache),
                 ]
+                if config["backend"] in D3_BACKENDS:
+                    argv.extend(["--backend", config["backend"]])
                 for name in ("epochs", "batch_size", "learning_rate", "device"):
                     argv.extend(["--" + name.replace("_", "-"), str(config[name])])
                 if config["max_steps"] is not None:
@@ -592,7 +596,7 @@ class Worker:
                 from .vega_training import checked_report
 
                 checked_report(report, config)
-            elif config["backend"] == "d3-edge":
+            elif config["backend"] in D3_BACKENDS:
                 from .d3_training import checked_artifact
 
                 checked_artifact(artifact_folder, report, config, spec["questions"])

@@ -1,5 +1,10 @@
 """Owner-selected Modal GPU Sandbox lifecycle; volume/tags are writer attestations."""
 
+from decision_workbench.training.transfer_limits import (
+    MAX_ARTIFACT_BYTES,
+    transfer_seconds,
+)
+
 import os
 import re
 from .cloud_aws import CloudUnavailable
@@ -98,7 +103,7 @@ def validate_profile(p):
         ("max_runtime_seconds", 300, 14400),
         ("max_runs_day", 1, 100),
         ("max_inflight", 1, 4),
-        ("max_artifact_bytes", 1024, 32 * 1024**3),
+        ("max_artifact_bytes", 1024, MAX_ARTIFACT_BYTES),
     ):
         if type(p[k]) is not int or not low <= p[k] <= high:
             raise ValueError("Invalid Modal limit: " + k)

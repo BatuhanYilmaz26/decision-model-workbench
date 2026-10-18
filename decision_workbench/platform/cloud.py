@@ -173,6 +173,18 @@ class Cloud:
             raise ValueError(
                 "The approved image profile does not declare this training backend"
             )
+        from decision_workbench.training.d3_profiles import (
+            BACKENDS as D3_BACKENDS,
+            get_profile,
+        )
+
+        if config["backend"] in D3_BACKENDS:
+            native = get_profile(config["backend"])
+            minimum = native.weight_bytes + native.readout_bytes
+            if p["max_artifact_bytes"] <= minimum:
+                raise ValueError(
+                    "Cloud artifact limit cannot hold this D3 variant's frozen weights and readout"
+                )
         regional = [
             x
             for x in profiles()

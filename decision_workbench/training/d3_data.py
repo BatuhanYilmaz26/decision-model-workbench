@@ -14,6 +14,7 @@ from decision_workbench.data import options, validate_questions
 from decision_workbench.json_tools import strict_json
 from .contracts import SPLITS
 from .d3_assets import ASSETS, MODEL, REVISION
+from .d3_profiles import get_profile, BACKENDS
 from .liquid_data import dumps, load_inputs
 
 SYSTEM = (
@@ -22,31 +23,33 @@ SYSTEM = (
 )
 
 
-def checked_asset(folder, name):
-    if name not in ASSETS:
+def checked_asset(folder, name, backend="d3-edge"):
+    assets = get_profile(backend).assets
+    if name not in assets:
         raise ValueError("Unknown D3 asset")
     with (Path(folder) / name).open("rb") as stream:
         body = stream.read(32 * 1024**2 + 1)
-    if len(body) > 32 * 1024**2 or hashlib.sha256(body).hexdigest() != ASSETS[name]:
+    if len(body) > 32 * 1024**2 or hashlib.sha256(body).hexdigest() != assets[name]:
         raise ValueError("D3 asset differs from the pinned publisher revision: " + name)
     return body
 
 
-def resolve_assets(cache, *, download=False):
+def resolve_assets(cache, *, download=False, backend="d3-edge"):
     from huggingface_hub import snapshot_download
 
+    profile = get_profile(backend)
     folder = Path(
         snapshot_download(
-            MODEL,
-            revision=REVISION,
+            profile.model,
+            revision=profile.revision,
             token=False,
             cache_dir=str(cache),
             local_files_only=not download,
-            allow_patterns=list(ASSETS),
+            allow_patterns=list(profile.assets),
         )
     )
-    for name in ASSETS:
-        checked_asset(folder, name)
+    for name in profile.assets:
+        checked_asset(folder, name, backend)
     return folder
 
 
@@ -93,20 +96,23 @@ def render(state, question, codes):
 
 
 class D3Prompt:
-    def __init__(self, folder):
+    def __init__(self, folder, backend="d3-edge"):
         from tokenizers import Tokenizer
 
-        config = strict_json(checked_asset(folder, "decision_config.json"))
-        checked_asset(folder, "chat_template.jinja")
-        tokenizer_config = strict_json(checked_asset(folder, "tokenizer_config.json"))
+        self.profile = get_profile(backend)
+
+        def asset(name):
+            return checked_asset(folder, name, backend)
+
+        config = strict_json(asset("decision_config.json"))
+        asset("chat_template.jinja")
+        tokenizer_config = strict_json(asset("tokenizer_config.json"))
         self.special_tokens = tuple(
             token["content"]
             for token in tokenizer_config["added_tokens_decoder"].values()
             if token.get("special") is True
         )
-        self.tokenizer = Tokenizer.from_str(
-            checked_asset(folder, "tokenizer.json").decode()
-        )
+        self.tokenizer = Tokenizer.from_str(asset("tokenizer.json").decode())
         self.codes, self.code_ids = config["codes"], config["token_ids"]
         if (
             len(self.codes) != 255
@@ -229,8 +235,8 @@ def export_dataset(data, out, prompt, max_length=2048):
         }
         manifest = {
             "format": "domain-d3-data-v1",
-            "model": MODEL,
-            "revision": REVISION,
+            "model": getattr(prompt, "profile", get_profile()).model,
+            "revision": getattr(prompt, "profile", get_profile()).revision,
             "max_length": max_length,
             "counts": counts,
             "max_tokens": maximums,
@@ -246,6 +252,7 @@ def export_dataset(data, out, prompt, max_length=2048):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--backend", choices=BACKENDS, default="d3-edge")
     parser.add_argument("--data", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--cache", required=True)
@@ -253,10 +260,14 @@ def main():
     parser.add_argument("--max-length", type=int, default=2048)
     args = parser.parse_args()
     try:
-        folder = resolve_assets(args.cache, download=args.download)
+        folder = resolve_assets(
+            args.cache, download=args.download, backend=args.backend
+        )
         print(
             dumps(
-                export_dataset(args.data, args.out, D3Prompt(folder), args.max_length)
+                export_dataset(
+                    args.data, args.out, D3Prompt(folder, args.backend), args.max_length
+                )
             )
         )
     except (OSError, ValueError, RuntimeError) as exc:

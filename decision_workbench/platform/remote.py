@@ -17,7 +17,12 @@ from decision_workbench.training.provenance import source_fingerprint
 from .store import Conflict, digest
 
 PROVIDERS = ("aws", "azure", "gcp", "modal", "runpod")
-MAX_BYTES = 32 * 1024**3
+from decision_workbench.training.transfer_limits import (
+    MAX_ARTIFACT_BYTES,
+    transfer_seconds,
+)
+
+MAX_BYTES = MAX_ARTIFACT_BYTES
 MAX_FILES = 2048
 
 
@@ -353,7 +358,7 @@ def stage_import(
         target = store.folder / "incoming" / stage_id
         target.mkdir(parents=True, exist_ok=False)
         total, count = 0, 0
-        deadline = time.monotonic() + 600
+        deadline = time.monotonic() + transfer_seconds(MAX_BYTES)
         try:
             # Copy from a private operator directory, reject links before descending.
             for current, directories, filenames in os.walk(source, followlinks=False):

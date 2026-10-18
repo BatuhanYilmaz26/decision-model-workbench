@@ -15,6 +15,7 @@ from decision_workbench.training.d3_local import (
     settings,
 )
 from decision_workbench.training.provenance import source_fingerprint
+from decision_workbench.training.d3_profiles import get_profile
 
 
 def study_for(config, snapshot, questions, *, source=None):
@@ -62,8 +63,13 @@ def recheck(config, snapshot, questions):
 
 def checked_report(report, config):
     study = config.get("d3_study", {})
+    profile = get_profile(config.get("backend"))
     if (
-        any(report.get(k) != v for k, v in PROFILE.items() if k != "training_method")
+        any(
+            report.get(k) != v
+            for k, v in profile.fields.items()
+            if k != "training_method"
+        )
         or report.get("source_sha256") != study.get("source_sha256")
         or report.get("data_sha256") != study.get("data_sha256")
         or report.get("counts") != study.get("counts")
@@ -104,7 +110,7 @@ def checked_report(report, config):
         or training.get("frozen_parameters_unchanged") is not True
         or training.get("backbone_dtype") != "bfloat16"
         or training.get("readout_dtype") != "float32"
-        or training.get("trainable_parameters") != 261120
+        or training.get("trainable_parameters") != profile.trainable_parameters
         or training.get("device") not in ("cpu", "cuda:0")
         or not isinstance(training.get("frozen_parameters_sha256"), str)
         or len(training["frozen_parameters_sha256"]) != 64
@@ -117,19 +123,20 @@ def checked_report(report, config):
 def checked_artifact(folder, report, config, questions):
     from decision_workbench.training.artifacts import inventory
     from decision_workbench.training.d3_runtime import checked_runtime
-    from decision_workbench.training.d3_assets import ASSETS
+
+    profile = get_profile(config["backend"])
+    assets = profile.assets
 
     folder = Path(folder).resolve()
     checked_report(report, config)
     files = inventory(folder)
-    from decision_workbench.training.d3_assets import WEIGHTS
 
     allowed = {"report.json", "data/manifest.json"}
     if report.get("admission"):
         allowed.add("training_report.json")
     allowed.update(
         "checkpoint/" + name
-        for name in (*ASSETS, WEIGHTS, "readout.safetensors", "dmt_d3.json")
+        for name in (*assets, *profile.weights, "readout.safetensors", "dmt_d3.json")
     )
     allowed.update(
         "data/" + directory + "/" + role + ".jsonl"
@@ -141,13 +148,13 @@ def checked_artifact(folder, report, config, questions):
             "D3 export contains an unapproved native file or bytecode cache"
         )
     if {name for name in files if name.endswith(".py")} != {
-        "checkpoint/" + name for name in ASSETS if name.endswith(".py")
+        "checkpoint/" + name for name in assets if name.endswith(".py")
     }:
         raise ValueError("D3 export contains missing or unapproved native code")
     manifest = strict_json((folder / "manifest.json").read_bytes())
     if manifest.get("checkpoint") != "checkpoint":
         raise ValueError("D3 manifest selects a different native checkpoint")
-    checked_runtime(folder / "checkpoint")
+    checked_runtime(folder / "checkpoint", backend=profile.backend)
     with (folder / "checkpoint/dmt_d3.json").open("rb") as stream:
         body = stream.read(16 * 1024**2 + 1)
     if len(body) > 16 * 1024**2:
@@ -155,8 +162,8 @@ def checked_artifact(folder, report, config, questions):
     metadata = strict_json(body)
     if (
         metadata.get("format") != "domain-d3-runtime-v1"
-        or metadata.get("model") != PROFILE["model"]
-        or metadata.get("revision") != PROFILE["revision"]
+        or metadata.get("model") != profile.model
+        or metadata.get("revision") != profile.revision
         or metadata.get("training_method") != "native-readout"
         or metadata.get("questions") != questions
         or any(

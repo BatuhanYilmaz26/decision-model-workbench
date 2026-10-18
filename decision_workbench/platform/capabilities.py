@@ -1,5 +1,7 @@
 """Bounded on-demand inspection of configured model runtimes; no downloads."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
+
 import json
 import os
 import subprocess
@@ -60,7 +62,7 @@ def runtime_capabilities():
         from .model_environment import model_python
 
         targets = [("training", worker), ("serving", model)]
-        for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni", "d3-edge"):
+        for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni", *D3_BACKENDS):
             for purpose in ("training", "serving"):
                 try:
                     executable = model_python(backend, purpose)
@@ -101,7 +103,7 @@ def runtime_capabilities():
                 purpose: runtimes.pop(backend + "-" + purpose)
                 for purpose in ("training", "serving")
             }
-            for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni", "d3-edge")
+            for backend in ("liquid-trl", "liquid-unsloth", "liquid-omni", *D3_BACKENDS)
         }
         result = {
             "runtimes": runtimes,

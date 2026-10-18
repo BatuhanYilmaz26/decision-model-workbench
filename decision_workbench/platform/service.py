@@ -1,5 +1,7 @@
 """Authenticated application lifecycle. Identity comes from server key configuration."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
+
 import copy
 import hashlib
 import json
@@ -549,7 +551,7 @@ class Service:
                     "liquid-trl",
                     "liquid-unsloth",
                     "liquid-omni",
-                    "d3-edge",
+                    *D3_BACKENDS,
                 ):
                     if config.get("device", "cuda") != "cuda":
                         raise ValueError(
@@ -571,13 +573,11 @@ class Service:
                 "liquid-trl",
                 "liquid-unsloth",
                 "liquid-omni",
-                "d3-edge",
+                *D3_BACKENDS,
             ):
-                raise ValueError(
-                    "Select cpu-baseline, unsloth, laya-native, vega, liquid-trl, liquid-unsloth, liquid-omni or d3-edge"
-                )
-            if config["backend"] in ("d3-edge", "liquid-omni"):
-                if config["backend"] == "d3-edge":
+                raise ValueError("Select a compatible backend from the model directory")
+            if config["backend"] in (*D3_BACKENDS, "liquid-omni"):
+                if config["backend"] in D3_BACKENDS:
                     from .d3_training import freeze
                 else:
                     from .liquid_omni_training import freeze
@@ -655,7 +655,7 @@ class Service:
                 "liquid-trl",
                 "liquid-unsloth",
                 "liquid-omni",
-                "d3-edge",
+                *D3_BACKENDS,
             ) and set(config) & {
                 "device",
                 "download",
@@ -669,7 +669,7 @@ class Service:
                 "liquid-trl",
                 "liquid-unsloth",
                 "liquid-omni",
-                "d3-edge",
+                *D3_BACKENDS,
             ):
                 unsupported = (
                     {"rank", "max_steps", "full_precision"}
@@ -771,7 +771,7 @@ class Service:
             "liquid-trl",
             "liquid-unsloth",
             "liquid-omni",
-            "d3-edge",
+            *D3_BACKENDS,
         ):
             raise ValueError("Unsupported serving backend")
         if model["schema_sha256"] != spec["schema_sha256"]:
@@ -901,7 +901,7 @@ class Service:
 
             checked_report(report, model["configuration"])
             checked_model(self, model, questions)
-        elif model["backend"] == "d3-edge":
+        elif model["backend"] in D3_BACKENDS:
             from .d3_training import checked_artifact
 
             checked_artifact(folder, report, model["configuration"], questions)
@@ -954,7 +954,7 @@ class Service:
             "liquid-trl",
             "liquid-unsloth",
             "liquid-omni",
-            "d3-edge",
+            *D3_BACKENDS,
         ):
             answers = self.runtime.predict(
                 active["model_id"], model, spec["questions"], state, threshold

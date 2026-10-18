@@ -372,6 +372,7 @@ class LiquidPlatformTests(unittest.TestCase):
 class LiquidEnvironmentTests(unittest.TestCase):
     def test_capability_probe_deduplicates_shared_interpreters_across_profiles(self):
         from decision_workbench.platform import capabilities
+        from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
 
         value = {"packages": {"numpy": "fixture", "scikit-learn": "fixture"}}
         with (
@@ -398,7 +399,7 @@ class LiquidEnvironmentTests(unittest.TestCase):
             self.assertEqual(set(result["runtimes"]), {"training", "serving"})
             self.assertEqual(
                 set(result["model_profiles"]),
-                {"liquid-trl", "liquid-unsloth", "liquid-omni", "d3-edge"},
+                {"liquid-trl", "liquid-unsloth", "liquid-omni", *D3_BACKENDS},
             )
 
     def test_unsloth_interpreter_and_compile_cache_are_independent(self):

@@ -1,5 +1,7 @@
 """Linux Pod runner: local-disk training, network-volume export; exit is not termination."""
 
+from .transfer_limits import MAX_ARTIFACT_BYTES
+
 import argparse
 import json
 import os
@@ -64,7 +66,7 @@ def execute(
         raise ValueError("RunPod frozen identities are invalid")
     if (
         source_fingerprint() != source_sha256
-        or not 1024 <= max_artifact_bytes <= 32 * 1024**3
+        or not 1024 <= max_artifact_bytes <= MAX_ARTIFACT_BYTES
         or not 60 <= max_runtime_seconds <= 14400
     ):
         raise ValueError("RunPod package source or runtime bounds differ")

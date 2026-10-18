@@ -1,5 +1,7 @@
 """Personal-local entry and explicit shared-workspace connection."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS, get_profile
+
 import os
 from pathlib import Path
 
@@ -248,7 +250,7 @@ def render_connection(root):
             st.text_input(
                 "D3 Edge model Python (optional)",
                 key="local-d3-python",
-                help="Absolute Python executable from the separate requirements/d3-edge.txt environment. Both training and serving use this pinned native profile.",
+                help="Absolute Python executable from requirements/d3-native.txt. The six pinned D3 profiles share packages and keep separate model caches.",
             )
             st.link_button(
                 "D3 installation and model setup", REPO + "docs/models/d3.md"
@@ -329,11 +331,16 @@ def local_backend_available(backend, capabilities):
             capabilities["cpu_baseline"],
             "Install the platform dependencies in the worker environment.",
         )
-    if backend in ("liquid-omni", "d3-edge"):
-        if backend == "d3-edge":
+    if backend in ("liquid-omni", *D3_BACKENDS):
+        if backend in D3_BACKENDS:
             from decision_workbench.training.d3_runtime import PACKAGES
 
-            variable, filename, label, memory = "DMT_D3_PYTHON", "d3-edge", "D3", 3
+            variable, filename, label, memory = (
+                "DMT_D3_PYTHON",
+                "d3-edge",
+                "D3",
+                get_profile(backend).cpu_gib,
+            )
         else:
             from decision_workbench.training.liquid_omni_runtime import PACKAGES
 

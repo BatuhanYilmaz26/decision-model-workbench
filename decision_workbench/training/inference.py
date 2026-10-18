@@ -1,5 +1,7 @@
 """Local exported-head inference using the same calibrated engine as the service."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
+
 import argparse
 import json
 from pathlib import Path
@@ -19,7 +21,7 @@ def predict_export(model_path, state, questions, backend="unsloth"):
         raise ValueError("Provide a local trained export directory")
     from .engines import load_engine
 
-    if backend in ("liquid-omni", "d3-edge"):
+    if backend in ("liquid-omni", *D3_BACKENDS):
         from .artifacts import file_sha, verify_manifest
 
         manifest = verify_manifest(
@@ -41,7 +43,7 @@ def main():
             "liquid-trl",
             "liquid-unsloth",
             "liquid-omni",
-            "d3-edge",
+            *D3_BACKENDS,
         ],
         default="unsloth",
     )

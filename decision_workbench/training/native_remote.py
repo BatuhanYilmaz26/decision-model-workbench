@@ -1,5 +1,7 @@
 """Bind portable native-model studies to native local trainers and remote exports."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS, get_profile
+
 import hashlib
 import os
 from pathlib import Path
@@ -9,12 +11,12 @@ from decision_workbench.data import dumps
 from decision_workbench.json_tools import strict_json
 from .provenance import source_fingerprint
 
-BACKENDS = ("liquid-trl", "liquid-unsloth", "liquid-omni", "d3-edge")
+BACKENDS = ("liquid-trl", "liquid-unsloth", "liquid-omni", *D3_BACKENDS)
 LOCATION = {"provider", "region", "gpu", "image_digest"}
 
 
 def profile(backend):
-    if backend == "d3-edge":
+    if backend in D3_BACKENDS:
         from . import d3_local as local
         from decision_workbench.platform import d3_training as platform
 
@@ -137,8 +139,8 @@ def checked_artifact(folder, report, config, questions):
 
 
 def approved_configs(backend, checkpoint):
-    if backend == "d3-edge":
-        from .d3_assets import ASSETS as assets
+    if backend in D3_BACKENDS:
+        assets = get_profile(backend).assets
     elif backend == "liquid-omni":
         from .liquid_omni_data import ASSETS as assets
     else:
@@ -150,8 +152,8 @@ def approved_configs(backend, checkpoint):
 
 
 def export_assets(backend, checkpoint):
-    if backend == "d3-edge":
-        from .d3_assets import ASSETS as assets
+    if backend in D3_BACKENDS:
+        assets = get_profile(backend).assets
     elif backend == "liquid-omni":
         from .liquid_omni_data import ASSETS as assets
     else:
@@ -160,7 +162,7 @@ def export_assets(backend, checkpoint):
     return {
         checkpoint + "/" + name: value
         for name, value in assets.items()
-        if backend == "d3-edge" or name != "config.json"
+        if backend in D3_BACKENDS or name != "config.json"
     }
 
 

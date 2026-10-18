@@ -12,7 +12,7 @@ These adapters consume reviewed domain data and produce complete model exports w
 | Liquid native data | [liquid_data.py](liquid_data.py) | [CPU preparation for the official d1-3B notebooks](../../docs/models/liquid.md); standalone data export, not a managed trainer |
 | Liquid local training | [liquid_runner.py](liquid_runner.py), [liquid_runtime.py](liquid_runtime.py) | [d1-3B application training/release](../../docs/models/liquid.md#train-and-release-through-the-localhost-application) and [standalone training](../../docs/models/liquid.md#train-with-the-local-trl-runner) |
 | Liquid omni | [liquid_omni_runner.py](liquid_omni_runner.py), [liquid_omni_runtime.py](liquid_omni_runtime.py) | [Native head adaptation, calibration and application use](../../docs/models/liquid-omni.md) |
-| D3 Edge | [d3_data.py](d3_data.py), [d3_runner.py](d3_runner.py), [d3_runtime.py](d3_runtime.py) | [Local application and CLI native-readout workflow](../../docs/models/d3.md); managed-cloud integration is unavailable |
+| D3 family | [Pinned variants](d3_profiles.py), [native data](d3_data.py), [trainer](d3_runner.py), [runtime](d3_runtime.py) | [Model/resource selection](../../docs/models/d3-family.md), [local application and CLI](../../docs/models/d3.md), [five-provider cloud workflow](../../docs/remote-training/d3.md) |
 | Semantic review | [semantic_runner.py](semantic_runner.py) | [Semantic audit](../../docs/semantic-data-guide.md) |
 | Exported model serving | [runtime.py](runtime.py) | [Platform setup](../../docs/setup.md#configure-model-training-and-serving), [deployment](../../docs/deployment-guide.md) |
 

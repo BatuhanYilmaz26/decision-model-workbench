@@ -14,6 +14,7 @@ from .contracts import load_splits
 from .engines import load_engine
 from .metrics import evaluate_predictions
 from .provenance import source_fingerprint
+from .d3_profiles import BACKENDS as D3_BACKENDS
 
 
 def qualify(folder, data, expected_sha, request, engine_factory=None):
@@ -145,7 +146,7 @@ def qualify(folder, data, expected_sha, request, engine_factory=None):
             "note": "Local exported-runtime measurements replace supplied validation/test metrics. Cloud receipt remains operator-attested.",
         },
     }
-    if config["backend"] in ("liquid-omni", "d3-edge"):
+    if config["backend"] in ("liquid-omni", *D3_BACKENDS):
         report["calibration_metrics"] = report["admission"][
             "calibration_runtime_metrics"
         ]

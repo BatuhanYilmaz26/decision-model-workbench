@@ -1,5 +1,10 @@
 """Selected RunPod v2 Pods and signed network-volume transport; no ambient keys."""
 
+from decision_workbench.training.transfer_limits import (
+    MAX_ARTIFACT_BYTES,
+    transfer_seconds,
+)
+
 import hashlib
 import json
 import math
@@ -102,7 +107,7 @@ def validate_profile(p):
         ("max_runtime_seconds", 60, 14400),
         ("max_runs_day", 1, 100),
         ("max_inflight", 1, 4),
-        ("max_artifact_bytes", 1024, 32 * 1024**3),
+        ("max_artifact_bytes", 1024, MAX_ARTIFACT_BYTES),
     ):
         if type(p[k]) is not int or not low <= p[k] <= high:
             raise ValueError("Invalid RunPod limit: " + k)
@@ -596,9 +601,10 @@ class RunPodGateway:
                 with target.open("xb") as stream:
                     for chunk in response.iter_raw():
                         size += len(chunk)
-                        if (
-                            size > marker["artifact_bytes"]
-                            or time.monotonic() - start > 600
+                        if size > marker[
+                            "artifact_bytes"
+                        ] or time.monotonic() - start > transfer_seconds(
+                            marker["artifact_bytes"]
                         ):
                             raise CloudUnavailable(
                                 "RunPod output exceeds checked size/deadline"

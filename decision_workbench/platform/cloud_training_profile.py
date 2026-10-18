@@ -1,7 +1,9 @@
 """Declared image capabilities checked before any owner-approved allocation."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
+
 LEGACY = ("laya-native", "unsloth")
-SUPPORTED = (*LEGACY, "liquid-trl", "liquid-unsloth", "liquid-omni", "d3-edge")
+SUPPORTED = (*LEGACY, "liquid-trl", "liquid-unsloth", "liquid-omni", *D3_BACKENDS)
 
 
 def training_backends(profile):

@@ -1,5 +1,7 @@
 """Operator-only consistent backups and fresh-target recovery for a local workspace."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
+
 import hashlib
 import json
 import math
@@ -378,7 +380,7 @@ def _validate_workspace(folder):
             "liquid-trl",
             "liquid-unsloth",
             "liquid-omni",
-            "d3-edge",
+            *D3_BACKENDS,
             "hosted",
         ):
             raise ValueError("Model training configuration integrity check failed")

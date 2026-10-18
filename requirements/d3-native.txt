@@ -1,0 +1,3 @@
+# Shared Python 3.12 eager native environment for the pinned Decision 3.0 variants.
+# The original Edge profile filename remains available for existing installations.
+-r d3-edge.txt

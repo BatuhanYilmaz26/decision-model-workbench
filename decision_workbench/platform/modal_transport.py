@@ -21,6 +21,10 @@ from .cloud_modal import (
     valid_job_id,
 )
 from decision_workbench.training.artifacts import file_sha
+from decision_workbench.training.transfer_limits import (
+    MAX_ARTIFACT_BYTES,
+    transfer_seconds,
+)
 
 
 def resources(modal, profile, client):
@@ -147,7 +151,10 @@ def execute(modal, profile, credentials, op, body):
         ):
             raise CloudUnavailable("Modal input archive differs")
         for kind in ("input", "output", "result"):
-            if entry(modal, volume, object_key(run, kind), 32 * 1024**3) is not None:
+            if (
+                entry(modal, volume, object_key(run, kind), MAX_ARTIFACT_BYTES)
+                is not None
+            ):
                 raise CloudUnavailable("Modal run path already contains input/output")
         with volume.batch_upload(force=False) as batch:
             batch.put_file(str(archive), object_key(run, "input"))
@@ -243,16 +250,21 @@ def execute(modal, profile, credentials, op, body):
     raise ValueError("Unknown Modal transport operation")
 
 
+def operation_seconds(profile, op, body):
+    if op == "download" and isinstance(body, dict):
+        marker = body.get("marker")
+        size = marker.get("artifact_bytes") if isinstance(marker, dict) else None
+        if type(size) is int and 1 <= size <= profile["max_artifact_bytes"]:
+            return transfer_seconds(size)
+    return 300 if op in ("upload", "download") else 90
+
+
 def run_process(
     profile, credentials, op, body, command=None, timeout=None, observe=None
 ):
     if op not in ("identity", "upload", "create", "observe", "stop", "download"):
         raise ValueError("Invalid Modal operation")
-    seconds = (
-        timeout
-        if timeout is not None
-        else (300 if op in ("upload", "download") else 90)
-    )
+    seconds = timeout if timeout is not None else operation_seconds(profile, op, body)
     start, process = time.monotonic(), None
     try:
         with tempfile.TemporaryDirectory(prefix="dmt-modal-config-") as tmp:

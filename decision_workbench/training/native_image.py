@@ -1,5 +1,7 @@
 """Check a native model image's runtime and cache its pinned public checkpoint."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS, get_profile
+
 import argparse
 import json
 from pathlib import Path
@@ -9,7 +11,7 @@ from .provenance import source_fingerprint
 
 def prepare(backend, cache):
     local, _, _ = profile(backend)
-    if backend == "d3-edge":
+    if backend in D3_BACKENDS:
         from .d3_runtime import resolve_checkpoint, runtime_identity
 
         packages = runtime_identity()
@@ -21,11 +23,14 @@ def prepare(backend, cache):
         from .liquid_runtime import resolve_checkpoint, runtime_identity
 
         packages = runtime_identity(backend)
-    checkpoint = resolve_checkpoint(cache, download=True)
+    checkpoint = resolve_checkpoint(
+        cache, download=True, **({"backend": backend} if backend in D3_BACKENDS else {})
+    )
+    selected = get_profile(backend).fields if backend in D3_BACKENDS else local.PROFILE
     return {
         "backend": backend,
-        "model": local.PROFILE["model"],
-        "revision": local.PROFILE["revision"],
+        "model": selected["model"],
+        "revision": selected["revision"],
         "source_sha256": source_fingerprint(),
         "packages": packages,
         "cached_checkpoint": str(checkpoint),

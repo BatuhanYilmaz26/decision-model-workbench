@@ -1,5 +1,7 @@
 """Bounded resident model broker; GPU packages stay outside the web API process."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
+
 import atexit
 import json
 import math
@@ -177,7 +179,7 @@ class RuntimeBroker:
                 "liquid-trl",
                 "liquid-unsloth",
                 "liquid-omni",
-                "d3-edge",
+                *D3_BACKENDS,
             ):
                 from .model_environment import native_environment, model_python
 

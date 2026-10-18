@@ -1,5 +1,7 @@
 """Bounded regular-file USTAR/GNU-short-name extraction for managed training outputs."""
 
+from decision_workbench.training.transfer_limits import transfer_seconds
+
 import gzip
 import hashlib
 import re
@@ -47,7 +49,7 @@ def extract_model(archive, output, max_bytes, *, backend=None):
         *["LPT" + str(n) for n in range(1, 10)],
     }
     count, total, seen = 0, 0, set()
-    deadline = time.monotonic() + 600
+    deadline = time.monotonic() + transfer_seconds(max_bytes)
     try:
         with gzip.open(ordinary(archive), "rb") as stream:
             while True:

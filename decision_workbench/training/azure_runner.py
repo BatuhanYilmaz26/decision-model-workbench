@@ -1,5 +1,7 @@
 """Azure ML named-input/output wrapper around the unchanged frozen-study trainer."""
 
+from .transfer_limits import MAX_ARTIFACT_BYTES
+
 import argparse
 import subprocess
 import sys
@@ -51,7 +53,7 @@ def main(argv=None):
     p.add_argument("--artifact", required=True, type=Path)
     p.add_argument("--max-artifact-bytes", required=True, type=int)
     args = p.parse_args(argv)
-    if not 1024 <= args.max_artifact_bytes <= 32 * 1024**3:
+    if not 1024 <= args.max_artifact_bytes <= MAX_ARTIFACT_BYTES:
         raise ValueError("Azure artifact bound is invalid")
     execute(
         args.archive,

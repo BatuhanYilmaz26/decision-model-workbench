@@ -1,5 +1,7 @@
 """Operator-selected model interpreters; request bodies never select executables."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
+
 import os
 from pathlib import Path
 import sys
@@ -13,7 +15,7 @@ def model_python(backend, purpose, environment=None):
         "liquid-trl": "DMT_LIQUID_PYTHON",
         "liquid-unsloth": "DMT_LIQUID_UNSLOTH_PYTHON",
         "liquid-omni": "DMT_OMNI_PYTHON",
-        "d3-edge": "DMT_D3_PYTHON",
+        **{name: "DMT_D3_PYTHON" for name in D3_BACKENDS},
     }.get(backend)
     if variable and environment.get(variable):
         path = Path(environment[variable])
@@ -35,10 +37,13 @@ def native_environment(home, environment=None, *, backend="liquid-trl"):
     """Use writable private caches and the same source as the controlling service."""
     result = dict(os.environ if environment is None else environment)
     root = Path(__file__).resolve().parents[2]
-    family = {"liquid-omni": "liquid-omni", "d3-edge": "d3"}.get(backend, "liquid")
-    variable = {"liquid-omni": "DMT_OMNI_CACHE", "d3-edge": "DMT_D3_CACHE"}.get(
-        backend, "DMT_LIQUID_CACHE"
+    family = {"liquid-omni": "liquid-omni", **{name: "d3" for name in D3_BACKENDS}}.get(
+        backend, "liquid"
     )
+    variable = {
+        "liquid-omni": "DMT_OMNI_CACHE",
+        **{name: "DMT_D3_CACHE" for name in D3_BACKENDS},
+    }.get(backend, "DMT_LIQUID_CACHE")
     cache = Path(
         result.get(variable) or Path(home).parent / "model-cache" / (family + "-hub")
     ).absolute()
@@ -48,7 +53,7 @@ def native_environment(home, environment=None, *, backend="liquid-trl"):
     result.setdefault("CUDA_CACHE_PATH", str(cache.parent / (family + "-cuda")))
     result.setdefault("TOKENIZERS_PARALLELISM", "false")
     result.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
-    if backend == "d3-edge":
+    if backend in D3_BACKENDS:
         result["D3_FAST"] = "0"
         result.setdefault("OMP_NUM_THREADS", "4")
         result.setdefault("MKL_NUM_THREADS", "4")

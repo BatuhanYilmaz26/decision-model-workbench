@@ -183,7 +183,7 @@ For d1-3B, install the separate [Liquid profile](models/liquid.md#train-with-the
 
 For the separate FastVisionModel route, follow [Liquid Unsloth setup](models/liquid.md#train-with-fastvisionmodel-and-unsloth) and configure `DMT_LIQUID_UNSLOTH_PYTHON`. Both profiles can coexist; select the matching Liquid training backend.
 
-For D3 Edge, install the separate [D3 profile](models/d3.md#install-a-separate-environment),
+For a pinned D3 variant, install the separate [D3 family profile](models/d3-family.md#install-the-application-and-model-environment),
 set `DMT_D3_PYTHON` to its absolute Python executable in the API/worker environment,
 and restart the services. Personal mode also offers a D3 interpreter field before
 startup. Optional `DMT_D3_CACHE` selects its public checkpoint cache. Follow

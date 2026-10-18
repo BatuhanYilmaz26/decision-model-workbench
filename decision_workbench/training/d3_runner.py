@@ -15,10 +15,16 @@ import random
 import shutil
 
 from .artifacts import compare_predictions, file_sha, write_manifest
-from .d3_assets import ASSETS, MODEL, REVISION, WEIGHTS
+from .d3_profiles import get_profile, BACKENDS
 from .d3_data import export_dataset, native_record
 from .d3_local import DEFAULTS, settings, validate_request
-from .d3_runtime import D3Engine, features, resolve_checkpoint, runtime_identity
+from .d3_runtime import (
+    D3Engine,
+    features,
+    resolve_checkpoint,
+    runtime_identity,
+    memory_guard,
+)
 from .liquid_data import load_inputs, dumps as ordered_dumps
 from .liquid_runtime import fit_temperatures
 from .metrics import evaluate_predictions
@@ -38,7 +44,11 @@ def frozen_digest(model):
 
 
 def train_d3(args):
-    configuration = settings({name: getattr(args, name) for name in DEFAULTS})
+    backend = getattr(args, "backend", "d3-edge")
+    profile = get_profile(backend)
+    configuration = settings(
+        {"backend": backend, **{name: getattr(args, name) for name in DEFAULTS}}
+    )
     packages = runtime_identity()
     rows, bodies = load_inputs(args.data)
     if len(rows["calibration"]) < 8:
@@ -54,12 +64,23 @@ def train_d3(args):
     out = Path(args.out).absolute()
     if out.exists():
         raise ValueError("Choose a new D3 run directory; existing runs are preserved")
-    checkpoint = resolve_checkpoint(args.cache, download=args.download)
-    engine = D3Engine(checkpoint, device=args.device, base=True)
+    import torch
+    from .d3_storage import training_storage
+
+    picked = torch.device(
+        "cuda:0"
+        if args.device == "cuda" or args.device == "auto" and torch.cuda.is_available()
+        else "cpu"
+    )
+    if picked.type == "cuda" and not torch.cuda.is_available():
+        raise ValueError("CUDA is unavailable; choose CPU or a compatible GPU host")
+    memory_guard(picked, startup=True, profile=profile)
+    training_storage(args.cache, out, profile, download=args.download)
+    checkpoint = resolve_checkpoint(args.cache, download=args.download, backend=backend)
+    engine = D3Engine(checkpoint, device=args.device, base=True, backend=backend)
     engine.max_length = args.max_length
     out.mkdir(parents=True)
     export_dataset(args.data, out / "data", engine.prompt, args.max_length)
-    import torch
     from safetensors.torch import save_file
 
     torch.manual_seed(3407)
@@ -132,8 +153,8 @@ def train_d3(args):
         )
     metadata = {
         "format": "domain-d3-runtime-v1",
-        "model": MODEL,
-        "revision": REVISION,
+        "model": profile.model,
+        "revision": profile.revision,
         "training_method": "native-readout",
         "questions": questions,
         "max_length": args.max_length,
@@ -145,7 +166,7 @@ def train_d3(args):
     expected = [engine.predict(row["state"], questions) for row in probes]
     exported = out / "checkpoint"
     exported.mkdir()
-    for name in (*ASSETS, WEIGHTS):
+    for name in (*profile.assets, *profile.weights):
         shutil.copyfile(checkpoint / name, exported / name)
     save_file(
         {"weight": head.detach().cpu().contiguous()},
@@ -162,7 +183,7 @@ def train_d3(args):
     print(
         "Reloading the D3 domain bundle and fitting reserved calibration...", flush=True
     )
-    served = D3Engine(exported, device=args.device)
+    served = D3Engine(exported, device=args.device, backend=backend)
     actual = [served.predict(row["state"], questions) for row in probes]
     equivalence = compare_predictions(expected, actual, questions, 1e-5)
     calibration_predictions = [
@@ -188,9 +209,9 @@ def train_d3(args):
     ):
         raise ValueError("D3 source or reserved inputs changed during training")
     report = {
-        "backend": "d3-edge",
-        "model": MODEL,
-        "revision": REVISION,
+        "backend": backend,
+        "model": profile.model,
+        "revision": profile.revision,
         "schema_conditioned": True,
         "source_sha256": source,
         "data_sha256": hashes,
@@ -223,12 +244,13 @@ def train_d3(args):
     (out / "report.json").write_text(
         json.dumps(report, indent=2, allow_nan=False), encoding="utf-8"
     )
-    write_manifest(out, "d3-edge", questions, "checkpoint")
+    write_manifest(out, backend, questions, "checkpoint")
     return report
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--backend", choices=BACKENDS, default="d3-edge")
     for name in ("data", "out", "cache"):
         parser.add_argument("--" + name, required=True)
     parser.add_argument("--local-study-request")

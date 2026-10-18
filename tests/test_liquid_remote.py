@@ -343,7 +343,9 @@ class LiquidRemoteTests(unittest.TestCase):
                     self.assertEqual(job["config"]["device"], "cuda")
                     self.assertFalse(job["config"]["download"])
                     self.assertIn(
-                        {"d3-edge": "d3_study", "liquid-omni": "omni_study"}.get(backend, "liquid_study"),
+                        {"d3-edge": "d3_study", "liquid-omni": "omni_study"}.get(
+                            backend, "liquid_study"
+                        ),
                         job["config"],
                     )
                     self.f.worker.once()
@@ -396,10 +398,20 @@ class LiquidRemoteTests(unittest.TestCase):
                     backend="liquid-omni",
                 )
 
-    def test_all_provider_profiles_refuse_undeclared_models_before_run_creation(self, backend="liquid-omni"):
+    def test_all_provider_profiles_refuse_undeclared_models_before_run_creation(
+        self, backend="liquid-omni"
+    ):
         from decision_workbench.training.native_remote import profile
 
         native, _, _ = profile(backend)
+        from decision_workbench.training.d3_profiles import (
+            BACKENDS as D3_BACKENDS,
+            get_profile,
+        )
+
+        model_profile = (
+            get_profile(backend).fields if backend in D3_BACKENDS else native.PROFILE
+        )
         import test_cloud as aws
         import test_cloud_gcp as gcp
         import test_cloud_azure as azure
@@ -419,7 +431,7 @@ class LiquidRemoteTests(unittest.TestCase):
                 try:
                     config = {
                         "snapshot": fixture.f.snapshot,
-                        **native.PROFILE,
+                        **model_profile,
                         "device": "cuda",
                         "download": False,
                         "max_length": 256,
@@ -452,6 +464,13 @@ class LiquidRemoteTests(unittest.TestCase):
                             True,
                             True,
                             "undeclared-omni-image",
+                        )
+                    if backend.startswith("d3"):
+                        from decision_workbench.training.d3_profiles import get_profile
+
+                        chosen = get_profile(backend)
+                        fixture.p["max_artifact_bytes"] = (
+                            chosen.weight_bytes + chosen.readout_bytes + 64 * 1024**2
                         )
                     fixture.p["training_backends"] = [backend]
                     if hasattr(fixture, "write_profiles"):

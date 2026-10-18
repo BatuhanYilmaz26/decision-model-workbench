@@ -47,6 +47,7 @@ and separate references to models whose integrations are still in development.
 | [Liquid d1-3B](models/liquid.md) | Prepare native domain data, run standalone local LoRA training and use a calibrated export |
 | [Liquid d1-omni-600M](models/liquid-omni.md) | Adapt the native decision head on text/JSON, calibrate and use a domain export in the local app |
 | [Liquid remote GPU training](remote-training/liquid.md) | Prepare model-specific images/studies for five providers and independently admit returned exports |
+| [Decision 3.0 family](models/d3-family.md) | Choose among six pinned native profiles, prepare variant-specific data and provision their CPU/GPU/cloud resources |
 | [D3 Edge](models/d3.md) | Prepare native targets, train locally or through the [five-provider cloud workflow](remote-training/d3.md), and release/use a calibrated model |
 | [Evaluation and calibration](evaluation-guide.md) | Assess class-level quality, probabilities, abstention and independent reload |
 | [Error costs and critical outcomes](error-policy-guide.md) | Freeze domain-specific release criteria before training |

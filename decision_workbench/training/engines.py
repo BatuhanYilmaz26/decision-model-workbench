@@ -1,5 +1,7 @@
 """Pinned decision-head loaders; no chat completion or uploaded executable weights."""
 
+from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
+
 from pathlib import Path
 import json
 import importlib.metadata
@@ -177,8 +179,8 @@ def load_engine(backend, checkpoint):
         from .liquid_omni_runtime import OmniEngine
 
         return OmniEngine(checkpoint)
-    if backend == "d3-edge":
+    if backend in D3_BACKENDS:
         from .d3_runtime import D3Engine
 
-        return D3Engine(checkpoint)
+        return D3Engine(checkpoint, backend=backend)
     raise ValueError("Unknown trained decision backend")
