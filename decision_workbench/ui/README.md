@@ -4,6 +4,8 @@
 
 These components support the [Streamlit application](../../app.py). Its [onboarding](onboarding.py) opens a personal loopback workspace or connects to an authenticated shared API. Launch it using [local setup](../../docs/setup.md); these files do not run as separate applications.
 
+Use the [complete application manual](../../docs/app-guide.md) for every screen and optional workflow. [Contextual guidance](guidance.py) links controls and tabs to the matching manual section without changing their data or permissions.
+
 | User task | Guide |
 |---|---|
 | Describe a domain, define questions and upload or enter examples | [Data preparation](../../docs/data-guide.md) |

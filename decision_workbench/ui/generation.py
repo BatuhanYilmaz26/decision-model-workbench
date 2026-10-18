@@ -3,10 +3,12 @@
 import uuid
 
 import streamlit as st
+from .guidance import render_hint
 
 
 def render_generation(api, project, principal, snapshot):
     st.subheader("Generate training candidates")
+    render_hint("generation")
     st.write(
         "Describe the gaps in your training data. A generative teacher proposes examples; "
         "you review their evidence and labels before adding them to training. "

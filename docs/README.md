@@ -8,6 +8,7 @@ Choose a workflow below. Start with local setup for the browser application, API
 
 | Guide | Use it to |
 |---|---|
+| [Streamlit application user guide](app-guide.md) | Follow every screen, optional workflow, role and recovery action, starting with a first project |
 | [Local setup](setup.md) | Install the application, provision a credential and start its services |
 | [Complete project workflow](product-workflow.md) | Describe a domain, prepare data, train, evaluate and release a model |
 | [Support-routing walkthrough](domain-adoption-guide.md) | Follow a concrete domain example with clear data and evaluation requirements |

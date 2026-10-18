@@ -1,6 +1,7 @@
 """Local candidate audit and immutable owner/reviewer adjudication workflow."""
 
 import streamlit as st
+from .guidance import render_hint
 
 
 def render_semantic(
@@ -17,6 +18,7 @@ def render_semantic(
     with st.expander(
         prefix + "Find and review semantic relatives", expanded=profile["required"]
     ):
+        render_hint("semantic")
         st.write(
             f"Local model: {profile['model']} · revision {profile['revision'][:12]}"
         )

@@ -322,7 +322,7 @@ def render_upload(api, project, spec, principal, datasets):
                 key="file-origin-" + key,
             )
             st.caption(
-                "Repeated customer/document families must share a group. Synthetic examples are eligible only for the training split after review."
+                "Set File source to observed only for actual operational records; choose synthetic for invented examples. Repeated customer/document families must share a group. Synthetic examples are eligible only for the training split after review."
             )
             labels, value_maps = {}, {}
             for name, question in spec["questions"].items():

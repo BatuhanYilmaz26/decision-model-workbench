@@ -5,6 +5,7 @@ import json
 import uuid
 
 import streamlit as st
+from .guidance import render_hint
 from decision_workbench.platform.schema_intake import strict_json
 
 
@@ -18,6 +19,7 @@ def render_schema_assistant(api, principal):
     st.write(
         "Describe your domain first. The teacher drafts questions and outcomes; you review and edit them before creating a project. No datasets or evaluation records are sent."
     )
+    render_hint("schema")
     profile = api("GET", "/v1/schema-teacher")
     if profile["available"]:
         teacher = profile["teacher"]

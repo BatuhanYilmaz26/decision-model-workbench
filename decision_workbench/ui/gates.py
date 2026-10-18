@@ -13,7 +13,7 @@ def render_gates(api, submit, project, spec, principal, snapshots):
         "Collect real examples where a domain question should not be applied. These records train Vega's applicability gate; they carry no business decision labels. All new examples require review."
     )
     st.caption(
-        "Reserve these negatives against a positive snapshot, then select Vega in the Data & training tab. The owner must set applicability acceptance criteria before the first training submission. An eight-file download is also available for standalone studies."
+        "Reserve these negatives against a positive snapshot, then select Vega in Training jobs. The owner must set applicability acceptance criteria before the first training submission. An eight-file download is also available for standalone studies."
     )
     versions = api("GET", f"/v1/projects/{project}/entities/gate-dataset?limit=200")
     roots = {}

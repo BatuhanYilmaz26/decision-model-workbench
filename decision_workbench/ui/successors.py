@@ -3,6 +3,7 @@
 import json
 import uuid
 import streamlit as st
+from .guidance import render_hint
 
 from decision_workbench.data import validate_questions
 
@@ -11,6 +12,7 @@ def render_successor(api, project, spec, principal):
     if principal["role"] != "admin":
         return
     with st.expander("Create a policy successor"):
+        render_hint("successor")
         st.caption(
             "Start a new policy version from this domain and question schema. "
             "The current project's data, models, acceptance gates and active release stay attached to it. "

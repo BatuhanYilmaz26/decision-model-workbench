@@ -3,6 +3,7 @@
 import io
 import uuid
 import streamlit as st
+from .guidance import render_hint
 from decision_workbench.platform.audit_exports import (
     verify_stream,
     MAX_BYTES,
@@ -17,6 +18,7 @@ def render_audit_exports(api, project):
     )
     if not st.checkbox("Open audit exports", key="audit-open-" + project):
         return
+    render_hint("audit")
     prefix = f"/v1/projects/{project}/audit-exports"
     request_key = "audit-request-" + project
     if request_key not in st.session_state:

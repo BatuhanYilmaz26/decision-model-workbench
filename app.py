@@ -14,12 +14,18 @@ import streamlit as st
 from decision_workbench.data import validate_questions
 from decision_workbench.ui.intake import render_examples, render_upload
 from decision_workbench.ui.onboarding import render_connection, render_runtime
+from decision_workbench.ui.guidance import (
+    render_help_navigation,
+    render_hint,
+    render_role_help,
+)
 
 st.set_page_config(page_title="Decision Model Workbench", layout="wide")
 st.title("Decision Model Workbench")
 st.caption(
     "Define a domain · review data · train · evaluate · release · make decisions"
 )
+render_help_navigation()
 
 # A render owns its client; reruns and separate browser sessions never share it.
 _api_client = None
@@ -73,6 +79,7 @@ principal = st.session_state["principal"]
 with st.sidebar:
     st.write(f"Workspace: {principal['tenant']}")
     st.caption(f"{principal['actor']} · {principal['role']}")
+    render_role_help(principal["role"])
     if st.button("Sign out"):
         st.session_state.clear()
         st.session_state["manual_connection"] = True
@@ -116,6 +123,7 @@ try:
             "https://github.com/BatuhanYilmaz26/decision-model-workbench/blob/main/docs/product-workflow.md",
         )
     with st.expander("Create a domain project", expanded=not projects):
+        render_hint("project")
         from decision_workbench.ui.schema_intake import render_schema_assistant
 
         render_schema_assistant(api, principal)
@@ -249,6 +257,7 @@ try:
     render_successor(api, project, spec, principal)
     if principal["role"] == "inference":
         st.subheader("Make a decision")
+        render_hint("decisions")
         state = st.text_area("Input evidence")
         if st.button("Decide"):
             st.json(
@@ -282,6 +291,7 @@ try:
         "Work left to right: add and review examples → reserve data / generate candidates → train locally, evaluate a hosted API or prepare cloud training → release a tested version → make decisions. Applicability is an additional requirement for Vega."
     )
     with tabs[5]:
+        render_hint("applicability")
         from decision_workbench.ui.gates import render_gates
 
         next_gate_root = st.session_state.pop("gate-next-root-" + project, None)
@@ -289,6 +299,7 @@ try:
             st.session_state["gate-collection-" + project] = next_gate_root
         render_gates(api, submit, project, spec, principal, snapshots)
     with tabs[0]:
+        render_hint("data")
         from decision_workbench.ui.review import render_queue
 
         render_queue(api, project, principal)
@@ -405,6 +416,7 @@ try:
                 api, project, spec, principal, dataset, dataset_id, rows, is_latest
             )
     with tabs[1]:
+        render_hint("prepare")
         chosen = st.multiselect(
             "Dataset versions to prepare (approved rows; rejected rows excluded)",
             [d["id"] for d in datasets],
@@ -480,6 +492,7 @@ try:
 
         render_generation(api, project, principal, snapshot if snapshots else None)
     with tabs[2]:
+        render_hint("training")
         st.write(
             "Training runs in the independent worker; you can close this browser without losing the job."
         )
@@ -488,6 +501,7 @@ try:
             "Acceptance criteria — set before the first training run",
             expanded=acceptance["policy"] is None,
         ):
+            render_hint("criteria")
             existing = (
                 acceptance["policy"]["payload"]["criteria"]
                 if acceptance["policy"]
@@ -951,6 +965,7 @@ try:
                 st.json(submit(project, "train", config))
         if snapshots and principal["role"] == "admin":
             with st.expander("Evaluate a hosted decision model"):
+                render_hint("hosted")
                 profiles = api("GET", f"/v1/projects/{project}/decision-profiles")
                 if not profiles:
                     st.info(
@@ -1043,6 +1058,7 @@ try:
                                 st.rerun()
         if snapshots and principal["role"] == "admin":
             with st.expander("Train on a cloud GPU"):
+                render_hint("cloud")
                 st.write(
                     "Prepare an immutable study using the model settings above, then follow the provider guide. This action allocates no paid resources."
                 )
@@ -1223,6 +1239,7 @@ try:
                 )
         if principal["role"] in ("admin", "editor"):
             with st.expander("Workspace health and alerts"):
+                render_hint("health")
                 health = api("GET", f"/v1/projects/{project}/operations")
                 backup_health = health["collector"].get("backup")
                 if backup_health:
@@ -1317,6 +1334,7 @@ try:
                         "Showing the first alert page. Older history is available through the paginated operations API."
                     )
         jobs = api("GET", f"/v1/projects/{project}/jobs")
+        render_hint("jobs")
         st.dataframe(
             [
                 {
@@ -1341,6 +1359,7 @@ try:
                     api("POST", f"/v1/projects/{project}/jobs/{job['id']}/cancel")
                     st.rerun()
     with tabs[3]:
+        render_hint("models")
         active = api("GET", f"/v1/projects/{project}/active")
         st.caption(
             f"Active version: {active['model_id'] or 'None'} · release revision {active['revision']}"
@@ -1435,6 +1454,7 @@ try:
                 "Reactivating an earlier eligible version is a rollback. The server verifies the evaluated policy and its local runtime or hosted provider profile before release."
             )
     with tabs[4]:
+        render_hint("decisions")
         state = st.text_area("Evidence for the released model")
         threshold = st.slider("Abstain below confidence", 0.0, 1.0, 0.8)
         if st.button("Make decision"):

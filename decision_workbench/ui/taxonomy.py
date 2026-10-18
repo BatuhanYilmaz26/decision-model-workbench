@@ -1,11 +1,13 @@
 """Example-bound discovery, immutable review and owner-confirmed schema branching."""
 
 import streamlit as st
+from .guidance import render_hint
 
 
 def render_taxonomy(api, submit, project, spec, principal, dataset_id, rows):
     if not st.checkbox("Open taxonomy workspace", key="taxonomy-open-" + project):
         return
+    render_hint("taxonomy")
     prefix = f"/v1/projects/{project}"
     role = principal["role"]
     st.subheader("Discover and review categories")

@@ -4,6 +4,8 @@
 
 Start the application using [local setup](setup.md), then work through the following stages. The browser uses an authenticated API and an independent worker, so closing a page does not discard a project or queued job.
 
+For the exact tab names, controls, optional workflows and troubleshooting, follow the [complete browser user guide](app-guide.md).
+
 ## 1. Describe the decision
 
 Create a project with your domain, policy and data needs in natural language. Define the evidence available at decision time, allowed outcomes, missing-evidence behavior and escalation policy. Confirm stable question IDs and outcome descriptions before collecting labels. The [data guide](data-guide.md) provides the format and a fictional support example.

@@ -3,6 +3,7 @@
 import hashlib
 import json
 import streamlit as st
+from .guidance import render_hint
 
 from decision_workbench.reservations import group_csv, read_group_csv, read_group_json
 
@@ -22,6 +23,7 @@ def render_reservations(
     )
     if not enabled:
         return False, None
+    render_hint("reservations")
     st.write(
         "Keep source families together, choose all four roles, preview the result and confirm it before reservation. This creates an immutable study; existing holdouts cannot be moved."
     )

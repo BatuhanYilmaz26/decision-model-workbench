@@ -6,6 +6,8 @@ A decision model maps supplied evidence to defined outcomes: a category, a yes/n
 
 Current integrations cover specific [model backends](docs/model-landscape.md), [hosted APIs](docs/api-integration-guide.md) and [remote training providers](docs/remote-training-guide.md). Model and provider contracts differ; using an additional backend requires a compatible integration and evaluation. The agnostic design does not mean every model or provider works automatically.
 
+**Using the browser app?** Follow the [complete Streamlit user guide](docs/app-guide.md), starting with the [first project walkthrough](docs/app-guide.md#first-project-walkthrough). It covers every tab, optional tools, workspace roles and [what to do when a control is unavailable](docs/app-guide.md#when-a-control-is-unavailable).
+
 ## Run on your computer
 
 Install [Git](https://git-scm.com/downloads) and [Python](https://www.python.org/downloads/) first. Use Python **3.13 on Windows** or **3.12 on Linux** for the application profiles below; the Linux/macOS commands assume `python3.12` is installed. A GPU, cloud account and workspace key are not required for the local CPU application. macOS instructions use the same Python workflow, but end-to-end macOS support has not been qualified.
@@ -148,6 +150,7 @@ Follow [testing](docs/verification.md) and [runtime compatibility and upgrades](
 
 | Area | Guides |
 |---|---|
+| Browser application | [Complete user guide](docs/app-guide.md), [first project walkthrough](docs/app-guide.md#first-project-walkthrough), [screen directory](docs/app-guide.md#find-the-right-screen), [troubleshooting controls](docs/app-guide.md#when-a-control-is-unavailable) |
 | Data | [Preview and import](docs/import-guide.md), [collection and review](docs/data-guide.md), [review assignments](docs/review-workflow.md), [policy versions](docs/policy-versioning-guide.md), [temporal boundaries](docs/temporal-data-guide.md), [semantic relatives](docs/semantic-data-guide.md), [taxonomy](docs/taxonomy-guide.md), [applicability](docs/applicability-guide.md) |
 | Models | [All model workflows](docs/models/README.md), [Laya and Unsloth](docs/training-guide.md), [Vega](docs/vega-guide.md), [Liquid d1-3B](docs/models/liquid.md), [evaluation and calibration](docs/evaluation-guide.md), [error costs and critical outcomes](docs/error-policy-guide.md) |
 | APIs and remote runs | [Hosted studies](docs/hosted-decisions-guide.md), [provider selection](docs/remote-training/provider-selection.md), [remote artifact admission](docs/remote-admission-guide.md) |
