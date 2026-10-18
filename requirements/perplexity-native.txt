@@ -1,0 +1,21 @@
+# Linux Python 3.12+, separate CUDA training/inference environment.
+# Publisher pins at 14c9d90137962d300f3de95633f7b6535e80c5ce; not a transitive lock.
+# Large runtime packages and model weights are separate from the CPU application.
+-e .[perplexity-data]
+torch==2.14.0
+torchvision==0.29.0
+transformers==5.17.0
+accelerate==1.15.0
+pillow==12.3.0
+fastapi==0.141.1
+uvicorn==0.52.4
+httpx==0.28.1
+python-dotenv==1.2.3
+datasets==5.0.1
+matplotlib==3.11.2
+kernels==0.16.1
+flash-linear-attention==0.5.2
+safetensors==0.8.0
+numpy==2.5.3
+huggingface-hub==1.31.0
+imageio-ffmpeg>=0.6

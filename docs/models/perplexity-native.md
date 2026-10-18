@@ -1,4 +1,4 @@
-# Prepare domain data for Perplexity's open Decider
+# Prepare, train and use Perplexity's open Decider
 
 [Hosted API](perplexity.md) · [Model directory](README.md) · [Project overview](../../README.md)
 
@@ -8,8 +8,9 @@ four data roles, source lineage and file checksums.
 
 This profile targets `perplexity-ai/pplx-decider-v1.1-27b`, revision
 `14c9d90137962d300f3de95633f7b6535e80c5ce`. It is separate from hosted v1.2.
-The workbench provides data conversion here; native app-managed training,
-release, serving and cloud admission are not yet available for this checkpoint.
+The CPU exporter is separate from an **experimental Linux/CUDA native CLI** for
+training and prediction. Native app-managed training, release, serving and cloud
+admission are not yet available for this checkpoint.
 Use the [hosted workflow](perplexity.md) for app-managed Perplexity decisions.
 
 ## Prepare compatible reviewed records
@@ -128,16 +129,152 @@ temperature fitting consume discrete labels. Soft heldout targets are refused.
 Existing output directories are never overwritten, and failures do not publish
 partial bundles.
 
-## Continue with the publisher's GPU runtime
+## Train with the native Linux launcher
 
-This is a data handoff, not a training job. The checkpoint uses a Qwen3.8-27B
+The checkpoint uses a Qwen3.8-27B
 backbone, a separate BF16 decision readout, noncausal full-attention layers and
 last-position pooling. A generic causal chat recipe does not preserve that
 setup. Native prediction applies its saved temperature once. See the
 [checkpoint card](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b/blob/14c9d90137962d300f3de95633f7b6535e80c5ce/README.md)
 and [decision configuration](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b/blob/14c9d90137962d300f3de95633f7b6535e80c5ce/decision_config.json).
 
-For an environment you provision yourself:
+### Check resources before installing the model runtime
+
+The native launcher invokes the publisher's **full-weight** trainer with a fresh
+CPU-offloaded optimizer. It is not LoRA or readout-only adaptation. Its logger
+imports Linux `fcntl`; run on Linux, including a suitably provisioned WSL2 VM or
+Linux GPU host. Use Python 3.12 and Git, and run from this cloned repository.
+For WSL2, keep the native run and checkpoint directories on its Linux filesystem
+so the publisher's file locks and selected-checkpoint symlink behave consistently.
+
+The initial checkpoint download is about **52.2 GB**. The launcher checks for
+roughly 107 GiB of free GPU memory, 428 GiB of available host RAM for FP32
+optimizer states, and 150 GiB of free run storage in addition to the existing
+checkpoint. These are conservative startup floors, not a guarantee that every
+batch/token budget fits. Provision extra memory and disk headroom; 512 GiB host
+RAM and a GPU with more than 107 GiB free are a starting point for sizing, not a
+measured training configuration. Replicated multi-GPU training does not pool
+device memory, and this launcher accepts one GPU process only. Use a smaller
+model or the hosted API when these resources are impractical. The memory needs
+follow the publisher's [FP32 CPU optimizer](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b/blob/14c9d90137962d300f3de95633f7b6535e80c5ce/source/src/autojev/optim.py)
+and [native trainer](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b/blob/14c9d90137962d300f3de95633f7b6535e80c5ce/source/src/autojev/train.py).
+
+Create a separate environment on that host:
+
+```bash
+python3.12 -m venv .venv-perplexity-native
+source .venv-perplexity-native/bin/activate
+python -m pip install -r requirements/perplexity-native.txt
+python -m pip check
+```
+
+The [native profile](../../requirements/perplexity-native.txt) follows the
+publisher's Torch 2.14 / Transformers 5.17 pins and adds the CPU data tools.
+It is a direct dependency profile, not a complete transitive lock or a qualified
+GPU image. Use a CUDA-compatible PyTorch distribution and driver; consult the
+[official installation selector](https://pytorch.org/get-started/locally/).
+The native GPU environment and training throughput still need hardware validation.
+
+### Obtain the pinned checkpoint explicitly
+
+Skip this step if you already have the complete pinned checkpoint. This command
+downloads large model weights into your chosen cache, after a free-space check:
+
+```bash
+python -m decision_workbench.training.perplexity_checkpoint \
+  --cache data/perplexity-model-cache --download-weights
+```
+
+Retain the printed absolute `checkpoint` path. The command checks the source,
+processor and all twelve weight-file identities against the pinned publisher
+manifest/Hub metadata. It uses your configured Hugging Face access if needed;
+keep access tokens in the environment or Hugging Face's credential store.
+No weight download happens from the CPU data-export command or native trainer.
+
+To fetch only source/config/tokenizer files, use
+`python -m decision_workbench.training.perplexity_checkpoint --assets data/perplexity-publisher --download-assets`.
+That roughly 21 MB asset directory is **not** a complete model checkpoint.
+Downloaded publisher code is hash-checked before execution; the native loader
+isolates its package imports and ignores existing Python bytecode caches.
+
+### Run full-weight domain continuation
+
+Use the original four reviewed canonical files from the earlier download.
+Replace the checkpoint path below with the value printed by the previous command:
+
+```bash
+python -m decision_workbench.training.perplexity_runner \
+  --data data/perplexity-canonical \
+  --checkpoint /absolute/path/to/pinned/checkpoint \
+  --out data/perplexity-domain-run \
+  --epochs 1 --batch-size 1 --grad-accum 4 \
+  --max-length 2048 --learning-rate 0.000002
+```
+
+The launcher validates and converts all four roles before loading a model,
+evaluates the original local checkpoint on validation, then uses those saved
+predictions as the trainer's fixed comparison. It makes no paid API calls.
+Upstream logs call the comparison `jev`; the exported report identifies it as
+the **original local Perplexity checkpoint**, not a Jev measurement.
+
+It retains noncausal full-attention behavior, the original recurrent layers,
+last pooling and the native BF16 readout. Training uses a fixed final-epoch
+checkpoint, not development-selected weights or an interrupted-run resume.
+Validation curves and separate calibration data remain available, while test is
+never passed into periodic training evaluation. `--grad-accum` sets effective
+batch size to batch size times accumulation; a larger `--max-length` increases
+memory use. `--cpu-threads` and `--eval-every` control host threads and evaluation
+frequency. Do not run competing model jobs on the same hardware.
+
+Watch the printed phase and `baseline.log`, `training.log`, `events.jsonl` and
+`study/summary.json` inside the new run directory. Existing runs are refused.
+On failure or interruption, retain the logs for diagnosis and choose a new run;
+the launcher does not offer optimizer-state resume. A failed run without a
+complete export manifest is not a usable domain export.
+
+### Use the exported model for your domain
+
+Successful completion produces `export/` with the checkpoint, pinned publisher
+source/licenses, domain schema, metrics and a file manifest. The launcher checks
+that both backbone and readout tensor payloads changed, reloads the export and
+compares validation probabilities with the publisher's saved results. The saved
+global temperature is applied once. Test metrics are computed after the final
+weights and calibration are fixed. These checks do not establish representative
+domain quality; inspect the per-question results and action costs yourself.
+
+Keep the printed `manifest_sha256` separately and retain the **whole** export
+directory, not only its weight files. Put new evidence in a JSON request such as:
+
+```json
+{"state": {"required_fields_present": false}}
+```
+
+The export supplies its frozen questions. Run native prediction with the saved
+manifest hash and your request file:
+
+```bash
+python -m decision_workbench.training.perplexity_predict \
+  --export data/perplexity-domain-run/export \
+  --manifest-sha YOUR_SAVED_MANIFEST_SHA256 \
+  --request data/new-evidence.json --device cuda --threshold 0.8
+```
+
+Prediction is offline and returns typed answers, complete probabilities and
+abstention flags. Route abstained results to your fallback; the threshold does
+not retrain the model. CPU inference is available on a Linux host with roughly
+112 GiB of available RAM plus workload headroom, because the publisher loads CPU
+weights in FP32. GPU inference has a lower startup floor than training, roughly
+58 GiB free device memory and 58 GiB available host RAM for the publisher's CPU
+staging before moving the model to CUDA. These guards are not latency benchmarks.
+
+The native CLI has source, integrity and fictional orchestration checks. Its
+complete Torch 2.14 training and inference paths remain experimental until
+exercised on compatible hardware. App registration/release and managed cloud admission for
+this native model remain separate work; the hosted app path is available now.
+
+## Use the publisher commands directly
+
+If you prefer to operate its trainer yourself:
 
 1. Obtain the complete pinned checkpoint, retaining shards, readout, processor,
    configuration, source and notices. Follow its [dependency metadata](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b/blob/14c9d90137962d300f3de95633f7b6535e80c5ce/source/pyproject.toml)
@@ -162,8 +299,10 @@ For an environment you provision yourself:
    `autojev-evaluate --local --checkpoint ... --data ... --output ...` on test.
    Inspect selection results and your own domain gates before deployment.
 
-The data/prompt contracts can be checked without weights. That does not establish
-GPU-runtime compatibility, training quality or deployment readiness.
+The trainer also requires Git provenance and its `source/uv.lock`. Retain the
+complete pinned source tree rather than copying `train.py` alone. Its event
+logger requires Linux. Source/data checks do not establish GPU compatibility,
+domain quality or deployment readiness.
 
 ## Rent hardware if local memory is insufficient
 

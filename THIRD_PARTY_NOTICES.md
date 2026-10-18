@@ -20,6 +20,8 @@ Prompt construction in `perplexity_data.py` is adapted from Perplexity's Apache-
 
 License declarations above were checked on **13–18 October 2026**. Links to `main` may change; preserve the license and notices from the exact installed artifact for a distribution.
 
+The optional Perplexity native CLI executes hash-checked publisher source in an isolated package namespace and retains LICENSE/NOTICE with complete domain exports. Its weights and backbone retain upstream terms; the separate [native profile](requirements/perplexity-native.txt) follows publisher dependency pins.
+
 ## Libraries, schemas and research
 
 Runtime dependencies are installed separately and retain their upstream notices. The [dependency profiles](requirements/README.md) identify selected versions; this page is not a complete dependency license inventory.
