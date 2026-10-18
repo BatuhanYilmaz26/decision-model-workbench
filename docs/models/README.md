@@ -19,7 +19,7 @@ every model, device or cloud combination is supported.
 | Liquid hosted d1 / d1-ultra | Direct text/JSON API adapter, domain evaluation/calibration and released-policy predictions using your API key | [Liquid hosted guide](liquid-hosted.md) |
 | Liquid d1-3B | CPU native-data export, separate TRL and FastVisionModel/Unsloth training profiles, calibrated release and inference | [Liquid data and training guide](liquid.md) |
 | Liquid d1-omni-600M | Native text/JSON head adaptation on CPU/CUDA, soft labels, native data export, calibration, release and inference | [Omni guide](liquid-omni.md) |
-| D3 Edge | Local application and CLI native-readout training, soft targets, calibrated exports, release and inference; managed cloud integration remains unavailable | [D3 workflow](d3.md), [examples](../../examples/d3/README.md) |
+| D3 Edge | Local application/CLI and five-provider cloud studies, native-readout training, soft targets, calibrated exports, release and inference | [D3 workflow](d3.md), [cloud training](../remote-training/d3.md), [examples](../../examples/d3/README.md) |
 | Local or hosted generative teacher | Reviewed synthetic candidates and optional schema assistance | [Synthetic generation](../synthetic-generation-guide.md), [schema assistant](../schema-assistant-guide.md) |
 | TypeLLM category discovery | Review proposed categories before adopting a schema | [Taxonomy workflow](../taxonomy-guide.md) |
 

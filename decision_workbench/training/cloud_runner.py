@@ -102,7 +102,7 @@ def prepare_archive(archive, work, archive_sha256, request_sha256):
             != {s: {"rows": len(rows[s]), "sha256": hashes[s]} for s in SPLITS}
         ):
             raise ValueError("Frozen data/schema/snapshot identities differ")
-        from .liquid_remote import BACKENDS, check_inputs
+        from .native_remote import BACKENDS, check_inputs
 
         if request.get("configuration", {}).get("backend") in BACKENDS:
             check_inputs(request, rows, hashes, rows["train"][0]["questions"])
@@ -116,10 +116,10 @@ def trainer_command(request, work, output, interpreter=sys.executable):
     """Construct arguments without a shell; there are no caller-provided commands."""
     config = request["configuration"]
     backend = config.get("backend")
-    from .liquid_remote import BACKENDS
+    from .native_remote import BACKENDS
 
     if backend in BACKENDS:
-        from .liquid_remote import native_command
+        from .native_remote import native_command
 
         return native_command(request, work, output, interpreter)
     if backend not in ("laya-native", "unsloth"):

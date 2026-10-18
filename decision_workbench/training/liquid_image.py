@@ -1,44 +1,6 @@
-"""Check a Liquid image's runtime and cache its pinned public checkpoint."""
+"""Compatibility entry point for pinned Liquid training images."""
 
-import argparse
-import json
-from pathlib import Path
-from .liquid_remote import BACKENDS, profile
-from .provenance import source_fingerprint
-
-
-def prepare(backend, cache):
-    local, _, _ = profile(backend)
-    if backend == "liquid-omni":
-        from .liquid_omni_runtime import resolve_checkpoint, runtime_identity
-
-        packages = runtime_identity()
-    else:
-        from .liquid_runtime import resolve_checkpoint, runtime_identity
-
-        packages = runtime_identity(backend)
-    checkpoint = resolve_checkpoint(cache, download=True)
-    return {
-        "backend": backend,
-        "model": local.PROFILE["model"],
-        "revision": local.PROFILE["revision"],
-        "source_sha256": source_fingerprint(),
-        "packages": packages,
-        "cached_checkpoint": str(checkpoint),
-    }
-
-
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--backend", choices=BACKENDS, required=True)
-    parser.add_argument("--cache", required=True)
-    parser.add_argument("--metadata", required=True)
-    args = parser.parse_args()
-    value = prepare(args.backend, args.cache)
-    with Path(args.metadata).open("x", encoding="utf-8") as stream:
-        json.dump(value, stream, indent=2, allow_nan=False)
-    print(json.dumps(value, allow_nan=False))
-
+from .native_image import prepare, main
 
 if __name__ == "__main__":
     main()

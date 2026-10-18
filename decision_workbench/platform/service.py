@@ -536,10 +536,6 @@ class Service:
             )
             config["backend"] = "hosted"
         elif kind in ("train", "remote-study"):
-            if kind == "remote-study" and config.get("backend") == "d3-edge":
-                raise ValueError(
-                    "D3 cloud studies are not available yet; use local training or its standalone operated-host guide"
-                )
             if config.get("backend") == "vega":
                 from .vega_training import validate_references
 
@@ -553,14 +549,15 @@ class Service:
                     "liquid-trl",
                     "liquid-unsloth",
                     "liquid-omni",
+                    "d3-edge",
                 ):
                     if config.get("device", "cuda") != "cuda":
                         raise ValueError(
-                            "Remote Liquid GPU studies require the CUDA device profile"
+                            "Remote native GPU studies require the CUDA device profile"
                         )
                     if config.get("download", False) is not False:
                         raise ValueError(
-                            "Remote Liquid images must include their pinned checkpoint; downloads are disabled"
+                            "Remote native images must include their pinned checkpoint; downloads are disabled"
                         )
                     config["device"] = "cuda"
                 if config.get("backend") == "cpu-baseline":
@@ -579,12 +576,11 @@ class Service:
                 raise ValueError(
                     "Select cpu-baseline, unsloth, laya-native, vega, liquid-trl, liquid-unsloth, liquid-omni or d3-edge"
                 )
-            if config["backend"] == "d3-edge":
-                from .d3_training import freeze
-
-                config = freeze(self, principal, project, config)
-            elif config["backend"] == "liquid-omni":
-                from .liquid_omni_training import freeze
+            if config["backend"] in ("d3-edge", "liquid-omni"):
+                if config["backend"] == "d3-edge":
+                    from .d3_training import freeze
+                else:
+                    from .liquid_omni_training import freeze
 
                 location = (
                     {

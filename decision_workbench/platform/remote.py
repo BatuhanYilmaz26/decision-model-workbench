@@ -243,15 +243,15 @@ def validate_export(folder, expected_sha, request):
     config = request["configuration"]
     questions = request["questions"]
     manifest = verify_manifest(folder, expected_sha, config["backend"], questions)
-    from decision_workbench.training.liquid_remote import BACKENDS
+    from decision_workbench.training.native_remote import BACKENDS
 
-    liquid = config["backend"] in BACKENDS
+    native = config["backend"] in BACKENDS
     report = json.loads((folder / "report.json").read_text(encoding="utf-8"))
     if not isinstance(report, dict):
         raise ValueError("Remote export report must be a JSON object")
     allowed_native = set()
-    if liquid:
-        from decision_workbench.training.liquid_remote import (
+    if native:
+        from decision_workbench.training.native_remote import (
             checked_artifact,
             export_files,
         )

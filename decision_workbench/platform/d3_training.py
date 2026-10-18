@@ -125,6 +125,8 @@ def checked_artifact(folder, report, config, questions):
     from decision_workbench.training.d3_assets import WEIGHTS
 
     allowed = {"report.json", "data/manifest.json"}
+    if report.get("admission"):
+        allowed.add("training_report.json")
     allowed.update(
         "checkpoint/" + name
         for name in (*ASSETS, WEIGHTS, "readout.safetensors", "dmt_d3.json")

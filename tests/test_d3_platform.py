@@ -103,7 +103,7 @@ class D3PlatformTests(unittest.TestCase):
             },
         )
         self.assertEqual(remote.status_code, 400, remote.text)
-        self.assertIn("D3 cloud studies", remote.text)
+        self.assertIn("CUDA device", remote.text)
         self.assertEqual(self.store.jobs("A", self.project)[-1]["kind"], "prepare")
 
     def test_worker_source_tamper_and_queued_cancellation_register_nothing(self):
@@ -286,7 +286,7 @@ class D3PlatformTests(unittest.TestCase):
             self.assertEqual(len(app.exception), 0, str(app.exception))
             self.assertEqual(
                 next(w for w in app.radio if w.label == "Training location").options,
-                ["This computer"],
+                ["This computer", "Cloud GPU"],
             )
             self.assertFalse(any("LoRA rank" in w.label for w in app.number_input))
             next(w for w in app.selectbox if w.label == "D3 compute device").select(
@@ -311,9 +311,7 @@ class D3PlatformTests(unittest.TestCase):
             self.assertEqual(job["config"]["device"], "cpu")
             self.assertIn("d3_study", job["config"])
             self.assertFalse(job["config"]["download"])
-            self.assertFalse(
-                any(w.label == "Prepare remote training study" for w in app.button)
-            )
+            self.assertTrue(next(w for w in app.button if w.label == "Prepare remote training study").disabled)
 
 
 if __name__ == "__main__":

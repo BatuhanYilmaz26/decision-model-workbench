@@ -657,7 +657,7 @@ try:
                 "Training location",
                 (
                     ["This computer", "Cloud GPU"]
-                    if principal["role"] == "admin" and backend != "d3-edge"
+                    if principal["role"] == "admin"
                     else ["This computer"]
                 ),
                 horizontal=True,
@@ -689,7 +689,7 @@ try:
                 )
             elif backend == "d3-edge":
                 st.info(
-                    "Adapt D3 Edge's original answer-code readout while keeping its native backbone frozen. Use reviewed text/JSON and independent calibration data. The exported device is retained for serving; managed D3 cloud training is not yet available."
+                    "Adapt D3 Edge's original answer-code readout while keeping its native backbone frozen. Use reviewed text/JSON and independent calibration data. The exported device is retained for serving; cloud training requires a compatible pinned image and an approved provider profile."
                 )
                 st.link_button(
                     "D3 installation, data and training guide",
@@ -736,7 +736,7 @@ try:
             if backend == "d3-edge":
                 from decision_workbench.ui.d3 import training_options
 
-                local_ready = training_options(config, capabilities) and local_ready
+                local_ready = (training_options(config, capabilities, cloud=training_location == "Cloud GPU") and local_ready)
             elif backend == "liquid-omni":
                 from decision_workbench.ui.liquid_omni import training_options
 
@@ -1031,10 +1031,6 @@ try:
                 if backend == "cpu-baseline":
                     st.info(
                         "Select a compatible native model and cloud image for remote GPU training."
-                    )
-                elif backend == "d3-edge":
-                    st.info(
-                        "D3 managed cloud studies are not available yet. Use this computer or follow the D3 guide for an operated GPU host."
                     )
                 else:
                     if backend == "vega":

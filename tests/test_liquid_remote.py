@@ -80,7 +80,7 @@ class LiquidRemoteTests(unittest.TestCase):
                     command = trainer_command(request, work, self.f.root / "output")
                     self.assertEqual(command[0], sys.executable)
                     self.assertIn(
-                        "decision_workbench.training.liquid_remote_runner", command
+                        "decision_workbench.training.native_remote_runner", command
                     )
                     self.assertNotIn("--rank", command)
                     self.assertFalse(native["configuration"]["download"])
@@ -343,7 +343,7 @@ class LiquidRemoteTests(unittest.TestCase):
                     self.assertEqual(job["config"]["device"], "cuda")
                     self.assertFalse(job["config"]["download"])
                     self.assertIn(
-                        "omni_study" if backend == "liquid-omni" else "liquid_study",
+                        {"d3-edge": "d3_study", "liquid-omni": "omni_study"}.get(backend, "liquid_study"),
                         job["config"],
                     )
                     self.f.worker.once()
@@ -396,7 +396,10 @@ class LiquidRemoteTests(unittest.TestCase):
                     backend="liquid-omni",
                 )
 
-    def test_all_provider_profiles_refuse_undeclared_models_before_run_creation(self):
+    def test_all_provider_profiles_refuse_undeclared_models_before_run_creation(self, backend="liquid-omni"):
+        from decision_workbench.training.native_remote import profile
+
+        native, _, _ = profile(backend)
         import test_cloud as aws
         import test_cloud_gcp as gcp
         import test_cloud_azure as azure
@@ -416,7 +419,7 @@ class LiquidRemoteTests(unittest.TestCase):
                 try:
                     config = {
                         "snapshot": fixture.f.snapshot,
-                        **liquid_omni_local.PROFILE,
+                        **native.PROFILE,
                         "device": "cuda",
                         "download": False,
                         "max_length": 256,
@@ -450,7 +453,7 @@ class LiquidRemoteTests(unittest.TestCase):
                             True,
                             "undeclared-omni-image",
                         )
-                    fixture.p["training_backends"] = ["liquid-omni"]
+                    fixture.p["training_backends"] = [backend]
                     if hasattr(fixture, "write_profiles"):
                         fixture.write_profiles()
                     else:
@@ -473,7 +476,7 @@ class LiquidRemoteTests(unittest.TestCase):
                         "declared-omni-image",
                     )
                     self.assertEqual(
-                        run["payload"]["profile"]["training_backends"], ["liquid-omni"]
+                        run["payload"]["profile"]["training_backends"], [backend]
                     )
                     self.assertEqual(run["state"]["phase"], "ready")
                 finally:

@@ -1,7 +1,7 @@
 """Declared image capabilities checked before any owner-approved allocation."""
 
 LEGACY = ("laya-native", "unsloth")
-SUPPORTED = (*LEGACY, "liquid-trl", "liquid-unsloth", "liquid-omni")
+SUPPORTED = (*LEGACY, "liquid-trl", "liquid-unsloth", "liquid-omni", "d3-edge")
 
 
 def training_backends(profile):

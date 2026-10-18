@@ -1,0 +1,30 @@
+FROM python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+WORKDIR /app
+ARG TARGETARCH
+RUN test "$TARGETARCH" = "amd64"
+RUN apt-get update && apt-get install -y --no-install-recommends gcc g++ git libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+COPY requirements/torch-linux-amd64-py312-cu126.txt ./requirements/torch-linux-amd64-py312-cu126.txt
+RUN python -m pip install --no-cache-dir --no-deps --require-hashes --only-binary=:all: \
+    --index-url https://download.pytorch.org/whl/cu126 -r requirements/torch-linux-amd64-py312-cu126.txt \
+    && python -m pip install --no-cache-dir --no-deps --only-binary=:all: \
+    --index-url https://download.pytorch.org/whl/cu126 torchvision==0.25.0+cu126
+COPY pyproject.toml README.md LICENSE NOTICE THIRD_PARTY_NOTICES.md ./
+COPY decision_workbench ./decision_workbench
+COPY requirements/d3-edge.txt ./requirements/
+RUN python -m pip install --no-cache-dir -r requirements/d3-edge.txt '.[gcp,azure,runpod]' \
+    && python -m pip check
+ENV DMT_CLOUD_IMAGE_BACKEND=d3-edge \
+    DMT_D3_CACHE=/app/model-cache/d3-hub \
+    HF_MODULES_CACHE=/tmp/d3-modules \
+    TRITON_CACHE_DIR=/tmp/d3-triton \
+    CUDA_CACHE_PATH=/tmp/d3-cuda \
+    HF_HUB_DISABLE_TELEMETRY=1 \
+    TOKENIZERS_PARALLELISM=false \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=compute,utility
+RUN python -m decision_workbench.training.native_image --backend d3-edge \
+    --cache "$DMT_D3_CACHE" --metadata /app/d3-image.json
+ENV D3_FAST=0 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4
+ENV HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+CMD ["python", "-m", "decision_workbench.training.cloud_runner", "--help"]

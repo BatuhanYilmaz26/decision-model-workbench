@@ -70,13 +70,13 @@ def admit(worker, job, snapshot, questions, coverage, cancelled):
         ]
         environment = os.environ.copy()
         environment.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1")
-        from decision_workbench.training.liquid_remote import BACKENDS
+        from decision_workbench.training.native_remote import BACKENDS
 
         child_cwd = None
         if config["backend"] in BACKENDS:
-            from .model_environment import liquid_environment, model_python
+            from .model_environment import native_environment, model_python
 
-            environment, child_cwd, _ = liquid_environment(
+            environment, child_cwd, _ = native_environment(
                 store.folder, environment, backend=config["backend"]
             )
             argv[0] = model_python(config["backend"], "serving", environment)

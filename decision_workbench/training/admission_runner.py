@@ -36,12 +36,12 @@ def qualify(folder, data, expected_sha, request, engine_factory=None):
     manifest = verify_manifest(folder, expected_sha, config["backend"], questions)
     folder = Path(folder)
     source_report = json.loads((folder / "report.json").read_text(encoding="utf-8"))
-    from .liquid_remote import BACKENDS
+    from .native_remote import BACKENDS
 
     allowed_native_configs = set()
     if config["backend"] in BACKENDS:
         from decision_workbench.platform.remote import validate_export
-        from .liquid_remote import approved_configs, check_inputs
+        from .native_remote import approved_configs, check_inputs
 
         check_inputs(request, rows, hashes, questions)
         validate_export(folder, expected_sha, request)
@@ -145,7 +145,7 @@ def qualify(folder, data, expected_sha, request, engine_factory=None):
             "note": "Local exported-runtime measurements replace supplied validation/test metrics. Cloud receipt remains operator-attested.",
         },
     }
-    if config["backend"] == "liquid-omni":
+    if config["backend"] in ("liquid-omni", "d3-edge"):
         report["calibration_metrics"] = report["admission"][
             "calibration_runtime_metrics"
         ]

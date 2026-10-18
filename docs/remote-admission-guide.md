@@ -6,7 +6,7 @@ Bring a remotely trained model into the local platform using **frozen study → 
 
 Use this workflow **before training**. A pre-existing checkpoint without the frozen study request cannot enter this route by relabeling it or changing its report. Local training remains available through the normal worker. The current transfer route requires an authenticated operator with filesystem access to the workspace; a browser upload of multi-gigabyte weights is not implemented.
 
-Liquid d1-3B TRL/Unsloth and omni use the [Liquid remote-training workflow](remote-training/liquid.md). Their returned native model code is accepted only at its reviewed hashes and approved configuration; arbitrary uploaded Python remains prohibited. Configure the matching isolated model interpreter before admission.
+Liquid d1-3B TRL/Unsloth and omni use the [Liquid remote-training workflow](remote-training/liquid.md). Their returned native model code is accepted only at its reviewed hashes and approved configuration; arbitrary uploaded Python remains prohibited. Configure the matching isolated model interpreter before admission. [D3 Edge cloud exports](remote-training/d3.md) use `DMT_D3_PYTHON`, pinned native source and the calibrated CUDA device; bytecode caches are rejected.
 
 ## 1. Freeze an owner-approved remote study
 

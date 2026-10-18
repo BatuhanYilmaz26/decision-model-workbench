@@ -4,7 +4,7 @@ from decision_workbench.training.d3_local import PROFILE, DEFAULTS
 from .native_head import training_options as native_options
 
 
-def training_options(config, capabilities):
+def training_options(config, capabilities, *, cloud=False):
     return native_options(
         config,
         capabilities,
@@ -15,4 +15,5 @@ def training_options(config, capabilities):
         max_tokens=32768,
         checkpoint_label="D3 Edge",
         checkpoint_gb="1.19",
+        cloud=cloud,
     )

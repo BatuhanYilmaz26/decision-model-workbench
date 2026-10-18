@@ -6,6 +6,7 @@
 
 | Task | Guide or file |
 |---|---|
+| Prepare a D3 Edge training image | [Dockerfile.d3](Dockerfile.d3), [D3 cloud workflow](../../docs/remote-training/d3.md); experimental until qualified on your selected GPU/provider |
 | Prepare a Liquid training image | [Dockerfile.liquid](Dockerfile.liquid), [Liquid cloud workflow](../../docs/remote-training/liquid.md); experimental until qualified on your selected GPU/provider |
 | Train or serve a Vega domain model | [Vega workflow](../../docs/vega-guide.md) |
 | Audit possible related examples | [Semantic data workflow](../../docs/semantic-data-guide.md) |

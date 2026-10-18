@@ -26,7 +26,7 @@ def octal(field):
 def extract_model(archive, output, max_bytes, *, backend=None):
     """Extract regular files; native assets require a selected pinned profile."""
     output = ordinary(output)
-    from decision_workbench.training.liquid_remote import (
+    from decision_workbench.training.native_remote import (
         BACKENDS,
         export_files,
         export_assets,

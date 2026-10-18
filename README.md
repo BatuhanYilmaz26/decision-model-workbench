@@ -74,7 +74,7 @@ models whose application adapters are still being built.
 | Train and use Liquid d1-3B | Native data export, local TRL or FastVisionModel/Unsloth training, calibrated releases and predictions with isolated model environments | [Liquid guide](docs/models/liquid.md), [example specification and CSV](examples/liquid/README.md) |
 | Train and use Liquid d1-omni-600M | Native text/JSON decision-head adaptation on CPU/CUDA, reviewed soft labels, calibrated exports, releases and predictions | [Omni guide](docs/models/liquid-omni.md), [model environment](requirements/liquid-omni.txt) |
 | Train Liquid on a rented GPU | Frozen studies for AWS, Azure, GCP, Modal and RunPod, explicit image compatibility and independent returned-model admission | [Liquid cloud guide](docs/remote-training/liquid.md), [experimental image recipe](docker/models/Dockerfile.liquid) |
-| Train and use D3 Edge | Local application or CLI native-readout training, reviewed soft targets, calibrated versions, release and inference | [D3 guide](docs/models/d3.md), [retrieval-evidence examples](examples/d3/README.md), [model environment](requirements/d3-edge.txt) |
+| Train and use D3 Edge | Local or five-provider native-readout training, reviewed soft targets, calibrated versions, release and inference | [D3 cloud training](docs/remote-training/d3.md), [D3 guide](docs/models/d3.md), [retrieval-evidence examples](examples/d3/README.md), [model environment](requirements/d3-edge.txt) |
 
 ## Where decision models can help
 

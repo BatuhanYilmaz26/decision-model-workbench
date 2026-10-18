@@ -2,7 +2,7 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-Train your own open-weight decision model on a rented GPU when local VRAM is insufficient. The workflows below run the repository's Laya or Unsloth trainer with the same reviewed datasets and export checks used locally. Hosted Jev access is a separate API workflow; TypeSafe's [model documentation](https://docs.typesafe.ai/models) does not offer customer fine-tuning.
+Train your own open-weight decision model on a rented GPU when local VRAM is insufficient. The shared protocol supports compatible native trainers with the same reviewed datasets and export checks used locally. Use the [Liquid cloud guide](remote-training/liquid.md) or [D3 Edge cloud guide](remote-training/d3.md) for their separate images, native formats and admission profiles. Hosted Jev access is a separate API workflow; TypeSafe's [model documentation](https://docs.typesafe.ai/models) does not offer customer fine-tuning.
 
 Choose AWS, Azure, Google Cloud, Modal or RunPod based on your infrastructure, identity and GPU needs. Each walkthrough covers data staging, job submission, output retrieval and shutdown. Before sending domain data, prepare a Linux training image and verify it with a small non-sensitive study. See [provider compatibility checks](verification.md#provider-compatibility-checks).
 
