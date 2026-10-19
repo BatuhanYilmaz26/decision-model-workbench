@@ -6,6 +6,29 @@ Training is part of the durable product workflow: confirm policy, import and rev
 
 Before installing a GPU environment, review [runtime compatibility and dependency advisories](compatibility-and-upgrades.md). The historical Laya/Unsloth profile requires remediation and a new GPU qualification before production use. The CPU baseline runs in a separate application environment.
 
+## Choose a training route
+
+In the browser app, select a reserved **Training snapshot**, then choose a **Training backend**. The selector uses the names below. Install the matching environment before starting a model job; the application environment alone installs the CPU baseline.
+
+| Training backend | What you train | Setup and workflow |
+|---|---|---|
+| CPU comparison baseline (`cpu-baseline`) | A fixed-schema lexical classifier on your CPU | [Local setup](setup.md), [first project](app-guide.md#first-project-walkthrough) |
+| Laya (`laya-native`) | The native decision head, with the encoder frozen by default | [Model environment](setup.md#configure-model-training-and-serving), [native adapter](#native-laya-adapter) |
+| Unsloth decision fine-tuning (`unsloth`) | A compatible decision checkpoint using its decision trainer | [Model environment](setup.md#configure-model-training-and-serving), [Unsloth adapter](#unsloth-adapter) |
+| Vega domain adapter (`vega`) | An adapter with separate positive and out-of-domain examples | [Vega data, training and gate calibration](vega-guide.md) |
+| Liquid d1-3B (`liquid-trl` or `liquid-unsloth`) | The same pinned model through one of two distinct training environments | [Liquid setup and training](models/liquid.md) |
+| Liquid d1-omni-600M (`liquid-omni`) | The native text/JSON decision head | [Omni setup and training](models/liquid-omni.md) |
+| Decision 3.0 variants | The selected variant's native readout, with variant-specific resource requirements | [D3 family and backend names](models/d3-family.md), [D3 workflow](models/d3.md) |
+| Perplexity open v1.1 (`perplexity-native`) | The publisher's native full-weight model through an experimental Linux/CUDA profile | [Native setup, data and training](models/perplexity-native.md) |
+
+Each model guide defines compatible questions, labels, input limits, devices and dependencies. A shared backend interface does not make their native formats or environments interchangeable. The **CPU baseline** is a separate choice; an unavailable model backend does not silently become that baseline. Hosted decision APIs use [hosted studies](hosted-decisions-guide.md) rather than local fine-tuning.
+
+Prepare and review examples through the [data workflow](data-guide.md), reserve independent evaluation roles, and optionally add [reviewed synthetic candidates](synthetic-generation-guide.md) to training. The model adapters convert the reserved canonical records into their native formats. Vega also needs its paired applicability datasets; native Perplexity supports Choice/Noul rather than Score training. Follow the selected guide before exporting data for a standalone publisher recipe.
+
+When a job succeeds, inspect its training and [evaluation report](evaluation-guide.md), including role counts, per-question results, calibration and export/reload comparison. Release an eligible version through the [application workflow](product-workflow.md#6-release-and-integrate); a standalone CLI export is not automatically registered. A failed job or export check must be resolved before release. For insufficient local VRAM, use the compatible [remote training workflow](remote-training-guide.md) and its provider/model-specific instructions.
+
+Experimental profiles and unexecuted hardware/image combinations remain identified in their guides. Successful contract tests do not establish model quality on your domain or qualify a different device, image or dependency set.
+
 ## Select a comparison
 
 Compare rules, the CPU specialist baseline, an unadapted decision checkpoint and the adapted model on identical domain data. The CPU backend is a fixed-schema lexical classifier; Laya and Unsloth train schema-conditioned decision heads. Fine-tuning cannot repair contradictory policy labels or leaked evaluation data.

@@ -42,10 +42,8 @@ training/serving adapters for the routes below are not delivered here yet.
 
 | Family | Official resources | Important distinction |
 |---|---|---|
-| Perplexity open Decider | [v1 card](https://huggingface.co/perplexity-ai/pplx-decider-v1-27b), [v1.1 card](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b), [current hosted API](https://docs.perplexity.ai/docs/decisions/quickstart) | Downloadable checkpoint versions and hosted aliases can differ. |
 | Interfaze Lite | [Model card](https://huggingface.co/interfaze-ai/interfaze-1-lite) | A generative/perception companion, not an interchangeable typed-probability backend. |
 | Amos 1 | [Publisher models](https://amos.scira.ai/models/), [API documentation](https://amos.scira.ai/docs/) | Verify model identity, request-retention terms and availability of training artifacts. |
-| Decision 3.0 | [Official six-model collection](https://huggingface.co/collections/vllm-sr/decision-30) | [Pinned family profiles](d3-family.md) share the native training path; each variant/runtime/hardware combination needs its own qualification. |
 
 Use the [model landscape](../model-landscape.md) and
 [benchmark guide](../benchmarks.md) for dated comparisons. Check the publisher's
