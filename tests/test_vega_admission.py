@@ -309,10 +309,10 @@ class VegaAdmissionTests(unittest.TestCase):
                 engine_factory=factory,
             )
 
-    def test_managed_launch_refuses_before_profile_or_provider_work(self):
+    def test_managed_launch_requires_image_declaration_before_provider_work(self):
         study = self.study()
-        with patch.object(self.service.cloud, "profile") as profile:
-            with self.assertRaisesRegex(ValueError, "eight-file runner/image"):
+        with patch.object(self.service.cloud, "profile", return_value={}) as profile:
+            with self.assertRaisesRegex(ValueError, "does not declare"):
                 self.service.cloud.create(
                     OWNER,
                     self.project,
@@ -322,7 +322,7 @@ class VegaAdmissionTests(unittest.TestCase):
                     True,
                     "no-launch-for-vega",
                 )
-            profile.assert_not_called()
+            profile.assert_called_once()
 
     def test_staging_rejects_tampered_negative_provenance_and_nonowner(self):
         study = self.study()

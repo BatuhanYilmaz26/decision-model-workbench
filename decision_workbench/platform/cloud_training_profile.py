@@ -5,6 +5,7 @@ from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
 LEGACY = ("laya-native", "unsloth")
 SUPPORTED = (
     *LEGACY,
+    "vega",
     "liquid-trl",
     "liquid-unsloth",
     "liquid-omni",

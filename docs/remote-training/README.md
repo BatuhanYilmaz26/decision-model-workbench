@@ -10,6 +10,8 @@ For the six D3 variants, use the separate [D3 cloud workflow](d3.md) and its com
 For open Perplexity v1.1, follow [native full-weight cloud training](perplexity.md)
 for the H200/RAM requirements, experimental image and returned-model admission.
 
+For Vega, follow the [paired-data cloud workflow](vega.md); its native trainer and image declaration preserve the extra applicability files.
+
 | Provider | Direct walkthrough | Application-managed workflow | Configuration template |
 |---|---|---|---|
 | AWS | [SageMaker AI training](aws.md) | [Managed AWS](../managed-cloud-training.md) | [AWS profile](../../examples/cloud/aws-profiles.json) |

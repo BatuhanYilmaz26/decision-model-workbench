@@ -18,7 +18,7 @@ Google Cloud documents CustomJob training under [Gemini Enterprise Agent Platfor
 
 For application-managed approvals, job history and artifact validation, use [AWS](managed-cloud-training.md), [Azure](managed-azure-training.md), [GCP](managed-gcp-training.md), [RunPod v2](managed-runpod-training.md) or [Modal GPU Sandboxes](managed-modal-training.md). Check each provider's storage, recovery and shutdown contract when configuring the profile.
 
-Start with [provider selection, VRAM sizing and total cost](remote-training/provider-selection.md). The [comparison dated 12 October](../research/decision-model-refresh-2026-10-12.md) lists the provider references. Vega uses a separate [eight-file operator study/admission route](remote-admission-guide.md#vega-eight-file-studies-and-independent-admission); the managed Laya/Unsloth runner does not accept it.
+Start with [provider selection, VRAM sizing and total cost](remote-training/provider-selection.md). The [comparison dated 12 October](../research/decision-model-refresh-2026-10-12.md) lists the provider references. Vega uses a separate paired [eight-file data contract](remote-admission-guide.md#vega-eight-file-studies-and-independent-admission), now accepted by the shared cloud launcher. Follow the [Vega image and five-provider guide](remote-training/vega.md) and declare that backend explicitly.
 
 ## Before you begin
 

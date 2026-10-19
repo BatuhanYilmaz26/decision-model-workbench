@@ -162,10 +162,6 @@ class Cloud:
         ]
         request = study_value["request"]
         config = request["configuration"]
-        if config.get("backend") == "vega":
-            raise ValueError(
-                "Managed cloud launch requires a qualified Vega eight-file runner/image; use operator training and admission"
-            )
         p = self.profile(principal, profile_id)
         from .cloud_training_profile import training_backends
 

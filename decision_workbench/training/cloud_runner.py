@@ -16,6 +16,10 @@ from .provenance import source_fingerprint
 
 MAX_INPUT = 256 * 1024**2
 MEMBERS = {"request.json", "data/manifest.json", *[f"data/{s}.jsonl" for s in SPLITS]}
+VEGA_MEMBERS = {
+    "request.json",
+    *[f"data/{prefix}{s}.jsonl" for prefix in ("", "gate_") for s in SPLITS],
+}
 
 
 def sha(value):
@@ -35,7 +39,7 @@ def ordinary(path):
 
 
 def prepare_archive(archive, work, archive_sha256, request_sha256):
-    """Accept only the bounded, uncompressed six-file archive emitted by the platform."""
+    """Accept bounded, uncompressed four-role or paired Vega study archives."""
     archive, work = ordinary(archive), ordinary(work)
     sha(archive_sha256)
     sha(request_sha256)
@@ -47,7 +51,8 @@ def prepare_archive(archive, work, archive_sha256, request_sha256):
     try:
         with zipfile.ZipFile(archive) as bundle:
             entries = bundle.infolist()
-            if len(entries) != len(MEMBERS) or {e.filename for e in entries} != MEMBERS:
+            members = {e.filename for e in entries}
+            if len(entries) != len(members) or members not in (MEMBERS, VEGA_MEMBERS):
                 raise ValueError("Frozen study archive inventory differs")
             if sum(e.file_size for e in entries) > MAX_INPUT + 1024**2 + 65536:
                 raise ValueError("Frozen study expanded input exceeds the bound")
@@ -83,12 +88,31 @@ def prepare_archive(archive, work, archive_sha256, request_sha256):
         if file_sha(request_path) != request_sha256:
             raise ValueError("Frozen study request hash differs")
         request = json.loads(request_path.read_bytes())
+        vega = request.get("configuration", {}).get("backend") == "vega"
+        expected_format = (
+            "domain-remote-vega-study-v1" if vega else "domain-remote-study-v1"
+        )
         if (
-            request.get("format") != "domain-remote-study-v1"
+            request.get("format") != expected_format
+            or members != (VEGA_MEMBERS if vega else MEMBERS)
             or request.get("source_sha256") != source_fingerprint()
         ):
             raise ValueError("Cloud trainer package differs from the frozen study")
         rows, hashes = load_splits(work / "data")
+        if vega:
+            from .vega_contracts import load_gate_splits
+            from .vega_remote import check_inputs as check_vega_inputs
+
+            negatives, negative_hashes = load_gate_splits(work / "data", rows)
+            check_vega_inputs(
+                request,
+                rows,
+                hashes,
+                negatives,
+                negative_hashes,
+                rows["train"][0]["questions"],
+            )
+            return request
         schema_sha = hashlib.sha256(
             dumps(rows["train"][0]["questions"]).encode()
         ).hexdigest()
@@ -122,8 +146,12 @@ def trainer_command(request, work, output, interpreter=sys.executable):
         from .native_remote import native_command
 
         return native_command(request, work, output, interpreter)
+    if backend == "vega":
+        from .vega_remote import cloud_command
+
+        return cloud_command(request, work, output, interpreter)
     if backend not in ("laya-native", "unsloth"):
-        raise ValueError("Cloud study requires native Laya or Unsloth")
+        raise ValueError("Cloud study requires a supported decision training backend")
     if (
         not isinstance(config.get("model"), str)
         or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", config["model"])

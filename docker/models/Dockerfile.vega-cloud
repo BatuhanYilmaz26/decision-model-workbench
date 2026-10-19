@@ -1,0 +1,11 @@
+# Supply the exact digest of a current Dockerfile.vega image you built.
+ARG VEGA_IMAGE
+FROM ${VEGA_IMAGE}
+# Provider jobs write to mounted output directories; this is a training image.
+USER root
+ENV DMT_MODEL_CACHE=/opt/dmt/vega-hub \
+    HF_HUB_DISABLE_TELEMETRY=1
+RUN python -m pip check \
+    && HF_HUB_OFFLINE=0 TRANSFORMERS_OFFLINE=0 python -c "from argparse import Namespace; from decision_workbench.training.vega_local import PROFILE; from decision_workbench.training.vega_runner import pinned_assets; pinned_assets(Namespace(**PROFILE, offline=False))"
+ENV HF_HUB_OFFLINE=1 \
+    TRANSFORMERS_OFFLINE=1

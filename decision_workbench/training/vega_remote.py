@@ -87,3 +87,53 @@ def check_inputs(request, rows, hashes, negatives, negative_hashes, questions):
         questions,
         validate_settings(SimpleNamespace(**config), rows, negatives, questions),
     )
+
+
+def cloud_command(request, work, output, interpreter):
+    """Recheck all eight inputs before building the fixed native CUDA command."""
+    from .contracts import load_splits
+    from .vega_contracts import load_gate_splits
+
+    work = Path(work)
+    config = request["configuration"]
+    if type(config.get("offline")) is not bool:
+        raise ValueError("Remote Vega offline setting must be an explicit boolean")
+    positive, hashes = load_splits(work / "data")
+    negatives, negative_hashes = load_gate_splits(work / "data", positive)
+    check_inputs(
+        request,
+        positive,
+        hashes,
+        negatives,
+        negative_hashes,
+        positive["train"][0]["questions"],
+    )
+    command = [
+        str(interpreter),
+        "-m",
+        "decision_workbench.training.vega_runner",
+        "--data",
+        str(work / "data"),
+        "--out",
+        str(output),
+        "--study-request",
+        str(work / "request.json"),
+        "--device",
+        "cuda",
+    ]
+    for name in (
+        "model",
+        "revision",
+        "backbone_model",
+        "backbone_revision",
+        "epochs",
+        "batch_size",
+        "rank",
+        "max_steps",
+        "learning_rate",
+        "gate_weight",
+    ):
+        command.extend(["--" + name.replace("_", "-"), str(config[name])])
+    if config["offline"]:
+        command.append("--offline")
+    return command

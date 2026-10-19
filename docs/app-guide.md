@@ -437,7 +437,8 @@ continue after compute stops.
 
 For a completed run, **Retrieve and queue independent admission** validates the
 returned export locally. It remains inactive until admission and owner release.
-Vega's operator study is separate from managed launch support. Follow the
+Vega keeps its eight-file study and requires an image profile declaring its backend.
+Follow the [Vega cloud guide](remote-training/vega.md),
 [provider directory](remote-training/README.md), [returned-model admission](remote-admission-guide.md)
 and the selected model guide for exact supported combinations.
 

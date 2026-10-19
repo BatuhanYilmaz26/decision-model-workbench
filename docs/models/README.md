@@ -11,7 +11,7 @@ every model, device or cloud combination is supported.
 | CPU comparison baseline | Local domain training, evaluation, release and predictions | [Complete application workflow](../product-workflow.md) |
 | Laya | Native decision-head training and exported-model serving on compatible profiles | [Training](../training-guide.md#native-laya-adapter) |
 | Unsloth decision training | Compatible decision-head fine-tuning, export and serving | [Unsloth adapter](../training-guide.md#unsloth-adapter) |
-| Vega | Domain adapters, applicability data, evaluation and serving | [Vega workflow](../vega-guide.md) |
+| Vega | Domain adapters, paired applicability data, local/five-provider cloud training, evaluation and serving | [Vega workflow](../vega-guide.md), [cloud training](../remote-training/vega.md) |
 | Jev / TypeSafe | Direct hosted requests and application-managed evaluation | [API integration](../api-integration-guide.md), [hosted studies](../hosted-decisions-guide.md) |
 | OpenRouter | Hosted decision requests through supported model routes | [OpenRouter integration](../api-integration-guide.md) |
 | Perplexity Decider v1.2 / Flash v1.2 | Hosted evaluation/releases; separate open v1.1 CPU data conversion, experimental Linux/CUDA app/CLI and five-provider cloud studies, native admission and prediction | [Hosted guide](perplexity.md), [native workflow](perplexity-native.md), [cloud training](../remote-training/perplexity.md), [API example](../../examples/perplexity/README.md) |

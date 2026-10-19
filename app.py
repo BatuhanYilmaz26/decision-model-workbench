@@ -952,7 +952,7 @@ try:
                     )
                 config.update(PROFILE)
                 st.caption(
-                    "Pinned Vega 0.8B engine and Qwen 0.8B backbone. This eight-file local worker profile requires the separate Vega model environment."
+                    "Pinned Vega 0.8B engine and Qwen 0.8B backbone. Use the separate Vega environment locally or a compatible Vega image on your cloud GPU."
                 )
                 config["epochs"] = int(st.number_input("Vega epochs", 1, 100, 2))
                 config["batch_size"] = int(st.number_input("Vega batch size", 1, 64, 8))
@@ -969,7 +969,9 @@ try:
                     "Vega applicability loss weight", 0.01, 100.0, 1.0
                 )
                 config["offline"] = st.checkbox(
-                    "Use only cached pinned Vega/backbone assets", value=True
+                    "Use only cached pinned Vega/backbone assets",
+                    value=True,
+                    help="Keep enabled for a pre-populated cache. Disable only when the runtime and provider network allow downloading pinned assets; downloads consume time and storage. Network-restricted jobs need a complete cache.",
                 )
                 st.info(
                     "Training requires sixty independent real calibration families, complete negative coverage in every role and the owner's negative test-count floor. Release checks both ordinary quality and applicability limits. Model abstention always reaches the caller."
@@ -1130,7 +1132,7 @@ try:
                 else:
                     if backend == "vega":
                         st.info(
-                            "Vega prepares a separate eight-file operator study. Managed cloud launches remain unavailable until their runner/image is qualified. Train the frozen request with the Vega command and import the full export for independent local admission."
+                            "Vega prepares eight paired data files. Managed launch needs an operator image profile declaring the vega backend. Use the Vega cloud guide for image/cache setup and independent admission."
                         )
                     approved = st.checkbox(
                         "The selected provider is approved to receive this study's domain data",
