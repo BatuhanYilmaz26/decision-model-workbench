@@ -37,12 +37,7 @@ def receive(profile, body, key, transport=None):
     with httpx.Client(
         transport=transport,
         timeout=httpx.Timeout(
-            (
-                float(profile["timeout_seconds"])
-                if profile["provider"]
-                in ("schema-teacher", "generation-teacher", "perplexity")
-                else 2.0
-            ),
+            float(profile["timeout_seconds"]),
             connect=3.0,
             pool=2.0,
         ),

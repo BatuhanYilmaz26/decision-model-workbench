@@ -102,6 +102,8 @@ POST it to `/v1/projects/{project}/jobs` using the owner's workspace credential.
 
 ## Serve, retry and account for calls
 
+`timeout_seconds` sets the hosted profile's 3–30 second local request budget. The HTTP read/write inactivity timeout uses that setting for every decision provider; connect and pool waits remain capped at three and two seconds. The isolated parent also enforces the overall deadline, including child startup and response handling. Increasing the budget permits slower responses but does not enable automatic retries. After an uncertain outcome, follow [call reconciliation](#reconcile-an-uncertain-call) before attempting another paid call. Local termination does not prove the provider stopped processing. [HTTPX timeout semantics](https://www.python-httpx.org/advanced/timeouts/)
+
 Call `/v1/projects/{project}/decisions` with the application's scoped inference credential:
 
 ```json
