@@ -116,12 +116,12 @@ def publisher_module(folder, backend="d3-edge"):
 
 def memory_guard(device, *, batch=1, length=0, startup=False, profile=None):
     import torch
-    import psutil
+    from .memory_limits import available_cpu_memory
 
     available = (
         torch.cuda.mem_get_info(device)[0]
         if device.type == "cuda"
-        else psutil.virtual_memory().available
+        else available_cpu_memory()
     )
     profile = profile or get_profile()
     minimum = (

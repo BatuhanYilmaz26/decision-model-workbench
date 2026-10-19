@@ -68,3 +68,11 @@ The [pinned Vega recipe](https://github.com/NandhaKishorM/vegaml/blob/01d2850408
 6. Export adapter metadata/calibration with the base-engine hash and requalify the exact serving mode, long-input refusal, gate behavior and abstention/coverage.
 
 Vega's `fit`/TTT mode is a different fitted readout and does not inherit the engine's calibration/conformal/abstention claims. The application integrates the separately pinned engine/domain-adapter profile. The author provides a Kaggle two-T4 notebook, but reports only a small laptop mechanics run for the training example; do not call the full cloud recipe reproduced. See the [dated source and benchmark review](../research/decision-model-expansion-2026-10-10.md).
+
+## Memory preflight in containers
+
+The hardware screen and the Liquid d1-3B, Omni and D3 CPU guards use the same available-memory check. On Linux, this conservatively combines host availability with inherited cgroup memory limits and current usage, including ancestor limits. Liquid d1-3B, Omni and D3 therefore check the capacity available to their container rather than assuming they can use all host RAM. Perplexity native retains its existing container-aware guard.
+
+Keep the model guide's RAM/VRAM floors and context/batch estimates in view. Increase the container or host allocation, reduce a supported context/batch setting, or use a compatible remote GPU when capacity is insufficient. Unknown limit usage is not free memory, and unreadable limits do not trigger a fallback to unrestricted host capacity. CUDA checks continue to use measured free device memory.
+
+This is a preflight check, not a reservation or a guarantee against an OOM as other workloads change. Keep host/container enforcement in place. [Linux cgroup memory controls](https://docs.kernel.org/admin-guide/cgroup-v2.html#memory)

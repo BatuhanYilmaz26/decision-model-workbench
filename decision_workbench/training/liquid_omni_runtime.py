@@ -88,6 +88,34 @@ def resolve_checkpoint(cache, *, download=False):
     return folder
 
 
+def checked_device(device):
+    """Keep the published CPU/CUDA floors before resolving or loading weights."""
+    if device not in ("auto", "cpu", "cuda"):
+        raise ValueError("Choose auto, CPU or CUDA for omni")
+    if device == "cpu":
+        from .memory_limits import available_cpu_memory
+
+        if available_cpu_memory() < 6 * 1024**3:
+            raise ValueError(
+                "Omni float32 inference needs at least 6 GiB available system RAM"
+            )
+        return "cpu"
+    import torch
+
+    picked = (
+        "cuda"
+        if device == "auto" and torch.cuda.is_available()
+        else "cpu" if device == "auto" else device
+    )
+    if picked == "cuda":
+        if not torch.cuda.is_available() or torch.cuda.mem_get_info()[0] < 4 * 1024**3:
+            raise ValueError(
+                "Omni float32 needs at least 4 GiB free CUDA memory; choose CPU or a remote GPU"
+            )
+        return picked
+    return checked_device("cpu")
+
+
 def features(model, records):
     """Frozen native text trunk; padding never becomes evidence for the head."""
     import torch
@@ -102,9 +130,9 @@ def features(model, records):
     if device.type == "cuda":
         available = torch.cuda.mem_get_info(device)[0]
     else:
-        import psutil
+        from .memory_limits import available_cpu_memory
 
-        available = psutil.virtual_memory().available
+        available = available_cpu_memory()
     if estimate + 512 * 1024**2 > available:
         raise ValueError(
             "Omni batch/context exceeds available memory; reduce batch size or input length, or use a larger CPU/GPU host"
@@ -181,29 +209,10 @@ class OmniEngine:
             ):
                 raise ValueError("Omni calibration must cover every pinned question")
             self.max_length = m["max_length"]
-        if device not in ("auto", "cpu", "cuda"):
-            raise ValueError("Choose auto, CPU or CUDA for omni")
+        self.device = checked_device(device)
         import torch
         from transformers import AutoModel
 
-        self.device = (
-            "cuda"
-            if device == "auto" and torch.cuda.is_available()
-            else "cpu" if device == "auto" else device
-        )
-        if self.device == "cuda" and (
-            not torch.cuda.is_available() or torch.cuda.mem_get_info()[0] < 4 * 1024**3
-        ):
-            raise ValueError(
-                "Omni float32 needs at least 4 GiB free CUDA memory; choose CPU or a remote GPU"
-            )
-        if self.device == "cpu":
-            import psutil
-
-            if psutil.virtual_memory().available < 6 * 1024**3:
-                raise ValueError(
-                    "Omni float32 inference needs at least 6 GiB available system RAM"
-                )
         self.model = AutoModel.from_pretrained(
             str(checkpoint),
             trust_remote_code=True,

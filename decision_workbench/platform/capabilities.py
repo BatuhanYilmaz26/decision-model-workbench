@@ -23,23 +23,10 @@ for name in ("scikit-learn", "numpy", "torch", "laya", "unsloth", "unsloth_zoo",
 result = {"system": platform.system(), "python": platform.python_version(), "packages": packages,
           "cuda": False, "mps": False, "gpus": [], "error": None, "ram_available_gib": None}
 try:
-    import psutil
-    result["ram_available_gib"] = round(psutil.virtual_memory().available / 1024**3, 1)
-except ImportError:
-    if platform.system() == "Linux":
-        from pathlib import Path
-        try:
-            memory = next(line for line in Path("/proc/meminfo").read_text().splitlines() if line.startswith("MemAvailable:"))
-            result["ram_available_gib"] = round(int(memory.split()[1]) * 1024 / 1024**3, 1)
-        except (OSError, ValueError, StopIteration):
-            pass
-if platform.system() == "Linux":
-    try:
-        from decision_workbench.training.memory_limits import available_linux_memory
-        bounded = round(available_linux_memory() / 1024**3, 1)
-        result["ram_available_gib"] = min(result.get("ram_available_gib", bounded), bounded)
-    except (ImportError, OSError, ValueError, StopIteration):
-        result["ram_available_gib"] = None
+    from decision_workbench.training.memory_limits import available_cpu_memory
+    result["ram_available_gib"] = round(available_cpu_memory() / 1024**3, 1)
+except (ImportError, OSError, ValueError, StopIteration):
+    result["ram_available_gib"] = None
 if packages["torch"]:
     try:
         import torch

@@ -12,6 +12,7 @@ from .artifacts import file_sha
 from .liquid_data import ASSETS, MODEL, REVISION, LiquidPrompt
 from .liquid_local import PINNED_PACKAGES, UNSLOTH_PACKAGES
 from .metrics import normalize_answers
+from .memory_limits import available_cpu_memory
 
 RUNTIME_ASSETS = {
     **ASSETS,
@@ -29,10 +30,8 @@ TEMPERATURES = (0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0)
 
 
 def require_cpu_memory(*, training=False):
-    import psutil
-
     gib = 20 if training else 16
-    if psutil.virtual_memory().available < gib * 1024**3:
+    if available_cpu_memory() < gib * 1024**3:
         raise ValueError(
             f"This float32 d1-3B CPU profile requires at least {gib} GiB available RAM; "
             "use a compatible CUDA GPU, a remote GPU, or the CPU comparison baseline"

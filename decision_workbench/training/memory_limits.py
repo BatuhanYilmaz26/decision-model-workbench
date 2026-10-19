@@ -1,6 +1,19 @@
 """Conservative available Linux memory, including inherited container limits."""
 
 from pathlib import Path, PurePosixPath
+import sys
+
+
+def available_cpu_memory():
+    """Available host RAM bounded by inherited Linux container limits."""
+    if sys.platform == "linux":
+        return available_linux_memory()
+    import psutil
+
+    available = psutil.virtual_memory().available
+    if type(available) is not int or available < 0:
+        raise ValueError("Cannot determine available system memory")
+    return available
 
 
 def checked_process_limit(value):

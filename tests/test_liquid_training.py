@@ -203,14 +203,7 @@ class LiquidTrainingTests(unittest.TestCase):
                 runtime.apply_temperature(values, 1)
 
     def test_insufficient_cpu_memory_is_refused_before_loading_weights(self):
-        with patch.dict(
-            "sys.modules",
-            {
-                "psutil": SimpleNamespace(
-                    virtual_memory=lambda: SimpleNamespace(available=3 * 1024**3)
-                )
-            },
-        ):
+        with patch.object(runtime, "available_cpu_memory", return_value=3 * 1024**3):
             for training in (False, True):
                 with self.assertRaisesRegex(ValueError, "available RAM"):
                     runtime.require_cpu_memory(training=training)

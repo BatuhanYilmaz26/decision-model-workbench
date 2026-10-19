@@ -21,6 +21,7 @@ from .liquid_omni_runtime import (
     head_logits,
     resolve_checkpoint,
     runtime_identity,
+    checked_device,
 )
 from .liquid_runtime import fit_temperatures
 from .metrics import evaluate_predictions
@@ -53,6 +54,7 @@ def train_omni(args):
     out = Path(args.out).absolute()
     if out.exists():
         raise ValueError("Choose a new omni run directory; existing runs are preserved")
+    checked_device(args.device)
     checkpoint = resolve_checkpoint(args.cache, download=args.download)
     engine = OmniEngine(checkpoint, device=args.device, base=True)
     out.mkdir(parents=True)
