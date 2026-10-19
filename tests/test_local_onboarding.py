@@ -321,6 +321,10 @@ class PersonalWorkspaceTests(unittest.TestCase):
                 "Use configured default",
             )
             app.selectbox(key="local-teacher-format").set_value("json_schema").run()
+            app.selectbox(key="local-teacher-token-parameter").set_value(
+                "max_completion_tokens"
+            )
+            app.checkbox(key="local-teacher-omit-temperature").check().run()
             next(
                 b for b in app.button if b.label == "Start local workspace"
             ).click().run()
@@ -333,6 +337,14 @@ class PersonalWorkspaceTests(unittest.TestCase):
             self.assertEqual(
                 resource.environment["DMT_TEACHER_RESPONSE_FORMAT"], "json_schema"
             )
+            for kind in ("SCHEMA", "GENERATION"):
+                self.assertEqual(
+                    resource.environment["DMT_" + kind + "_TOKEN_PARAMETER"],
+                    "max_completion_tokens",
+                )
+                self.assertEqual(
+                    resource.environment["DMT_" + kind + "_TEMPERATURE"], "omit"
+                )
             self.workspace = resource
             pids = [p.pid for p in resource.processes]
             app.run()

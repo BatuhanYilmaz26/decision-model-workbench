@@ -27,6 +27,18 @@ def render_schema_assistant(api, principal):
             f"Configured teacher: {teacher['model']} at {teacher['base_url']} · {teacher['timeout_seconds']} second timeout"
         )
         st.caption("Response format: " + teacher.get("response_format", "json_object"))
+        st.caption(
+            "Output allowance: "
+            + str(teacher.get("max_output_tokens", 3000))
+            + " tokens via "
+            + teacher.get("token_parameter", "max_tokens")
+            + " · Temperature: "
+            + (
+                "omitted"
+                if teacher.get("temperature", 0.2) is None
+                else str(teacher.get("temperature", 0.2))
+            )
+        )
         attempt = st.session_state.get("schema-request-attempt", 0)
         with st.form("schema-assistant-request-" + str(attempt)):
             name = st.text_input("Suggested project name", max_chars=120)

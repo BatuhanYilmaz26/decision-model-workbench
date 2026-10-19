@@ -166,6 +166,31 @@ class SchemaIntakeTests(unittest.TestCase):
             self.assertEqual(self.submit().status_code, 409)
         self.assertEqual(len(self.teacher.calls), 1)
 
+    def test_modern_teacher_controls_reach_http_and_require_owner_confirmation(self):
+        with patch.dict(
+            os.environ,
+            {
+                "DMT_SCHEMA_TOKEN_PARAMETER": "max_completion_tokens",
+                "DMT_SCHEMA_OUTPUT_TOKENS": "4096",
+                "DMT_SCHEMA_TEMPERATURE": "omit",
+                "DMT_TEACHER_RESPONSE_FORMAT": "json_schema",
+            },
+        ):
+            self.test_real_teacher_worker_review_and_idempotent_project_confirmation()
+        request = self.teacher.calls[0][2]
+        self.assertEqual(request["max_completion_tokens"], 4096)
+        self.assertNotIn("temperature", request)
+        self.assertNotIn("max_tokens", request)
+
+    def test_schema_control_drift_never_dispatches(self):
+        response = self.submit()
+        self.assertEqual(response.status_code, 202, response.text)
+        with patch.dict(os.environ, {"DMT_SCHEMA_TEMPERATURE": "omit"}):
+            self.assertTrue(self.worker.once())
+        detail = self.detail(response.json()["id"])
+        self.assertEqual(detail["job"]["status"], "failed")
+        self.assertEqual(self.teacher.calls, [])
+
     def test_real_teacher_worker_review_and_idempotent_project_confirmation(self):
         response = self.submit()
         self.assertEqual(response.status_code, 202, response.text)

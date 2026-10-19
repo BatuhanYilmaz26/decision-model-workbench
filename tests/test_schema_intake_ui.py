@@ -27,6 +27,9 @@ class SchemaAssistantBrowserTests(unittest.TestCase):
                 "DMT_TEACHER_API_KEY": "private-fixture-key",
                 "DMT_SCHEMA_TIMEOUT_SECONDS": "10",
                 "DMT_SCHEMA_CALLS_PER_DAY": "20",
+                "DMT_SCHEMA_TOKEN_PARAMETER": "max_completion_tokens",
+                "DMT_SCHEMA_TEMPERATURE": "omit",
+                "DMT_TEACHER_RESPONSE_FORMAT": "json_schema",
             },
         )
         self.environment.start()

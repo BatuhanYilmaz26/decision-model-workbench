@@ -165,23 +165,24 @@ def render_connection(root):
                 )
                 if teacher_format != "Use configured default":
                     settings["DMT_TEACHER_RESPONSE_FORMAT"] = teacher_format
+                parameter = st.session_state.get(
+                    "local-teacher-token-parameter", "Use configured default"
+                )
+                if parameter != "Use configured default":
+                    settings["DMT_SCHEMA_TOKEN_PARAMETER"] = parameter
+                    settings["DMT_GENERATION_TOKEN_PARAMETER"] = parameter
+                if st.session_state.get("local-teacher-omit-temperature", False):
+                    settings["DMT_SCHEMA_TEMPERATURE"] = "omit"
+                    settings["DMT_GENERATION_TEMPERATURE"] = "omit"
                 if teacher_url or teacher_model:
-                    parsed = httpx.URL(teacher_url)
-                    if (
-                        not teacher_model
-                        or not parsed.host
-                        or parsed.userinfo
-                        or parsed.scheme not in ("http", "https")
-                        or (
-                            parsed.scheme == "http"
-                            and parsed.host not in ("localhost", "127.0.0.1", "::1")
-                        )
-                    ):
+                    from decision_workbench.synthetic_contracts import teacher_address
+
+                    if not teacher_model:
                         raise ValueError(
                             "Supply a teacher model and local HTTP or remote HTTPS base URL without embedded credentials"
                         )
                     settings.update(
-                        DMT_TEACHER_BASE_URL=teacher_url,
+                        DMT_TEACHER_BASE_URL=teacher_address(teacher_url),
                         DMT_TEACHER_MODEL=teacher_model,
                         DMT_TEACHER_API_KEY=st.session_state.get(
                             "local-teacher-key", ""
@@ -303,6 +304,17 @@ def render_connection(root):
             )
             st.caption(
                 "Credentials stay in the local server/worker memory. Training seeds leave this computer only if you approve generation using a remote teacher inside the project."
+            )
+            st.selectbox(
+                "Teacher token limit parameter",
+                ["Use configured default", "max_tokens", "max_completion_tokens"],
+                key="local-teacher-token-parameter",
+                help="For schema suggestions and synthetic generation. Choose the parameter documented by your teacher; changing it does not send a request.",
+            )
+            st.checkbox(
+                "Omit teacher temperature",
+                key="local-teacher-omit-temperature",
+                help="Enable if the teacher rejects a temperature parameter. This applies to schema suggestions and synthetic generation; unchecked preserves configured defaults.",
             )
     st.link_button("Installation and local model setup", REPO + "docs/setup.md")
     st.stop()

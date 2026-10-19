@@ -16,6 +16,9 @@ Start with [local setup](setup.md#configure-a-teacher). The API and independent 
 | `DMT_TEACHER_API_KEY` | Optional credential, supplied to the services rather than saved in a project |
 | `DMT_SCHEMA_TIMEOUT_SECONDS` | Total suggestion deadline; default 60 seconds, allowed range 5–180 |
 | `DMT_SCHEMA_CALLS_PER_DAY` | Maximum new schema requests per tenant in a rolling 24 hours; default 20, allowed range 1–100 |
+| `DMT_SCHEMA_TOKEN_PARAMETER` | `max_tokens` by default; choose `max_completion_tokens` when required by your teacher |
+| `DMT_SCHEMA_OUTPUT_TOKENS` | Output allowance; default 3,000, allowed range 256–16,384 |
+| `DMT_SCHEMA_TEMPERATURE` | Default `0.2`; a finite number from 0 to 2, or `omit` to leave the parameter out |
 
 The endpoint must support `POST /chat/completions`, the selected JSON output mode and the configured model. JSON Schema mode is non-strict; proposed questions still pass server validation and owner review. See [teacher setup](setup.md#configure-a-teacher) for format selection and startup commands. Loopback HTTP and remote HTTPS are supported; embedded credentials, query strings and fragments in the base URL are refused. For a local endpoint, install and start a compatible teacher separately. For example, [Ollama documents its compatible endpoint and structured-output options](https://docs.ollama.com/api/openai-compatibility). Compatibility must be checked with the selected teacher; a decision-only model is not a generative teacher.
 
@@ -24,6 +27,21 @@ Restart the services after changing configuration. The browser displays the conf
 With [Docker Compose](container-guide.md), set these variables in your private `.env` file. Compose passes the teacher address, model and schema limits to both API and worker, and the teacher credential only to the worker. A container's loopback address points to that container, not the host computer. Use a reachable approved HTTPS endpoint when the teacher runs elsewhere; the default Compose configuration does not provide an Ollama service or configure a TLS gateway for a host teacher.
 
 ## Request and review a draft
+For a teacher that requires the newer token parameter and rejects temperature,
+set `DMT_SCHEMA_TOKEN_PARAMETER=max_completion_tokens` and
+`DMT_SCHEMA_TEMPERATURE=omit` before starting API and worker services. Leave the
+optional settings blank to preserve the defaults. Synthetic generation has its
+own `DMT_GENERATION_*` controls. Direct personal setup offers **Teacher token
+limit parameter** and **Omit teacher temperature**, applying these choices to
+both workflows; **Use configured default** preserves your environment settings.
+
+The browser shows the active token allowance and whether temperature is omitted.
+All controls form part of the approved request. Changing them requires a new
+approval; saved history retains its original request. No automatic parameter
+fallback or billable retry is performed. Check your model's parameter support;
+`max_completion_tokens` can include reasoning as well as visible output.
+[Chat Completions parameters](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)
+
 
 1. Open **Create a domain project** and select **Suggest decision questions with a teacher**. This optional workflow requires a workspace owner.
 2. Enter a project name, decision policy and data requirements. Explain the evidence available, allowed actions, exclusions and cases needing review. Do not paste evaluation examples or secrets into this brief.

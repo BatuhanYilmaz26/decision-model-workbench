@@ -3,6 +3,7 @@
 import copy
 import hashlib
 import json
+import math
 import os
 import re
 import threading
@@ -65,17 +66,54 @@ def teacher_profile():
         raise ValueError(
             "Configure integer schema timeout and request limits"
         ) from None
-    return validate_profile(
-        configured_format(
-            {
-                "provider": "schema-teacher",
-                "base_url": base,
-                "model": model,
-                "timeout_seconds": timeout,
-                "max_calls_day": calls,
-            }
+    profile = {
+        "provider": "schema-teacher",
+        "base_url": base,
+        "model": model,
+        "timeout_seconds": timeout,
+        "max_calls_day": calls,
+    }
+    for variable, field in (
+        ("DMT_SCHEMA_TOKEN_PARAMETER", "token_parameter"),
+        ("DMT_SCHEMA_OUTPUT_TOKENS", "max_output_tokens"),
+        ("DMT_SCHEMA_TEMPERATURE", "temperature"),
+    ):
+        value = os.environ.get(variable, "").strip()
+        if not value:
+            continue
+        try:
+            if field == "max_output_tokens":
+                value = int(value)
+            elif field == "temperature":
+                value = None if value.lower() == "omit" else float(value)
+        except (ValueError, OverflowError):
+            raise ValueError(
+                "Check the schema teacher token and temperature settings"
+            ) from None
+        profile[field] = value
+    return validate_profile(configured_format(profile))
+
+
+def completion_settings(profile):
+    """Validate optional controls without adding fields to historical profiles."""
+    parameter = profile.get("token_parameter", "max_tokens")
+    tokens = profile.get("max_output_tokens", 3000)
+    temperature = profile.get("temperature", 0.2)
+    if parameter not in ("max_tokens", "max_completion_tokens"):
+        raise ValueError(
+            "Schema teacher token parameter must be max_tokens or max_completion_tokens"
         )
-    )
+    if type(tokens) is not int or not 256 <= tokens <= 16384:
+        raise ValueError("Schema teacher output allowance must be 256–16,384 tokens")
+    if temperature is not None and (
+        type(temperature) not in (int, float)
+        or not math.isfinite(temperature)
+        or not 0 <= temperature <= 2
+    ):
+        raise ValueError(
+            "Schema teacher temperature must be omitted or a finite number in [0,2]"
+        )
+    return parameter, tokens, temperature
 
 
 def validate_profile(value):
@@ -89,11 +127,15 @@ def validate_profile(value):
         "timeout_seconds",
         "max_calls_day",
     }
-    if not isinstance(value, dict) or set(value) not in (
-        fields,
-        fields | {"response_format"},
-    ):
+    optional = {
+        "response_format",
+        "token_parameter",
+        "max_output_tokens",
+        "temperature",
+    }
+    if not isinstance(value, dict) or not fields <= set(value) <= fields | optional:
         raise ValueError("Schema teacher configuration is invalid")
+    completion_settings(value)
     if "response_format" in value:
         format_mode(value["response_format"])
     base, model = value["base_url"], value["model"]
@@ -140,6 +182,7 @@ def validate_profile(value):
 
 def request_body(domain, profile):
     domain = brief(domain)
+    parameter, tokens, temperature = completion_settings(profile)
     task = {
         "domain": domain,
         "task": "Propose a small decision schema for the owner to review. Return a JSON object with questions and assumptions.",
@@ -170,14 +213,15 @@ def request_body(domain, profile):
             },
             {"role": "user", "content": encode(task)},
         ],
-        "temperature": 0.2,
-        "max_tokens": 3000,
+        parameter: tokens,
         "response_format": response_format(
             profile.get("response_format", "json_object"),
             "decision_schema",
             suggestions_schema(),
         ),
     }
+    if temperature is not None:
+        value["temperature"] = temperature
     body = encode(value).encode("utf-8")
     if len(body) > MAX_REQUEST:
         raise ValueError(
@@ -378,10 +422,20 @@ def frozen_request(payload):
             raise ValueError()
         request = strict_json(body)
         messages = request["messages"]
+        parameter, tokens, temperature = completion_settings(profile)
+        fields = {"model", "messages", parameter, "response_format"}
+        if temperature is not None:
+            fields.add("temperature")
         if (
-            set(request)
-            != {"model", "messages", "temperature", "max_tokens", "response_format"}
+            set(request) != fields
             or request["model"] != profile["model"]
+            or type(request[parameter]) is not int
+            or request[parameter] != tokens
+            or (
+                temperature is not None
+                and type(request.get("temperature")) not in (int, float)
+            )
+            or request.get("temperature") != temperature
             or not archived_format(
                 request["response_format"],
                 profile.get("response_format", "json_object"),

@@ -109,6 +109,16 @@ JSON Schema mode sends a schema with `strict: false`, allowing arbitrary text/JS
 
 The optional [schema assistant](schema-assistant-guide.md) uses the same teacher to draft questions before project creation. Configure the API and worker consistently, then approve the domain-brief request in the browser. Its timeout and daily request limit are configurable separately; every proposed question still requires owner review.
 
+If your teacher requires `max_completion_tokens` or rejects temperature, set
+`DMT_SCHEMA_TOKEN_PARAMETER=max_completion_tokens` and
+`DMT_SCHEMA_TEMPERATURE=omit` for schema drafts, plus the corresponding
+`DMT_GENERATION_TOKEN_PARAMETER` and `DMT_GENERATION_TEMPERATURE` for synthetic
+candidates. In direct personal startup, **Teacher token limit parameter** and
+**Omit teacher temperature** apply those choices to both workflows. Detailed
+[schema controls](schema-assistant-guide.md#set-up-the-teacher) and
+[generation controls](synthetic-generation-guide.md) explain their independent
+output allowances. Restart services after changing settings.
+
 ## Configure model training and serving
 
 Use the [tested dependency profiles](../requirements/README.md) and [training guide](training-guide.md). Install this project into the isolated model environment. In PowerShell, configure both the worker and resident inference runtime before starting the launcher:

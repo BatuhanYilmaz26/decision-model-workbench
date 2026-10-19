@@ -96,8 +96,12 @@ browsers reaching that server; do not expose it through a public proxy.
 
 Before starting a direct personal workspace, **Optional local model and synthetic
 generation settings** accepts existing model-environment Python executables and
-an optional teacher endpoint/model/key and **Teacher response format**. Keep **Use configured default**, or choose the JSON mode supported by your teacher; see [teacher setup](setup.md#configure-a-teacher). Leave the model paths empty for the CPU
-baseline. These fields do not install packages or model weights. Restart the app
+an optional teacher endpoint/model/key. **Teacher response format** selects
+JSON object or JSON Schema output. **Teacher token limit parameter** and
+**Omit teacher temperature** handle teachers with different Chat Completions
+parameters. Keep **Use configured default** to preserve environment settings;
+see [teacher setup](setup.md#configure-a-teacher). Leave model paths empty for
+the CPU baseline. These fields do not install packages or weights. Restart the app
 to change settings after services have started. Launcher-based configuration and
 provider secrets are described in [setup](setup.md).
 
