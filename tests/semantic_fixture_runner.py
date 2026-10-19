@@ -7,6 +7,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from decision_workbench.training.process_guard import arm_parent_guard
+
+arm_parent_guard()
 import numpy as np
 from decision_workbench.training.semantic_runner import cosine_pairs
 
@@ -18,7 +21,14 @@ args = parser.parse_args()
 request = json.loads(Path(args.request).read_bytes())
 rows = request["rows"]
 if any(row["state"].startswith("STALL") for row in rows):
+    import os
+
+    Path(args.out).with_name("semantic-child-ready.json").write_text(
+        json.dumps({"pid": os.getpid()})
+    )
     time.sleep(120)
+if any(row["state"].startswith("ALLOCATE") for row in rows):
+    bytearray(512 * 1024**2)
 ids = [row["id"] for row in rows]
 vectors = np.eye(len(rows) + 1, dtype=np.float32)[1:]
 for i, row in enumerate(rows):

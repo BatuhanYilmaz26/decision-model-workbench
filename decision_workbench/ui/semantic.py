@@ -23,6 +23,11 @@ def render_semantic(
             f"Local model: {profile['model']} · revision {profile['revision'][:12]}"
         )
         st.caption(
+            f"Process memory budget: {profile.get('memory_limit_mb', 16384):,} MiB. "
+            "Windows limits job committed memory; Linux limits each child's address space. "
+            "This is a ceiling, not reserved RAM. See the semantic-data guide before changing it."
+        )
+        st.caption(
             "The audit compares every included state using the pinned local CPU encoder. Similarity proposes pairs for review; it does not establish duplicate status or guarantee decontamination. Review all candidates before reservation. Synthetic extensions include the original reserved data in the audit."
         )
         threshold = st.number_input(

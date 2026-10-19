@@ -26,6 +26,7 @@ def main():
     parser.add_argument("--max-rows", type=int, default=5000)
     parser.add_argument("--max-pairs", type=int, default=10000)
     parser.add_argument("--timeout-seconds", type=int, default=600)
+    parser.add_argument("--memory-limit-mb", type=int, default=16384)
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
     folder = Path(args.model_dir).resolve()
@@ -46,6 +47,7 @@ def main():
         "max_rows": args.max_rows,
         "max_pairs": args.max_pairs,
         "timeout_seconds": args.timeout_seconds,
+        "memory_limit_mb": args.memory_limit_mb,
     }
     validate_profile(profile)
     verify_model(profile)

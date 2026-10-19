@@ -448,6 +448,36 @@ class GuidedIntakeTests(unittest.TestCase):
             )
         )
 
+    def test_known_semantic_links_reduce_real_family_readiness_count(self):
+        from decision_workbench.quality import quality_report
+
+        rows = [
+            {
+                "id": str(i),
+                "group_id": "family-" + str(i),
+                "state": "Different evidence " + str(i),
+                "questions": QUESTIONS,
+                "gold": {},
+                "metadata": {
+                    "origin": "real",
+                    "reviewed": False,
+                    "semantic_links": [str(i - 1)] if i else [],
+                },
+            }
+            for i in range(4)
+        ]
+        report = quality_report(rows, QUESTIONS)
+        self.assertEqual(report["real_source_groups"], 4)
+        self.assertEqual(report["real_families_after_known_links"], 1)
+        self.assertTrue(
+            any("four real families" in text for text in report["preparation_blockers"])
+        )
+        # A quality view may contain only a subset of an existing reservation.
+        rows[0]["metadata"]["semantic_links"] = ["outside-this-view"]
+        self.assertEqual(
+            quality_report(rows, QUESTIONS)["real_families_after_known_links"], 1
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

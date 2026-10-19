@@ -31,3 +31,9 @@ The one-shot child receives the selected credential through a private pipe and c
 Use the authenticated project's routes: `GET taxonomy-profiles`, `POST taxonomy-proposals` for manual proposals, `POST jobs` with kind `taxonomy-discover` for consented discovery, `GET taxonomy-proposals/{id}`, `POST taxonomy-proposals/{id}/reviews`, and `POST taxonomy-proposals/{id}/confirm`. Manual proposal fields are `dataset`, `question_id`, `record_ids` and `candidates` (`name`, `example_ids`). Discovery config adds `profile_id`, `data_approved=true` and `cost_approved=true`. Review fields are `candidate_id`, `decision`, `canonical_id`, `description`, `expected_revision`, `expected_hash` and `note`. Confirmation fields are `expected_state_sha256`, `name` and `note`. Unknown-call inspection/settlement uses `taxonomy-discoveries/{id}` and its `/settle` route. Inspect `/docs` for the strict live schema; use [workspace authentication](authentication-guide.md).
 
 Fictional provider responses exercise the real API/worker/HTTP parser, isolated process, review and recovery paths. They do not establish TypeLLM account execution, category quality, calibration, source truth or enterprise production acceptance.
+
+## Recover interrupted discovery
+
+The worker owns the HTTP transport process. On supported Windows/Linux profiles, worker loss ends that child; a restarted worker marks the expired job interrupted and does not replay its request. This cannot cancel work already accepted by the upstream provider or establish whether it was charged.
+
+An unresolved discovery keeps its call reservation. Inspect the saved discovery and provider activity before using the owner reconciliation controls. Confirm local termination and upstream completion only when you can support both; closing a connection is not proof of a refund or provider cancellation. Review any completed proposal before confirming a new schema.

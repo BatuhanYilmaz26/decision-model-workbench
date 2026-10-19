@@ -43,6 +43,10 @@ def independent_real_families(rows):
             if seed in by_id:
                 union(i, by_id[seed])
     families = defaultdict(list)
+    from .semantic import linked_pairs
+
+    for left, right in linked_pairs(rows, included_only=True):
+        union(by_id[left], by_id[right])
     for i, row in enumerate(rows):
         families[find(i)].append(row)
     return sum(
@@ -145,7 +149,7 @@ def quality_report(rows, questions):
         )
     if real_families < 4:
         blockers.append(
-            "Fewer than four real families after known group, exact-state and seed links; four independent split families are the format minimum"
+            "Fewer than four real families after known group, exact-state, seed and included semantic links; four independent split families are the format minimum"
         )
     for name, report in per_question.items():
         report["absent_classes"] = [

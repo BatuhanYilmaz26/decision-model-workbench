@@ -33,7 +33,10 @@ def validate_profile(profile):
         "max_pairs",
         "timeout_seconds",
     }
-    if not isinstance(profile, dict) or set(profile) != fields:
+    if not isinstance(profile, dict) or set(profile) not in (
+        fields,
+        fields | {"memory_limit_mb"},
+    ):
         raise ValueError("Invalid operator semantic profile fields")
     if not isinstance(profile["id"], str) or not re.fullmatch(
         r"[A-Za-z0-9_-]{1,64}", profile["id"]
@@ -86,6 +89,9 @@ def validate_profile(profile):
     ):
         if type(profile[field]) is not int or not low <= profile[field] <= high:
             raise ValueError("Semantic " + field + " is outside the supported bounds")
+    memory = profile.get("memory_limit_mb", 16384)
+    if type(memory) is not int or not 256 <= memory <= 65536:
+        raise ValueError("Semantic memory_limit_mb must be 256–65,536 MiB")
     return profile
 
 
@@ -114,6 +120,39 @@ def public_profile(profile):
         for key, value in profile.items()
         if key not in ("model_dir", "tenants", "projects")
     }
+
+
+def audit_source_capacity(store, tenant, project, config):
+    """Bound new audit sources before loading dataset rows; history is unchanged."""
+    maximum = 20000
+    total = 0
+    kind = "gate-dataset" if config.get("applicability") else "dataset"
+    for identifier in config["datasets"]:
+        count = store.get(identifier, tenant, project, kind, include_rows=False)[
+            "payload"
+        ]["row_count"]
+        if type(count) is not int or count < 0:
+            raise ValueError("Invalid semantic source row-count metadata")
+        total += count
+        if total > maximum:
+            raise ValueError(
+                "Semantic audit sources exceed 20,000 records, including rejected records and base reservations; select smaller collections. Nothing was sampled"
+            )
+    if config.get("base_snapshot"):
+        base = store.get(config["base_snapshot"], tenant, project, "snapshot")[
+            "payload"
+        ]
+        splits = base.get("splits")
+        if not isinstance(splits, dict) or any(
+            not isinstance(rows, list) for rows in splits.values()
+        ):
+            raise ValueError("Invalid semantic base reservation")
+        total += sum(len(rows) for rows in splits.values())
+        if total > maximum:
+            raise ValueError(
+                "Semantic audit sources exceed 20,000 records, including rejected records and base reservations; select smaller collections. Nothing was sampled"
+            )
+    return total
 
 
 def collect(store, tenant, project, config):
@@ -200,7 +239,7 @@ def validate_report(payload):
         raise ValueError("Semantic report fields are incomplete or unexpected")
     report = payload["report"]
     profile = payload["profile"]
-    if not isinstance(profile, dict) or set(profile) != {
+    profile_fields = {
         "id",
         "required",
         "model",
@@ -211,7 +250,11 @@ def validate_report(payload):
         "max_rows",
         "max_pairs",
         "timeout_seconds",
-    }:
+    }
+    if not isinstance(profile, dict) or set(profile) not in (
+        profile_fields,
+        profile_fields | {"memory_limit_mb"},
+    ):
         raise ValueError("Semantic report has no frozen profile")
     validate_profile(
         {
@@ -597,6 +640,7 @@ def run_audit(worker, job, cancelled):
         or source_fingerprint() != config["source_sha256"]
     ):
         raise ValueError("Semantic job profile/source identity changed")
+    audit_source_capacity(worker.store, tenant, project, config)
     _, _, rows, input_sha, exclusions = collect(worker.store, tenant, project, config)
     if config.get("applicability") and input_sha != config["input_sha256"]:
         raise ValueError("Combined semantic inputs changed after submission")
@@ -636,6 +680,9 @@ def run_audit(worker, job, cancelled):
         HF_HUB_DISABLE_TELEMETRY="1",
         HF_HUB_DISABLE_IMPLICIT_TOKEN="1",
         TOKENIZERS_PARALLELISM="false",
+        OMP_NUM_THREADS="4",
+        MKL_NUM_THREADS="4",
+        OPENBLAS_NUM_THREADS="4",
         # PyTorch imports Dynamo even for eager CPU encoders. Its default
         # cache asks getpass for a username, which is unavailable in this
         # deliberately restricted Windows environment. Keep its cache private
@@ -664,7 +711,11 @@ def run_audit(worker, job, cancelled):
             ],
             stdout=log,
             stderr=subprocess.STDOUT,
-            **leased_process_options(semantic_lease, env),
+            **leased_process_options(
+                semantic_lease,
+                env,
+                memory_limit_bytes=profile.get("memory_limit_mb", 16384) * 1024**2,
+            ),
             cwd=Path(__file__).resolve().parents[2],
             shell=False,
         )

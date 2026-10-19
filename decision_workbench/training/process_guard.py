@@ -17,14 +17,23 @@ import threading
 _KEYS = ("DMT_LINUX_PARENT_PID", "DMT_LINUX_PARENT_TID", "DMT_LINUX_LEASE_FD")
 _lease_file = None
 _WINDOWS_KEY = "DMT_WINDOWS_MODEL_JOB"
+_MEMORY_KEY = "DMT_PROCESS_MEMORY_LIMIT_BYTES"
 
 
-def leased_process_options(lease, environment=None):
+def leased_process_options(lease, environment=None, *, memory_limit_bytes=None):
     """Create platform ownership metadata for a child under a held lease."""
     env = dict(os.environ if environment is None else environment)
     for key in _KEYS:
         env.pop(key, None)
     env.pop(_WINDOWS_KEY, None)
+    env.pop(_MEMORY_KEY, None)
+    if memory_limit_bytes is not None:
+        from .memory_limits import checked_process_limit
+
+        checked_process_limit(memory_limit_bytes)
+        if sys.platform not in ("win32", "linux"):
+            raise ValueError("Managed process memory limits require Windows or Linux")
+        env[_MEMORY_KEY] = str(memory_limit_bytes)
     if sys.platform == "win32":
         if lease.file is None or lease.file.closed:
             raise ValueError("Child launch requires a held resource lease")
@@ -32,7 +41,9 @@ def leased_process_options(lease, environment=None):
 
         if lease.windows_job is not None:
             raise ValueError("This held lease already owns a model process job")
-        lease.windows_job = WindowsJob(lease.path)
+        lease.windows_job = WindowsJob(
+            lease.path, memory_limit_bytes=memory_limit_bytes
+        )
         env[_WINDOWS_KEY] = lease.windows_job.name
         return {"env": env, "creationflags": 0x08000000}  # CREATE_NO_WINDOW
     if sys.platform != "linux":
@@ -54,6 +65,14 @@ def arm_parent_guard():
     global _lease_file
     values = [os.environ.pop(key, None) for key in _KEYS]
     windows = os.environ.pop(_WINDOWS_KEY, None)
+    memory = os.environ.pop(_MEMORY_KEY, None)
+    if memory is not None:
+        from .memory_limits import checked_process_limit
+
+        try:
+            memory = checked_process_limit(int(memory))
+        except (ValueError, TypeError):
+            raise RuntimeError("Invalid managed child memory limit") from None
     if windows is not None:
         if sys.platform != "win32" or any(value is not None for value in values):
             raise RuntimeError("Invalid Windows child supervision metadata")
@@ -62,6 +81,8 @@ def arm_parent_guard():
         join_parent_job(windows)
         return True
     if all(value is None for value in values):
+        if memory is not None:
+            raise RuntimeError("A memory-limited child requires an owned process lease")
         return False
     if sys.platform != "linux" or any(value is None for value in values):
         raise RuntimeError("Invalid Linux child supervision metadata")
@@ -92,6 +113,10 @@ def arm_parent_guard():
             raise RuntimeError("Supervising parent ended during child initialization")
         os.set_inheritable(fd, False)
         _lease_file = os.fdopen(fd, "a+b")
+        if memory is not None:
+            from .memory_limits import limit_linux_address_space
+
+            limit_linux_address_space(memory)
         return True
     except (OSError, ValueError) as exc:
         raise RuntimeError(

@@ -94,6 +94,9 @@ def freeze(service, principal, project, config):
         "profile": public_profile(profile),
         "source_sha256": source_fingerprint(),
     }
+    from .semantic import audit_source_capacity
+
+    audit_source_capacity(service.store, principal["tenant"], project, frozen)
     frozen["input_sha256"] = collect(
         service.store, principal["tenant"], project, frozen
     )[3]

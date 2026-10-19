@@ -35,6 +35,38 @@ The helper defaults to a **required** audit, a 256-token budget, 5,000 records, 
 
 The Windows dependency profile uses `torch 2.10.0+cu126`, but the semantic audit runs on CPU. In a container, install the model-capable runtime and mount an approved model directory read-only before enabling the profile; the baseline image contains no model assets. Validate replacement checkpoints and CPU-wheel profiles separately. Monitor interrupted children and manage cache retention yourself; there is no fleet-wide capacity scheduler.
 
+## Process memory and interrupted audits
+
+Managed audits require Windows or Linux. `--memory-limit-mb` sets the operator
+profile's `memory_limit_mb` ceiling in MiB (256–65,536; default 16,384).
+Existing profiles without the field use that default. Set an appropriate budget
+for your installed encoder and runtime; the ceiling does not reserve RAM or
+prove enough physical memory is available.
+
+A new audit can inspect at most 20,000 source records across the selected
+collections and base reservation, including rejected records. The API checks
+stored row counts before reading the collections; the worker rechecks before
+embedding. The configured `max_rows` separately bounds eligible records.
+Oversized input is refused without sampling. Use smaller collections; changing
+this new-job limit does not rewrite or invalidate historical audit records.
+
+On Windows, the owned process job limits committed memory across the child and
+its ordinary descendants. On Linux, an inherited `RLIMIT_AS` caps each child's
+virtual address space, including mapped libraries. Existing stricter limits
+are retained. These measure different resources, so the same number does not
+imply equal RSS or usable tensor memory. Use container/host controls for an
+aggregate service limit. [Windows job memory](https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-jobobject_extended_limit_information), [Python resource limits](https://docs.python.org/3/library/resource.html#resource.RLIMIT_AS)
+
+Limits are armed before model imports. Allocation failure, cancellation or a
+deadline publishes no partial audit. Open `jobs/JOB_ID/semantic.log` within your
+workspace storage, correct the input or resource profile and submit a new job.
+Parent loss terminates the owned child;
+the job becomes interrupted after its lease expires. Row, pair, token and time
+limits still apply. A required semantic profile continues to block unchecked
+reservation. Direct use of the internal runner is not a replacement for this
+managed supervision path.
+
+
 ## Owner and reviewer workflow
 
 1. Approve complete business labels on the selected immutable dataset versions. Explicitly rejected rows are excluded; pending records still block the study.

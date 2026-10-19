@@ -490,6 +490,9 @@ class Service:
             profile = profile_for(principal["tenant"], project)
             if kind == "semantic-audit":
                 self.require(principal, ("admin",))
+                from .semantic import audit_source_capacity
+
+                audit_source_capacity(self.store, principal["tenant"], project, config)
                 threshold = config.get("threshold")
                 if profile is None:
                     raise ValueError(

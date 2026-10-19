@@ -11,7 +11,7 @@ def row_hashes(rows):
     return {r["id"]: hashlib.sha256(dumps(r).encode()).hexdigest() for r in rows}
 
 
-def linked_pairs(rows):
+def linked_pairs(rows, *, included_only=False):
     ids = {r["id"] for r in rows}
     output = set()
     for row in rows:
@@ -23,11 +23,12 @@ def linked_pairs(rows):
         ):
             raise ValueError("semantic_links must be unique record identifiers")
         for other in links:
-            if other == row["id"] or other not in ids:
+            if other == row["id"] or (other not in ids and not included_only):
                 raise ValueError(
                     "A semantic link references itself or missing study data"
                 )
-            output.add(tuple(sorted((row["id"], other))))
+            if other in ids:
+                output.add(tuple(sorted((row["id"], other))))
     return sorted(output)
 
 

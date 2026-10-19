@@ -368,13 +368,23 @@ def run_discovery(worker, job, cancelled, transport=None):
         worker.store.heartbeat(
             job, "Requesting provisional categories from approved TypeLLM profile"
         )
-        received = (
-            run_process(
-                public_profile(p), body, key, record_started=started, observe=observe
+        from decision_workbench.training.resources import ResourceLease
+
+        folder = worker.store.folder / "jobs" / job["id"]
+        folder.mkdir(parents=True, exist_ok=True)
+        with ResourceLease(folder / "taxonomy-transport.lock").hold(timeout=0) as lease:
+            received = (
+                run_process(
+                    public_profile(p),
+                    body,
+                    key,
+                    record_started=started,
+                    observe=observe,
+                    lease=lease,
+                )
+                if transport is None
+                else transport(public_profile(p), body, key)
             )
-            if transport is None
-            else transport(public_profile(p), body, key)
-        )
         outcome = decode_response(received, spec, c["question_id"], rows, p)
     except TransportFailure as e:
         terminated = e.terminated

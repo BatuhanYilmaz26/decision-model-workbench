@@ -551,6 +551,161 @@ class SemanticWorkflowTests(unittest.TestCase):
             self.app.state.store.list("A", self.project, "semantic-audit"), []
         )
 
+    def test_memory_refusal_publishes_no_partial_audit_and_releases_capacity(self):
+        self.profile["memory_limit_mb"] = 256
+        self.profile_path.write_text(json.dumps(self.profile))
+        rows = fixtures.fixture_rows(40)
+        rows[-1]["state"] = "ALLOCATE bounded fixture"
+        job = self.submit(
+            "semantic-audit",
+            {"datasets": [self.dataset(rows)], "threshold": 0.9},
+            "memory",
+        )
+        self.assertEqual(job["status"], "failed")
+        self.assertEqual(
+            self.app.state.store.list("A", self.project, "semantic-audit"), []
+        )
+        self.assertIsNotNone(self.children[-1].poll())
+        del self.profile["memory_limit_mb"]
+        self.profile_path.write_text(json.dumps(self.profile))
+        self.audit(self.dataset(), key="after-memory-refusal")
+
+    def test_memory_profile_bounds_and_legacy_omission_are_preserved(self):
+        self.assertNotIn(
+            "memory_limit_mb", validate_profile(copy.deepcopy(self.profile))
+        )
+        for value in (True, None, 255, 65537, "16384"):
+            profile = {**self.profile, "memory_limit_mb": value}
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                validate_profile(profile)
+        self.assertEqual(
+            validate_profile({**self.profile, "memory_limit_mb": 1024})[
+                "memory_limit_mb"
+            ],
+            1024,
+        )
+
+    def test_explicit_memory_profile_survives_report_review_and_backup(self):
+        self.profile["memory_limit_mb"] = 16384
+        self.profile_path.write_text(json.dumps(self.profile))
+        audit = self.audit(self.dataset(), key="explicit-memory-report")
+        self.page(audit)
+        from decision_workbench.platform.recovery import backup_workspace
+
+        backup_workspace(
+            self.app.state.store.folder, self.home.resolve() / "explicit-memory-backup"
+        )
+
+    def test_source_capacity_refuses_at_api_before_reading_rows(self):
+        dataset = self.dataset()
+        original = self.app.state.store.get
+
+        def get(identifier, *args, **kwargs):
+            result = original(identifier, *args, **kwargs)
+            if identifier == dataset:
+                result = copy.deepcopy(result)
+                result["payload"]["row_count"] = 20001
+            return result
+
+        with (
+            patch.object(self.app.state.store, "get", side_effect=get),
+            patch.object(
+                self.app.state.store,
+                "verify_dataset",
+                side_effect=AssertionError("Do not materialize an oversized selection"),
+            ),
+        ):
+            response = self.client.post(
+                self.prefix + "/jobs",
+                json={
+                    "kind": "semantic-audit",
+                    "config": {"datasets": [dataset], "threshold": 0.9},
+                    "request_key": "capacity-refusal",
+                },
+            )
+        self.assertEqual(response.status_code, 400, response.text)
+        self.assertIn("20,000", response.text)
+        self.assertEqual(self.children, [])
+
+    def test_source_capacity_does_not_rewrite_historical_audits(self):
+        audit = self.audit(self.dataset())
+        from decision_workbench.platform.recovery import backup_workspace
+
+        with patch(
+            "decision_workbench.platform.semantic.audit_source_capacity",
+            side_effect=AssertionError(
+                "Historical reads do not use current new-job budgets"
+            ),
+        ):
+            self.page(audit)
+            backup_workspace(
+                self.app.state.store.folder,
+                self.home.resolve() / "history-capacity-backup",
+            )
+
+    @unittest.skipUnless(
+        sys.platform in ("win32", "linux"), "Owned semantic process contract"
+    )
+    def test_parent_crash_ends_semantic_child_and_interrupted_job_never_publishes(self):
+        rows = fixtures.fixture_rows(40)
+        rows[-1]["state"] = "STALL parent-crash fixture"
+        job = self.client.post(
+            self.prefix + "/jobs",
+            json={
+                "kind": "semantic-audit",
+                "config": {"datasets": [self.dataset(rows)], "threshold": 0.9},
+                "request_key": "semantic-parent-crash",
+            },
+        ).json()
+        marker = (
+            self.app.state.store.folder
+            / "jobs"
+            / job["id"]
+            / "semantic-child-ready.json"
+        )
+        parent = subprocess.Popen(
+            [
+                sys.executable,
+                str(Path(__file__).with_name("data_process_fixture.py")),
+                "semantic-parent",
+                str(self.app.state.store.folder),
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+        try:
+            deadline = time.monotonic() + 15
+            while not marker.exists():
+                self.assertIsNone(
+                    parent.poll(), "Worker ended before fixture was ready"
+                )
+                if time.monotonic() > deadline:
+                    self.fail("Semantic child did not arm its parent guard")
+                time.sleep(0.02)
+            parent.kill()
+            parent.wait(timeout=10)
+            from decision_workbench.training.resources import ResourceLease
+
+            with ResourceLease(self.app.state.store.folder / "semantic.lock").hold(
+                timeout=10
+            ):
+                pass
+            with self.app.state.store.transaction() as db:
+                db.execute("UPDATE jobs SET lease=0 WHERE id=?", (job["id"],))
+            self.assertIsNone(self.app.state.store.claim())
+            self.assertEqual(
+                self.app.state.store.job(job["id"], "A", self.project)["status"],
+                "interrupted",
+            )
+            self.assertEqual(
+                self.app.state.store.list("A", self.project, "semantic-audit"), []
+            )
+        finally:
+            if parent.poll() is None:
+                parent.kill()
+                parent.wait(timeout=10)
+
     def test_browser_audit_review_and_reservation_over_actual_http(self):
         dataset = self.dataset()
         listener = socket.socket()

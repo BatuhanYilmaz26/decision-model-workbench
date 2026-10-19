@@ -3,6 +3,26 @@
 from pathlib import Path, PurePosixPath
 
 
+def checked_process_limit(value):
+    """A managed child budget in bytes; never interpret a boolean as a limit."""
+    if type(value) is not int or not 16 * 1024**2 <= value <= 1024**4:
+        raise ValueError("Managed process memory limit must be 16 MiB–1 TiB")
+    return value
+
+
+def limit_linux_address_space(value):
+    """Cap this child before heavy imports without raising inherited limits."""
+    import resource
+
+    value = checked_process_limit(value)
+    inherited = resource.getrlimit(resource.RLIMIT_AS)
+    cap = min(v for v in (*inherited, value) if v != resource.RLIM_INFINITY)
+    resource.setrlimit(resource.RLIMIT_AS, (cap, cap))
+    if resource.getrlimit(resource.RLIMIT_AS) != (cap, cap):
+        raise RuntimeError("Cannot verify the managed child address-space limit")
+    return cap
+
+
 def available_linux_memory(proc=Path("/proc"), cgroups=Path("/sys/fs/cgroup")):
     proc, cgroups = Path(proc), Path(cgroups)
     lines = (proc / "meminfo").read_text().splitlines()

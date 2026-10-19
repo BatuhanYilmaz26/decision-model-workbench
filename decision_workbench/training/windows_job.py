@@ -150,7 +150,11 @@ def previous_job_active(lease_path):
 
 
 class WindowsJob:
-    def __init__(self, lease_path):
+    def __init__(self, lease_path, *, memory_limit_bytes=None):
+        if memory_limit_bytes is not None:
+            from .memory_limits import checked_process_limit
+
+            checked_process_limit(memory_limit_bytes)
         self.name = "Local\\DMT-" + uuid.uuid4().hex
         self.dll = kernel()
         self.handle = checked(self.dll.CreateJobObjectW(None, self.name))
@@ -159,6 +163,9 @@ class WindowsJob:
                 raise RuntimeError("Refuse a preexisting model process job")
             limits = ExtendedLimits()
             limits.basic.flags = 0x2000  # JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+            if memory_limit_bytes is not None:
+                limits.basic.flags |= 0x200  # JOB_OBJECT_LIMIT_JOB_MEMORY
+                limits.job_memory = memory_limit_bytes
             checked(
                 self.dll.SetInformationJobObject(
                     self.handle, 9, ctypes.byref(limits), ctypes.sizeof(limits)
