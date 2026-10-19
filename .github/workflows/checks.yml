@@ -31,6 +31,7 @@ jobs:
       - run: ${{ matrix.interpreter }} -m decision_workbench.platform.cli --help
       - run: ${{ matrix.interpreter }} -m unittest discover -s tests -p test_local_onboarding.py -v
       - run: ${{ matrix.interpreter }} -m unittest discover -s tests -p test_launcher.py -v
+      - run: ${{ matrix.interpreter }} -m unittest discover -s tests -p test_complete_journey.py -v
   preparation:
     strategy:
       fail-fast: false

@@ -6,6 +6,8 @@
 
 The quick-start jobs create fresh virtual environments on Windows and Linux, install the root [requirements.txt](../requirements.txt), check dependencies and exercise personal workspace startup, the CPU workflow and both launch modes. These jobs keep the [README installation path](../README.md#run-on-your-computer) usable without depending on preinstalled provider SDKs or model packages.
 
+The [continuous journey](../tests/test_complete_journey.py) follows one newly created personal project through import, review, reservation, generation with a fictional localhost teacher, reviewed training-data extension, CPU training, release, prediction and reopening. It checks that evaluation data stays unchanged. Streamlit AppTest supplies the upload at the widget boundary, so this does not test a native file picker or visual accessibility. The teacher and data are fictional; no pretrained weights or paid service are needed.
+
 This workflow does not submit paid cloud jobs or qualify every real GPU model. Follow [provider compatibility checks](../docs/verification.md#provider-compatibility-checks), [model container verification](../docs/model-container-guide.md) and [runtime upgrades](../docs/compatibility-and-upgrades.md) for those separate paths.
 
 The Liquid data jobs install the optional CPU-only [data preparation profile](../requirements/liquid-data.txt) on Windows and Linux, check dependencies and exercise export failure/lineage contracts. They do not fetch model weights or run GPU training; offline fixtures do not establish native model quality.

@@ -33,6 +33,18 @@ The unit suite includes HTTP services, SQLite state, worker/process ownership, a
 
 The [synthetic-generation workflow](synthetic-generation-guide.md) has separate local HTTP/worker and Streamlit form tests for transfer/cost approvals, request identity, training-only seeds, all-or-nothing candidate publication, deadline/cancellation, unknown outcomes, explicit retries and recovery. Their fictional teacher checks transport and lifecycle behavior; it does not measure a generative model's domain accuracy or actual provider billing.
 
+## Run the continuous personal journey
+
+After installing the root [requirements.txt](../requirements.txt), run:
+
+```bash
+python -m unittest discover -s tests -p test_complete_journey.py -v
+```
+
+This check creates one personal workspace and project through the browser controls, imports fictional examples, reviews a record in the browser and the remaining annotations through the authenticated API, then reserves the four data roles. A fictional localhost teacher proposes one training candidate. The browser reviews it, extends the original training set, trains the CPU baseline, activates a release and makes a prediction. The check then restarts the services and opens the same project and release again. It verifies that generation uses training seeds and that validation, calibration and test records remain unchanged.
+
+The check starts and stops its own temporary API, worker and teacher. It requires no account, pretrained model download or GPU. AppTest injects the upload at the file-uploader boundary; use a browser for file-picker, layout and accessibility checks. Permissive fixture acceptance criteria exercise the release mechanism, not a policy suitable for your domain. The quick-start CI jobs also run this check on Windows and Linux; inspect the corresponding run before claiming a platform passed.
+
 ## Verify a fresh container
 
 ```bash

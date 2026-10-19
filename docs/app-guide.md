@@ -74,6 +74,15 @@ models and external services have separate requirements below.
 7. In **Decisions and audit**, enter new evidence and choose **Make decision**.
    Inspect the answers and abstention flags before connecting a business action.
 
+To add synthetic examples between reservation and training, use
+[Generate training candidates](#generate-and-review-training-candidates) with a
+configured teacher. Review the resulting collection, then select its reviewed
+revision in **Prepare and generate** and select the original reservation in
+**Preserve holdouts from an existing snapshot when adding synthetic data**.
+Prepare the extended snapshot and select that new snapshot for training.
+Validation, calibration and test records remain reserved; generation never
+automatically approves candidates or retrains a released model.
+
 A few examples are useful for learning intake and review. They are not enough
 to establish domain quality or necessarily satisfy training/release coverage.
 The default acceptance form requires 100 real test records per question; class
