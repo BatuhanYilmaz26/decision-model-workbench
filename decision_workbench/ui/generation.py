@@ -64,6 +64,7 @@ def render_generation(api, project, principal, snapshot):
         )
         teacher = profile["teacher"]
         st.text("Teacher: " + teacher["model"])
+        st.caption("Response format: " + teacher.get("response_format", "json_object"))
         st.text("Endpoint: " + teacher["base_url"])
         with st.expander("Teacher limits and token prices"):
             st.json(teacher)

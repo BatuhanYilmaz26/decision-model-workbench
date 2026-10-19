@@ -26,6 +26,7 @@ def render_schema_assistant(api, principal):
         st.caption(
             f"Configured teacher: {teacher['model']} at {teacher['base_url']} · {teacher['timeout_seconds']} second timeout"
         )
+        st.caption("Response format: " + teacher.get("response_format", "json_object"))
         attempt = st.session_state.get("schema-request-attempt", 0)
         with st.form("schema-assistant-request-" + str(attempt)):
             name = st.text_input("Suggested project name", max_chars=120)

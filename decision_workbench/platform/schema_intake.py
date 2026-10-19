@@ -10,6 +10,13 @@ import time
 
 from decision_workbench.data import validate_questions
 from decision_workbench.json_tools import strict_json
+from decision_workbench.teacher_formats import (
+    archived_format,
+    configured_format,
+    format_mode,
+    response_format,
+    suggestions_schema,
+)
 from decision_workbench.training.provenance import source_fingerprint
 from decision_workbench.training.resources import ResourceLease
 from .store import Conflict, digest, encode
@@ -59,13 +66,15 @@ def teacher_profile():
             "Configure integer schema timeout and request limits"
         ) from None
     return validate_profile(
-        {
-            "provider": "schema-teacher",
-            "base_url": base,
-            "model": model,
-            "timeout_seconds": timeout,
-            "max_calls_day": calls,
-        }
+        configured_format(
+            {
+                "provider": "schema-teacher",
+                "base_url": base,
+                "model": model,
+                "timeout_seconds": timeout,
+                "max_calls_day": calls,
+            }
+        )
     )
 
 
@@ -73,14 +82,20 @@ def validate_profile(value):
     """Validate saved configuration independently of current environment settings."""
     from urllib.parse import urlsplit
 
-    if not isinstance(value, dict) or set(value) != {
+    fields = {
         "provider",
         "base_url",
         "model",
         "timeout_seconds",
         "max_calls_day",
-    }:
+    }
+    if not isinstance(value, dict) or set(value) not in (
+        fields,
+        fields | {"response_format"},
+    ):
         raise ValueError("Schema teacher configuration is invalid")
+    if "response_format" in value:
+        format_mode(value["response_format"])
     base, model = value["base_url"], value["model"]
     if not isinstance(base, str) or not isinstance(model, str):
         raise ValueError("Schema teacher address and model must be text")
@@ -157,7 +172,11 @@ def request_body(domain, profile):
         ],
         "temperature": 0.2,
         "max_tokens": 3000,
-        "response_format": {"type": "json_object"},
+        "response_format": response_format(
+            profile.get("response_format", "json_object"),
+            "decision_schema",
+            suggestions_schema(),
+        ),
     }
     body = encode(value).encode("utf-8")
     if len(body) > MAX_REQUEST:
@@ -363,6 +382,11 @@ def frozen_request(payload):
             set(request)
             != {"model", "messages", "temperature", "max_tokens", "response_format"}
             or request["model"] != profile["model"]
+            or not archived_format(
+                request["response_format"],
+                profile.get("response_format", "json_object"),
+                "decision_schema",
+            )
             or not isinstance(messages, list)
             or len(messages) != 2
             or any(

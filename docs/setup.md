@@ -85,7 +85,27 @@ Dataset lists return compact metadata. `GET /v1/projects/{project}/datasets/{dat
 
 The API and worker read matching `DMT_TEACHER_BASE_URL` and `DMT_TEACHER_MODEL` settings. Only the worker needs `DMT_TEACHER_API_KEY`. It does not load `.env` automatically. Configure these before starting services. Only the operator chooses endpoints; user job payloads cannot store credentials or arbitrary teacher URLs.
 
-Use an approved generative endpoint supporting `POST /chat/completions` and JSON object output mode. Localhost HTTP or remote HTTPS are supported. Compatibility of a specific provider and candidate quality require live acceptance. No generation occurs simply by opening the application. Follow the [synthetic-generation guide](synthetic-generation-guide.md) for the exact request preview, server-enforced transfer/cost approvals, token-cost planning settings, saved history and explicit retry workflow.
+Use an approved generative endpoint supporting `POST /chat/completions` and either `json_object` or `json_schema` output. Localhost HTTP or remote HTTPS are supported. Choose the format documented by your teacher; the workbench does not automatically translate other APIs or retry with another format. No generation occurs simply by opening the application. Follow the [synthetic-generation guide](synthetic-generation-guide.md) for previews, approvals, cost estimates, history and explicit retries.
+
+For a local teacher already running at port 1234, set these before starting the workbench. Replace the model identifier with the name served by your endpoint:
+
+```powershell
+$env:DMT_TEACHER_BASE_URL = "http://127.0.0.1:1234/v1"
+$env:DMT_TEACHER_MODEL = "YOUR_SERVED_MODEL_ID"
+$env:DMT_TEACHER_RESPONSE_FORMAT = "json_schema"
+domain-platform run
+```
+
+```bash
+export DMT_TEACHER_BASE_URL="http://127.0.0.1:1234/v1"
+export DMT_TEACHER_MODEL="YOUR_SERVED_MODEL_ID"
+export DMT_TEACHER_RESPONSE_FORMAT="json_schema"
+domain-platform run
+```
+
+Leave `DMT_TEACHER_RESPONSE_FORMAT` unset or blank to preserve `json_object`. The setting applies to synthetic candidates and schema suggestions; set it identically in API and worker services. In a directly started Streamlit app, expand **Optional local model and synthetic generation settings**, enter the teacher address/model/key and choose **Teacher response format** before **Start local workspace**. **Use configured default** preserves the environment setting. The launcher `domain-platform run` connects automatically, so configure its teacher through the environment before startup. Restart services to change settings; queued requests need their approved configuration or a new approval.
+
+JSON Schema mode sends a schema with `strict: false`, allowing arbitrary text/JSON evidence and teacher-proposed question names. This is a format hint, not a promise of schema adherence or correct labels. Complete responses are validated and still require human review. Check your selected model/server's compatibility. [LM Studio structured output](https://lmstudio.ai/docs/developer/openai-compat/structured-output), [vLLM structured output](https://docs.vllm.ai/en/latest/features/structured_outputs/)
 
 The optional [schema assistant](schema-assistant-guide.md) uses the same teacher to draft questions before project creation. Configure the API and worker consistently, then approve the domain-brief request in the browser. Its timeout and daily request limit are configurable separately; every proposed question still requires owner review.
 
@@ -120,7 +140,8 @@ The app never downloads this large checkpoint. Follow the [native application
 setup](models/perplexity-native.md#train-through-the-application) for requirements,
 resource floors and model-load/UI deadlines. Native full-weight jobs use a
 24-hour default deadline; `DMT_PERPLEXITY_TRAINING_TIMEOUT_SECONDS` accepts
-600–604800 seconds. Managed native cloud training/admission is not available yet.
+600–604800 seconds. For managed native cloud studies and independent admission,
+follow the [Perplexity cloud training guide](remote-training/perplexity.md).
 The [hosted API workflow](models/perplexity.md) needs no native GPU.
 
 ## Run services individually

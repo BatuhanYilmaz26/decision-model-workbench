@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 
 from .data import dumps, validate, validate_questions
 from .json_tools import strict_json
+from .teacher_formats import candidates_schema, format_mode, response_format
 
 MAX_REQUEST = 64000
 MAX_RESPONSE = 1048576
@@ -52,7 +53,9 @@ def request_body(
     output_tokens=6000,
     token_parameter="max_tokens",
     temperature=0.7,
+    output_format="json_object",
 ):
+    format_mode(output_format)
     if type(count) is not int or not 1 <= count <= 50:
         raise ValueError("Generate 1–50 candidates per request")
     if (
@@ -107,7 +110,11 @@ def request_body(
         ],
         token_parameter: output_tokens,
         "stream": False,
-        "response_format": {"type": "json_object"},
+        "response_format": response_format(
+            output_format,
+            "decision_candidates",
+            candidates_schema(spec["questions"], count),
+        ),
     }
     if temperature is not None:
         body["temperature"] = temperature

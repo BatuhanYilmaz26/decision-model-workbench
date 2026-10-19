@@ -96,7 +96,7 @@ browsers reaching that server; do not expose it through a public proxy.
 
 Before starting a direct personal workspace, **Optional local model and synthetic
 generation settings** accepts existing model-environment Python executables and
-an optional teacher endpoint/model/key. Leave the model paths empty for the CPU
+an optional teacher endpoint/model/key and **Teacher response format**. Keep **Use configured default**, or choose the JSON mode supported by your teacher; see [teacher setup](setup.md#configure-a-teacher). Leave the model paths empty for the CPU
 baseline. These fields do not install packages or model weights. Restart the app
 to change settings after services have started. Launcher-based configuration and
 provider secrets are described in [setup](setup.md).

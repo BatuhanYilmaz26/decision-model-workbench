@@ -153,6 +153,19 @@ class SchemaIntakeTests(unittest.TestCase):
             },
         )
 
+    def test_json_schema_suggestions_require_owner_confirmation_and_keep_history(self):
+        with patch.dict(os.environ, {"DMT_TEACHER_RESPONSE_FORMAT": "json_schema"}):
+            response = self.submit()
+            self.assertEqual(response.status_code, 202, response.text)
+            identifier = response.json()["id"]
+            self.test_real_teacher_worker_review_and_idempotent_project_confirmation()
+        sent = self.teacher.calls[0][2]
+        self.assertEqual(sent["response_format"]["type"], "json_schema")
+        with patch.dict(os.environ, {"DMT_TEACHER_RESPONSE_FORMAT": "json_object"}):
+            self.detail(identifier)
+            self.assertEqual(self.submit().status_code, 409)
+        self.assertEqual(len(self.teacher.calls), 1)
+
     def test_real_teacher_worker_review_and_idempotent_project_confirmation(self):
         response = self.submit()
         self.assertEqual(response.status_code, 202, response.text)

@@ -75,6 +75,12 @@ class PersonalWorkspaceTests(unittest.TestCase):
             time.sleep(0.1)
 
     def test_personal_cpu_lifecycle_persists_and_rejects_expired_and_missing_keys(self):
+        self.personal_cpu_lifecycle("json_object")
+
+    def test_personal_json_schema_teacher_to_cpu_release(self):
+        self.personal_cpu_lifecycle("json_schema")
+
+    def personal_cpu_lifecycle(self, output_format):
         seen = []
         seen_headers = []
 
@@ -124,6 +130,7 @@ class PersonalWorkspaceTests(unittest.TestCase):
             DMT_TEACHER_BASE_URL=f"http://127.0.0.1:{teacher.server_port}/v1",
             DMT_TEACHER_MODEL="fixture-teacher",
             DMT_TEACHER_API_KEY="fictional-worker-only",
+            DMT_TEACHER_RESPONSE_FORMAT=output_format,
         )
         launches = []
         original_popen = subprocess.Popen
@@ -228,6 +235,7 @@ class PersonalWorkspaceTests(unittest.TestCase):
                 seen_headers[0].get("Authorization"), "Bearer fictional-worker-only"
             )
             self.assertEqual(seen[0]["model"], "fixture-teacher")
+            self.assertEqual(seen[0]["response_format"]["type"], output_format)
             candidate = client.get(
                 prefix + "/datasets/" + candidates["dataset"] + "/rows"
             ).json()["rows"][0]
@@ -308,6 +316,11 @@ class PersonalWorkspaceTests(unittest.TestCase):
         ):
             app = AppTest.from_file(str(ROOT / "app.py"), default_timeout=40).run()
             self.assertEqual(len(app.exception), 0)
+            self.assertEqual(
+                app.selectbox(key="local-teacher-format").value,
+                "Use configured default",
+            )
+            app.selectbox(key="local-teacher-format").set_value("json_schema").run()
             next(
                 b for b in app.button if b.label == "Start local workspace"
             ).click().run()
@@ -317,6 +330,9 @@ class PersonalWorkspaceTests(unittest.TestCase):
             self.assertEqual(app.session_state["principal"]["actor"], "local-owner")
             url = app.session_state["api_url"]
             resource = personal_workspace(str(self.home), str(ROOT))
+            self.assertEqual(
+                resource.environment["DMT_TEACHER_RESPONSE_FORMAT"], "json_schema"
+            )
             self.workspace = resource
             pids = [p.pid for p in resource.processes]
             app.run()

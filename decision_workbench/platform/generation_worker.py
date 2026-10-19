@@ -267,6 +267,7 @@ def run(worker, job, cancelled):
             output_tokens=profile["max_output_tokens"],
             token_parameter=profile["token_parameter"],
             temperature=profile["temperature"],
+            output_format=profile.get("response_format", "json_object"),
         )
     ):
         raise ValueError(

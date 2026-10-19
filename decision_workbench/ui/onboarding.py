@@ -160,6 +160,11 @@ def render_connection(root):
                         settings[variable] = value
                 teacher_url = st.session_state.get("local-teacher-url", "").strip()
                 teacher_model = st.session_state.get("local-teacher-model", "").strip()
+                teacher_format = st.session_state.get(
+                    "local-teacher-format", "Use configured default"
+                )
+                if teacher_format != "Use configured default":
+                    settings["DMT_TEACHER_RESPONSE_FORMAT"] = teacher_format
                 if teacher_url or teacher_model:
                     parsed = httpx.URL(teacher_url)
                     if (
@@ -277,7 +282,7 @@ def render_connection(root):
                 REPO + "docs/models/perplexity-native.md",
             )
             st.write(
-                "Synthetic generation uses a generative teacher; the trained decision model scores allowed answers. Use a local OpenAI-compatible server or an approved hosted endpoint supporting JSON object output."
+                "Synthetic generation uses a generative teacher; the trained decision model scores allowed answers. Use a local OpenAI-compatible server or an approved hosted endpoint supporting JSON object or JSON Schema output."
             )
             st.text_input(
                 "Teacher base URL (optional)",
@@ -289,6 +294,12 @@ def render_connection(root):
             )
             st.text_input(
                 "Teacher API key (optional)", key="local-teacher-key", type="password"
+            )
+            st.selectbox(
+                "Teacher response format",
+                ["Use configured default", "json_object", "json_schema"],
+                key="local-teacher-format",
+                help="Use the format supported by your teacher's Chat Completions API. The default is json_object unless DMT_TEACHER_RESPONSE_FORMAT is set. JSON Schema is a non-strict hint; all suggestions and candidates are validated and need your review.",
             )
             st.caption(
                 "Credentials stay in the local server/worker memory. Training seeds leave this computer only if you approve generation using a remote teacher inside the project."

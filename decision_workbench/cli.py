@@ -33,6 +33,12 @@ def main():
             p.add_argument("--model", required=True)
             p.add_argument("--count", type=int, default=10)
             p.add_argument(
+                "--response-format",
+                choices=("json_object", "json_schema"),
+                default="json_object",
+                help="Output format supported by the teacher API",
+            )
+            p.add_argument(
                 "--seed-count",
                 type=int,
                 help="Reviewed training seeds to send: 0–10; default is up to three available records",
@@ -108,6 +114,7 @@ def main():
                 model=args.model,
                 api_key=os.environ.get("TEACHER_API_KEY", ""),
                 count=args.count,
+                output_format=args.response_format,
             )
             destination.parent.mkdir(parents=True, exist_ok=True)
             destination.write_text(jsonl(candidates), encoding="utf-8")

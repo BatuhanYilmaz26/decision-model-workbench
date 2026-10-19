@@ -42,6 +42,14 @@ Some models require `max_completion_tokens` and omit configurable temperature. S
 
 Token prices are operator-entered assumptions. An empty price is **unknown**, not free. The input planning allowance is the UTF-8 request byte count plus 1,024; the output allowance is the configured token limit. This is not an exact tokenizer count or guaranteed bill. Estimates exclude infrastructure, fees and price changes. Reported response usage is retained when valid, but is not a billing attestation. Local estimate limits do not enforce an account-wide monetary ceiling. Configure provider-side spending controls separately.
 
+## Choose the teacher output format
+
+Set `DMT_TEACHER_RESPONSE_FORMAT` to `json_object` (default) or `json_schema` before starting the API and worker. For a directly started personal Streamlit app, use the same choice under **Optional local model and synthetic generation settings**. The generation screen shows the active format; the request preview includes the complete schema when selected. See [teacher setup](setup.md#configure-a-teacher) for commands and credential handling.
+
+JSON Schema mode describes the row count, evidence types, question IDs and probability keys. It uses `strict: false`: arbitrary JSON evidence remains possible, and the server still validates every candidate, including normalized probabilities, before saving a batch. Invalid output is not repaired or automatically resent. Both formats produce pending-review data, preserve fixed real holdouts and use the same approval, accounting and recovery workflow. Choose a format supported by your endpoint; [LM Studio](https://lmstudio.ai/docs/developer/openai-compat/structured-output) and [vLLM](https://docs.vllm.ai/en/latest/features/structured_outputs/) document schema output.
+
+The standalone `domain-decisions generate` command also accepts `--response-format json_schema`. This CLI creates unreviewed candidate files; use the application for durable approvals, independent reservations and review history.
+
 ## Preview and approve a batch
 
 In the preparation tab, select a reserved snapshot and find **Generate training candidates**.

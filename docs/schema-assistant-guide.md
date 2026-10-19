@@ -12,11 +12,12 @@ Start with [local setup](setup.md#configure-a-teacher). The API and independent 
 |---|---|
 | `DMT_TEACHER_BASE_URL` | Approved teacher API base, including its version path, such as `http://127.0.0.1:11434/v1` |
 | `DMT_TEACHER_MODEL` | The installed or provider-supported generative model identifier |
+| `DMT_TEACHER_RESPONSE_FORMAT` | `json_object` by default; choose `json_schema` when required by the endpoint |
 | `DMT_TEACHER_API_KEY` | Optional credential, supplied to the services rather than saved in a project |
 | `DMT_SCHEMA_TIMEOUT_SECONDS` | Total suggestion deadline; default 60 seconds, allowed range 5–180 |
 | `DMT_SCHEMA_CALLS_PER_DAY` | Maximum new schema requests per tenant in a rolling 24 hours; default 20, allowed range 1–100 |
 
-The endpoint must support `POST /chat/completions`, JSON object output mode and the configured model. Loopback HTTP and remote HTTPS are supported; embedded credentials, query strings and fragments in the base URL are refused. For a local endpoint, install and start a compatible teacher separately. For example, [Ollama documents its compatible endpoint and structured-output options](https://docs.ollama.com/api/openai-compatibility). Compatibility must be checked with the selected teacher; a decision-only model is not a generative teacher.
+The endpoint must support `POST /chat/completions`, the selected JSON output mode and the configured model. JSON Schema mode is non-strict; proposed questions still pass server validation and owner review. See [teacher setup](setup.md#configure-a-teacher) for format selection and startup commands. Loopback HTTP and remote HTTPS are supported; embedded credentials, query strings and fragments in the base URL are refused. For a local endpoint, install and start a compatible teacher separately. For example, [Ollama documents its compatible endpoint and structured-output options](https://docs.ollama.com/api/openai-compatibility). Compatibility must be checked with the selected teacher; a decision-only model is not a generative teacher.
 
 Restart the services after changing configuration. The browser displays the configured endpoint and model to the owner, without the API key. It cannot choose an arbitrary endpoint. You can build questions manually without any teacher or external account.
 

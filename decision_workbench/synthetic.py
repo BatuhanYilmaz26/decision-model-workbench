@@ -17,7 +17,17 @@ class _NoRedirect(HTTPRedirectHandler):
         return None
 
 
-def generate(spec, examples, *, base_url, model, api_key="", count=10, request=None):
+def generate(
+    spec,
+    examples,
+    *,
+    base_url,
+    model,
+    api_key="",
+    count=10,
+    request=None,
+    output_format="json_object",
+):
     base_url = teacher_address(base_url)
     if (
         not isinstance(api_key, str)
@@ -25,7 +35,7 @@ def generate(spec, examples, *, base_url, model, api_key="", count=10, request=N
         or any(ord(c) < 32 or ord(c) == 127 for c in api_key)
     ):
         raise ValueError("Teacher credentials must be text without control characters")
-    body = request_body(spec, examples, model, count)
+    body = request_body(spec, examples, model, count, output_format=output_format)
     headers = {"Content-Type": "application/json", "Accept-Encoding": "identity"}
     if api_key:
         headers["Authorization"] = "Bearer " + api_key

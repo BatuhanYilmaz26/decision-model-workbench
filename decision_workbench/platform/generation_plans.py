@@ -10,6 +10,7 @@ import re
 import time
 
 from decision_workbench.json_tools import strict_json
+from decision_workbench.teacher_formats import archived_format
 from decision_workbench.synthetic_contracts import (
     MAX_REQUEST,
     request_body,
@@ -259,6 +260,7 @@ def definition(store, tenant, project, chosen, profile):
         output_tokens=profile["max_output_tokens"],
         token_parameter=profile["token_parameter"],
         temperature=profile["temperature"],
+        output_format=profile.get("response_format", "json_object"),
     )
     value = {
         "selector": chosen,
@@ -374,7 +376,11 @@ def load(store, tenant, project, binding, *, require_current=False, seen=None):
             or request["model"] != profile["model"]
             or request[profile["token_parameter"]] != profile["max_output_tokens"]
             or request.get("temperature") != profile["temperature"]
-            or request["response_format"] != {"type": "json_object"}
+            or not archived_format(
+                request["response_format"],
+                profile.get("response_format", "json_object"),
+                "decision_candidates",
+            )
             or request["stream"] is not False
         ):
             raise ValueError()

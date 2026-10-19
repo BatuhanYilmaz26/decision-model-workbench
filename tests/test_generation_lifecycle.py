@@ -117,6 +117,40 @@ class GenerationLifecycleTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200, response.text)
         return response.json()
 
+    def test_json_schema_teacher_keeps_review_and_history_contracts(self):
+        with patch.dict(os.environ, {"DMT_TEACHER_RESPONSE_FORMAT": "json_schema"}):
+            self.test_approved_request_archives_exact_training_seeds_and_pending_result()
+        body = self.teacher.calls[0][2]
+        self.assertEqual(body["response_format"]["type"], "json_schema")
+        self.assertEqual(
+            body["response_format"]["json_schema"]["name"], "decision_candidates"
+        )
+        # Old approvals are readable after selecting another format. No dispatch.
+        with patch.dict(os.environ, {"DMT_TEACHER_RESPONSE_FORMAT": "json_object"}):
+            plans = self.client.get(self.prefix + "/generation-plans")
+            self.assertEqual(plans.status_code, 200, plans.text)
+        self.assertEqual(len(self.teacher.calls), 1)
+
+    def test_json_schema_reviewed_candidates_preserve_holdouts_and_train(self):
+        with patch.dict(os.environ, {"DMT_TEACHER_RESPONSE_FORMAT": "json_schema"}):
+            self.test_reviewed_candidates_extend_only_training_then_train_a_real_cpu_model()
+        self.assertEqual(
+            self.teacher.calls[0][2]["response_format"]["type"], "json_schema"
+        )
+
+    def test_json_schema_backup_keeps_frozen_schema_and_rejects_tampering(self):
+        with patch.dict(os.environ, {"DMT_TEACHER_RESPONSE_FORMAT": "json_schema"}):
+            self.test_history_restore_ignores_current_prompt_and_refuses_orphan_records()
+
+    def test_response_format_drift_refuses_before_dispatch(self):
+        job, _ = self.submit()
+        with patch.dict(os.environ, {"DMT_TEACHER_RESPONSE_FORMAT": "json_schema"}):
+            self.run_worker()
+        detail = self.detail(job)
+        self.assertEqual(detail["job"]["status"], "failed")
+        self.assertEqual(detail["state"], "not_dispatched")
+        self.assertEqual(self.teacher.calls, [])
+
     def test_approved_request_archives_exact_training_seeds_and_pending_result(self):
         preview = self.preview()
         job, config = self.submit()

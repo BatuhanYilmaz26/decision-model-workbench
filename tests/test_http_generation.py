@@ -14,6 +14,12 @@ from decision_workbench.data import read_records
 
 class HttpGenerationTest(unittest.TestCase):
     def test_cli_teacher_request_and_unreviewed_export(self):
+        self.cli_generation("json_object")
+
+    def test_cli_json_schema_teacher_and_unreviewed_export(self):
+        self.cli_generation("json_schema")
+
+    def cli_generation(self, output_format):
         spec = json.loads(
             Path("examples/support/spec.json").read_text(encoding="utf-8-sig")
         )
@@ -75,6 +81,8 @@ class HttpGenerationTest(unittest.TestCase):
                         "fixture-teacher",
                         "--count",
                         "1",
+                        "--response-format",
+                        output_format,
                         "--out",
                         str(output),
                     ],
@@ -86,6 +94,7 @@ class HttpGenerationTest(unittest.TestCase):
                 candidates = read_records(output.read_bytes(), output.name)
                 self.assertFalse(candidates[0]["metadata"]["reviewed"])
                 self.assertEqual(seen[0][0], "/v1/chat/completions")
+                self.assertEqual(seen[0][1]["response_format"]["type"], output_format)
                 self.assertEqual(seen[0][1]["model"], "fixture-teacher")
                 self.assertEqual(candidates[0]["metadata"]["seed_ids"][0], "t01")
                 self.assertEqual(len(candidates[0]["metadata"]["seed_ids"]), 3)

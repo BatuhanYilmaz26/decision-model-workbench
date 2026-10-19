@@ -6,6 +6,7 @@ import math
 import os
 
 from decision_workbench.synthetic_contracts import teacher_address
+from decision_workbench.teacher_formats import configured_format, format_mode
 
 FIELDS = {
     "provider",
@@ -48,11 +49,13 @@ def amount(value):
 def validate_profile(value):
     if (
         not isinstance(value, dict)
-        or set(value) != FIELDS
+        or set(value) not in (FIELDS, FIELDS | {"response_format"})
         or value["provider"] != "generation-teacher"
     ):
         raise ValueError("Invalid synthetic teacher configuration")
     result = copy.deepcopy(value)
+    if "response_format" in result:
+        format_mode(result["response_format"])
     result["base_url"] = teacher_address(result["base_url"])
     model = result["model"]
     if (
@@ -152,7 +155,7 @@ def teacher_profile():
         raise ValueError(
             "Check the integer, temperature and price settings for the synthetic teacher"
         ) from None
-    return validate_profile(value)
+    return validate_profile(configured_format(value))
 
 
 def token_cost(prompt_tokens, completion_tokens, profile):
