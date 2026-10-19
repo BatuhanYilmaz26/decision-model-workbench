@@ -1,0 +1,12 @@
+{
+  "state": {
+    "evidence": "Replace with evidence available at decision time for your domain."
+  },
+  "threshold": 0.8,
+  "request_key": "replace-with-your-logical-request-id",
+  "expected_release": {
+    "model_id": "00000000000000000000000000000000",
+    "release_revision": 1,
+    "schema_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  }
+}

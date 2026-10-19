@@ -961,7 +961,15 @@ class Service:
             raise ValueError("Export lacks actual runtime reload qualification")
         return folder
 
-    def predict(self, principal, project, state, threshold, request_key=None):
+    def predict(
+        self,
+        principal,
+        project,
+        state,
+        threshold,
+        request_key=None,
+        expected_release=None,
+    ):
         self.require(principal, ("admin", "editor", "reviewer", "inference"))
         spec = self.project(principal, project)["payload"]
         if (
@@ -971,14 +979,37 @@ class Service:
         ):
             raise ValueError("Provide nonempty text or JSON state under 64 KB")
         if (
-            not isinstance(threshold, (int, float))
+            isinstance(threshold, bool)
+            or not isinstance(threshold, (int, float))
             or not math.isfinite(threshold)
             or not 0 <= threshold <= 1
         ):
             raise ValueError("Threshold must be in [0,1]")
+        if expected_release is not None and (
+            not isinstance(expected_release, dict)
+            or set(expected_release)
+            != {"model_id", "release_revision", "schema_sha256"}
+            or not isinstance(expected_release.get("model_id"), str)
+            or not re.fullmatch(r"[a-f0-9]{32}", expected_release["model_id"])
+            or type(expected_release.get("release_revision")) is not int
+            or not 1 <= expected_release["release_revision"] <= 9223372036854775807
+            or not isinstance(expected_release.get("schema_sha256"), str)
+            or not re.fullmatch(r"[a-f0-9]{64}", expected_release["schema_sha256"])
+        ):
+            raise ValueError(
+                "Expected release must name a model, positive revision and schema SHA-256"
+            )
         active = self.store.active(principal["tenant"], project)
         if not active["model_id"]:
             raise Conflict("No released model; train, evaluate and activate one first")
+        if expected_release is not None and expected_release != {
+            "model_id": active["model_id"],
+            "release_revision": active["revision"],
+            "schema_sha256": spec["schema_sha256"],
+        }:
+            raise Conflict(
+                "Active release differs from the expected model, revision or schema; refresh the approved integration configuration"
+            )
         model = self.store.get(
             active["model_id"], principal["tenant"], project, "model"
         )["payload"]

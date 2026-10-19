@@ -9,6 +9,7 @@ Use these fictional records to understand the data format and adapt the template
 | [Support-routing data and request](support/README.md) | [Data preparation](../docs/data-guide.md) and the [domain walkthrough](../docs/domain-adoption-guide.md) |
 | [Liquid operation-selection specification and CSV](liquid/README.md) | [Native d1-3B data preparation](../docs/models/liquid.md); fictional pending examples, not evaluation gold |
 | [D3 retrieval-evidence specification and CSV](d3/README.md) | [Native D3 Edge training](../docs/models/d3.md); pending synthetic illustrations for answer/search/review decisions |
+| [Released-model Python client](platform/README.md) | [Local or deployed API integration](../docs/api-integration-guide.md); release preconditions, user-owned inference keys and fallback handling |
 | [Hosted decision profiles](hosted-profiles.json) | [Hosted studies](../docs/hosted-decisions-guide.md), including [Liquid d1/d1-ultra](../docs/models/liquid-hosted.md) |
 | [Perplexity request and Python client](perplexity/README.md) | [Full/Flash key setup and evaluation](../docs/models/perplexity.md); a bounded direct call with your own key |
 | [Category-discovery profiles](taxonomy-profiles.json) | [Reviewed taxonomy discovery](../docs/taxonomy-guide.md) |

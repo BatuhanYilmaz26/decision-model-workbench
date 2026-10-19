@@ -491,6 +491,8 @@ and release identity. Abstention or a request failure must go to your applicatio
 review/fallback path. Confidence is not a correctness guarantee or permission to
 perform a consequential action.
 
+Both views enable **Require the active release version** by default. The API rejects a changed release before execution; a request already started may finish with its captured version. Open **Release identity for integrations** to copy the project/model/revision/schema values for the [runnable API client](../examples/platform/README.md). Clear the checkbox only when you intentionally want current-release behavior without this precondition.
+
 Inference-role users get a simpler **Input evidence → Decide** view with a fixed
 0.8 cutoff and the same Text/JSON input choice. Use the
 [decision API](api-integration-guide.md) to supply application idempotency keys

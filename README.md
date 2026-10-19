@@ -67,6 +67,7 @@ models whose application adapters are still being built.
 
 | What you want to do | What you will use | Start here |
 |---|---|---|
+| Call an approved released model | Version/schema-pinned API client with abstention and failure fallback | [Runnable client and key setup](examples/platform/README.md) |
 | Use a decision model without training one | Hosted API requests, typed response validation and fallbacks | [API integration](docs/api-integration-guide.md), [application blueprints](docs/application-blueprints.md) |
 | Train a model for your domain | Browser application, reviewed data, model training and release API | [Local setup](docs/setup.md), [complete workflow](docs/product-workflow.md) |
 | Generate additional training examples | A configured local or hosted teacher and your reviewed training seeds | [Synthetic data workflow](#generate-synthetic-training-data) |

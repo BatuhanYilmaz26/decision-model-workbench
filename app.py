@@ -261,12 +261,16 @@ try:
         from decision_workbench.ui.prediction_input import (
             evidence_input,
             parsed_evidence,
+            release_guard,
         )
 
         evidence_mode, evidence_body = evidence_input(
             "Input evidence", "inference-evidence-" + project
         )
-        if st.button("Decide"):
+        expected_release, prediction_ready = release_guard(
+            api, project, spec["schema_sha256"]
+        )
+        if st.button("Decide", disabled=not prediction_ready):
             st.json(
                 api(
                     "POST",
@@ -274,6 +278,7 @@ try:
                     json={
                         "state": parsed_evidence(evidence_mode, evidence_body),
                         "threshold": 0.8,
+                        "expected_release": expected_release,
                     },
                 )
             )
@@ -1521,13 +1526,17 @@ try:
         from decision_workbench.ui.prediction_input import (
             evidence_input,
             parsed_evidence,
+            release_guard,
         )
 
         evidence_mode, evidence_body = evidence_input(
             "Evidence for the released model", "decision-evidence-" + project
         )
         threshold = st.slider("Abstain below confidence", 0.0, 1.0, 0.8)
-        if st.button("Make decision"):
+        expected_release, prediction_ready = release_guard(
+            api, project, spec["schema_sha256"]
+        )
+        if st.button("Make decision", disabled=not prediction_ready):
             st.json(
                 api(
                     "POST",
@@ -1535,6 +1544,7 @@ try:
                     json={
                         "state": parsed_evidence(evidence_mode, evidence_body),
                         "threshold": threshold,
+                        "expected_release": expected_release,
                     },
                 )
             )

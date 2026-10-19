@@ -32,6 +32,6 @@ Start with a CPU comparison baseline, then use [native Laya or Unsloth](training
 
 ## 6. Release and integrate
 
-An owner activates an eligible model version after checking its frozen criteria. Applications call the authenticated decision endpoint, preserve release/schema identity and send abstained or failed decisions to the approved fallback. Use shadow traffic and a bounded canary before consequential automation. Roll back model and policy together when acceptance limits fail.
+An owner activates an eligible model version after checking its frozen criteria. The [release-pinned client](../examples/platform/README.md) can require an approved model/revision/schema before execution and sends abstained or failed cases to fallback. Applications call the authenticated decision endpoint, preserve release/schema identity and send abstained or failed decisions to the approved fallback. Use shadow traffic and a bounded canary before consequential automation. Roll back model and policy together when acceptance limits fail.
 
 Policy or schema changes create an [owner-approved successor project](policy-versioning-guide.md). Review carried-forward domain text, questions and optional criteria in the browser; the successor starts with an empty data workspace and its own release endpoint. Retain the earlier model contract and use fresh independent gold if test findings informed the change. Follow [evaluation](evaluation-guide.md), [deployment](deployment-guide.md) and [recovery](recovery-guide.md) for operating the resulting service.

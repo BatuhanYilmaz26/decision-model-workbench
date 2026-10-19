@@ -227,10 +227,17 @@ class CloudActionBody(Body):
     request_key: str = Field(min_length=8, max_length=128)
 
 
+class ReleaseExpectation(Body):
+    model_id: str = Field(pattern=r"^[a-f0-9]{32}$")
+    release_revision: int = Field(ge=1, le=9223372036854775807)
+    schema_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+
+
 class DecisionBody(Body):
     state: Any
     request_key: str | None = Field(default=None, min_length=8, max_length=128)
     threshold: float = Field(default=0.8, ge=0, le=1)
+    expected_release: ReleaseExpectation | None = None
 
 
 def create_app(home=None, keys=None, hosted=None):
@@ -1206,7 +1213,10 @@ def create_app(home=None, keys=None, hosted=None):
         authorization: str | None = Header(default=None),
         p=Depends(identity),
     ):
-        result = service.predict(p, project, **body.model_dump())
+        values = body.model_dump()
+        if values["expected_release"] is None:
+            values.pop("expected_release")
+        result = service.predict(p, project, **values)
         authorize_again(authorization, p)
         return result
 

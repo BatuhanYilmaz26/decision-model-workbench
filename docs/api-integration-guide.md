@@ -177,7 +177,7 @@ Cloudflare documents a **24,576-token context window** for Clef Flash in the ref
 
 ### Call your released local domain model
 
-After training and owner activation, an existing application can call the scoped platform route:
+After training and owner activation, use the [runnable release-pinned client](../examples/platform/README.md) for an approved version and fallback handling. The short HTTP example below follows the current active release:
 
 ```python
 import os
@@ -194,7 +194,7 @@ with httpx.Client(base_url=os.environ["DMT_API_URL"], timeout=30.0) as client:
     print(result["release_revision"], result["answers"], result["abstained"])
 ```
 
-Replace the example threshold `0.9` with one measured on your domain. The active release fixes the schema and model. Fetch expected release information through an authorized administrative workflow, then check `model_id`, `release_revision`, `schema_sha256` and abstention before acting. The API cannot atomically pin a caller-selected release for each request; reject unexpected identities at the application boundary. See [deployment](deployment-guide.md), [authentication](authentication-guide.md) and [evaluation](evaluation-guide.md).
+Replace the example threshold `0.9` with one measured on your domain. The active release fixes the schema and model. Fetch expected release information through an authorized administrative workflow, then check `model_id`, `release_revision`, `schema_sha256` and abstention before acting. For a release precondition, send `expected_release` with the approved `model_id`, `release_revision` and `schema_sha256`. A mismatch returns HTTP 409 before model/provider dispatch. The selected snapshot may finish in flight after another activation, and its response retains the captured identity. The guard does not select inactive versions or attest hosted provider weights. Reject unexpected response identities at the application boundary as well; the [request template and client](../examples/platform/README.md) implement that path. See [deployment](deployment-guide.md), [authentication](authentication-guide.md) and [evaluation](evaluation-guide.md).
 
 Vega uses a different local library boundary. The following is the **historical 10 October profile**, retained for its source pin. The selected 0.8.0 mode and complete engine/backbone pins are in the [Vega guide](vega-guide.md); use that guide for new work and consult [runtime compatibility](compatibility-and-upgrades.md) before upgrading. Its reviewed loader accepts a Hub revision:
 
