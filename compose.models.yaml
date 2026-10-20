@@ -4,9 +4,11 @@ services:
     command: ["domain-platform", "serve", "--host", "0.0.0.0", "--port", "8080"]
     environment:
       DMT_MODEL_CACHE: /app/model-cache/hub
+      DMT_MODEL_RESOURCE_LOCK: /run/model-resources/gpu.lock
       HF_HUB_OFFLINE: "1"
       TRANSFORMERS_OFFLINE: "1"
     volumes:
+      - model-resources:/run/model-resources
       - type: bind
         source: ${DMT_MODEL_CACHE_PATH:?Set the predownloaded approved Hub cache directory}
         target: /app/model-cache/hub
@@ -23,9 +25,11 @@ services:
     command: ["domain-worker"]
     environment:
       DMT_MODEL_CACHE: /app/model-cache/hub
+      DMT_MODEL_RESOURCE_LOCK: /run/model-resources/gpu.lock
       HF_HUB_OFFLINE: "1"
       TRANSFORMERS_OFFLINE: "1"
     volumes:
+      - model-resources:/run/model-resources
       - type: bind
         source: ${DMT_MODEL_CACHE_PATH:?Set the predownloaded approved Hub cache directory}
         target: /app/model-cache/hub
@@ -37,3 +41,8 @@ services:
             - driver: nvidia
               device_ids: ["${DMT_GPU_DEVICE:?Select the same NVIDIA device for API and worker}"]
               capabilities: [gpu]
+
+volumes:
+  model-resources:
+    external: true
+    name: ${DMT_MODEL_RESOURCE_VOLUME:-decision-workbench-model-resources}

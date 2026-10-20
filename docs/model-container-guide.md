@@ -90,6 +90,24 @@ The optional [model Compose override](../compose.models.yaml) selects a model im
 - `DMT_MODEL_IMAGE`: the retained qualified model image reference, preferably by digest.
 - `DMT_MODEL_CACHE_PATH`: an absolute host path to the approved Hub cache directory.
 - `DMT_GPU_DEVICE`: the same NVIDIA device ID or UUID for API and worker.
+- `DMT_MODEL_RESOURCE_VOLUME`: an external volume shared by every workbench
+  container using that GPU; the default name is `decision-workbench-model-resources`.
+
+Stop existing model services before changing the lease configuration or upgrading
+from workspace-only locking. Create the shared volume once, then initialize its
+directory for the supplied model images' `platform` user. These
+commands use your already qualified image; they do not build or download weights:
+
+```bash
+docker volume create decision-workbench-model-resources
+docker compose --file compose.yaml --file compose.models.yaml run --rm --no-deps --pull never --user 0 --entrypoint python api -c "import os,pwd; u=pwd.getpwnam('platform'); os.chown('/run/model-resources', u.pw_uid, u.pw_gid); os.chmod('/run/model-resources', 0o770)"
+```
+
+If you select another volume name, create that name instead. For a custom image,
+initialize permissions for its actual service identity. Do not reset permissions
+or delete the volume while any participating service is running. The one-off
+initialization command runs as root only to set volume permissions; the regular
+API and worker retain the selected image's service user.
 
 Start against the existing provisioned configuration using both Compose files and disable builds so the selected model image is retained:
 
@@ -97,6 +115,16 @@ Start against the existing provisioned configuration using both Compose files an
 docker compose --file compose.yaml --file compose.models.yaml up --no-build --detach --wait
 ```
 
-Build the CPU/browser image separately first, as shown in the [CPU container guide](container-guide.md). The override explicitly supplies the API command because the model image defaults to the worker. Local paths are operator configuration; do not publish credentials or enterprise records in image layers. Mounting a GPU does not establish model readiness or a globally exclusive GPU reservation. The shared workspace lease coordinates these application services; other applications and multi-host scheduling need separate controls.
+Build the CPU/browser image separately first, as shown in the [CPU container guide](container-guide.md). The override explicitly supplies the API command because the model image defaults to the worker. Local paths are operator configuration; do not publish credentials or enterprise records in image layers. Mounting a GPU does not establish model readiness or a globally exclusive GPU reservation. The overlay sets `DMT_MODEL_RESOURCE_LOCK=/run/model-resources/gpu.lock` for both services. Separate Compose projects use the same external volume name, so their model operations share capacity while retaining separate workspace ownership. [Docker external volumes and names](https://docs.docker.com/reference/compose-file/volumes/).
+
+On a Linux host, for native processes and containers to coordinate together, replace the
+named-volume mounts with a bind mount of one protected host lock directory in
+both services. Point native processes at that directory's same lock file; matching
+path text in different filesystems is insufficient. Verify lock exclusion on the
+selected local filesystem. Docker Desktop and mixed Windows/Linux processes need
+separate coordination checks; use a dedicated device until those pass.
+Keep other GPU applications
+and multi-host scheduling under separate controls. See
+[shared model capacity](setup.md#shared-model-capacity-on-one-host).
 
 Use approved paired data and frozen owner criteria with the [training/release workflow](vega-guide.md). Evaluate accuracy, calibration and coverage on operational gold before release. For managed cloud studies, check the selected account and image through [provider compatibility checks](verification.md#provider-compatibility-checks).

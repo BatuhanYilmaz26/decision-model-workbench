@@ -544,12 +544,12 @@ class Worker:
                     self.store, config, job_folder
                 )
                 deadline = time.monotonic() + job_timeout()
-            from decision_workbench.training.resources import ResourceLease
+            from decision_workbench.training.resources import ModelResourceLease
             from decision_workbench.training.process_guard import leased_process_options
 
             self.store.heartbeat(job, "Waiting for exclusive model resource")
             with (
-                ResourceLease(self.store.folder / "gpu.lock").hold(
+                ModelResourceLease(self.store.folder).hold(
                     timeout=240, cancelled=cancelled
                 ) as model_lease,
                 (job_folder / "training.log").open("w", encoding="utf-8") as log,

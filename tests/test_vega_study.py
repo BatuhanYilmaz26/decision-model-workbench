@@ -54,19 +54,49 @@ class VegaStudyTests(unittest.TestCase):
             )
         )
 
-    def test_cli_uses_the_platform_home_resource_lease(self):
+    def test_cli_uses_the_shared_and_platform_home_resource_lease(self):
         with (
             patch.dict("os.environ", {"DMT_HOME": "custom-workspace"}),
             patch("sys.argv", ["vega_runner", "--data", "inputs", "--out", "outputs"]),
-            patch("decision_workbench.training.vega_runner.ResourceLease") as lease,
+            patch(
+                "decision_workbench.training.vega_runner.ModelResourceLease"
+            ) as lease,
             patch(
                 "decision_workbench.training.vega_runner.train_vega", return_value={}
             ),
             patch("builtins.print"),
         ):
             main()
-        lease.assert_called_once_with(str(Path("custom-workspace") / "gpu.lock"))
+        lease.assert_called_once_with(Path("custom-workspace"))
         lease.return_value.hold.assert_called_once_with(timeout=0)
+
+    def test_cli_keeps_an_explicit_standalone_resource_lock(self):
+        with (
+            patch(
+                "sys.argv",
+                [
+                    "vega_runner",
+                    "--data",
+                    "inputs",
+                    "--out",
+                    "outputs",
+                    "--resource-lock",
+                    "selected.lock",
+                ],
+            ),
+            patch("decision_workbench.training.vega_runner.ResourceLease") as lease,
+            patch(
+                "decision_workbench.training.vega_runner.ModelResourceLease"
+            ) as shared,
+            patch(
+                "decision_workbench.training.vega_runner.train_vega", return_value={}
+            ),
+            patch("builtins.print"),
+        ):
+            main()
+        lease.assert_called_once_with("selected.lock")
+        lease.return_value.hold.assert_called_once_with(timeout=0)
+        shared.assert_not_called()
 
     def test_threshold_uses_both_classes_and_refuses_bad_scores(self):
         policy = select_gate_threshold([0.9, 0.8], [0.2, 0.3])

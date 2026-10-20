@@ -13,7 +13,7 @@ import threading
 import time
 import uuid
 from decision_workbench.data import dumps
-from decision_workbench.training.resources import ResourceLease, ResourceBusy
+from decision_workbench.training.resources import ModelResourceLease, ResourceBusy
 from decision_workbench.training.process_guard import leased_process_options
 
 
@@ -150,7 +150,7 @@ class RuntimeBroker:
         folder = (self.store.folder / "artifacts" / model["artifact_id"]).resolve()
         if folder.parent != (self.store.folder / "artifacts").resolve():
             raise ValueError("Invalid artifact reference")
-        lease = ResourceLease(self.store.folder / "gpu.lock")
+        lease = ModelResourceLease(self.store.folder)
         try:
             lease.acquire(timeout=2)
         except ResourceBusy as exc:

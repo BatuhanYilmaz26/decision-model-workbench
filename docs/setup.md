@@ -213,6 +213,35 @@ Use the [hosted decision workflow](hosted-decisions-guide.md) to evaluate provid
 
 Choose [managed AWS](managed-cloud-training.md), [GCP](managed-gcp-training.md), [Azure](managed-azure-training.md), [RunPod](managed-runpod-training.md) or [Modal](managed-modal-training.md) to submit frozen studies from the application. Install the selected provider's control dependencies in the API/worker environment, configure approved infrastructure and obtain separate owner approvals for data transfer and paid compute. Check the provider's retained-storage charges and termination behavior. [Provider compatibility checks](verification.md#provider-compatibility-checks)
 
+## Shared model capacity on one host
+
+Native training, resident native inference and returned-model admission take an
+exclusive shared model lock as well as their workspace lock. By default, processes
+running as the same OS user share `~/.cache/decision-workbench/locks/gpu.lock`,
+even when their workspace directories differ. The CPU comparison baseline and
+external hosted API calls do not take this model lock. Semantic audits retain
+their separate CPU process and memory limits.
+
+To coordinate different service users or select an operator-managed resource
+group, set `DMT_MODEL_RESOURCE_LOCK` to the same **absolute file path** in every
+participating API and worker environment before startup. Its directory must be
+writable by those service identities on a local filesystem supporting OS file
+locks. Protect it from unrelated writers. Do not remove or replace a lock file
+while a service is running. A filename alone cannot coordinate separate hosts,
+separate container filesystems, external model servers or unrelated GPU programs.
+
+Stop all model API/worker processes before upgrading from workspace-only locking,
+changing this setting or moving a lock. Restart all participants with the same
+configuration. A busy resource waits up to the operation's configured deadline or
+returns a resource-unavailable error; this is mutual exclusion, not a fair queue,
+a VRAM quota or a cluster scheduler. Locks do not partition multiple devices
+automatically. Keep one shared lock for all processes that may use the same GPU.
+
+For containers, follow the [shared model volume setup](model-container-guide.md#configure-application-services).
+The [standalone Vega runner](vega-guide.md) uses the shared default unless you
+explicitly select its `--resource-lock` override. An override coordinates only
+processes using that same file.
+
 ## Local semantic review
 
 Before reserving a domain study, optionally configure the [local semantic audit workflow](semantic-data-guide.md). Its operator profile pins approved cached model/tokenizer assets and an isolated CPU runtime; the baseline application image does not supply those model assets. Required scoped profiles block unchecked reservations and require immutable owner/reviewer adjudication of every candidate pair. This complements source-family and temporal checks; domain threshold/recall qualification remains required.

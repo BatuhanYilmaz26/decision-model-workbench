@@ -135,7 +135,7 @@ python -m decision_workbench.training.vega_runner \
   --epochs 2 --batch-size 8 --rank 8 --device cuda
 ```
 
-Use `--offline` after preparing both pinned snapshots in the cache selected by `DMT_MODEL_CACHE`. `DMT_HOME` selects the platform workspace and shared GPU lease; its default is `data/workspace`. Choose an empty output directory. Both gate classes participate in training; validation selects the adapter and applicability threshold. The backbone and original engine are frozen. No optimizer resume or multi-GPU mode is provided.
+Use `--offline` after preparing both pinned snapshots in the cache selected by `DMT_MODEL_CACHE`. `DMT_HOME` selects the workspace and its ownership lock; its default is `data/workspace`. Standalone training also uses the [shared host model lease](setup.md#shared-model-capacity-on-one-host). Set the same `DMT_MODEL_RESOURCE_LOCK` as the API/worker when sharing a GPU. An explicit `--resource-lock` retains standalone override behavior and coordinates only users of that selected file. Choose an empty output directory. Both gate classes participate in training; validation selects the adapter and applicability threshold. The backbone and original engine are frozen. No optimizer resume or multi-GPU mode is provided.
 
 The export contains `merged/engine.safetensors`, the complete `merged/backbone`, one domain adapter, calibration/policy/schema/runtime metadata, `report.json` and the complete hash inventory in `manifest.json`. The report records source/input hashes, disjoint calibration indexes, gate gradients and parameter changes, selection history, applicability errors, reload comparison and held-out evaluation. Portable `reviewed` fields alone do not establish authenticated annotation.
 

@@ -22,7 +22,7 @@ from .artifacts import compare_predictions, file_sha, write_manifest
 from .contracts import load_splits, SPLITS
 from .metrics import evaluate_predictions
 from .provenance import source_fingerprint
-from .resources import ResourceLease
+from .resources import ModelResourceLease, ResourceLease
 from .vega_contracts import load_gate_splits
 from .vega_engine import (
     VegaEngine,
@@ -689,7 +689,7 @@ def main():
     )
     parser.add_argument(
         "--resource-lock",
-        default=str(Path(os.environ.get("DMT_HOME", "data/workspace")) / "gpu.lock"),
+        help="Override the shared model lease with an explicit standalone lock file",
     )
     args = parser.parse_args()
     if args.local_study_request:
@@ -697,7 +697,12 @@ def main():
         # Request/source/input checks still run before importing/loading the model.
         report = train_vega(args)
     else:
-        with ResourceLease(args.resource_lock).hold(timeout=0):
+        lease = (
+            ResourceLease(args.resource_lock)
+            if args.resource_lock
+            else ModelResourceLease(Path(os.environ.get("DMT_HOME", "data/workspace")))
+        )
+        with lease.hold(timeout=0):
             report = train_vega(args)
     print(json.dumps(report, indent=2, allow_nan=False))
 

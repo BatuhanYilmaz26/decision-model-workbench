@@ -10,7 +10,7 @@ import uuid
 from pathlib import Path
 from decision_workbench.data import dumps, write_splits
 from decision_workbench.training.artifacts import file_sha, verify_manifest
-from decision_workbench.training.resources import ResourceLease
+from decision_workbench.training.resources import ModelResourceLease
 from decision_workbench.training.process_guard import leased_process_options
 from .remote import study_entity, validate_export
 from .store import Conflict
@@ -83,7 +83,7 @@ def admit(worker, job, snapshot, questions, coverage, cancelled):
         deadline = time.monotonic() + 4 * 60 * 60
         store.heartbeat(job, "Waiting for exclusive exported-runtime qualification")
         with (
-            ResourceLease(store.folder / "gpu.lock").hold(
+            ModelResourceLease(store.folder).hold(
                 timeout=240, cancelled=cancelled
             ) as model_lease,
             (job_folder / "qualification.log").open("w", encoding="utf-8") as log,

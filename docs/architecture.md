@@ -30,7 +30,7 @@ Projects pin policy and questions. Reviews append immutable dataset revisions; j
 
 ## Training and serving
 
-CPU, native Laya, Unsloth and Vega are explicit adapters with different dependency and data contracts. Training separates selection, calibration and locked evaluation. Exports include weights, configuration, tokenizer, calibration, reports and a file manifest. Release checks the model contract and frozen owner criteria; a failed run does not replace the active release. Resident model processes share a single-workspace capacity lease with training. [Training](training-guide.md), [Vega](vega-guide.md)
+CPU, native Laya, Unsloth and Vega are explicit adapters with different dependency and data contracts. Training separates selection, calibration and locked evaluation. Exports include weights, configuration, tokenizer, calibration, reports and a file manifest. Release checks the model contract and frozen owner criteria; a failed run does not replace the active release. Resident native model processes, native training and model admission share a host capacity lease while retaining workspace ownership locks. Participating services must use the same lock file and filesystem; CPU baseline jobs remain independent. [Capacity configuration](setup.md#shared-model-capacity-on-one-host), [training](training-guide.md), [Vega](vega-guide.md)
 
 ## External operations
 

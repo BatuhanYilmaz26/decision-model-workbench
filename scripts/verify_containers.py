@@ -752,8 +752,8 @@ def main():
                     len(report["data_sha256"]) == len(report["gate_data_sha256"]) == 4
                 )
                 lease_code = (
-                    "import json;from decision_workbench.training.resources import ResourceLease,ResourceBusy;"
-                    "lease=ResourceLease('/app/data/workspace/gpu.lock');\n"
+                    "import json;from decision_workbench.training.resources import ModelResourceLease,ResourceBusy;"
+                    "lease=ModelResourceLease('/app/data/workspace');\n"
                     "try:\n lease.acquire(timeout=0)\n"
                     "except ResourceBusy:\n print(json.dumps({'blocked':True}))\n"
                     "else:\n lease.release();print(json.dumps({'blocked':False}))"
@@ -1055,6 +1055,8 @@ def main():
                             )
                             kill_parent = (
                                 "import os,signal,sys,json;from pathlib import Path;"
+                                "from decision_workbench.training.resources import model_resource_path;"
+                                "lease_path=str(model_resource_path());"
                                 "parent,child=map(int,sys.argv[1:]);assert parent>1 and child>1;"
                                 "args=Path(f'/proc/{parent}/cmdline').read_bytes().split(b'\\0');"
                                 "assert b'decision_workbench.platform.worker' in args and b'--once' in args;"
@@ -1063,7 +1065,7 @@ def main():
                                 "fds=list(Path(f'/proc/{child}/fd').iterdir());"
                                 "held=0;\n"
                                 "for f in fds:\n"
-                                " try: held+=os.readlink(f)=='/app/data/workspace/gpu.lock'\n"
+                                " try: held+=os.readlink(f)==lease_path\n"
                                 " except FileNotFoundError: pass\n"
                                 "assert held>=1;os.kill(parent,signal.SIGKILL);"
                                 "print(json.dumps({'trainer_inherited_lease_fds':held}))"

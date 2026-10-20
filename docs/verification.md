@@ -45,6 +45,22 @@ This check creates one personal workspace and project through the browser contro
 
 The check starts and stops its own temporary API, worker and teacher. It requires no account, pretrained model download or GPU. AppTest injects the upload at the file-uploader boundary; use a browser for file-picker, layout and accessibility checks. Permissive fixture acceptance criteria exercise the release mechanism, not a policy suitable for your domain. The quick-start CI jobs also run this check on Windows and Linux; inspect the corresponding run before claiming a platform passed.
 
+## Check shared model capacity
+
+With the local application dependencies installed, run:
+
+```bash
+python -m unittest discover -s tests -p test_shared_resources.py -v
+```
+
+These checks use temporary lock files and small owned Python processes. They
+exercise exclusion across different workspace roots, cancellation, recovery after
+parent death on Windows/Linux, the existing workspace lock and rejection before
+launching a competing inference process. A CPU training check runs while the
+model resource is held. They do not allocate a GPU or download weights. Configure
+the same [shared model lock](setup.md#shared-model-capacity-on-one-host) in all
+participants and qualify the actual model image/filesystem before deployment.
+
 ## Verify a fresh container
 
 ```bash
