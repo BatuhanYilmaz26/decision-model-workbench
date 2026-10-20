@@ -12,7 +12,9 @@ Follow [testing and compatibility](../docs/verification.md) to install the test 
 | Explicit reservations | Group/time policies, fixed historical roles, owner preview/approval and recovery integrity | [Reservation workflow](../docs/reservation-guide.md) |
 | Synthetic generation | Server approvals, seed selection, usage/estimate accounting, supervised transport, explicit retry, review and recovery | [Generation workflow](../docs/synthetic-generation-guide.md) |
 | Platform services | HTTP authorization, persistence, worker ownership, releases and inference | [Architecture](../docs/architecture.md), [authentication](../docs/authentication-guide.md) |
+| Workspace roles | Read/mutation permissions for all four roles, unchanged state after denials, editor training, owner release and tenant boundaries | [Role table](../docs/authentication-guide.md#choose-a-workspace-role) |
 | Shared model capacity | Different-workspace exclusion, cancellation, owned-child recovery and CPU independence | [Resource checks](../docs/verification.md#check-shared-model-capacity), [configuration](../docs/setup.md#shared-model-capacity-on-one-host) |
+| Resident runtime lifetime | Reuse across independent request threads, orderly shutdown and broker-parent death | [Weight-free lifecycle checks](../docs/verification.md#check-shared-model-capacity) |
 | Browser workflows | Guided forms and API-backed state through Streamlit AppTest | [Testing scope](../docs/verification.md) |
 | Complete personal journey | One new project, imported/reviewed examples, fixed holdouts, reviewed synthetic extension, CPU training, release, prediction and service reopening | [Run the continuous journey](../docs/verification.md#run-the-continuous-personal-journey) |
 | Training and provider adapters | Frozen request construction, export contracts and failure handling | [Training](../docs/training-guide.md), [provider checks](../docs/verification.md#provider-compatibility-checks) |

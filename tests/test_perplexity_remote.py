@@ -277,6 +277,16 @@ class NativePerplexityRemoteTests(unittest.TestCase):
             recovered = create_app(restored["destination"], keys())
             try:
                 with TestClient(recovered) as client:
+                    # The source still owns this host's model capacity. A cold
+                    # recovery must hand it off rather than load a second model.
+                    response = client.post(
+                        self.f.prefix + "/decisions",
+                        headers={"Authorization": "Bearer a-secret"},
+                        json={"state": {"ready": False}},
+                    )
+                    self.assertEqual(response.status_code, 503, response.text)
+                    self.assertIn("resource is busy", response.json()["detail"])
+                    self.f.service.runtime.close()
                     response = client.post(
                         self.f.prefix + "/decisions",
                         headers={"Authorization": "Bearer a-secret"},

@@ -6,6 +6,40 @@ The API supports local workspace keys and an optional JWT access-token adapter. 
 
 The dependency profile pins PyJWT 2.15.1 and cryptography 50.0.2. Configure RS256 or ES256 public signing keys and the `at+jwt` or `application/at+jwt` access-token type. Fixed algorithms, issuer and audience validation help keep API access tokens separate from ID tokens. [RFC 8725](https://www.rfc-editor.org/rfc/rfc8725.html), [RFC 9068](https://www.rfc-editor.org/rfc/rfc9068.html), [PyJWT verification API](https://pyjwt.readthedocs.io/en/latest/api.html)
 
+## Choose a workspace role
+
+Assign the role to the principal when provisioning a key or configuring a trusted
+access-token binding. The API enforces these permissions; hiding a browser control
+does not grant or remove access. Personal localhost mode uses an `admin` identity.
+
+| Action | Owner (`admin`) | Editor (`editor`) | Reviewer (`reviewer`) | Application (`inference`) |
+|---|---|---|---|---|
+| Read project questions and active release; request predictions | Yes | Yes | Yes | Yes |
+| Read examples, dataset/model reports, reserved exports and job status | Yes | Yes | Yes | No |
+| Create an independent project; import or enter examples | Yes | Yes | No | No |
+| Approve, correct or reject example labels | Yes | No | Yes | No |
+| Reserve data; queue supported local training | Yes | Yes | No | No |
+| Cancel a local job | Yes | Yes | No | No |
+| Set acceptance criteria; activate or roll back a release | Yes | No | No | No |
+| Approve teacher requests, hosted evaluation or cloud training | Yes | No | No | No |
+| Inspect configured teachers, hardware or cloud profiles | Yes | No | No | No |
+| Inspect operational incidents | Yes | Yes | No | No |
+| Assign review work; export audit history; inspect/reconcile provider calls | Yes | No | No | No |
+
+An editor can supply examples and train a model without approving its labels or
+releasing it. A reviewer can inspect and annotate data without starting training.
+Use `inference` for an application that only needs project metadata and released
+predictions; it cannot download training data or read job/audit history. Existing
+record assignments, frozen criteria and model/backend prerequisites still apply.
+
+Roles apply within the principal's tenant. A role never grants access to another
+tenant's resources. Identity comes from the configured key or verified token
+binding; request headers and body fields cannot select a different tenant or
+role. Local job cancellation does not stop upstream cloud compute: an owner must
+use the [managed provider controls](remote-training-guide.md) and observe its
+terminal state. Key provisioning, rotation and revocation remain operator CLI
+actions; an API `admin` token alone cannot administer the operator's key file.
+
 ## Workspace key lifecycle
 
 Provision a principal with an explicit role:

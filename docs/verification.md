@@ -45,6 +45,16 @@ This check creates one personal workspace and project through the browser contro
 
 The check starts and stops its own temporary API, worker and teacher. It requires no account, pretrained model download or GPU. AppTest injects the upload at the file-uploader boundary; use a browser for file-picker, layout and accessibility checks. Permissive fixture acceptance criteria exercise the release mechanism, not a policy suitable for your domain. The quick-start CI jobs also run this check on Windows and Linux; inspect the corresponding run before claiming a platform passed.
 
+## Check workspace role boundaries
+
+After installing the root application requirements, run:
+
+```bash
+python -m unittest discover -s tests -p test_access_roles.py -v
+```
+
+The check uses temporary workspace keys for all four [documented roles](authentication-guide.md#choose-a-workspace-role). It exercises API read and mutation permissions, verifies that denied requests leave project/job/release state unchanged, and trains a fictional CPU model as an editor before an owner releases it. It also checks tenant boundaries and refuses identity-header overrides. It uses the in-process HTTP test client, no external account or pretrained weights. Enterprise identity-provider deployment and operator filesystem permissions need their own checks.
+
 ## Check shared model capacity
 
 With the local application dependencies installed, run:
@@ -60,6 +70,17 @@ launching a competing inference process. A CPU training check runs while the
 model resource is held. They do not allocate a GPU or download weights. Configure
 the same [shared model lock](setup.md#shared-model-capacity-on-one-host) in all
 participants and qualify the actual model image/filesystem before deployment.
+
+To check that a resident model survives independent API request threads and ends
+with its broker, run the weight-free lifecycle check:
+
+```bash
+python -m unittest discover -s tests -p test_runtime_ownership.py -v
+```
+
+It checks reuse of the same resident process across requests, orderly shutdown,
+and capacity recovery after broker-process death on Windows/Linux. The fictional
+framed runtime checks process ownership, not model predictions or GPU readiness.
 
 ## Verify a fresh container
 

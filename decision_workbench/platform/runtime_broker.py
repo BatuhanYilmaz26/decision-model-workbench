@@ -3,6 +3,7 @@
 from decision_workbench.training.d3_profiles import BACKENDS as D3_BACKENDS
 
 import atexit
+from concurrent.futures import ThreadPoolExecutor
 import json
 import math
 import os
@@ -34,6 +35,7 @@ class RuntimeBroker:
         self.stop = threading.Event()
         self.monitor = None
         self.reader = None
+        self.launcher = None
         self.capacity = threading.BoundedSemaphore(4)
         self.idle_seconds = float(os.environ.get("DMT_INFERENCE_IDLE_SECONDS", "30"))
         self.timeout = float(os.environ.get("DMT_INFERENCE_TIMEOUT_SECONDS", "120"))
@@ -131,9 +133,29 @@ class RuntimeBroker:
         self.stop.set()
         with self.lock:
             self._close()
+            launcher, self.launcher = self.launcher, None
+        if launcher is not None:
+            launcher.shutdown(wait=True)
         if self.monitor and self.monitor is not threading.current_thread():
             self.monitor.join(timeout=3)
         atexit.unregister(self.close)
+
+    def _launch(self, argv, environment, options):
+        # Linux ownership follows the creating thread. Request-pool threads can
+        # end while a resident model is idle, so launch from a stable owner.
+        if self.launcher is None:
+            self.launcher = ThreadPoolExecutor(
+                max_workers=1, thread_name_prefix="DMT-model-owner"
+            )
+            atexit.register(self.close)
+        lease = self.lease
+
+        def create():
+            return subprocess.Popen(
+                argv, **options, **leased_process_options(lease, environment)
+            )
+
+        return self.launcher.submit(create).result()
 
     def _ensure(self, model_id, model, questions):
         if self.stop.is_set():
@@ -201,17 +223,19 @@ class RuntimeBroker:
                 "--schema-file",
                 str(schema),
             ]
-            self.process = subprocess.Popen(
+            self.process = self._launch(
                 argv,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=self.log,
-                text=True,
-                encoding="utf-8",
-                bufsize=1,
-                shell=False,
-                **({"cwd": runtime_cwd} if runtime_cwd is not None else {}),
-                **leased_process_options(self.lease, environment),
+                environment,
+                {
+                    "stdin": subprocess.PIPE,
+                    "stdout": subprocess.PIPE,
+                    "stderr": self.log,
+                    "text": True,
+                    "encoding": "utf-8",
+                    "bufsize": 1,
+                    "shell": False,
+                    **({"cwd": runtime_cwd} if runtime_cwd is not None else {}),
+                },
             )
             self.messages = queue.Queue(maxsize=4)
             self.reader = threading.Thread(
@@ -224,7 +248,6 @@ class RuntimeBroker:
             if self.monitor is None:
                 self.monitor = threading.Thread(target=self._watch, daemon=True)
                 self.monitor.start()
-                atexit.register(self.close)
         except BaseException:
             self._close()
             raise

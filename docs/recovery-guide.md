@@ -2,7 +2,7 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-The local platform provides operator commands to back up the SQLite workspace and all registered CPU, native Laya and Unsloth model exports. Recovery restores into a new directory and preserves immutable project/data/model history and the active release revision. It does not replay unfinished work.
+The local platform provides operator commands to back up the SQLite workspace and its registered model exports. Recovery restores into a new directory and preserves immutable project/data/model history and the active release revision. It does not replay unfinished work.
 
 This is the single-host local profile.
 
@@ -72,6 +72,6 @@ Supply an approved credential file and select the recovered home when starting t
 domain-platform run --home data/recovered-workspace --keys-file data/operator-keys.json
 ```
 
-Use the model environment in [setup](setup.md) for native/Unsloth exports. Recovery preserves historical training configuration, including original job paths, while serving resolves registered artifacts under the current workspace. Run only one independent workspace service per GPU: capacity coordination does not extend across source and restored workspaces.
+Use the matching model environment in [setup](setup.md) for native exports. Recovery preserves historical training configuration, including original job paths, while serving resolves registered artifacts under the current workspace. Source and restored services sharing a GPU must use the same [model-capacity lock](setup.md#shared-model-capacity-on-one-host). Before probing the restored native release, stop model serving/training in the source workspace or let its resident model unload. While the source owns that capacity, a restored native prediction returns resource unavailable rather than loading a competing model. CPU baseline predictions do not require this handoff.
 
 Check `/ready`, authenticated project visibility and the active release, then send a known decision request and compare its complete model/schema/revision/probability response with the trusted pre-recovery probe. Readiness alone does not verify model loading. Check the restore receipt before resubmitting any interrupted work.
