@@ -7,6 +7,7 @@ Follow [testing and compatibility](../docs/verification.md) to install the test 
 | Area | What is checked | Related guide |
 |---|---|---|
 | PostgreSQL metadata | Real disposable database, isolated schemas, independent process claims, typed JSON queries, rollback and actual API/worker/CPU release workflows | [PostgreSQL setup and test command](../docs/postgresql-guide.md) |
+| Shared model artifacts | Immutable file objects, atomic caches, cross-cache PostgreSQL release/prediction, conditional S3 SDK requests and multipart cleanup | [Shared artifact setup](../docs/shared-artifacts-guide.md) |
 | Data and domain contracts | Import, review, preparation, held-out roles and synthetic lineage | [Data](../docs/data-guide.md), [evaluation](../docs/evaluation-guide.md) |
 | Import previews | Whole-file validation, worksheet/mapping selection, preview consistency, atomic append and pending review | [Import workflow](../docs/import-guide.md) |
 | Manual examples | Fifty-record append, draft retention after refusal, empty-row handling and strict JSON evidence | [Batch entry](../docs/import-guide.md#enter-examples-without-a-file) |

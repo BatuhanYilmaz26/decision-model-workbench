@@ -157,6 +157,7 @@ def validate_profile(p):
 
 def public_profile(profile):
     # Credential locations and approved tenant identities are operator configuration.
+
     value = {
         k: copy.deepcopy(v)
         for k, v in profile.items()
@@ -399,6 +400,7 @@ def finish_call(
     transport_terminated=True,
 ):
     # Record the external outcome even if a worker lost its lease during the call.
+
     value = {
         "call_id": call_id,
         "status": status,
@@ -649,7 +651,7 @@ def credential(profile):
 
 
 def checked_hosted(store, model, questions):
-    folder = store.folder / "artifacts" / model["artifact_id"]
+    folder = store.artifact_path(model)
 
     def linked(path):
         return path.is_symlink() or getattr(path, "is_junction", lambda: False)()
@@ -769,7 +771,6 @@ def validate_call_history(store):
             normalize_answers(result["answers"], questions)
         elif value["result"] is not None:
             raise ValueError("Ambiguous provider calls cannot contain accepted results")
-
     with store.transaction() as db:
         settlements = db.execute(
             "SELECT * FROM entities WHERE kind='provider-call-reconciliation'"
@@ -796,7 +797,6 @@ def validate_call_history(store):
             or not 1 <= len(value["note"].strip()) <= 1000
         ):
             raise ValueError("Provider settlement history integrity check failed")
-
     with store.transaction() as db:
         transports = db.execute(
             "SELECT * FROM entities WHERE kind='provider-call-transport'"

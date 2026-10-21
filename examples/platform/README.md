@@ -8,8 +8,9 @@ Use the same endpoint for a released CPU baseline, native model or hosted decisi
 
 For an experimental PostgreSQL metadata workspace, use
 [postgres_workspace.py](postgres_workspace.py) with the
-[PostgreSQL guide](../../docs/postgresql-guide.md). Artifacts remain local; the
-API and worker must share one host and workspace directory.
+[PostgreSQL guide](../../docs/postgresql-guide.md). Metadata-only configuration
+keeps artifacts local; use the [shared-artifact guide](../../docs/shared-artifacts-guide.md)
+to configure S3 storage and separate model caches.
 
 Follow the [local quick start](../../README.md#run-on-your-computer), prepare data, train/evaluate and activate an eligible version. Keep its model/provider environment configured. The default personal browser app connects automatically and needs no workspace key from you. External applications still authenticate to its API.
 

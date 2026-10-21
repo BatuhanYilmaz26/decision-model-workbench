@@ -24,6 +24,7 @@ from .store import Store, Conflict, digest
 from .service import Service
 from .paging import MAX_OFFSET
 from .runtime_broker import RuntimeUnavailable
+from .artifact_storage import ArtifactUnavailable
 from .cloud_aws import CloudUnavailable
 from .operations import OperationsMonitor
 from .auth import (
@@ -246,7 +247,8 @@ def create_app(
     hosted=None,
     *,
     database_url=None,
-    database_schema="decision_workbench"
+    database_schema="decision_workbench",
+    artifact_store=None,
 ):
     auth = Authentication(
         keys=keys,
@@ -257,6 +259,7 @@ def create_app(
         home or os.environ.get("DMT_HOME", "data/workspace"),
         database_url=database_url,
         database_schema=database_schema,
+        artifact_store=artifact_store,
     )
     service = Service(store, hosted=hosted)
     monitor = OperationsMonitor(store)
@@ -427,6 +430,7 @@ def create_app(
 
     @app.exception_handler(CloudUnavailable)
     @app.exception_handler(RuntimeUnavailable)
+    @app.exception_handler(ArtifactUnavailable)
     async def model_unavailable(request, exc):
         return JSONResponse(
             {"detail": str(exc)}, status_code=503, headers={"Retry-After": "5"}

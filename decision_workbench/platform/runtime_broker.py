@@ -169,9 +169,7 @@ class RuntimeBroker:
             self.last_use = time.monotonic()
             return
         self._close()
-        folder = (self.store.folder / "artifacts" / model["artifact_id"]).resolve()
-        if folder.parent != (self.store.folder / "artifacts").resolve():
-            raise ValueError("Invalid artifact reference")
+        folder = self.store.artifact_path(model)
         lease = ModelResourceLease(self.store.folder)
         try:
             lease.acquire(timeout=2)

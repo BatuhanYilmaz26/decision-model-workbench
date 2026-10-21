@@ -59,7 +59,7 @@ Measure monthly service cost divided by successful completed cases. Include upti
 
 Verify readiness, authentication, tenant separation, bounded queues, deadlines, memory recovery, metrics, drift, canary and rollback. Use enterprise policy for raw-state logging.
 
-The default local platform provides an authenticated API, SQLite persistence, independent jobs and release/inference routes for compatible exports. The experimental [PostgreSQL metadata setup](postgresql-guide.md) keeps artifacts local and does not by itself provide multi-host operation. Follow [local backup and recovery](recovery-guide.md) for SQLite workspace/model retention and [authentication](authentication-guide.md) for credentials and trusted JWT mappings. PostgreSQL requires separate database backups with matching artifacts.
+The default local platform provides an authenticated API, SQLite persistence, independent jobs and release/inference routes for compatible exports. Experimental [PostgreSQL metadata](postgresql-guide.md) can be paired with [shared S3 model artifacts](shared-artifacts-guide.md); remaining node, identity and operational requirements still apply. Follow [local backup and recovery](recovery-guide.md) for SQLite workspace/model retention and [authentication](authentication-guide.md) for credentials and trusted JWT mappings. PostgreSQL requires separate database backups with matching artifacts.
 
 ## Training and application integration
 

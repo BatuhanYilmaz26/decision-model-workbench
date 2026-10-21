@@ -225,6 +225,7 @@ class PostgresDatabase:
                 "schema": self.schema,
                 "workspace": identity,
             }
+            self.workspace_id = identity
             if marker.exists():
                 if (
                     marker.stat().st_size > 4096

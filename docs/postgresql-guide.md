@@ -6,10 +6,11 @@ Use the experimental PostgreSQL backend for projects, reviewed datasets,
 reservations, job ownership, releases and audit events. Personal localhost mode
 continues to use SQLite.
 
-**Keep the API and worker on one host with the same workspace directory.** Model
-exports, snapshots, job files and credentials still use local storage. PostgreSQL
-metadata alone does not provide multi-host operation, shared artifacts,
-interactive enterprise login or coordinated enterprise recovery.
+**With metadata-only configuration, keep API and worker on one host with the same
+workspace directory.** The optional [shared-artifact setup](shared-artifacts-guide.md)
+publishes model exports to S3 and supports separate node caches. PostgreSQL alone
+does not move job/staging files, provide interactive enterprise login or supply
+coordinated database/object recovery.
 
 ## Prepare the database
 
@@ -35,6 +36,11 @@ separate schema for each workspace. Schema names must start with a lowercase
 letter and contain only lowercase letters, digits and underscores. Public/system
 schemas and missing schemas are refused. Existing SQLite workspaces are not
 automatically migrated. [PostgreSQL schemas](https://www.postgresql.org/docs/18/ddl-schemas.html).
+
+Stop API and worker processes before upgrading a PostgreSQL workspace. The current
+metadata protocol is 10; an older service version must not continue writing
+during an upgrade. Downgrading against newer metadata is refused. The personal
+SQLite protocol is unchanged by the optional object-storage route.
 
 ## Start the services
 

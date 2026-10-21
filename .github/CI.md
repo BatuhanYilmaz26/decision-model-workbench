@@ -23,3 +23,10 @@ schemas and fictional data. They include actual API/worker/CPU release behavior,
 independent process claims and SQL/transaction failure checks; they do not
 establish shared artifact storage or production database operations. Follow the
 [PostgreSQL guide](../docs/postgresql-guide.md) for configuration and limits.
+
+That job also installs the pinned AWS SDK and exercises
+[shared artifacts](../tests/test_shared_artifacts.py): actual PostgreSQL CPU
+workflows across independent local caches, content integrity, conditional S3 SDK
+contracts and multipart cancellation/completion. The object conformance backend
+uses local files; SDK responses are fictional. It does not contact a paid bucket
+or establish native model/cloud operational qualification.

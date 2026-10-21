@@ -2,7 +2,7 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-The platform combines a browser interface, authenticated HTTP API, durable workspace and independent worker. SQLite is the personal default; an explicit [PostgreSQL metadata backend](postgresql-guide.md) is available experimentally. Model training runs outside web requests. Artifacts remain local, so multi-host deployment still requires shared artifact storage and a validated scheduling design.
+The platform combines a browser interface, authenticated HTTP API, durable workspace and independent worker. SQLite is the personal default; explicit [PostgreSQL metadata](postgresql-guide.md) and [shared S3 model artifacts](shared-artifacts-guide.md) are experimental alternatives. Training runs outside web requests. Multi-host operation still requires compatible node environments, staging access, identity and operational configuration; shared model files alone do not supply those controls.
 
 ```mermaid
 flowchart LR

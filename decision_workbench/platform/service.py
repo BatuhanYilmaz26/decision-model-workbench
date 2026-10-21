@@ -915,9 +915,7 @@ class Service:
         )
 
     def checked_bundle(self, model):
-        folder = (self.store.folder / "artifacts" / model["artifact_id"]).resolve()
-        if folder.parent != (self.store.folder / "artifacts").resolve():
-            raise ValueError("Invalid artifact reference")
+        folder = self.store.artifact_path(model)
         body = (folder / "model.json").read_bytes()
         if hashlib.sha256(body).hexdigest() != model["model_sha256"]:
             raise ValueError("Model integrity check failed")
@@ -926,9 +924,7 @@ class Service:
     def checked_export(self, model, questions):
         from decision_workbench.training.artifacts import verify_manifest
 
-        folder = (self.store.folder / "artifacts" / model["artifact_id"]).resolve()
-        if folder.parent != (self.store.folder / "artifacts").resolve():
-            raise ValueError("Invalid artifact reference")
+        folder = self.store.artifact_path(model)
         verify_manifest(folder, model["model_sha256"], model["backend"], questions)
         report = json.loads((folder / "report.json").read_text(encoding="utf-8"))
         if report != model["report"]:
