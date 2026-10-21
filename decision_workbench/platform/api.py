@@ -240,13 +240,24 @@ class DecisionBody(Body):
     expected_release: ReleaseExpectation | None = None
 
 
-def create_app(home=None, keys=None, hosted=None):
+def create_app(
+    home=None,
+    keys=None,
+    hosted=None,
+    *,
+    database_url=None,
+    database_schema="decision_workbench"
+):
     auth = Authentication(
         keys=keys,
         keys_file=os.environ.get("DMT_KEYS_FILE") if keys is None else None,
         sso_file=os.environ.get("DMT_SSO_FILE") if keys is None else None,
     )
-    store = Store(home or os.environ.get("DMT_HOME", "data/workspace"))
+    store = Store(
+        home or os.environ.get("DMT_HOME", "data/workspace"),
+        database_url=database_url,
+        database_schema=database_schema,
+    )
     service = Service(store, hosted=hosted)
     monitor = OperationsMonitor(store)
 

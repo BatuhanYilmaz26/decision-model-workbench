@@ -15,3 +15,11 @@ This workflow does not submit paid cloud jobs or qualify every real GPU model. F
 The Liquid data jobs install the optional CPU-only [data preparation profile](../requirements/liquid-data.txt) on Windows and Linux, check dependencies and exercise export failure/lineage contracts. They do not fetch model weights or run GPU training; offline fixtures do not establish native model quality.
 
 Use [contribution guidance](../CONTRIBUTING.md) when changing the checks. Credentials, private data, generated caches and local execution receipts belong outside the public repository.
+
+The PostgreSQL job starts a digest-pinned disposable server, installs the
+[optional metadata driver](../requirements/postgres.txt) and runs the
+[database contracts](../tests/test_postgres.py). Cases use randomly named test
+schemas and fictional data. They include actual API/worker/CPU release behavior,
+independent process claims and SQL/transaction failure checks; they do not
+establish shared artifact storage or production database operations. Follow the
+[PostgreSQL guide](../docs/postgresql-guide.md) for configuration and limits.

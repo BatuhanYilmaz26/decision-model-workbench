@@ -77,6 +77,7 @@ Use [remote model admission](remote-admission-guide.md) to verify and register a
 | Guide | Use it to |
 |---|---|
 | [Deployment](deployment-guide.md) | Plan local serving and custom-container enterprise cloud integration |
+| [PostgreSQL metadata](postgresql-guide.md) | Run experimental metadata persistence with local artifacts and explicit recovery limits |
 | [CPU containers](container-guide.md) | Run the local API, worker and browser with persistent storage |
 | [Model containers](model-container-guide.md) | Run the separate Linux Vega/semantic GPU image |
 | [Authentication](authentication-guide.md) | Provision and rotate credentials or configure trusted access tokens |

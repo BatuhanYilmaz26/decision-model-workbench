@@ -26,6 +26,12 @@ The optional Perplexity native CLI executes hash-checked publisher source in an 
 
 Runtime dependencies are installed separately and retain their upstream notices. The [dependency profiles](requirements/README.md) identify selected versions; this page is not a complete dependency license inventory.
 
+The optional [PostgreSQL profile](requirements/postgres.txt) installs Psycopg and
+its binary distribution. Their 3.3.6 package metadata declares `LGPL-3.0-only`;
+retain the installed distributions' license files and bundled-library notices.
+See the [Psycopg distribution](https://pypi.org/project/psycopg/3.3.6/) and
+[binary distribution](https://pypi.org/project/psycopg-binary/3.3.6/).
+
 The [provider schema fixtures](tests/fixtures/provider-contracts/README.md) contain excerpts from upstream API specifications for offline compatibility tests. Their upstream terms remain applicable. Source URLs, revisions and capture hashes are retained in the research metadata.
 
 Benchmark extracts are attributed to the publishers in the [benchmark guide](docs/benchmarks.md) and corresponding method files. Cited text, benchmark data and schemas are not relicensed as original project content. Review their terms before redistributing them separately. This repository does not reproduce full articles or claim endorsement by any model or infrastructure provider.

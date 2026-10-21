@@ -1,0 +1,2 @@
+# Optional metadata backend; install after the CPU application profile.
+psycopg[binary]==3.3.6

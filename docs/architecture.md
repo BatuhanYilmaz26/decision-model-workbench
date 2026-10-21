@@ -2,7 +2,7 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-The platform combines a browser interface, authenticated HTTP API, durable SQLite workspace and independent worker. Model training runs outside web requests. The local design coordinates processes on one host; multi-host deployment needs an independently validated storage and scheduling design.
+The platform combines a browser interface, authenticated HTTP API, durable workspace and independent worker. SQLite is the personal default; an explicit [PostgreSQL metadata backend](postgresql-guide.md) is available experimentally. Model training runs outside web requests. Artifacts remain local, so multi-host deployment still requires shared artifact storage and a validated scheduling design.
 
 ```mermaid
 flowchart LR

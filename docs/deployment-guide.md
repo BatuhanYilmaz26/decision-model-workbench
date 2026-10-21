@@ -59,7 +59,7 @@ Measure monthly service cost divided by successful completed cases. Include upti
 
 Verify readiness, authentication, tenant separation, bounded queues, deadlines, memory recovery, metrics, drift, canary and rollback. Use enterprise policy for raw-state logging.
 
-The local platform provides an authenticated API, SQLite persistence, independent jobs and release/inference routes for CPU, Laya and Unsloth exports. Follow [backup and recovery](recovery-guide.md) for workspace/model retention and [authentication](authentication-guide.md) for credential changes and trusted JWT mappings.
+The default local platform provides an authenticated API, SQLite persistence, independent jobs and release/inference routes for compatible exports. The experimental [PostgreSQL metadata setup](postgresql-guide.md) keeps artifacts local and does not by itself provide multi-host operation. Follow [local backup and recovery](recovery-guide.md) for SQLite workspace/model retention and [authentication](authentication-guide.md) for credentials and trusted JWT mappings. PostgreSQL requires separate database backups with matching artifacts.
 
 ## Training and application integration
 

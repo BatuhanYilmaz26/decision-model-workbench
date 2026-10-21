@@ -1,4 +1,7 @@
-"""SQLite local store with immutable entities, audit, and fenced job ownership."""
+"""Workspace metadata with immutable entities, audit and fenced job ownership.
+
+SQLite is the personal default; PostgreSQL is explicitly selected by operators.
+"""
 
 import hashlib
 import json
@@ -27,10 +30,29 @@ class Conflict(ValueError):
 
 
 class Store(DatasetStorage, OperationsStorage):
-    def __init__(self, folder):
+    def __init__(
+        self, folder, *, database_url=None, database_schema="decision_workbench"
+    ):
         self.folder = Path(folder).resolve()
         self.folder.mkdir(parents=True, exist_ok=True)
         self.database = self.folder / "workspace.sqlite3"
+        self._postgres = None
+        self.backend = "sqlite"
+        if database_url is not None:
+            if self.database.exists():
+                raise ValueError(
+                    "Use a new artifact directory for PostgreSQL; SQLite migration is not automatic"
+                )
+            from .postgres import PostgresDatabase
+
+            self._postgres = PostgresDatabase(database_url, database_schema)
+            self.backend = "postgresql"
+        elif (self.folder / ".dmt-postgres.json").exists() or (
+            self.folder / ".dmt-postgres.json"
+        ).is_symlink():
+            raise ValueError(
+                "This workspace uses PostgreSQL; supply its database configuration"
+            )
         with self.transaction() as db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS schema_version (version INTEGER PRIMARY KEY)"
@@ -108,9 +130,15 @@ class Store(DatasetStorage, OperationsStorage):
             db.execute(
                 "CREATE INDEX IF NOT EXISTS audit_export_request_lookup ON entities(tenant,project,json_extract(payload,'$.request_key_sha256')) WHERE kind='audit-export'"
             )
+        if self._postgres is not None:
+            self._postgres.bind_folder(self.folder)
 
     @contextmanager
     def transaction(self):
+        if getattr(self, "_postgres", None) is not None:
+            with self._postgres.transaction() as db:
+                yield db
+            return
         db = sqlite3.connect(self.database, timeout=10, isolation_level=None)
         db.row_factory = sqlite3.Row
         db.execute("PRAGMA foreign_keys=ON")

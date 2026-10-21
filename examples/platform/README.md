@@ -6,6 +6,11 @@ Use the same endpoint for a released CPU baseline, native model or hosted decisi
 
 ## Start the API and obtain an inference credential
 
+For an experimental PostgreSQL metadata workspace, use
+[postgres_workspace.py](postgres_workspace.py) with the
+[PostgreSQL guide](../../docs/postgresql-guide.md). Artifacts remain local; the
+API and worker must share one host and workspace directory.
+
 Follow the [local quick start](../../README.md#run-on-your-computer), prepare data, train/evaluate and activate an eligible version. Keep its model/provider environment configured. The default personal browser app connects automatically and needs no workspace key from you. External applications still authenticate to its API.
 
 For a persistent local integration key, stop the personal launcher before starting operator-managed localhost mode on the same workspace. From the activated application environment, create a **new private key file**:

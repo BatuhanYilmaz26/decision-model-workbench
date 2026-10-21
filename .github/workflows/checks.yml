@@ -5,6 +5,35 @@ on:
 permissions:
   contents: read
 jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873
+        env:
+          POSTGRES_PASSWORD: fictional-ci-only
+          POSTGRES_DB: dmt_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d dmt_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DMT_TEST_POSTGRES_URL: postgresql://postgres:fictional-ci-only@127.0.0.1:5432/dmt_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12.15'
+      - run: >-
+          python -m pip install --require-hashes --only-binary=:all: --index-url https://pypi.org/simple -r requirements/platform-linux-amd64-py312.txt
+      - run: python -m pip install --no-deps --no-build-isolation -e .
+      - run: python -m pip install -r requirements/postgres.txt
+      - run: python -m pip check
+      - run: python -m unittest discover -s tests -p test_postgres.py -v
   quickstart:
     strategy:
       fail-fast: false
