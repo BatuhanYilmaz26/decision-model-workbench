@@ -244,6 +244,10 @@ try:
         st.info("Create your first project to begin.")
         st.stop()
     spec = next(p["payload"] for p in projects if p["id"] == project)
+    from decision_workbench.ui.project_lifecycle import render_lifecycle
+
+    if not render_lifecycle(api, project, principal):
+        st.stop()
     st.header(spec["name"])
     st.write(spec["description"])
     st.caption(

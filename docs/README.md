@@ -82,6 +82,7 @@ Use [remote model admission](remote-admission-guide.md) to verify and register a
 | [CPU containers](container-guide.md) | Run the local API, worker and browser with persistent storage |
 | [Model containers](model-container-guide.md) | Run the separate Linux Vega/semantic GPU image |
 | [Owned local transfer cleanup](local-stage-cleanup-guide.md) | Preview and reclaim abandoned downloads/intake copies while preserving live transfers and registered models |
+| [Project lifecycle](project-lifecycle-guide.md) | Archive and restore a project without deleting data or repeating paid requests |
 | [Authentication](authentication-guide.md) | Provision and rotate credentials or configure trusted access tokens |
 | [Audit exports](audit-export-guide.md) | Capture and verify a bounded immutable project audit window |
 | [Backup and recovery](recovery-guide.md) | Capture a workspace and restore it into a fresh directory |

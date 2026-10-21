@@ -47,6 +47,12 @@ class ProjectBody(Body):
     data_requirements: str = Field(default="", max_length=4000)
 
 
+class ProjectLifecycleBody(Body):
+    state: Literal["active", "archived"]
+    expected_revision: int = Field(ge=0, le=9999)
+    confirmation: str = Field(min_length=32, max_length=32)
+
+
 class SchemaIntakeBody(Body):
     name: str = Field(min_length=1, max_length=120)
     description: str = Field(min_length=1, max_length=12000)
@@ -282,8 +288,16 @@ def create_app(
 
     app.state.authentication = auth
 
-    def identity(authorization: str | None = Header(default=None)):
-        return auth.authenticate(authorization)
+    def identity(request: Request, authorization: str | None = Header(default=None)):
+        principal = auth.authenticate(authorization)
+        project = request.path_params.get("project")
+        if (
+            project
+            and getattr(request.scope.get("route"), "path", None)
+            != "/v1/projects/{project}/lifecycle"
+        ):
+            store.require_project_active(principal["tenant"], project)
+        return principal
 
     def authorize_again(authorization, expected):
         if auth.authenticate(authorization) != expected:
@@ -493,6 +507,29 @@ def create_app(
         p=Depends(identity),
     ):
         return store.list(p["tenant"], kind="project", limit=limit, offset=offset)
+
+    @app.get("/v1/projects/{project}/lifecycle")
+    def project_lifecycle(project: str, p=Depends(identity)):
+        from .project_lifecycle import view
+
+        return view(store, p, project)
+
+    @app.put("/v1/projects/{project}/lifecycle")
+    def change_project_lifecycle(
+        project: str,
+        body: ProjectLifecycleBody,
+        authorization: str | None = Header(default=None),
+        p=Depends(identity),
+    ):
+        from .project_lifecycle import transition
+
+        return transition(
+            store,
+            p,
+            project,
+            **body.model_dump(),
+            authorize=lambda: authorize_again(authorization, p),
+        )
 
     @app.get("/v1/schema-teacher")
     def schema_teacher(p=Depends(identity)):

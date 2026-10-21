@@ -41,3 +41,5 @@ For shared workspaces, [test_enterprise_flows.py](test_enterprise_flows.py) exer
 [Shared-object retention checks](test_artifact_retention.py) use disposable PostgreSQL schemas, fictional immutable object versions and installed S3 SDK response fixtures. They exercise retained model/import roots, young manifests, stale plans, lost publication ownership and resumable version deletion. Read the [operator guide](../docs/shared-object-retention-guide.md) before any real storage cleanup.
 
 [Owned local transfer cleanup](test_local_stage_cleanup.py) exercises actual process-held file locks, abrupt producer death, reviewed removal, partial receipts and backup compatibility. It preserves active/unmarked/registered paths. See [the operator guide](../docs/local-stage-cleanup-guide.md).
+
+[Project lifecycle checks](test_project_lifecycle.py) cover archive/restore permissions, stale revisions, accounting retention, in-flight writes/predictions, backup history integrity and real localhost browser use. The cross-node case requires disposable PostgreSQL. See [the user guide](../docs/project-lifecycle-guide.md).

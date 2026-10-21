@@ -37,7 +37,9 @@ class Service:
             raise PermissionError("Your role cannot perform this action")
 
     def project(self, principal, project):
-        return self.store.get(project, principal["tenant"], project, "project")
+        entity = self.store.get(project, principal["tenant"], project, "project")
+        self.store.require_project_active(principal["tenant"], project)
+        return entity
 
     def create_project(
         self,
@@ -1058,6 +1060,7 @@ class Service:
             )
         else:
             raise ValueError("Unsupported serving backend")
+        self.store.require_project_active(principal["tenant"], project)
         return {
             "model_id": active["model_id"],
             "release_revision": active["revision"],

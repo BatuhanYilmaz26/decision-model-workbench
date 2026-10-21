@@ -125,6 +125,9 @@ def _validate_workspace(folder):
     from .service import Service
 
     store = _SnapshotStore(folder)
+    from .project_lifecycle import validate_history
+
+    validate_history(store)
     with store.transaction() as db:
         if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
             raise ValueError("Workspace database integrity check failed")
@@ -722,13 +725,17 @@ def restore_workspace(backup, destination, manifest_sha256, *, timeout=None):
             for row in db.execute(
                 "SELECT tenant,project FROM entities WHERE kind='project'"
             ).fetchall():
-                store.audit(
-                    db,
-                    row["tenant"],
-                    row["project"],
-                    "operator",
-                    "restore.workspace",
-                    manifest_sha256,
+                # Operator recovery records its audit without reopening archived projects.
+                db.execute(
+                    "INSERT INTO events(tenant,project,actor,action,target,created) VALUES (?,?,?,?,?,?)",
+                    (
+                        row["tenant"],
+                        row["project"],
+                        "operator",
+                        "restore.workspace",
+                        manifest_sha256,
+                        time.time(),
+                    ),
                 )
         receipt = {
             "format": "domain-workspace-restore-v1",

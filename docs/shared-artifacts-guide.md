@@ -18,7 +18,7 @@ remain local to their worker.
 Follow [PostgreSQL setup](postgresql-guide.md), using a **new database schema
 without registered models**. Existing SQLite or metadata-only model registries
 are not automatically migrated. Stop all API/worker processes before upgrading:
-this route uses PostgreSQL workspace protocol 11 and older services must not
+this route uses PostgreSQL workspace protocol 12 and older services must not
 continue writing during the change. SQLite remains on its existing protocol.
 
 Install the optional clients in both API and worker environments:

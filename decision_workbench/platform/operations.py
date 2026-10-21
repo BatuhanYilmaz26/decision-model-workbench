@@ -73,12 +73,20 @@ class OperationsStorage:
 
     @staticmethod
     def audit(db, tenant, project, actor, action, target):
+        from .project_lifecycle import require_active_db
+
+        require_active_db(db, tenant, project)
         db.execute(
             "INSERT INTO events(tenant,project,actor,action,target,created) VALUES (?,?,?,?,?,?)",
             (tenant, project, actor, action, target, time.time()),
         )
 
     def _condition(self, db, tenant, project, kind, target, active, now):
+        from .project_lifecycle import latest
+
+        lifecycle = latest(db, tenant, project)
+        if lifecycle and lifecycle["state"] == "archived":
+            return
         row = db.execute(
             "SELECT * FROM operational_incidents WHERE tenant=? AND project=? AND kind=? AND target=?",
             (tenant, project, kind, target),
@@ -101,6 +109,7 @@ class OperationsStorage:
             )
         elif kind not in TRANSIENT:
             # Terminal attempts are observed once; operator resolution never replays them.
+
             return
         elif active and row["status"] == "resolved":
             db.execute(
@@ -159,6 +168,7 @@ class OperationsStorage:
                 ).fetchone()
             )
             # Bound historical catch-up; already observed terminal attempts are not reloaded.
+
             terminal = db.execute(
                 "SELECT id,tenant,project,status FROM jobs j WHERE status IN ('failed','interrupted') AND NOT EXISTS (SELECT 1 FROM operational_incidents i WHERE i.tenant=j.tenant AND i.project=j.project AND i.kind='job_'||j.status AND i.target=j.id) ORDER BY updated,id LIMIT 500"
             ).fetchall()

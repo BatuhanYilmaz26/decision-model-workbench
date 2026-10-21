@@ -42,6 +42,7 @@ models and external services have separate requirements below.
 
 | Screen or control | What you do there |
 |---|---|
+| [Project lifecycle](project-lifecycle-guide.md) | Owners pause or restore a project, with explicit confirmation and active-work checks |
 | [Connection and computer setup](#start-or-connect-to-a-workspace) | Start personal mode, connect to a shared API and inspect model environments |
 | [Create a domain project](#create-a-project) | Describe the policy, define outcomes or review teacher-suggested questions |
 | [Data and review](#add-and-review-examples) | Enter/import examples, map columns, review labels, assign work and discover categories |
