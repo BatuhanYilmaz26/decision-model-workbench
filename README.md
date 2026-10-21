@@ -185,3 +185,5 @@ Read [the architecture](docs/architecture.md) for the component flow and [contri
 ## License
 
 Original project code and documentation use [Apache-2.0](LICENSE). Models, libraries, provider schemas and cited content retain their own terms; see [third-party notices](THIRD_PARTY_NOTICES.md). Private data, credentials, weights, generated artifacts and local planning records are excluded from Git.
+
+Operators of shared workspaces can [preview and reconcile unreferenced S3 object-version cleanup](docs/shared-object-retention-guide.md). This preserves registered models and recorded imports; it is separate from project deletion and local cache retention.

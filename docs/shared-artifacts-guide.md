@@ -18,7 +18,7 @@ remain local to their worker.
 Follow [PostgreSQL setup](postgresql-guide.md), using a **new database schema
 without registered models**. Existing SQLite or metadata-only model registries
 are not automatically migrated. Stop all API/worker processes before upgrading:
-this route uses PostgreSQL workspace protocol 10 and older services must not
+this route uses PostgreSQL workspace protocol 11 and older services must not
 continue writing during the change. SQLite remains on its existing protocol.
 
 Install the optional clients in both API and worker environments:
@@ -181,3 +181,5 @@ tests use the installed SDK with fictional credentials and validated responses.
 They do not contact a paid account or establish real S3 billing, production scale
 or native model quality. Follow the [CI checks](../.github/CI.md) and qualify your
 storage account and selected model environment before deployment.
+
+Use [shared-object retention](shared-object-retention-guide.md) to preview and reconcile deletion of old unreferenced S3 versions. Keep local staging, project deletion and coordinated backup recovery under their separate policies.

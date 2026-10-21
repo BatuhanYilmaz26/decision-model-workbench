@@ -101,3 +101,5 @@ Use [remote model admission](remote-admission-guide.md) to verify and register a
 See [dependency profiles](../requirements/README.md), [helper commands](../scripts/README.md), [tests](../tests/README.md), [research](../research/README.md) and [contributing](../CONTRIBUTING.md) for the supporting files.
 
 For organizational browser access, follow [enterprise OIDC sign-in](enterprise-sign-in-guide.md) to configure the client, API roles, expiry, revocation and secret rotation.
+
+For operator storage maintenance, follow [shared-object retention](shared-object-retention-guide.md) for version-specific preview, deletion and interrupted-operation reconciliation.

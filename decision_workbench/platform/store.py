@@ -8,6 +8,7 @@ import json
 import re
 import sqlite3
 import time
+import threading
 import uuid
 from contextlib import contextmanager
 from pathlib import Path
@@ -30,6 +31,9 @@ class Conflict(ValueError):
     pass
 
 
+PUBLICATION_JOB_SQL = "(kind IN ('train','hosted-evaluate','remote-import') OR (kind='cloud-control' AND json_extract(config,'$.action')='retrieve'))"
+
+
 class Store(DatasetStorage, OperationsStorage):
     def __init__(
         self,
@@ -45,6 +49,7 @@ class Store(DatasetStorage, OperationsStorage):
         self._postgres = None
         self.backend = "sqlite"
         self.artifact_store = artifact_store
+        self._artifact_guards = threading.local()
         if artifact_store is not None and database_url is None:
             raise ValueError("Shared artifacts require PostgreSQL metadata")
         if database_url is not None:
@@ -69,7 +74,7 @@ class Store(DatasetStorage, OperationsStorage):
             current = db.execute("SELECT max(version) FROM schema_version").fetchone()[
                 0
             ]
-            supported = 10 if self._postgres is not None else WORKSPACE_SCHEMA_VERSION
+            supported = 11 if self._postgres is not None else WORKSPACE_SCHEMA_VERSION
             if current is not None and current not in range(1, supported + 1):
                 raise RuntimeError(
                     "Unsupported workspace schema version; restore a compatible application"
@@ -147,10 +152,23 @@ class Store(DatasetStorage, OperationsStorage):
                 )
                 self._artifact_binding(db, initialize=True)
                 db.execute(
-                    "INSERT INTO schema_version VALUES (10) ON CONFLICT DO NOTHING"
+                    "CREATE TABLE IF NOT EXISTS workspace_object_maintenance (slot INTEGER PRIMARY KEY CHECK(slot=1), operation_id TEXT NOT NULL, state TEXT NOT NULL, payload TEXT NOT NULL, progress INTEGER NOT NULL DEFAULT 0, owner_token TEXT, error TEXT, updated REAL NOT NULL)"
+                )
+                db.execute(
+                    "INSERT INTO schema_version VALUES (11) ON CONFLICT DO NOTHING"
                 )
 
     def _artifact_binding(self, db, initialize=False):
+        if not initialize:
+            row = db.execute(
+                "SELECT state FROM workspace_object_maintenance WHERE slot=1"
+            ).fetchone()
+            if row and row["state"] != "completed":
+                from .artifact_storage import ArtifactUnavailable
+
+                raise ArtifactUnavailable(
+                    "Shared storage cleanup needs operator reconciliation before publication"
+                )
         row = db.execute(
             "SELECT descriptor FROM workspace_artifact_storage WHERE slot=1"
         ).fetchone()
@@ -265,7 +283,54 @@ class Store(DatasetStorage, OperationsStorage):
             (tenant, project, actor, action, target, time.time()),
         )
 
+    @contextmanager
+    def artifact_guard(self, exclusive=False):
+        if self.artifact_store is None:
+            yield lambda: None
+        else:
+            held = getattr(self._artifact_guards, "held", None)
+            if held:
+                if exclusive and not held[0]:
+                    raise ValueError(
+                        "Cannot upgrade a publication guard to maintenance"
+                    )
+                held[1]()
+                yield held[1]
+            else:
+                with self._postgres.artifact_guard(exclusive) as live:
+                    self._artifact_guards.held = (exclusive, live)
+                    try:
+                        yield live
+                    finally:
+                        del self._artifact_guards.held
+
     def add(
+        self,
+        kind,
+        tenant,
+        project,
+        actor,
+        payload,
+        entity_id=None,
+        job=None,
+        validate_db=None,
+    ):
+        if kind != "model" or self.artifact_store is None:
+            return self._add(
+                kind, tenant, project, actor, payload, entity_id, job, validate_db
+            )
+        with self.artifact_guard() as live:
+
+            def validate(db):
+                live()
+                if validate_db:
+                    validate_db(db)
+
+            return self._add(
+                kind, tenant, project, actor, payload, entity_id, job, validate
+            )
+
+    def _add(
         self,
         kind,
         tenant,
@@ -463,6 +528,50 @@ class Store(DatasetStorage, OperationsStorage):
         *,
         authorize=None,
     ):
+        publication = kind in {"train", "hosted-evaluate", "remote-import"} or (
+            kind == "cloud-control" and config.get("action") == "retrieve"
+        )
+        if self.artifact_store is None or not publication:
+            return self._submit(
+                tenant,
+                project,
+                actor,
+                kind,
+                config,
+                request_key,
+                validate_db,
+                authorize=authorize,
+            )
+        with self.artifact_guard() as live:
+
+            def validate(db):
+                live()
+                if validate_db:
+                    validate_db(db)
+
+            return self._submit(
+                tenant,
+                project,
+                actor,
+                kind,
+                config,
+                request_key,
+                validate,
+                authorize=authorize,
+            )
+
+    def _submit(
+        self,
+        tenant,
+        project,
+        actor,
+        kind,
+        config,
+        request_key,
+        validate_db=None,
+        *,
+        authorize=None,
+    ):
         if not isinstance(request_key, str) or not 8 <= len(request_key) <= 128:
             raise ValueError("Use an 8–128 character idempotency key")
         request_hash = digest({"kind": kind, "config": config})
@@ -482,6 +591,11 @@ class Store(DatasetStorage, OperationsStorage):
                 if authorize:
                     authorize()
                 return self.decode_job(row)
+            if self.artifact_store is not None and (
+                kind in {"train", "hosted-evaluate", "remote-import"}
+                or (kind == "cloud-control" and config.get("action") == "retrieve")
+            ):
+                self._artifact_binding(db)
             pending = db.execute(
                 "SELECT count(*) FROM jobs WHERE tenant=? AND status IN ('queued','running','cancel_requested')",
                 (tenant,),
@@ -587,8 +701,17 @@ class Store(DatasetStorage, OperationsStorage):
                         True,
                         now,
                     )
+            publication_filter = ""
+            if self.artifact_store is not None:
+                maintenance = db.execute(
+                    "SELECT state FROM workspace_object_maintenance WHERE slot=1"
+                ).fetchone()
+                if maintenance and maintenance["state"] != "completed":
+                    publication_filter = " AND NOT " + PUBLICATION_JOB_SQL
             row = db.execute(
-                "SELECT * FROM jobs WHERE status='queued' ORDER BY created LIMIT 1"
+                "SELECT * FROM jobs WHERE status='queued'"
+                + publication_filter
+                + " ORDER BY created LIMIT 1"
             ).fetchone()
             if not row:
                 return None

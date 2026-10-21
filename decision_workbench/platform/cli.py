@@ -205,6 +205,29 @@ def main():
     revoke_access.add_argument("--sso-file", required=True)
     revoke_access.add_argument("--issuer", required=True)
     revoke_access.add_argument("--jti", required=True)
+    for name in (
+        "preview-storage-cleanup",
+        "apply-storage-cleanup",
+        "resume-storage-cleanup",
+        "storage-cleanup-status",
+    ):
+        cleanup = commands.add_parser(
+            name, help="Inspect or reconcile versioned shared-object retention"
+        )
+        cleanup.add_argument("--home", required=True)
+        cleanup.add_argument(
+            "--database-schema",
+            default=os.environ.get("DMT_DATABASE_SCHEMA", "decision_workbench"),
+        )
+        if name in {"preview-storage-cleanup", "apply-storage-cleanup"}:
+            cleanup.add_argument("--min-age-seconds", type=int, default=86400)
+            cleanup.add_argument("--max-objects", type=int, default=10000)
+        if name in {"apply-storage-cleanup", "resume-storage-cleanup"}:
+            cleanup.add_argument("--plan-sha256", required=True)
+        if name in {"resume-storage-cleanup", "storage-cleanup-status"}:
+            cleanup.add_argument(
+                "--operation-id", required=name == "resume-storage-cleanup"
+            )
     args = parser.parse_args()
     if args.action in ("provision-key", "rotate-key", "revoke-key", "list-keys"):
         from .credentials import credentials
@@ -240,6 +263,44 @@ def main():
         try:
             result = revoke_access_token(args.sso_file, args.issuer, args.jti)
         except (ValueError, OSError, AuthenticationUnavailable) as exc:
+            parser.error(str(exc))
+        print(json.dumps(result, indent=2))
+    elif args.action in {
+        "preview-storage-cleanup",
+        "apply-storage-cleanup",
+        "resume-storage-cleanup",
+        "storage-cleanup-status",
+    }:
+        from . import artifact_retention
+        from .artifact_s3 import repository_from_environment
+        from .store import Store
+        import sqlite3
+
+        try:
+            url = os.environ.get("DMT_DATABASE_URL")
+            if not url:
+                raise ValueError("Set DMT_DATABASE_URL for the shared workspace")
+            store = Store(
+                args.home,
+                database_url=url,
+                database_schema=args.database_schema,
+                artifact_store=repository_from_environment(),
+            )
+            if args.action == "preview-storage-cleanup":
+                result = artifact_retention.preview(
+                    store, args.min_age_seconds, args.max_objects
+                )
+            elif args.action == "apply-storage-cleanup":
+                result = artifact_retention.execute(
+                    store, args.plan_sha256, args.min_age_seconds, args.max_objects
+                )
+            elif args.action == "resume-storage-cleanup":
+                result = artifact_retention.execute(
+                    store, args.plan_sha256, operation_id=args.operation_id
+                )
+            else:
+                result = artifact_retention.status(store, args.operation_id)
+        except (ValueError, RuntimeError, OSError, sqlite3.DatabaseError) as exc:
             parser.error(str(exc))
         print(json.dumps(result, indent=2))
     elif args.action == "verify-audit-export":

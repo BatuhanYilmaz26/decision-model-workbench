@@ -356,12 +356,19 @@ def stage_import(
         last_check[0] = time.monotonic()
 
     def validate_origin(db):
+        storage_live()
+        if store.artifact_store is not None:
+            store._artifact_binding(db)
         if origin_job:
             store._assert_owner(db, origin_job)
 
     check(True)
-    with ResourceLease(store.folder / "remote-intake.lock").hold(timeout=30):
+    with store.artifact_guard() as storage_live, ResourceLease(
+        store.folder / "remote-intake.lock"
+    ).hold(timeout=30):
         with store.transaction() as db:
+            if store.artifact_store is not None:
+                store._artifact_binding(db)
             existing = db.execute(
                 "SELECT * FROM jobs WHERE tenant=? AND project=? AND request_key=?",
                 (principal["tenant"], project, key),

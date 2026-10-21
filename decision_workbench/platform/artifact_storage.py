@@ -152,6 +152,97 @@ def checked_copy(stream, target, size, sha, check=lambda: None):
         raise ValueError("Artifact object differs from its registered content")
 
 
+def reference_key(namespace, reference):
+    if (
+        not isinstance(reference, dict)
+        or set(reference) != {"namespace", "scope", "sha256", "bytes"}
+        or reference["namespace"] != namespace
+        or not isinstance(namespace, str)
+        or not IDENTIFIER.fullmatch(namespace)
+        or not isinstance(reference["scope"], str)
+        or not HEX.fullmatch(reference["scope"])
+        or not isinstance(reference["sha256"], str)
+        or not HEX.fullmatch(reference["sha256"])
+        or type(reference["bytes"]) is not int
+        or not 1 <= reference["bytes"] <= MAX_MANIFEST
+    ):
+        raise ValueError("Invalid shared artifact reference")
+    return namespace + "/manifests/" + reference["scope"] + "/" + reference["sha256"]
+
+
+def manifest_content(body, namespace, reference, model=None):
+    if (
+        len(body) != reference["bytes"]
+        or hashlib.sha256(body).hexdigest() != reference["sha256"]
+    ):
+        raise ValueError("Shared artifact manifest integrity check failed")
+    try:
+        manifest = json.loads(body)
+    except (ValueError, UnicodeError):
+        raise ValueError("Shared artifact manifest is malformed") from None
+    if not isinstance(manifest, dict):
+        raise ValueError("Shared artifact manifest must be an object")
+    model = model or {
+        key: manifest.get(key)
+        for key in ("artifact_id", "backend", "model_sha256", "schema_sha256")
+    }
+    if (
+        not isinstance(model.get("artifact_id"), str)
+        or not IDENTIFIER.fullmatch(model["artifact_id"])
+        or not isinstance(model.get("backend"), str)
+        or not 1 <= len(model["backend"]) <= 128
+        or any(
+            not isinstance(model.get(key), str) or not HEX.fullmatch(model[key])
+            for key in ("model_sha256", "schema_sha256")
+        )
+    ):
+        raise ValueError("Invalid shared model identity")
+    expected = {
+        "format": FORMAT,
+        "namespace": namespace,
+        "scope": reference["scope"],
+        **{
+            key: model[key]
+            for key in ("artifact_id", "backend", "model_sha256", "schema_sha256")
+        },
+    }
+    if (
+        not isinstance(manifest, dict)
+        or canonical(manifest) != body
+        or set(manifest) != set(expected) | {"files"}
+        or any(manifest.get(k) != v for k, v in expected.items())
+    ):
+        raise ValueError("Shared artifact does not match the registered model")
+    files, names, total = manifest["files"], set(), 0
+    if not isinstance(files, dict) or not 1 <= len(files) <= MAX_FILES:
+        raise ValueError("Invalid shared artifact inventory")
+    for name, item in files.items():
+        safe_name(name)
+        if (
+            name.casefold() in names
+            or not isinstance(item, dict)
+            or set(item) != {"sha256", "bytes"}
+            or not isinstance(item["sha256"], str)
+            or not HEX.fullmatch(item["sha256"])
+            or type(item["bytes"]) is not int
+            or not 0 <= item["bytes"] <= MAX_BYTES
+        ):
+            raise ValueError("Invalid shared artifact file")
+        names.add(name.casefold())
+        total += item["bytes"]
+    if total > MAX_BYTES:
+        raise ValueError("Shared artifact exceeds total size limits")
+    validate_names(files)
+    root_name = (
+        "model.json"
+        if model["backend"] in {"cpu-baseline", "hosted"}
+        else "manifest.json"
+    )
+    if files.get(root_name, {}).get("sha256") != model["model_sha256"]:
+        raise ValueError("Shared artifact model root differs from the registry")
+    return manifest, files, total
+
+
 class DirectoryObjects:
     """Local object-transport conformance backend; not a cloud service."""
 
@@ -264,6 +355,17 @@ class ArtifactRepository:
             "bytes": len(body),
         }
 
+    def inspect(self, namespace, reference, model=None):
+        """Read a bounded immutable manifest without downloading model files."""
+        key = reference_key(namespace, reference)
+        with closing(self.objects.open(key)) as stream:
+            body = bytearray()
+            while chunk := stream.read(min(CHUNK, reference["bytes"] - len(body) + 1)):
+                body.extend(chunk)
+                if len(body) > reference["bytes"]:
+                    break
+        return manifest_content(bytes(body), namespace, reference, model)[0]
+
     def restore(
         self,
         namespace,
@@ -274,20 +376,7 @@ class ArtifactRepository:
         check=lambda: None,
     ):
         check()
-        if (
-            not isinstance(reference, dict)
-            or set(reference) != {"namespace", "scope", "sha256", "bytes"}
-            or reference["namespace"] != namespace
-            or not isinstance(namespace, str)
-            or not IDENTIFIER.fullmatch(namespace)
-            or not isinstance(reference["scope"], str)
-            or not HEX.fullmatch(reference["scope"])
-            or not isinstance(reference["sha256"], str)
-            or not HEX.fullmatch(reference["sha256"])
-            or type(reference["bytes"]) is not int
-            or not 1 <= reference["bytes"] <= MAX_MANIFEST
-        ):
-            raise ValueError("Invalid shared artifact reference")
+        reference_key(namespace, reference)
         folder = Path(folder)
         index_dir = folder.parent / ".dmt-manifests"
         index = index_dir / (reference["sha256"] + ".json")
@@ -316,58 +405,7 @@ class ArtifactRepository:
                     if received > reference["bytes"]:
                         break
                 body = b"".join(parts)
-        if (
-            len(body) != reference["bytes"]
-            or hashlib.sha256(body).hexdigest() != reference["sha256"]
-        ):
-            raise ValueError("Shared artifact manifest integrity check failed")
-        try:
-            manifest = json.loads(body)
-        except (ValueError, UnicodeError):
-            raise ValueError("Shared artifact manifest is malformed") from None
-        expected = {
-            "format": FORMAT,
-            "namespace": namespace,
-            "scope": reference["scope"],
-            **{
-                key: model[key]
-                for key in ("artifact_id", "backend", "model_sha256", "schema_sha256")
-            },
-        }
-        if (
-            not isinstance(manifest, dict)
-            or canonical(manifest) != body
-            or set(manifest) != set(expected) | {"files"}
-            or any(manifest.get(k) != v for k, v in expected.items())
-        ):
-            raise ValueError("Shared artifact does not match the registered model")
-        files, names, total = manifest["files"], set(), 0
-        if not isinstance(files, dict) or not 1 <= len(files) <= MAX_FILES:
-            raise ValueError("Invalid shared artifact inventory")
-        for name, item in files.items():
-            safe_name(name)
-            if (
-                name.casefold() in names
-                or not isinstance(item, dict)
-                or set(item) != {"sha256", "bytes"}
-                or not isinstance(item["sha256"], str)
-                or not HEX.fullmatch(item["sha256"])
-                or type(item["bytes"]) is not int
-                or not 0 <= item["bytes"] <= MAX_BYTES
-            ):
-                raise ValueError("Invalid shared artifact file")
-            names.add(name.casefold())
-            total += item["bytes"]
-        if total > MAX_BYTES:
-            raise ValueError("Shared artifact exceeds total size limits")
-        validate_names(files)
-        root_name = (
-            "model.json"
-            if model["backend"] in {"cpu-baseline", "hosted"}
-            else "manifest.json"
-        )
-        if files.get(root_name, {}).get("sha256") != model["model_sha256"]:
-            raise ValueError("Shared artifact model root differs from the registry")
+        manifest, files, total = manifest_content(body, namespace, reference, model)
         if not index.exists():
             index_dir.mkdir(parents=True, exist_ok=True)
             handle, temporary_index = tempfile.mkstemp(

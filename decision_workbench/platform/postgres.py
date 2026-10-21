@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 import sqlite3
 import tempfile
+import time
 import uuid
 
 
@@ -192,6 +193,51 @@ class PostgresDatabase:
             "big",
             signed=True,
         )
+
+    @contextmanager
+    def artifact_guard(self, exclusive=False):
+        """Coordinate object publication and maintenance outside SQL transactions."""
+        from .artifact_storage import ArtifactUnavailable
+
+        key = int.from_bytes(
+            hashlib.sha256(("dmt-artifacts-v1:" + self.schema).encode()).digest()[:8],
+            "big",
+            signed=True,
+        )
+        function = (
+            "pg_try_advisory_lock" if exclusive else "pg_try_advisory_lock_shared"
+        )
+        try:
+            with self._driver.connect(
+                self._dsn, autocommit=True, connect_timeout=self.timeout
+            ) as connection:
+                connection.execute(
+                    "SELECT pg_catalog.set_config('statement_timeout', %s, false)",
+                    (str(self.timeout * 1000),),
+                )
+                deadline = time.monotonic() + self.timeout
+                while not connection.execute(
+                    "SELECT pg_catalog." + function + "(%s)", (key,)
+                ).fetchone()[0]:
+                    if time.monotonic() >= deadline:
+                        raise ArtifactUnavailable(
+                            "Shared artifact publication or maintenance is busy; retry after it finishes"
+                        )
+                    time.sleep(0.05)
+
+                def live():
+                    try:
+                        connection.execute("SELECT 1").fetchone()
+                    except self._driver.Error:
+                        raise ArtifactUnavailable(
+                            "Shared artifact ownership was lost; publication was refused"
+                        ) from None
+
+                yield live
+        except self._driver.Error:
+            raise ArtifactUnavailable(
+                "Shared artifact coordination was interrupted; inspect the operator maintenance state"
+            ) from None
 
     def bind_folder(self, folder):
         """Bind a local artifact cache to one database identity, without secrets."""

@@ -38,7 +38,7 @@ schemas and missing schemas are refused. Existing SQLite workspaces are not
 automatically migrated. [PostgreSQL schemas](https://www.postgresql.org/docs/18/ddl-schemas.html).
 
 Stop API and worker processes before upgrading a PostgreSQL workspace. The current
-metadata protocol is 10; an older service version must not continue writing
+metadata protocol is 11; an older service version must not continue writing
 during an upgrade. Downgrading against newer metadata is refused. The personal
 SQLite protocol is unchanged by the optional object-storage route.
 
@@ -128,3 +128,5 @@ numerical JSON ordering and actual API/worker/CPU release workflows. Database
 cases skip when the variable is absent; SQL-adapter checks still run. The
 [CI job](../.github/CI.md) supplies a disposable server. These checks do not
 establish production scale, cloud availability or domain model quality.
+
+Use [shared-object retention](shared-object-retention-guide.md) to preview and reconcile deletion of old unreferenced S3 versions. Keep local staging, project deletion and coordinated backup recovery under their separate policies.
