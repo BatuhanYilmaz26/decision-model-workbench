@@ -88,6 +88,16 @@ def provider_help():
 
 
 def render_connection(root):
+    from .enterprise_auth import authentication_mode, render_sign_in
+
+    try:
+        mode = authentication_mode()
+    except ValueError:
+        st.error("The administrator must set DMT_UI_AUTH_MODE to workspace or oidc.")
+        st.stop()
+    if mode == "oidc":
+        render_sign_in()
+        return
     if "credential" in st.session_state:
         return
     local_url = os.environ.get("DMT_LOCAL_API_URL")

@@ -99,3 +99,5 @@ Use [remote model admission](remote-admission-guide.md) to verify and register a
 | [Optional tools](tools.md) | Select teacher, registry, tracking or enterprise-data integrations |
 
 See [dependency profiles](../requirements/README.md), [helper commands](../scripts/README.md), [tests](../tests/README.md), [research](../research/README.md) and [contributing](../CONTRIBUTING.md) for the supporting files.
+
+For organizational browser access, follow [enterprise OIDC sign-in](enterprise-sign-in-guide.md) to configure the client, API roles, expiry, revocation and secret rotation.

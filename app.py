@@ -14,6 +14,7 @@ import streamlit as st
 from decision_workbench.data import validate_questions
 from decision_workbench.ui.intake import render_examples, render_upload
 from decision_workbench.ui.onboarding import render_connection, render_runtime
+from decision_workbench.ui.enterprise_auth import sign_out
 from decision_workbench.ui.guidance import (
     render_help_navigation,
     render_hint,
@@ -48,7 +49,8 @@ def api(method, path, **kwargs):
             base_url=st.session_state["api_url"],
             headers={"Authorization": "Bearer " + st.session_state["credential"]},
             timeout=30.0,
-            trust_env=st.session_state.get("connection_mode") != "personal",
+            trust_env=st.session_state.get("connection_mode")
+            not in ("personal", "oidc"),
         )
     try:
         response = _api_client.request(method, path, timeout=timeout, **kwargs)
@@ -81,9 +83,7 @@ with st.sidebar:
     st.caption(f"{principal['actor']} · {principal['role']}")
     render_role_help(principal["role"])
     if st.button("Sign out"):
-        st.session_state.clear()
-        st.session_state["manual_connection"] = True
-        st.rerun()
+        sign_out()
     if st.button("Refresh workspace"):
         st.rerun()
 

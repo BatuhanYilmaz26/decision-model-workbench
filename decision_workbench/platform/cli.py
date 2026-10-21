@@ -198,6 +198,13 @@ def main():
         "--database-schema",
         default=os.environ.get("DMT_DATABASE_SCHEMA", "decision_workbench"),
     )
+    revoke_access = commands.add_parser(
+        "revoke-access-token",
+        help="Atomically deny a JWT issuer/jti pair in trusted SSO configuration",
+    )
+    revoke_access.add_argument("--sso-file", required=True)
+    revoke_access.add_argument("--issuer", required=True)
+    revoke_access.add_argument("--jti", required=True)
     args = parser.parse_args()
     if args.action in ("provision-key", "rotate-key", "revoke-key", "list-keys"):
         from .credentials import credentials
@@ -226,6 +233,15 @@ def main():
             print(result["token"])
         else:
             print(json.dumps(result, indent=2))
+    elif args.action == "revoke-access-token":
+        from .sso_credentials import revoke_access_token
+        from .auth import AuthenticationUnavailable
+
+        try:
+            result = revoke_access_token(args.sso_file, args.issuer, args.jti)
+        except (ValueError, OSError, AuthenticationUnavailable) as exc:
+            parser.error(str(exc))
+        print(json.dumps(result, indent=2))
     elif args.action == "verify-audit-export":
         from .audit_exports import verify_file
 

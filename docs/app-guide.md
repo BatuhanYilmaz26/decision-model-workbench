@@ -577,3 +577,7 @@ Operators use the guides below for credentials, infrastructure and maintenance:
 Model and cloud support is profile-specific. A guide link, available dropdown or
 successful fixture test is not proof of production quality, provider billing
 behavior or compatibility with every machine.
+
+## Organization sign-in
+
+An operator can enable [OIDC sign-in](enterprise-sign-in-guide.md) for a shared deployment. Select **Sign in with your organization**, complete the identity-provider redirect and use the workspace role shown in the sidebar. No workspace credential needs copying. If the API refuses an expired, revoked or unmapped token, use **Sign out and choose an account** and sign in again. Account/role changes clear the previous session's drafts. Personal localhost mode still uses the ordinary local entry screen.

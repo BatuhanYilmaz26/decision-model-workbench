@@ -2,7 +2,7 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-The API supports local workspace keys and an optional JWT access-token adapter. Both derive tenant, actor and role from operator-controlled configuration. The browser's credential field accepts either form. The current adapter does not implement an interactive OIDC authorization-code/PKCE login or refresh-token session.
+The API supports local workspace keys and an optional JWT access-token adapter. Both derive tenant, actor and role from operator-controlled configuration. The browser's credential field accepts either form. For an organization sign-in button, configure the optional [OIDC browser workflow](enterprise-sign-in-guide.md); it uses authorization-code/S256 PKCE and obtains an API access token. Automatic access-token refresh is not implemented.
 
 The dependency profile pins PyJWT 2.15.1 and cryptography 50.0.2. Configure RS256 or ES256 public signing keys and the `at+jwt` or `application/at+jwt` access-token type. Fixed algorithms, issuer and audience validation help keep API access tokens separate from ID tokens. [RFC 8725](https://www.rfc-editor.org/rfc/rfc8725.html), [RFC 9068](https://www.rfc-editor.org/rfc/rfc9068.html), [PyJWT verification API](https://pyjwt.readthedocs.io/en/latest/api.html)
 
@@ -116,7 +116,7 @@ Only a configured issuer selects a configured JWKS URL. Token-supplied `jku`, em
 
 An exact configured subject binding takes precedence over groups. Otherwise, signed group memberships must produce exactly one distinct tenant/role combination. Ambiguous or unmapped identities receive HTTP 403. Group actors use a stable hash of issuer and subject so two members do not share an audit identity. Tokens cannot choose their own tenant, platform role or audit actor through arbitrary claims.
 
-To revoke one access token, atomically add its issuer and verified `jti` to `revoked_tokens`. Removing/changing a binding also affects the next request without API restart. Provider group changes in an already issued JWT are not introspected: they become visible when the provider issues a new token, unless the operator denies the token or changes the trusted binding. Refresh-token/session revocation remains with the identity provider; browser refresh handling is not implemented.
+To revoke one access token, use `domain-platform revoke-access-token --sso-file /operator/sso.json --issuer YOUR_CONFIGURED_ISSUER --jti YOUR_TOKEN_IDENTIFIER`. The command atomically adds its issuer and verified `jti` to `revoked_tokens` without storing the bearer token. Removing/changing a binding also affects the next request without API restart. Provider group changes in an already issued JWT are not introspected: they become visible when the provider issues a new token, unless the operator denies the token or changes the trusted binding. Refresh-token/session revocation remains with the identity provider; the [browser workflow](enterprise-sign-in-guide.md#sign-in-change-accounts-and-end-a-session) asks users to sign in again when API access expires.
 
 JWKS are cached for the configured interval (default 300 seconds). An unknown key ID can trigger a refresh, rate-limited to one such refresh per 30 seconds per configured key set. Removing a key at the issuer alone may leave a previously cached key usable until cache expiry. Use the local token/binding deny mechanism for an immediate platform restriction. Expired-cache retrieval failures return HTTP 503 and do not fall back to stale signing keys.
 

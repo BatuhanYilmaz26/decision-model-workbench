@@ -203,7 +203,7 @@ The standalone preparation CLI and research scripts remain maintenance tools. Th
 
 For consistent workspace/model backups, trusted checksum verification and fresh-directory recovery, follow the [operator recovery guide](recovery-guide.md). Restored unfinished jobs require explicit resubmission; credentials are supplied separately.
 
-Use the [authentication guide](authentication-guide.md) for key rotation, revocation and trusted JWT configuration. Paste an existing API access token into the browser credential field; interactive identity-provider login and automatic token refresh are not available.
+Use the [authentication guide](authentication-guide.md) for key rotation, revocation and trusted JWT configuration. Shared users can paste an API access token into the credential field, or use the optional [organization sign-in](enterprise-sign-in-guide.md) configured by their administrator. The OIDC route obtains a resource access token through authorization-code/S256 PKCE; automatic access-token refresh is not available.
 
 ## Hosted provider alternative
 

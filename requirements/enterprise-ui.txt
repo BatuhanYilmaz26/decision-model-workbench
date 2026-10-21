@@ -1,0 +1,4 @@
+# Optional browser OIDC client; API/worker credentials remain separate.
+streamlit==1.65.0
+Authlib==1.9.1
+joserfc==1.7.7

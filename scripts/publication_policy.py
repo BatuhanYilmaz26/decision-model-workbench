@@ -57,7 +57,7 @@ def private_path_reason(name):
         and filename != ".env.example"
     ):
         return "local environment configuration"
-    if filename in {"operator-keys.json", "credentials.json"}:
+    if filename in {"operator-keys.json", "credentials.json", "secrets.toml"}:
         return "local credential configuration"
     if (
         filename.startswith(".dmt-")

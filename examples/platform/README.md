@@ -79,3 +79,7 @@ The default HTTP inactivity budget is 420 seconds to accommodate cold model load
 | `reason: unavailable`, `http_error`, `invalid_request` or `invalid_response` | Use fallback and investigate configuration, availability or response validity. No automatic retry occurs. |
 
 The CLI exits with `0` for accepted output and `2` when review/fallback is required. Keep raw evidence out of application logs. A timeout does not prove a hosted request stopped or was not billed; follow [hosted call history and reconciliation](../../docs/hosted-decisions-guide.md#reconcile-an-uncertain-call) before another paid attempt. Test the full action/review workflow on independent domain data before enabling automation.
+
+## Organization sign-in configuration
+
+Use [streamlit-secrets.toml.example](streamlit-secrets.toml.example) as the format for a private UI-server configuration. Replace every example value and follow [the OIDC guide](../../docs/enterprise-sign-in-guide.md) for API trust, PKCE, secret handling and deployment checks. Keep the completed secrets file outside public source and container images.

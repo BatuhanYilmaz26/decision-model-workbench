@@ -12,6 +12,7 @@ For the standard local CPU application, follow the [root quick start](../README.
 | [Linux CPU lock](platform-linux-amd64-py312.txt) | Linux/amd64, CPython 3.12.15 | 87 hash-locked external dependencies for API, UI, CPU training and five provider control clients |
 | [Linux Vega/semantic lock](vega-linux-amd64-py312-cu126.txt) | Linux/amd64, CPython 3.12.15, CUDA 12.6 | 124 hash-locked dependencies for the application, Vega and semantic encoder; use the separate [official Torch/Triton stage](torch-linux-amd64-py312-cu126.txt) |
 | [Windows CPU lock](platform-windows-py313.txt) | Windows/amd64, CPython 3.13.5 | 88 hash-locked external dependencies for API, UI, CPU training and five provider control clients |
+| [Enterprise browser login](enterprise-ui.txt) | UI server, in addition to the application profile | Direct pins for Streamlit 1.65.0, Authlib 1.9.1 and Joserfc 1.7.7; [OIDC setup](../docs/enterprise-sign-in-guide.md). This is an optional client profile, not a complete transitive lock. |
 | [Windows model snapshot](models-windows-py312-cu126.txt) | CPython 3.12.13, CUDA 12.6 | Pinned native Laya and Unsloth encoder training/reload dependencies |
 | [Vega runtime pins](vega-runtime.txt) | Matching model environment | vegaml 0.8.0 and direct runtime pins; not a complete transitive lock |
 | [Liquid native-data profile](liquid-data.txt) | Separate CPU environment | Tokenizers 0.23.3 and project source for [d1-3B data preparation](../docs/models/liquid.md); no Torch, Transformers or weights |
