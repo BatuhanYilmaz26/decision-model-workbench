@@ -228,6 +228,14 @@ def main():
             cleanup.add_argument(
                 "--operation-id", required=name == "resume-storage-cleanup"
             )
+    for name in ("preview-local-stage-cleanup", "apply-local-stage-cleanup"):
+        local_cleanup = commands.add_parser(
+            name, help="Inspect or remove inactive owned transfer stages on one node"
+        )
+        local_cleanup.add_argument("--home", required=True)
+        local_cleanup.add_argument("--min-age-seconds", type=int, default=86400)
+        if name == "apply-local-stage-cleanup":
+            local_cleanup.add_argument("--plan-sha256", required=True)
     args = parser.parse_args()
     if args.action in ("provision-key", "rotate-key", "revoke-key", "list-keys"):
         from .credentials import credentials
@@ -301,6 +309,19 @@ def main():
             else:
                 result = artifact_retention.status(store, args.operation_id)
         except (ValueError, RuntimeError, OSError, sqlite3.DatabaseError) as exc:
+            parser.error(str(exc))
+        print(json.dumps(result, indent=2))
+    elif args.action in {"preview-local-stage-cleanup", "apply-local-stage-cleanup"}:
+        from . import local_stage_cleanup
+
+        try:
+            if args.action == "preview-local-stage-cleanup":
+                result = local_stage_cleanup.preview(args.home, args.min_age_seconds)
+            else:
+                result = local_stage_cleanup.execute(
+                    args.home, args.plan_sha256, args.min_age_seconds
+                )
+        except (ValueError, RuntimeError, OSError) as exc:
             parser.error(str(exc))
         print(json.dumps(result, indent=2))
     elif args.action == "verify-audit-export":
@@ -595,6 +616,7 @@ def launch(args, stop_event=None):
         DMT_API_URL=f"http://127.0.0.1:{args.api_port}",
     )
     # Complete an upgrade before API and worker can race their startup migrations.
+
     from .store import Store
 
     Store(environment["DMT_HOME"])

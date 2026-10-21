@@ -395,7 +395,7 @@ def stage_import(
             raise ValueError("Remote intake directory must not be linked")
         parent.mkdir(parents=True, exist_ok=True)
         target = parent / stage_id
-        temporary = parent / (".dmt-intake-" + stage_id + "-" + uuid.uuid4().hex)
+        stage = None
         created, submitting = False, False
 
         def safe_remove(path):
@@ -421,6 +421,10 @@ def stage_import(
             if linked(target):
                 raise ValueError("Remote intake must not be linked")
             if not target.exists():
+                from .owned_staging import OwnedStage
+
+                stage = OwnedStage(parent, "intake")
+                temporary = stage.path
                 source = Path(source).absolute()
                 if any(linked(path) for path in (source, *source.parents)):
                     raise ValueError(
@@ -430,7 +434,6 @@ def stage_import(
                     raise ValueError(
                         "Choose an extracted export directory; archives are not accepted"
                     )
-                temporary.mkdir(exist_ok=False)
                 total, count = 0, 0
                 deadline = time.monotonic() + transfer_seconds(MAX_BYTES)
                 for current, directories, filenames in os.walk(
@@ -543,4 +546,5 @@ def stage_import(
                     safe_remove(target)
             raise
         finally:
-            safe_remove(temporary)
+            if stage is not None:
+                stage.close()

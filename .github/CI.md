@@ -36,3 +36,5 @@ The PostgreSQL job also runs [separate-node workflow checks](../tests/test_enter
 The preparation jobs additionally install [the optional enterprise UI client](../requirements/enterprise-ui.txt). [Enterprise authentication checks](../tests/test_enterprise_auth.py) use a fictional loopback OIDC issuer, real signed tokens and the installed Streamlit/Authlib callback routes, together with Streamlit AppTest and the API. They test PKCE, nonce/state/replay refusal, role/account changes and atomic token revocation without an external identity-provider account.
 
 The PostgreSQL job also runs [shared-object retention checks](../tests/test_artifact_retention.py): publication fencing, retained roots, stale plans, interruption/reconciliation and version-specific S3 SDK requests. Object bytes and credentials are fictional; the tests do not delete cloud-account data.
+
+[Local staging checks](../tests/test_local_stage_cleanup.py) verify OS leases, producer-process death, stale plans, ownership/path fences and backup compatibility with tiny fictional files. They run without provider credentials or model weights; ordinary preparation jobs cover both operating systems.

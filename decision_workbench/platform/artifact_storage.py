@@ -439,9 +439,10 @@ class ArtifactRepository:
                 raise ArtifactUnavailable(
                     "Not enough free disk space for a verified artifact cache; free space before warming"
                 )
-            temporary = Path(
-                tempfile.mkdtemp(prefix=".dmt-download-", dir=folder.parent)
-            )
+            from .owned_staging import OwnedStage
+
+            stage = OwnedStage(folder.parent, "download")
+            temporary = stage.path
             try:
                 owned_stage(temporary, folder.parent)
                 for name, item in files.items():
@@ -462,7 +463,5 @@ class ArtifactRepository:
                     )
                 temporary.rename(folder)
             finally:
-                if temporary.exists():
-                    owned_stage(temporary, folder.parent)
-                    shutil.rmtree(temporary)
+                stage.close()
         return folder
