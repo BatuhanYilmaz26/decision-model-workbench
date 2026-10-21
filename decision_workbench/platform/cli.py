@@ -41,8 +41,14 @@ def main():
     run = commands.add_parser(
         "run", help="Start the local API, worker and browser app together"
     )
-    run.add_argument("--home", help="Workspace directory (personal and operator modes use separate defaults)")
-    run.add_argument("--keys-file", help="Operator credential file; omit for a personal local workspace")
+    run.add_argument(
+        "--home",
+        help="Workspace directory (personal and operator modes use separate defaults)",
+    )
+    run.add_argument(
+        "--keys-file",
+        help="Operator credential file; omit for a personal local workspace",
+    )
     run.add_argument("--api-port", type=int, default=8080)
     run.add_argument("--ui-port", type=int, default=8501)
     backup = commands.add_parser(
@@ -188,6 +194,10 @@ def main():
     admission.add_argument("--manifest-sha256", required=True)
     admission.add_argument("--receipt", required=True)
     admission.add_argument("--request-key", required=True)
+    admission.add_argument(
+        "--database-schema",
+        default=os.environ.get("DMT_DATABASE_SCHEMA", "decision_workbench"),
+    )
     args = parser.parse_args()
     if args.action in ("provision-key", "rotate-key", "revoke-key", "list-keys"):
         from .credentials import credentials
@@ -416,7 +426,20 @@ def main():
                         "Operator identity changed during staging"
                     )
 
-            service = Service(Store(args.home))
+            database_url = os.environ.get("DMT_DATABASE_URL") or None
+            artifacts = None
+            if database_url is not None:
+                from .artifact_s3 import repository_from_environment
+
+                artifacts = repository_from_environment()
+            service = Service(
+                Store(
+                    args.home,
+                    database_url=database_url,
+                    database_schema=args.database_schema,
+                    artifact_store=artifacts,
+                )
+            )
             with Path(args.receipt).open("rb") as stream:
                 body = stream.read(65537)
             if len(body) > 65536:

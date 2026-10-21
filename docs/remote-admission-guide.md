@@ -100,7 +100,7 @@ Provider/region/GPU/image must match the frozen study. Keep the real provider lo
 
 ## 4. Stage and queue admission as an authenticated operator
 
-Run from the platform environment on the workspace host. Set `DMT_OPERATOR_TOKEN` to a valid admin credential through your operator's secret mechanism. Use the same trusted key/JWT mappings as the API; credentials stay out of command arguments and receipt files.
+Run from the platform environment on the workspace host. Set `DMT_OPERATOR_TOKEN` to a valid admin credential through your operator's secret mechanism. Use the same trusted key/JWT mappings as the API; credentials stay out of command arguments and receipt files. For a PostgreSQL workspace, supply its `DMT_DATABASE_URL`, matching `--database-schema` (or `DMT_DATABASE_SCHEMA`) and shared artifact settings; follow [separate-node admission](shared-artifacts-guide.md#retrieve-and-admit-remote-training-results-on-separate-nodes). `--home` then selects this operator node's local cache, not a new SQLite workspace.
 
 ```bash
 domain-platform import-remote \
@@ -114,7 +114,7 @@ For enterprise access tokens use the matching trusted `--sso-file` configuration
 
 The input directory must be private and stable while copied. The importer rejects linked/nonregular content, unapproved executable/pickle formats, extra/missing/modified files, wrong schema/backend/model/data/source/request identity and mismatched receipts. Staging is bounded to 2,048 files and 64 GiB. Its checked transfer deadline scales with the size bound, from ten minutes up to four hours. Manifest JSON is capped at 1 MiB and report JSON at 16 MiB before parsing. It copies into a fresh private workspace location, then verifies the copy. Failed staging removes that partial copy. Identical idempotency keys/receipts return the same job; changed requests conflict.
 
-Inspect the current job before retrying an interrupted command. A successful queued intake remains durable if the operator disconnects. Incoming copies and private logs currently require operator retention/cleanup; automated cleanup, distributed storage and browser weight transfers require separate operational validation.
+Inspect the current job before retrying an interrupted command, using the same idempotency key. A successful queued intake remains durable if the operator disconnects; an uncertain submission retains its input when the commit cannot be ruled out. Incoming copies and private logs require operator retention/cleanup. With shared artifacts configured, a different worker can restore the verified intake; personal SQLite intake stays on its workspace host. Browser weight transfers are not supported.
 
 ## 5. Qualify, review and release
 
@@ -124,7 +124,7 @@ The supplied validation/test metrics are replaced by measured local metrics. The
 
 A successfully admitted model is **inactive**. Review its metrics and use the existing owner release action; frozen acceptance gates, full artifact verification, serving preload and atomic release revision still apply. Its API uses the same typed answers, probability validation, authentication and rollback path as local models. A permissive mechanical-fixture policy is not enterprise-quality acceptance.
 
-Generic optimizer resume, automatic provider retries, signed provider attestations and multi-host storage remain separate requirements.
+Generic optimizer resume, automatic provider retries and signed provider attestations are not supplied by admission. Shared storage still requires the identity, retention and coordinated recovery controls described in its guide.
 
 For application-managed submission and artifact retrieval, follow [AWS training](managed-cloud-training.md) or [GCP training](managed-gcp-training.md). Both hand the export to this independent validation and release workflow. Check the selected account and image using [provider compatibility checks](verification.md#provider-compatibility-checks).
 

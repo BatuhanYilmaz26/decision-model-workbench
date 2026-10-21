@@ -349,7 +349,8 @@ class RemoteAdmissionTests(unittest.TestCase):
                 "permission-test",
                 authorize=denied,
             )
-        self.assertEqual(list((self.store.folder / "incoming").iterdir()), [])
+        incoming = self.store.folder / "incoming"
+        self.assertEqual(list(incoming.iterdir()) if incoming.exists() else [], [])
 
     def test_independent_metrics_replace_forged_claims_and_reload_changes_fail(self):
         study = self.study()

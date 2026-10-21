@@ -265,8 +265,15 @@ class ArtifactRepository:
         }
 
     def restore(
-        self, namespace, reference, model, folder, max_download_bytes=8 * 1024**2
+        self,
+        namespace,
+        reference,
+        model,
+        folder,
+        max_download_bytes=8 * 1024**2,
+        check=lambda: None,
     ):
+        check()
         if (
             not isinstance(reference, dict)
             or set(reference) != {"namespace", "scope", "sha256", "bytes"}
@@ -303,6 +310,7 @@ class ArtifactRepository:
                 while chunk := stream.read(
                     min(CHUNK, reference["bytes"] - received + 1)
                 ):
+                    check()
                     received += len(chunk)
                     parts.append(chunk)
                     if received > reference["bytes"]:
@@ -379,10 +387,11 @@ class ArtifactRepository:
             30 if max_download_bytes is None else 1,
         ):
             if folder.exists():
-                if tree(folder) != files:
+                if tree(folder, check) != files:
                     raise ValueError(
                         "Artifact cache integrity check failed; local files differ from the immutable manifest"
                     )
+                check()
                 return folder
             if max_download_bytes is not None and total > max_download_bytes:
                 raise ArtifactUnavailable(
@@ -398,13 +407,17 @@ class ArtifactRepository:
             try:
                 owned_stage(temporary, folder.parent)
                 for name, item in files.items():
+                    check()
                     target = temporary / name
                     target.parent.mkdir(parents=True, exist_ok=True)
                     with closing(
                         self.objects.open(namespace + "/blobs/" + item["sha256"])
                     ) as stream:
-                        checked_copy(stream, target, item["bytes"], item["sha256"])
+                        checked_copy(
+                            stream, target, item["bytes"], item["sha256"], check
+                        )
                 owned_stage(temporary, folder.parent)
+                check()
                 if linked(folder) or folder.resolve().parent != folder.parent.resolve():
                     raise ValueError(
                         "Artifact cache target moved outside its reserved directory"

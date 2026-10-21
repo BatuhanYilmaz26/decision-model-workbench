@@ -314,7 +314,14 @@ def stage_import(
     receipt,
     key,
     authorize=None,
+    origin_job=None,
 ):
+    """Stage a verified export, then queue fenced independent qualification.
+
+    ``authorize`` rechecks operator credentials. Worker callers use ``origin_job``
+    for database ownership fencing instead of opening nested transactions from
+    an authorization callback.
+    """
     service.require(principal, ("admin",))
     service.project(principal, project)
     if not re.fullmatch(r"[a-f0-9]{64}", expected_sha):
@@ -322,14 +329,37 @@ def stage_import(
     if not isinstance(key, str) or not 8 <= len(key) <= 128:
         raise ValueError("Use an 8–128 character idempotency key")
     store = service.store
+    if origin_job and (
+        origin_job.get("tenant") != principal["tenant"]
+        or origin_job.get("project") != project
+    ):
+        raise ValueError("Originating job does not match the remote intake scope")
     payload = study_entity(store, principal["tenant"], project, study)["payload"]
     request = payload["request"]
     receipt = checked_receipt(receipt, request, expected_sha)
     from decision_workbench.training.resources import ResourceLease
+    from .artifact_storage import linked
 
     signature = digest(
         {"study": study, "manifest_sha256": expected_sha, "receipt": receipt}
     )
+    last_check = [0.0]
+
+    def check(force=False):
+        if not force and time.monotonic() - last_check[0] < 1:
+            return
+        if authorize:
+            authorize()
+        if origin_job:
+            with store.transaction() as db:
+                store._assert_owner(db, origin_job)
+        last_check[0] = time.monotonic()
+
+    def validate_origin(db):
+        if origin_job:
+            store._assert_owner(db, origin_job)
+
+    check(True)
     with ResourceLease(store.folder / "remote-intake.lock").hold(timeout=30):
         with store.transaction() as db:
             existing = db.execute(
@@ -343,61 +373,102 @@ def stage_import(
                 or old["config"].get("intake_signature") != signature
             ):
                 raise Conflict("Idempotency key already belongs to a different request")
+            check(True)
             return old
-        source = Path(source).absolute()
-        for path in (source, *source.parents):
-            if path.is_symlink() or (
-                hasattr(path, "is_junction") and path.is_junction()
-            ):
-                raise ValueError("Remote source must not traverse linked directories")
-        if not source.is_dir():
-            raise ValueError(
-                "Choose an extracted export directory; archives are not accepted"
-            )
-        stage_id = uuid.uuid4().hex
-        target = store.folder / "incoming" / stage_id
-        target.mkdir(parents=True, exist_ok=False)
-        total, count = 0, 0
-        deadline = time.monotonic() + transfer_seconds(MAX_BYTES)
-        try:
-            # Copy from a private operator directory, reject links before descending.
-            for current, directories, filenames in os.walk(source, followlinks=False):
-                for name in directories + filenames:
-                    candidate = Path(current) / name
-                    info = candidate.lstat()
-                    if candidate.is_symlink() or (
-                        hasattr(candidate, "is_junction") and candidate.is_junction()
-                    ):
-                        raise ValueError("Remote export contains linked content")
-                    if name in filenames and not stat.S_ISREG(info.st_mode):
-                        raise ValueError("Remote export contains a nonregular file")
-                for name in filenames:
-                    count += 1
-                    if count > MAX_FILES:
-                        raise ValueError("Remote export exceeds file-count limit")
-                    original = Path(current) / name
-                    destination = target / original.relative_to(source)
-                    destination.parent.mkdir(parents=True, exist_ok=True)
-                    with (
-                        original.open("rb") as reader,
-                        destination.open("xb") as writer,
-                    ):
-                        while chunk := reader.read(1024**2):
-                            total += len(chunk)
-                            if total > MAX_BYTES or time.monotonic() > deadline:
-                                raise ValueError(
-                                    "Remote export exceeds byte/time limit"
-                                )
-                            writer.write(chunk)
-            questions = service.project(principal, project)["payload"]["questions"]
-            checked = {
-                **request,
-                "questions": questions,
-                "request_sha256": payload["request_sha256"],
+        stage_id = digest(
+            {
+                "tenant": principal["tenant"],
+                "project": project,
+                "request_key": key,
+                "signature": signature,
             }
-            validate_export(target, expected_sha, checked)
-            if authorize:
-                authorize()
+        )[:32]
+        parent = store.folder / "incoming"
+        if linked(parent):
+            raise ValueError("Remote intake directory must not be linked")
+        parent.mkdir(parents=True, exist_ok=True)
+        target = parent / stage_id
+        temporary = parent / (".dmt-intake-" + stage_id + "-" + uuid.uuid4().hex)
+        created, submitting = False, False
+
+        def safe_remove(path):
+            if path.exists():
+                if (
+                    linked(path)
+                    or path.resolve().parent != parent.resolve()
+                    or not (
+                        path.name == stage_id
+                        or path.name.startswith(".dmt-intake-" + stage_id + "-")
+                    )
+                ):
+                    raise ValueError("Refusing cleanup outside the owned remote intake")
+                shutil.rmtree(path)
+
+        questions = service.project(principal, project)["payload"]["questions"]
+        checked = {
+            **request,
+            "questions": questions,
+            "request_sha256": payload["request_sha256"],
+        }
+        try:
+            if linked(target):
+                raise ValueError("Remote intake must not be linked")
+            if not target.exists():
+                source = Path(source).absolute()
+                if any(linked(path) for path in (source, *source.parents)):
+                    raise ValueError(
+                        "Remote source must not traverse linked directories"
+                    )
+                if not source.is_dir():
+                    raise ValueError(
+                        "Choose an extracted export directory; archives are not accepted"
+                    )
+                temporary.mkdir(exist_ok=False)
+                total, count = 0, 0
+                deadline = time.monotonic() + transfer_seconds(MAX_BYTES)
+                for current, directories, filenames in os.walk(
+                    source, followlinks=False
+                ):
+                    for name in directories + filenames:
+                        candidate = Path(current) / name
+                        info = candidate.lstat()
+                        if linked(candidate):
+                            raise ValueError("Remote export contains linked content")
+                        if name in filenames and not stat.S_ISREG(info.st_mode):
+                            raise ValueError("Remote export contains a nonregular file")
+                    for name in filenames:
+                        check()
+                        count += 1
+                        if count > MAX_FILES:
+                            raise ValueError("Remote export exceeds file-count limit")
+                        original = Path(current) / name
+                        destination = temporary / original.relative_to(source)
+                        destination.parent.mkdir(parents=True, exist_ok=True)
+                        with original.open("rb") as reader, destination.open(
+                            "xb"
+                        ) as writer:
+                            while chunk := reader.read(1024**2):
+                                check()
+                                total += len(chunk)
+                                if total > MAX_BYTES or time.monotonic() > deadline:
+                                    raise ValueError(
+                                        "Remote export exceeds byte/time limit"
+                                    )
+                                writer.write(chunk)
+                validate_export(temporary, expected_sha, checked)
+                if (
+                    temporary.resolve().parent != parent.resolve()
+                    or linked(target)
+                    or target.resolve().parent != parent.resolve()
+                ):
+                    raise ValueError(
+                        "Remote intake moved outside its reserved directory"
+                    )
+                temporary.rename(target)
+                created = True
+            if not created:
+                validate_export(target, expected_sha, checked)
+            check(True)
             config = {
                 **request["configuration"],
                 "study": study,
@@ -406,8 +477,32 @@ def stage_import(
                 "provider_receipt": receipt,
                 "intake_signature": signature,
             }
+            if store.artifact_store is not None:
+                intake_model = {
+                    "artifact_id": stage_id,
+                    "backend": config["backend"],
+                    "model_sha256": expected_sha,
+                    "schema_sha256": request["schema_sha256"],
+                }
+                config["incoming_reference"] = store.artifact_store.publish(
+                    store.workspace_id,
+                    digest(
+                        {
+                            "kind": "remote-input",
+                            "tenant": principal["tenant"],
+                            "project": project,
+                            "request_key": key,
+                            "signature": signature,
+                        }
+                    ),
+                    target,
+                    intake_model,
+                    check,
+                )
             if config["backend"] == "vega":
                 config["remote_request_sha256"] = payload["request_sha256"]
+            check(True)
+            submitting = True
             return store.submit(
                 principal["tenant"],
                 project,
@@ -415,7 +510,30 @@ def stage_import(
                 "remote-import",
                 config,
                 key,
+                validate_db=validate_origin,
+                authorize=authorize,
             )
         except BaseException:
-            shutil.rmtree(target)
+            if created:
+                remove = not submitting
+                if submitting:
+                    # A failed response after commit is not proof the job was not
+                    # queued. Preserve its immutable input when storage is uncertain.
+                    try:
+                        with store.transaction() as db:
+                            row = db.execute(
+                                "SELECT * FROM jobs WHERE tenant=? AND project=? AND request_key=?",
+                                (principal["tenant"], project, key),
+                            ).fetchone()
+                        remove = (
+                            row is None
+                            or store.decode_job(row)["config"].get("incoming_id")
+                            != stage_id
+                        )
+                    except Exception:
+                        remove = False
+                if remove:
+                    safe_remove(target)
             raise
+        finally:
+            safe_remove(temporary)

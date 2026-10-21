@@ -9,9 +9,9 @@ hashes. Personal SQLite mode continues to use local artifacts.
 
 This is a model-artifact workflow, not a complete enterprise deployment. Shared
 identity, coordinated recovery, operational acceptance and cloud application
-deployment need their own configuration. Remote-admission staging directories,
-node-specific model environments and unfinished job files are not made portable
-by enabling this setting.
+deployment need their own configuration. Verified remote-admission inputs can
+also move between these nodes; model environments and unfinished job directories
+remain local to their worker.
 
 ## Prepare storage and a new workspace
 
@@ -118,6 +118,42 @@ request; model files still undergo the applicable integrity checks. A corrupt
 cache or object is refused. Inspect the node and restore a verified cache before
 retrying; do not bypass its hashes or modify a registered model in place.
 
+## Retrieve and admit remote training results on separate nodes
+
+Use the same PostgreSQL schema and object repository on the API, retrieval worker
+and admission worker. The five managed training providers keep their own
+credentials and retrieval protocols. After retrieval, the workbench verifies the
+export and publishes an immutable input manifest before queuing admission.
+The worker that claims admission retrieves and verifies that input in its own
+`incoming` cache, then runs the normal [independent qualification](remote-admission-guide.md#5-qualify-review-and-release).
+An object-storage checksum does not replace model evaluation or owner release.
+
+For operator-supplied exports, configure `DMT_DATABASE_URL`,
+`DMT_ARTIFACT_S3_BUCKET` and the matching region/prefix/endpoint as above, then run:
+
+```bash
+domain-platform import-remote --home data/operator-cache --database-schema decision_workbench --keys-file /operator/workspace-keys.json --project YOUR_PROJECT_ID --study YOUR_STUDY_ID --export retrieved/export --manifest-sha256 YOUR_RETAINED_SHA256 --receipt provider-receipt.json --request-key YOUR_UNIQUE_IMPORT_KEY
+```
+
+Supply `DMT_OPERATOR_TOKEN` through your secret mechanism. Use your actual
+database schema; `DMT_DATABASE_SCHEMA` supplies its default. Keep the same trusted
+authentication configuration as the API. See [operator admission](remote-admission-guide.md#4-stage-and-queue-admission-as-an-authenticated-operator)
+for the receipt format, permissions and input limits.
+
+Keep a logical import's idempotency key unchanged when recovering a lost response.
+Identical scoped requests on different nodes return the same job and input
+identity. Conflicting requests are refused. An uncertain submission preserves
+its staged input rather than deleting files that a committed job may need.
+Cancelled or expired retrieval workers cannot queue a new admission.
+
+The admission node needs space for both the verified input cache and a separate
+qualification copy, plus its evaluation data and logs. Cache hydration and the qualification copy are
+preflighted with a 64 MiB reserve; this is not a reservation against concurrent
+disk use. Input transfer checks cancellation and ownership between chunks.
+Insufficient space, unavailable objects or failed integrity checks stop admission;
+no model is activated. In personal SQLite mode, intake remains local to that
+workspace and uses no object service.
+
 ## Retention, recovery and checks
 
 Do not delete objects solely because a recent upload has no registry row:
@@ -135,10 +171,12 @@ For local contract checks, install the clients and run:
 
 ```bash
 python -m unittest discover -s tests -p test_shared_artifacts.py -v
+python -m unittest discover -s tests -p test_enterprise_flows.py -v
 ```
 
 Set `DMT_TEST_POSTGRES_URL` to a disposable database to include PostgreSQL
-workflows. The local directory transport checks actual file/cache behavior; S3
+workflows and the separate-node hosted/five-provider flow checks. The local
+directory transport checks actual file/cache behavior; S3
 tests use the installed SDK with fictional credentials and validated responses.
 They do not contact a paid account or establish real S3 billing, production scale
 or native model quality. Follow the [CI checks](../.github/CI.md) and qualify your

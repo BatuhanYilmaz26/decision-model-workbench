@@ -36,6 +36,7 @@ jobs:
       - run: python -m pip check
       - run: python -m unittest discover -s tests -p test_postgres.py -v
       - run: python -m unittest discover -s tests -p test_shared_artifacts.py -v
+      - run: python -m unittest discover -s tests -p test_enterprise_flows.py -v
   quickstart:
     strategy:
       fail-fast: false

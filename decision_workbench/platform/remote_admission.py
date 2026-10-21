@@ -30,8 +30,25 @@ def admit(worker, job, snapshot, questions, coverage, cancelled):
     frozen = request["configuration"]
     if any(config.get(k) != v for k, v in frozen.items()):
         raise ValueError("Admission configuration differs from frozen remote study")
-    incoming = store.folder / "incoming" / config["incoming_id"]
-    validate_export(incoming, config["manifest_sha256"], request)
+    last_transfer_check = [0.0]
+
+    def check_transfer():
+        if cancelled.is_set():
+            raise Conflict("Cancelled")
+        if time.monotonic() - last_transfer_check[0] >= 1:
+            store.heartbeat(job, "Preparing verified input on this admission worker")
+            last_transfer_check[0] = time.monotonic()
+
+    incoming = store.incoming_path(config, request["schema_sha256"], check_transfer)
+    _, incoming_manifest = validate_export(incoming, config["manifest_sha256"], request)
+    required = (
+        sum(item["bytes"] for item in incoming_manifest["files"].values())
+        + (incoming / "manifest.json").stat().st_size
+    )
+    if shutil.disk_usage(store.folder).free < required + 64 * 1024**2:
+        raise ValueError(
+            "Not enough free disk space for independent export qualification"
+        )
     job_folder = store.folder / "jobs" / job["id"]
     job_folder.mkdir(parents=True, exist_ok=False)
     if config["backend"] == "vega":

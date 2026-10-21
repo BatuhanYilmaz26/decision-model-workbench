@@ -30,3 +30,5 @@ workflows across independent local caches, content integrity, conditional S3 SDK
 contracts and multipart cancellation/completion. The object conformance backend
 uses local files; SDK responses are fictional. It does not contact a paid bucket
 or establish native model/cloud operational qualification.
+
+The PostgreSQL job also runs [separate-node workflow checks](../tests/test_enterprise_flows.py): hosted contracts and quota accounting, all five managed providers handing verified exports to a different node, concurrent intake, cancellation, lost-response recovery and the authenticated operator CLI. It uses disposable PostgreSQL schemas, a local object transport and fictional HTTP/SDK responses; it makes no paid calls or model downloads.

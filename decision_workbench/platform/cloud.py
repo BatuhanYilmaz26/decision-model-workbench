@@ -594,7 +594,7 @@ class Cloud:
                             checksum,
                             receipt,
                             "cloud-import-" + identifier,
-                            authorize=lambda: self.store.heartbeat(job),
+                            origin_job=job,
                         )
                         return self.event(
                             principal,

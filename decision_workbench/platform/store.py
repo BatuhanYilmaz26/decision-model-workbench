@@ -204,6 +204,41 @@ class Store(DatasetStorage, OperationsStorage):
             max_download_bytes=None if warm else 8 * 1024**2,
         )
 
+    def incoming_path(self, config, schema_sha256, check=lambda: None):
+        """Materialize an approved intake on the worker that claimed admission."""
+        from .artifact_storage import ArtifactUnavailable, linked
+
+        identifier = config.get("incoming_id")
+        if not isinstance(identifier, str) or not re.fullmatch(
+            r"[a-f0-9]{32}", identifier
+        ):
+            raise ValueError("Invalid remote intake reference")
+        parent = self.folder / "incoming"
+        target = parent / identifier
+        if linked(parent) or linked(target):
+            raise ValueError("Remote intake contains a linked path")
+        reference = config.get("incoming_reference")
+        if self.artifact_store is None:
+            if reference is not None:
+                raise ArtifactUnavailable(
+                    "Configure this worker's shared artifact storage"
+                )
+            return target
+        model = {
+            "artifact_id": identifier,
+            "backend": config["backend"],
+            "model_sha256": config["manifest_sha256"],
+            "schema_sha256": schema_sha256,
+        }
+        return self.artifact_store.restore(
+            self.workspace_id,
+            reference,
+            model,
+            target,
+            max_download_bytes=None,
+            check=check,
+        )
+
     @contextmanager
     def transaction(self):
         if getattr(self, "_postgres", None) is not None:
