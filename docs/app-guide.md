@@ -560,6 +560,7 @@ negative roles for a standalone study. [Applicability guide](applicability-guide
 | Stale edit, assignment or release conflict | Refresh, inspect the latest version/revision and review your action again. |
 | No active model or release refused | Inspect the frozen criteria, test counts/metrics, export/runtime/profile availability and error message. Training success alone is insufficient. |
 | Shared model needs cache warming | Ask the operator to [warm the selected export on each serving node](shared-artifacts-guide.md#train-release-and-warm-a-cache), then retry release or prediction. Personal local mode does not require S3. |
+| Shared-workspace node is low on disk space | Ask the operator to [review inactive cache retention](cache-retention-guide.md). It runs from the operator terminal while that node's API and worker are stopped; the browser cannot apply it to its own running server. |
 | Decision abstains or fails | Use the fallback. Evaluate evidence coverage and the deployed profile before changing thresholds or collecting further training data. |
 
 ## Operator tasks outside the browser

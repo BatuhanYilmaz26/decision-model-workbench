@@ -270,6 +270,11 @@ class DirectoryObjects:
         except OSError:
             raise ArtifactUnavailable("Artifact object is unavailable") from None
 
+    def available(self, key, size):
+        path = self.path(key)
+        if not path.is_file() or path.stat().st_size != size:
+            raise ArtifactUnavailable("Shared cache recovery object is unavailable")
+
     def put_file(self, key, source, sha, size, check=lambda: None):
         target = self.path(key)
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -348,12 +353,16 @@ class ArtifactRepository:
             )
         finally:
             temporary.unlink(missing_ok=True)
-        return {
+        reference = {
             "namespace": namespace,
             "scope": scope,
             "sha256": sha,
             "bytes": len(body),
         }
+        from .cache_records import remember
+
+        remember(namespace, reference, model, folder, body)
+        return reference
 
     def inspect(self, namespace, reference, model=None):
         """Read a bounded immutable manifest without downloading model files."""
@@ -430,6 +439,9 @@ class ArtifactRepository:
                         "Artifact cache integrity check failed; local files differ from the immutable manifest"
                     )
                 check()
+                from .cache_records import remember
+
+                remember(namespace, reference, model, folder)
                 return folder
             if max_download_bytes is not None and total > max_download_bytes:
                 raise ArtifactUnavailable(
@@ -462,6 +474,9 @@ class ArtifactRepository:
                         "Artifact cache target moved outside its reserved directory"
                     )
                 temporary.rename(folder)
+                from .cache_records import remember
+
+                remember(namespace, reference, model, folder)
             finally:
                 stage.close()
         return folder

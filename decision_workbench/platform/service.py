@@ -10,6 +10,7 @@ import re
 import uuid
 from decision_workbench.data import validate, validate_questions, dumps
 from .store import Conflict, digest
+from .cache_usage import uses_cache
 
 
 class Service:
@@ -785,6 +786,7 @@ class Service:
             authorize=authorize if kind == "generate" else None,
         )
 
+    @uses_cache
     def activate(
         self, principal, project, model_id, expected_revision, note, authorize=None
     ):
@@ -916,6 +918,7 @@ class Service:
             principal["tenant"], project, principal["actor"], criteria, expected_id
         )
 
+    @uses_cache
     def checked_bundle(self, model):
         folder = self.store.artifact_path(model)
         body = (folder / "model.json").read_bytes()
@@ -923,6 +926,7 @@ class Service:
             raise ValueError("Model integrity check failed")
         return json.loads(body)
 
+    @uses_cache
     def checked_export(self, model, questions):
         from decision_workbench.training.artifacts import verify_manifest
 
@@ -959,6 +963,7 @@ class Service:
             raise ValueError("Export lacks actual runtime reload qualification")
         return folder
 
+    @uses_cache
     def predict(
         self,
         principal,

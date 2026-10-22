@@ -18,7 +18,7 @@ remain local to their worker.
 Follow [PostgreSQL setup](postgresql-guide.md), using a **new database schema
 without registered models**. Existing SQLite or metadata-only model registries
 are not automatically migrated. Stop all API/worker processes before upgrading:
-this route uses PostgreSQL workspace protocol 13 and older services must not
+this route uses PostgreSQL workspace protocol 14 and older services must not
 continue writing during the change. SQLite remains on its existing protocol.
 
 Install the optional clients in both API and worker environments:
@@ -90,6 +90,10 @@ in a workspace configured for shared artifacts. Do not remove the local
 secret-free database binding to point a cache at another workspace.
 
 ## Train, release and warm a cache
+
+For disk retention after warming, use [inactive cache cleanup](cache-retention-guide.md).
+It preserves registry/shared objects and released caches; stop the selected
+node before previewing or applying eviction.
 
 Train/evaluate through the normal workflow. The worker uploads content-addressed
 files and an immutable manifest **before** creating the model registry record.

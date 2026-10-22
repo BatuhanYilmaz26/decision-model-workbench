@@ -15,6 +15,7 @@ from decision_workbench.training.artifacts import file_sha, verify_manifest
 from decision_workbench.training.contracts import validate_splits
 from decision_workbench.training.provenance import source_fingerprint
 from .store import Conflict, digest
+from .cache_usage import uses_cache
 
 PROVIDERS = ("aws", "azure", "gcp", "modal", "runpod")
 from decision_workbench.training.transfer_limits import (
@@ -304,6 +305,7 @@ def validate_export(folder, expected_sha, request):
     return report, manifest
 
 
+@uses_cache
 def stage_import(
     service,
     principal,

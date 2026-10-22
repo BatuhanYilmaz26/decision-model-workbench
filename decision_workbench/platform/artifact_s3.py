@@ -109,6 +109,18 @@ class S3Objects:
                 "Artifact object storage is unavailable"
             ) from None
 
+    def available(self, key, size):
+        try:
+            value = self.client.head_object(Bucket=self.bucket, Key=self.key(key))
+            if value.get("ContentLength") != size:
+                raise ArtifactUnavailable("Shared cache recovery object size differs")
+        except ArtifactUnavailable:
+            raise
+        except Exception:
+            raise ArtifactUnavailable(
+                "Shared cache recovery object is unavailable"
+            ) from None
+
     def retention_inventory(self, namespace, limit):
         """List one workspace only; permanent cleanup requires enabled versioning."""
         if (

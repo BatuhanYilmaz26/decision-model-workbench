@@ -96,8 +96,16 @@ def publication_violations(root, names):
         if candidate.is_file() and not candidate.is_symlink():
             try:
                 with candidate.open("rb") as source:
-                    first = source.readline(1024 * 1024 + 1)
+                    prefix = source.read(1024 * 1024 + 1)
+                    first = prefix.split(b"\n", 1)[0]
                 if first.removeprefix(b"\xef\xbb\xbf").lstrip().startswith(b"{"):
+                    if re.search(
+                        rb'"format"\s*:\s*"domain-(?:cache-retention|registered-cache)-v1"',
+                        prefix,
+                    ):
+                        errors.append(
+                            f"Private cache maintenance record included in public checkout: {name}"
+                        )
                     header = json.loads(first)
                     if isinstance(header, dict) and (
                         header.get("format") == "domain-project-deletion-v1"

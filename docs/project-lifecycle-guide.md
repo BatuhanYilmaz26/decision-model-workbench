@@ -79,7 +79,7 @@ downloads can finish. Resident model processes retain their normal idle shutdown
 
 Back up the workspace and stop every API, worker and browser service before
 upgrading. This release uses SQLite schema **11** and PostgreSQL workspace
-protocol **13**. Restart all nodes with the same application version; mixed
+protocol **14**. Restart all nodes with the same application version; mixed
 versions are unsupported. Existing projects begin active without changing their
 policy, model, dataset or release identities.
 

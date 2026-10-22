@@ -125,6 +125,8 @@ requests from writing project records again. File and provider cleanup is
 separate: [shared-object retention](shared-object-retention-guide.md) can later
 select unreferenced versions, while [local transfer cleanup](local-stage-cleanup-guide.md)
 only handles abandoned temporary transfers and preserves final model caches.
+Use [cache retention](cache-retention-guide.md) to reclaim owned final caches
+after stopping the selected shared-workspace node.
 
 ## Capacity, upgrades and recovery
 
@@ -135,7 +137,7 @@ capacity with the operator instead of bypassing the preview or editing live
 database tables.
 
 Stop all services and back up before upgrading. This release uses SQLite schema
-**11** and PostgreSQL workspace protocol **13**; older nodes must not remain
+**11** and PostgreSQL workspace protocol **14**; older nodes must not remain
 running. All nodes need the same application version so deletion markers and
 retained quota accounting are enforced consistently.
 

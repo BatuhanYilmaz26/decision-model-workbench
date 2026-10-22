@@ -38,7 +38,7 @@ schemas and missing schemas are refused. Existing SQLite workspaces are not
 automatically migrated. [PostgreSQL schemas](https://www.postgresql.org/docs/18/ddl-schemas.html).
 
 Stop API and worker processes before upgrading a PostgreSQL workspace. The current
-metadata protocol is 13; an older service version must not continue writing
+metadata protocol is 14; an older service version must not continue writing
 during an upgrade. Downgrading against newer metadata is refused. The personal
 SQLite protocol is unchanged by the optional object-storage route.
 

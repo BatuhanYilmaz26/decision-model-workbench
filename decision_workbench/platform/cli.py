@@ -236,6 +236,27 @@ def main():
         local_cleanup.add_argument("--min-age-seconds", type=int, default=86400)
         if name == "apply-local-stage-cleanup":
             local_cleanup.add_argument("--plan-sha256", required=True)
+    for name in (
+        "preview-cache-cleanup",
+        "apply-cache-cleanup",
+        "resume-cache-cleanup",
+    ):
+        cache = commands.add_parser(
+            name,
+            help="Review or reclaim inactive shared-storage caches on an offline node",
+        )
+        cache.add_argument("--home", required=True)
+        cache.add_argument(
+            "--database-schema",
+            default=os.environ.get("DMT_DATABASE_SCHEMA", "decision_workbench"),
+        )
+        if name != "resume-cache-cleanup":
+            cache.add_argument("--min-idle-seconds", type=int, default=86400)
+            cache.add_argument("--timeout", type=int, default=300)
+        if name != "preview-cache-cleanup":
+            cache.add_argument("--plan-sha256", required=True)
+        if name == "resume-cache-cleanup":
+            cache.add_argument("--operation-id", required=True)
     args = parser.parse_args()
     if args.action in ("provision-key", "rotate-key", "revoke-key", "list-keys"):
         from .credentials import credentials
@@ -308,6 +329,41 @@ def main():
                 )
             else:
                 result = artifact_retention.status(store, args.operation_id)
+        except (ValueError, RuntimeError, OSError, sqlite3.DatabaseError) as exc:
+            parser.error(str(exc))
+        print(json.dumps(result, indent=2))
+    elif args.action in {
+        "preview-cache-cleanup",
+        "apply-cache-cleanup",
+        "resume-cache-cleanup",
+    }:
+        from . import cache_retention
+        from .artifact_s3 import repository_from_environment
+        from .store import Store
+        import sqlite3
+
+        try:
+            url = os.environ.get("DMT_DATABASE_URL")
+            if not url:
+                raise ValueError("Set DMT_DATABASE_URL for the shared workspace")
+            store = Store(
+                args.home,
+                database_url=url,
+                database_schema=args.database_schema,
+                artifact_store=repository_from_environment(),
+            )
+            if args.action == "preview-cache-cleanup":
+                result = cache_retention.preview(
+                    store, args.min_idle_seconds, args.timeout
+                )
+            elif args.action == "apply-cache-cleanup":
+                result = cache_retention.execute(
+                    store, args.plan_sha256, args.min_idle_seconds, args.timeout
+                )
+            else:
+                result = cache_retention.execute(
+                    store, args.plan_sha256, operation_id=args.operation_id
+                )
         except (ValueError, RuntimeError, OSError, sqlite3.DatabaseError) as exc:
             parser.error(str(exc))
         print(json.dumps(result, indent=2))

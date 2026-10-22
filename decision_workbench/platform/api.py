@@ -282,14 +282,17 @@ def create_app(
 
     @asynccontextmanager
     async def lifespan(app):
-        monitor.start()
-        try:
-            yield
-        finally:
+        from .cache_usage import use
+
+        with use(store.folder):
+            monitor.start()
             try:
-                monitor.close()
+                yield
             finally:
-                service.runtime.close()
+                try:
+                    monitor.close()
+                finally:
+                    service.runtime.close()
 
     app = FastAPI(title="Domain Decision Platform", version="0.2.0", lifespan=lifespan)
     app.state.store = store

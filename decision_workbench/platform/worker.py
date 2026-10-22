@@ -19,6 +19,7 @@ from decision_workbench.temporal import audit_splits
 from decision_workbench.training.contracts import validate_splits
 from .store import Store, Conflict, digest
 from .service import Service
+from .cache_usage import use, uses_cache
 
 
 class Worker:
@@ -31,6 +32,12 @@ class Worker:
 
     @contextmanager
     def presence(self):
+        with use(self.store.folder):
+            with self._presence():
+                yield
+
+    @contextmanager
+    def _presence(self):
         if self.presence_active:
             raise RuntimeError("Worker presence already active")
         stop = threading.Event()
@@ -62,6 +69,7 @@ class Worker:
                 raise RuntimeError("Worker presence thread did not stop")
             self.store.worker_presence(self.worker_id, "stopped")
 
+    @uses_cache
     def execute(self, job):
         stop = threading.Event()
         cancelled = threading.Event()

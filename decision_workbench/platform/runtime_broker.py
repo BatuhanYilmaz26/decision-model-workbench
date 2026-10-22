@@ -16,6 +16,7 @@ import uuid
 from decision_workbench.data import dumps
 from decision_workbench.training.resources import ModelResourceLease, ResourceBusy
 from decision_workbench.training.process_guard import leased_process_options
+from .cache_usage import uses_cache
 
 
 class RuntimeUnavailable(RuntimeError):
@@ -250,10 +251,12 @@ class RuntimeBroker:
             self._close()
             raise
 
+    @uses_cache
     def preload(self, model_id, model, questions):
         with self.lock:
             self._ensure(model_id, model, questions)
 
+    @uses_cache
     def predict(self, model_id, model, questions, state, threshold):
         if not self.capacity.acquire(timeout=2):
             raise RuntimeUnavailable("Inference queue is full; retry later")

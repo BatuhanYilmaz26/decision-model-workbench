@@ -45,3 +45,5 @@ For shared workspaces, [test_enterprise_flows.py](test_enterprise_flows.py) exer
 [Project lifecycle checks](test_project_lifecycle.py) cover archive/restore permissions, stale revisions, accounting retention, in-flight writes/predictions, backup history integrity and real localhost browser use. The cross-node case requires disposable PostgreSQL. See [the user guide](../docs/project-lifecycle-guide.md).
 
 [Project deletion checks](test_project_deletion.py) cover database deletion and retained accounting, including shared cloud-account quotas, teacher-request sources, logical shared-content preservation, atomic rollback, receipt privacy and browser confirmation. The cross-node case uses disposable PostgreSQL. See [the user guide](../docs/project-deletion-guide.md).
+
+[Cache retention checks](test_cache_retention.py) cover offline node leases, process death, active-release/intake preservation, remote availability, cold reload and interrupted quarantine cleanup. Shared metadata cases use disposable PostgreSQL; S3 availability uses fictional SDK responses. See [cache maintenance](../docs/cache-retention-guide.md).

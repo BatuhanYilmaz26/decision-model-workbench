@@ -15,6 +15,7 @@ from pathlib import Path
 from .dataset_storage import DatasetStorage
 from .operations import OperationsStorage
 from .paging import validate_page
+from .cache_usage import uses_cache
 
 WORKSPACE_SCHEMA_VERSION = 11
 
@@ -74,7 +75,7 @@ class Store(DatasetStorage, OperationsStorage):
             current = db.execute("SELECT max(version) FROM schema_version").fetchone()[
                 0
             ]
-            supported = 13 if self._postgres is not None else WORKSPACE_SCHEMA_VERSION
+            supported = 14 if self._postgres is not None else WORKSPACE_SCHEMA_VERSION
             if current is not None and current not in range(1, supported + 1):
                 raise RuntimeError(
                     "Unsupported workspace schema version; restore a compatible application"
@@ -163,7 +164,7 @@ class Store(DatasetStorage, OperationsStorage):
                     "CREATE TABLE IF NOT EXISTS workspace_object_maintenance (slot INTEGER PRIMARY KEY CHECK(slot=1), operation_id TEXT NOT NULL, state TEXT NOT NULL, payload TEXT NOT NULL, progress INTEGER NOT NULL DEFAULT 0, owner_token TEXT, error TEXT, updated REAL NOT NULL)"
                 )
                 db.execute(
-                    "INSERT INTO schema_version VALUES (13) ON CONFLICT DO NOTHING"
+                    "INSERT INTO schema_version VALUES (14) ON CONFLICT DO NOTHING"
                 )
 
     def _artifact_binding(self, db, initialize=False):
@@ -204,6 +205,7 @@ class Store(DatasetStorage, OperationsStorage):
                 "INSERT INTO workspace_artifact_storage VALUES (1,?)", (descriptor,)
             )
 
+    @uses_cache
     def artifact_path(self, model, *, warm=False):
         from .artifact_storage import ArtifactUnavailable, linked
 
@@ -230,6 +232,7 @@ class Store(DatasetStorage, OperationsStorage):
             max_download_bytes=None if warm else 8 * 1024**2,
         )
 
+    @uses_cache
     def incoming_path(self, config, schema_sha256, check=lambda: None):
         """Materialize an approved intake on the worker that claimed admission."""
         from .artifact_storage import ArtifactUnavailable, linked
@@ -321,6 +324,7 @@ class Store(DatasetStorage, OperationsStorage):
                     finally:
                         del self._artifact_guards.held
 
+    @uses_cache
     def add(
         self,
         kind,
@@ -852,7 +856,16 @@ class Store(DatasetStorage, OperationsStorage):
         return dict(row) if row else {"model_id": None, "revision": 0}
 
     def activate(self, tenant, project, actor, model_id, expected_revision, note):
+        with self.artifact_guard() as live:
+            return self._activate(
+                tenant, project, actor, model_id, expected_revision, note, live
+            )
+
+    def _activate(
+        self, tenant, project, actor, model_id, expected_revision, note, live
+    ):
         with self.transaction() as db:
+            live()
             row = db.execute(
                 "SELECT * FROM active_models WHERE tenant=? AND project=?",
                 (tenant, project),
@@ -867,4 +880,5 @@ class Store(DatasetStorage, OperationsStorage):
                 (tenant, project, model_id, revision + 1),
             )
             self.audit(db, tenant, project, actor, "activate.model:" + note, model_id)
+            live()
         return self.active(tenant, project)

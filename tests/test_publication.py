@@ -124,6 +124,26 @@ class PublicationTests(unittest.TestCase):
                     )
                 )
 
+    def test_renamed_cache_plans_and_receipts_are_private_in_both_json_styles(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            subprocess.run(
+                ["git", "init", "--quiet"], cwd=home, check=True, capture_output=True
+            )
+            for body in (
+                '{"format":"domain-cache-retention-v1"}',
+                '{\n  "format": "domain-cache-retention-v1"\n}',
+                '{"format":"domain-registered-cache-v1"}',
+            ):
+                file = home / "renamed-cache.json"
+                file.write_text(body, encoding="utf-8")
+                self.assertTrue(
+                    any(
+                        "Private cache maintenance record" in error
+                        for error in publication_violations(home, [file.name])
+                    )
+                )
+
     def test_git_add_excludes_internal_files_and_flags_force_added_files(self):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
