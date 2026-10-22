@@ -115,6 +115,8 @@ Perform a restore drill before relying on either route.
 
 ## Verify a disposable database
 
+For queue limits, node readiness, failure monitoring and the two-node functional workload, follow [shared workspace operations](shared-workspace-operations-guide.md).
+
 Set `DMT_TEST_POSTGRES_URL` to a dedicated test database whose role can create/drop
 schemas, then run:
 

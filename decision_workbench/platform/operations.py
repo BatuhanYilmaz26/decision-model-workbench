@@ -309,7 +309,7 @@ class OperationsStorage:
                 )
             ]
             summary = db.execute(
-                "SELECT count(*) AS total,sum(status='open') AS open,sum(status='open' AND acknowledged_at IS NULL) AS unacknowledged FROM operational_incidents WHERE tenant=? AND project=?",
+                "SELECT count(*) AS total,sum(CASE WHEN status='open' THEN 1 ELSE 0 END) AS open,sum(CASE WHEN status='open' AND acknowledged_at IS NULL THEN 1 ELSE 0 END) AS unacknowledged FROM operational_incidents WHERE tenant=? AND project=?",
                 (tenant, project),
             ).fetchone()
         return {
@@ -424,6 +424,7 @@ class OperationsMonitor:
 
         self.backup_reader = Reader(store.folder)
         self.backup_state = self.backup_reader.read()
+        self.storage_state = {"status": "unavailable", "checked_at": None}
         self.backup_cursor = None
         self.started = False
         self.stop = threading.Event()
@@ -431,6 +432,8 @@ class OperationsMonitor:
 
     def check(self):
         try:
+            from .storage_health import inspect
+
             self.cursor = self.store.collect_operations(
                 self.worker_max_age, self.queue_grace, self.queue_delay, self.cursor
             )
@@ -438,9 +441,11 @@ class OperationsMonitor:
             self.backup_cursor = self.store.collect_backup_operations(
                 self.backup_state, self.backup_cursor
             )
+            self.storage_state = inspect(self.store)
             self.last_checked = time.time()
             self.last_error = None
         except Exception as exc:
+            self.storage_state = {"status": "unavailable", "checked_at": None}
             self.last_error = type(exc).__name__
             logging.getLogger(__name__).error(
                 "Operational collector failed: %s", self.last_error
@@ -477,6 +482,7 @@ class OperationsMonitor:
             "worker_alert_after_seconds": self.queue_grace,
             "queue_alert_after_seconds": self.queue_delay,
             "backup": self.backup_state,
+            "storage": self.storage_state,
         }
 
     def close(self):

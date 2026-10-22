@@ -160,6 +160,8 @@ workspace and uses no object service.
 
 ## Retention, recovery and checks
 
+Configure [shared-workspace monitoring](shared-workspace-operations-guide.md) to inspect cached manifest connectivity and readiness. The probe does not download model weights or verify every object.
+
 Do not delete objects solely because a recent upload has no registry row:
 publication may be in progress. Shared-object garbage collection and coordinated
 database/object recovery require an operator policy. Use the [shared recovery commands](shared-recovery-guide.md) for consistent capture and fresh-workspace restoration. SQLite backup commands do

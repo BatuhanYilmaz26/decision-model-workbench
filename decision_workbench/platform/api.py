@@ -490,11 +490,19 @@ def create_app(
         backup_health = monitor.state()["backup"]
         if backup_health["required"] and not backup_health["healthy"]:
             raise HTTPException(503, "Required backup monitoring is unhealthy")
-        with store.transaction() as db:
-            db.execute("SELECT 1").fetchone()
+        import sqlite3
+
+        try:
+            with store.transaction() as db:
+                db.execute("SELECT 1").fetchone()
+                if store.backend == "postgresql":
+                    store._artifact_binding(db)
+        except (sqlite3.DatabaseError, ValueError, ArtifactUnavailable):
+            raise HTTPException(503, "Workspace storage is unavailable") from None
         return {
             "status": "ready",
-            "storage": "sqlite-local",
+            "storage": "sqlite-local" if store.backend == "sqlite" else "postgresql",
+            "artifact_storage": monitor.state()["storage"],
             "authentication_configuration": "valid",
             "operational_collector": "healthy",
             "gpu_and_cloud_acceptance": "pending",

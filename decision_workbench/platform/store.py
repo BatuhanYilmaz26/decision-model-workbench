@@ -632,7 +632,7 @@ class Store(DatasetStorage, OperationsStorage):
                 (tenant,),
             ).fetchone()[0]
             if pending >= 4:
-                raise Conflict("Workspace already has four pending jobs")
+                raise Conflict("Tenant already has four pending jobs")
             if validate_db:
                 validate_db(db)
             if kind in ("train", "remote-study", "hosted-evaluate"):
