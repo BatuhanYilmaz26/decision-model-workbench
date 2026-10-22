@@ -16,7 +16,7 @@ from .dataset_storage import DatasetStorage
 from .operations import OperationsStorage
 from .paging import validate_page
 
-WORKSPACE_SCHEMA_VERSION = 10
+WORKSPACE_SCHEMA_VERSION = 11
 
 
 def encode(value):
@@ -74,7 +74,7 @@ class Store(DatasetStorage, OperationsStorage):
             current = db.execute("SELECT max(version) FROM schema_version").fetchone()[
                 0
             ]
-            supported = 12 if self._postgres is not None else WORKSPACE_SCHEMA_VERSION
+            supported = 13 if self._postgres is not None else WORKSPACE_SCHEMA_VERSION
             if current is not None and current not in range(1, supported + 1):
                 raise RuntimeError(
                     "Unsupported workspace schema version; restore a compatible application"
@@ -129,6 +129,10 @@ class Store(DatasetStorage, OperationsStorage):
             db.execute("INSERT OR IGNORE INTO schema_version VALUES (8)")
             db.execute("INSERT OR IGNORE INTO schema_version VALUES (9)")
             db.execute("INSERT OR IGNORE INTO schema_version VALUES (10)")
+            db.execute("INSERT OR IGNORE INTO schema_version VALUES (11)")
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS retained_usage_budget ON entities(json_extract(payload,'$.type'),json_extract(payload,'$.scope'),created,tenant) WHERE kind='retained-usage'"
+            )
             db.execute(
                 "CREATE UNIQUE INDEX IF NOT EXISTS project_lifecycle_revision ON entities(tenant,project,json_extract(payload,'$.revision')) WHERE kind='project-lifecycle'"
             )
@@ -159,7 +163,7 @@ class Store(DatasetStorage, OperationsStorage):
                     "CREATE TABLE IF NOT EXISTS workspace_object_maintenance (slot INTEGER PRIMARY KEY CHECK(slot=1), operation_id TEXT NOT NULL, state TEXT NOT NULL, payload TEXT NOT NULL, progress INTEGER NOT NULL DEFAULT 0, owner_token TEXT, error TEXT, updated REAL NOT NULL)"
                 )
                 db.execute(
-                    "INSERT INTO schema_version VALUES (12) ON CONFLICT DO NOTHING"
+                    "INSERT INTO schema_version VALUES (13) ON CONFLICT DO NOTHING"
                 )
 
     def _artifact_binding(self, db, initialize=False):
@@ -398,6 +402,16 @@ class Store(DatasetStorage, OperationsStorage):
         with self.transaction() as db:
             if kind == "model" and self._postgres is not None:
                 self._artifact_binding(db)
+            if kind == "project" and payload.get("parent_project"):
+                from .project_lifecycle import require_active_db
+
+                parent = payload["parent_project"]
+                require_active_db(db, tenant, parent)
+                if not db.execute(
+                    "SELECT 1 FROM entities WHERE id=? AND tenant=? AND project=? AND kind='project'",
+                    (parent, tenant, parent),
+                ).fetchone():
+                    raise LookupError("Parent project not found")
             if job:
                 self._assert_owner(db, job)
             if validate_db:

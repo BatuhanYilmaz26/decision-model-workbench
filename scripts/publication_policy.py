@@ -61,7 +61,9 @@ def private_path_reason(name):
         return "local credential configuration"
     if (
         filename.startswith(".dmt-")
-        or filename.endswith((".dmtkey", ".dmtenc", ".dmtplan", ".dmtpub", ".dmtlog"))
+        or filename.endswith(
+            (".dmtkey", ".dmtenc", ".dmtplan", ".dmtpub", ".dmtlog", ".dmtdelete")
+        )
         or filename
         in {
             "encrypted-backup.json",
@@ -97,6 +99,14 @@ def publication_violations(root, names):
                     first = source.readline(1024 * 1024 + 1)
                 if first.removeprefix(b"\xef\xbb\xbf").lstrip().startswith(b"{"):
                     header = json.loads(first)
+                    if isinstance(header, dict) and (
+                        header.get("format") == "domain-project-deletion-v1"
+                        or isinstance(header.get("plan"), dict)
+                        and header["plan"].get("format") == "domain-project-deletion-v1"
+                    ):
+                        errors.append(
+                            f"Private project deletion record included in public checkout: {name}"
+                        )
                     if (
                         isinstance(header, dict)
                         and isinstance(header.get("manifest"), dict)

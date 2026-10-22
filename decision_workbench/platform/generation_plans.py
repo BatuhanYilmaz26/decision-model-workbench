@@ -558,6 +558,9 @@ def admission(db, tenant, profile, planned):
         "SELECT p.payload, (SELECT json_extract(r.payload,'$.reported_cost_usd') FROM entities r WHERE r.tenant=p.tenant AND r.project=p.project AND r.kind='generation-response' AND json_extract(r.payload,'$.plan_id')=p.id LIMIT 1) AS reported_usd FROM entities p WHERE p.tenant=? AND p.kind='generation-plan' AND json_extract(p.payload,'$.profile.base_url')=? AND p.created>=? LIMIT 101",
         (tenant, profile["base_url"], since),
     ).fetchall()
+    from .retained_usage import generation_rows
+
+    rows = list(rows) + generation_rows(db, tenant, profile["base_url"], since)
     if len(rows) >= profile["max_calls_day"]:
         raise Conflict("Synthetic generation daily request limit reached")
     request_cap = profile["max_estimated_request_usd"]

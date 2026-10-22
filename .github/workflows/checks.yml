@@ -40,6 +40,7 @@ jobs:
       - run: python -m unittest discover -s tests -p test_artifact_retention.py -v
       - run: python -m unittest discover -s tests -p test_local_stage_cleanup.py -v
       - run: python -m unittest discover -s tests -p test_project_lifecycle.py -v
+      - run: python -m unittest discover -s tests -p test_project_deletion.py -v
   quickstart:
     strategy:
       fail-fast: false

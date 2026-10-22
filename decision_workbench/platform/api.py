@@ -53,6 +53,16 @@ class ProjectLifecycleBody(Body):
     confirmation: str = Field(min_length=32, max_length=32)
 
 
+class ProjectDeletionPreviewBody(Body):
+    audit_mode: Literal["retain", "erase"] = "retain"
+    min_archived_days: int = Field(default=30, ge=0, le=3650)
+
+
+class ProjectDeletionBody(ProjectDeletionPreviewBody):
+    plan_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    confirmation: str = Field(min_length=32, max_length=32)
+
+
 class SchemaIntakeBody(Body):
     name: str = Field(min_length=1, max_length=120)
     description: str = Field(min_length=1, max_length=12000)
@@ -291,11 +301,12 @@ def create_app(
     def identity(request: Request, authorization: str | None = Header(default=None)):
         principal = auth.authenticate(authorization)
         project = request.path_params.get("project")
-        if (
-            project
-            and getattr(request.scope.get("route"), "path", None)
-            != "/v1/projects/{project}/lifecycle"
-        ):
+        if project and getattr(request.scope.get("route"), "path", None) not in {
+            "/v1/projects/{project}/lifecycle",
+            "/v1/projects/{project}/deletion",
+            "/v1/projects/{project}/deletion/preview",
+            "/v1/projects/{project}/deletion/audit",
+        }:
             store.require_project_active(principal["tenant"], project)
         return principal
 
@@ -530,6 +541,48 @@ def create_app(
             **body.model_dump(),
             authorize=lambda: authorize_again(authorization, p),
         )
+
+    @app.post("/v1/projects/{project}/deletion/preview")
+    def preview_project_deletion(
+        project: str, body: ProjectDeletionPreviewBody, p=Depends(identity)
+    ):
+        from .project_deletion import preview
+
+        return preview(store, p, project, **body.model_dump())
+
+    @app.post("/v1/projects/{project}/deletion")
+    def delete_project(
+        project: str,
+        body: ProjectDeletionBody,
+        authorization: str | None = Header(default=None),
+        p=Depends(identity),
+    ):
+        from .project_deletion import execute
+
+        return execute(
+            store,
+            p,
+            project,
+            **body.model_dump(),
+            authorize=lambda: authorize_again(authorization, p),
+        )
+
+    @app.get("/v1/projects/{project}/deletion")
+    def project_deletion_receipt(project: str, p=Depends(identity)):
+        from .project_deletion import receipt
+
+        return receipt(store, p, project)
+
+    @app.get("/v1/projects/{project}/deletion/audit")
+    def deleted_project_audit(
+        project: str,
+        after_id: int = Query(default=0, ge=0, le=9223372036854775807),
+        limit: int = Query(default=100, ge=1, le=200),
+        p=Depends(identity),
+    ):
+        from .project_deletion import audit_page
+
+        return audit_page(store, p, project, after_id, limit)
 
     @app.get("/v1/schema-teacher")
     def schema_teacher(p=Depends(identity)):

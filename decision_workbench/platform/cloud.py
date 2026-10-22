@@ -19,6 +19,7 @@ from .cloud_providers import (
 )
 from .remote import study_entity, study_archive, stage_import
 from .store import Conflict, digest, encode
+from .retained_usage import count as retained_count
 
 ACTIONS = ("submit", "observe", "stop", "abandon", "retrieve")
 FINISHED = TERMINAL | {"abandoned"}
@@ -260,6 +261,13 @@ class Cloud:
                     )
                 if (
                     sum(r["created"] >= time.time() - 86400 for r in rows)
+                    + retained_count(
+                        db,
+                        None,
+                        "cloud",
+                        [p["account_id"], p["region"], p["provider"]],
+                        time.time() - 86400,
+                    )
                     >= max_runs_day
                 ):
                     raise Conflict(
@@ -445,6 +453,7 @@ class Cloud:
                         )
                     if action == "stop":
                         # Describe/bind the job before issuing its stop request.
+
                         result = gateway.describe(run)
                         if (
                             state.get("provider_job_id") is not None
@@ -613,6 +622,7 @@ class Cloud:
                     raise ValueError("Unknown cloud action")
                 except BaseException:
                     # A missing event after a crash also retains capacity. Do not infer provider cancellation.
+
                     try:
                         self.event(
                             principal,
@@ -632,7 +642,6 @@ class Cloud:
                     except (Conflict, ValueError):
                         pass
                     raise
-
             finally:
                 gateway.close()
 

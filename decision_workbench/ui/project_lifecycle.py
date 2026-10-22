@@ -43,4 +43,8 @@ def render_lifecycle(api, project, principal):
                 st.rerun()
     elif archived:
         st.info("Ask a workspace owner to restore this project.")
+    if archived and principal["role"] == "admin":
+        from .project_deletion import render_delete
+
+        render_delete(api, project, principal)
     return not archived

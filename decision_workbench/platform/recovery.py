@@ -129,6 +129,9 @@ def _validate_workspace(folder):
 
     validate_history(store)
     with store.transaction() as db:
+        from .project_deletion import validate_history as validate_deletions
+
+        validate_deletions(db)
         if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
             raise ValueError("Workspace database integrity check failed")
         schema = db.execute("SELECT max(version) FROM schema_version").fetchone()[0]
@@ -226,7 +229,12 @@ def _validate_workspace(folder):
     validate_generation_history(store, lookup)
     for entity in lookup.values():
         value = entity["payload"]
-        if entity["kind"] == "schema-intake":
+        if entity["kind"] in (
+            "schema-intake",
+            "retained-usage",
+            "project-deletion",
+            "scope-deletion",
+        ):
             continue
         project = scoped(entity["project"], entity, "project")
         if entity["kind"] == "project":

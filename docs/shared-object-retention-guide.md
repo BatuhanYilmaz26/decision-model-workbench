@@ -21,8 +21,8 @@ buckets. Deletion targets exact non-null version IDs, with an ETag condition,
 instead of deleting whichever replacement happens to occupy the same key.
 [S3 version deletion](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html).
 
-This release uses PostgreSQL workspace protocol **12**; personal SQLite uses
-schema **10**. Stop all API and worker nodes before upgrading them
+This release uses PostgreSQL workspace protocol **13**; personal SQLite uses
+schema **11**. Stop all API and worker nodes before upgrading them
 to the same application revision. Do not run older publisher nodes alongside
 the collector. Take your approved metadata/object backup before maintenance.
 

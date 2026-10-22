@@ -78,8 +78,8 @@ downloads can finish. Resident model processes retain their normal idle shutdown
 ## Upgrade and recover
 
 Back up the workspace and stop every API, worker and browser service before
-upgrading. This release uses SQLite schema **10** and PostgreSQL workspace
-protocol **12**. Restart all nodes with the same application version; mixed
+upgrading. This release uses SQLite schema **11** and PostgreSQL workspace
+protocol **13**. Restart all nodes with the same application version; mixed
 versions are unsupported. Existing projects begin active without changing their
 policy, model, dataset or release identities.
 
@@ -88,7 +88,7 @@ verification checks it, and recovery preserves archived states while recording
 the operator restore event. [PostgreSQL/shared-storage recovery](shared-artifacts-guide.md)
 still needs a coordinated database/object procedure.
 
-Archival is not deletion, anonymization, secure erasure or a retention expiry.
+Use [permanent database deletion](project-deletion-guide.md) when you intend to remove archived project records. Archival itself is not deletion, anonymization, secure erasure or a retention expiry.
 It does not remove backups, exports, logs, model caches, external training
 volumes or data previously sent to a provider. Use your separate retention and
 deletion procedures for those copies. The [local transfer cleanup](local-stage-cleanup-guide.md)

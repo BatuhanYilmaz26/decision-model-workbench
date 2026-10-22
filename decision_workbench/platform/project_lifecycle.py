@@ -41,6 +41,11 @@ def latest(db, tenant, project):
 
 
 def require_active_db(db, tenant, project):
+    if db.execute(
+        "SELECT 1 FROM entities WHERE tenant=? AND project=? AND kind IN ('project-deletion','scope-deletion') LIMIT 1",
+        (tenant, project),
+    ).fetchone():
+        raise LookupError("Project data was permanently deleted")
     value = latest(db, tenant, project)
     if value and value["state"] == "archived":
         raise Conflict("Project is archived. An owner must restore it before use.")

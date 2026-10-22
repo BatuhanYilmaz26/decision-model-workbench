@@ -34,6 +34,8 @@ class PublicationTests(unittest.TestCase):
             "nested/policy.dmtplan",
             "nested/monitor.dmtpub",
             "nested/audit.dmtlog",
+            "nested/deletion.dmtdelete",
+            "nested/DELETION.DMTDELETE",
             "nested/.dmt-vault.json",
             "nested/payload.dmtenc",
             "nested/encrypted-backup.json",
@@ -103,6 +105,25 @@ class PublicationTests(unittest.TestCase):
                 )
             )
 
+    def test_renamed_deletion_plan_and_receipt_are_private(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            subprocess.run(
+                ["git", "init", "--quiet"], cwd=home, check=True, capture_output=True
+            )
+            for body in (
+                '{"format":"domain-project-deletion-v1"}',
+                '{"plan":{"format":"domain-project-deletion-v1"}}',
+            ):
+                file = home / "renamed.json"
+                file.write_text(body, encoding="utf-8")
+                self.assertTrue(
+                    any(
+                        "Private project deletion record" in error
+                        for error in publication_violations(home, [file.name])
+                    )
+                )
+
     def test_git_add_excludes_internal_files_and_flags_force_added_files(self):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
@@ -120,6 +141,7 @@ class PublicationTests(unittest.TestCase):
                 "nested/POLICY.DMTPLAN",
                 "nested/MONITOR.DMTPUB",
                 "nested/AUDIT.DMTLOG",
+                "nested/DELETION.DMTDELETE",
                 "nested/.dmt-vault.json",
                 "nested/RECOVERY.DMTKEY",
                 "nested/payload.dmtenc",

@@ -108,7 +108,7 @@ Submission `config` requires `data_approved=true`, `cost_approved=true` and `exp
 
 ## Recovery and maintenance
 
-Stop all services before upgrading a workspace to schema 10, and restart them with the same application version. Older schema-8/9 applications refuse the newer workspace. [Recovery](recovery-guide.md) validates the archived request, response, candidate dataset and retry/settlement references without regenerating historical prompts. Restoring unfinished jobs does not replay teacher calls. Historical generation jobs without a request archive cannot dispatch under this workflow; approve a new request instead.
+Stop all services before upgrading a workspace to schema 11, and restart them with the same application version. Older schema-8/9/10 applications refuse the newer workspace. [Recovery](recovery-guide.md) validates the archived request, response, candidate dataset and retry/settlement references without regenerating historical prompts. Restoring unfinished jobs does not replay teacher calls. Historical generation jobs without a request archive cannot dispatch under this workflow; approve a new request instead.
 
 The standalone generation helper is a maintenance tool with bounded output and a socket timeout. It does not provide the application's durable approvals, supervised whole-call deadline, budget history or retry reconciliation. Use the application or workspace API when those controls are required.
 

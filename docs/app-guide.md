@@ -42,6 +42,7 @@ models and external services have separate requirements below.
 
 | Screen or control | What you do there |
 |---|---|
+| [Permanent project deletion](project-deletion-guide.md) | Owners preview and confirm archived database cleanup, choose audit retention and retrieve private receipts |
 | [Project lifecycle](project-lifecycle-guide.md) | Owners pause or restore a project, with explicit confirmation and active-work checks |
 | [Connection and computer setup](#start-or-connect-to-a-workspace) | Start personal mode, connect to a shared API and inspect model environments |
 | [Create a domain project](#create-a-project) | Describe the policy, define outcomes or review teacher-suggested questions |

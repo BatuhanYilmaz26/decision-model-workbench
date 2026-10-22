@@ -88,6 +88,9 @@ with st.sidebar:
         st.rerun()
 
 try:
+    from decision_workbench.ui.project_deletion import render_lookup
+
+    render_lookup(api, principal)
     capabilities = render_runtime(api, principal)
     next_project = st.session_state.pop("next_project", None)
     if next_project:

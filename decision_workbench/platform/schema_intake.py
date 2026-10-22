@@ -351,10 +351,16 @@ def submit(
     def insert(db):
         if authorize:
             authorize()
+        from .project_lifecycle import require_active_db
+
+        require_active_db(db, tenant, intake)
         used = db.execute(
             "SELECT count(*) FROM entities WHERE tenant=? AND kind='schema-intake' AND created>=?",
             (tenant, time.time() - 86400),
         ).fetchone()[0]
+        from .retained_usage import count
+
+        used += count(db, tenant, "schema", "tenant", time.time() - 86400)
         if used >= profile["max_calls_day"]:
             raise Conflict(
                 "Schema suggestion request limit reached; review existing suggestions or ask the operator"

@@ -40,3 +40,5 @@ The PostgreSQL job also runs [shared-object retention checks](../tests/test_arti
 [Local staging checks](../tests/test_local_stage_cleanup.py) verify OS leases, producer-process death, stale plans, ownership/path fences and backup compatibility with tiny fictional files. They run without provider credentials or model weights; ordinary preparation jobs cover both operating systems.
 
 [Project lifecycle checks](../tests/test_project_lifecycle.py) exercise owner confirmation, active-work refusal, concurrent archival/imports, real CPU prediction fencing, recovery and the browser controls. The PostgreSQL job checks state visibility and write refusal on a separate node.
+
+[Project deletion checks](../tests/test_project_deletion.py) exercise confirmed database erasure, rollback, stale-request fencing, shared-record and tenant isolation, retained quotas, linked schema intakes, recovery and real browser controls. PostgreSQL checks deletion across independent nodes; no provider compute or model download is required.

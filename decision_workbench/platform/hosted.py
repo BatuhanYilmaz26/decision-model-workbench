@@ -357,6 +357,9 @@ def reserve(
             "SELECT count(*) FROM entities WHERE tenant=? AND kind='provider-call' AND json_extract(payload,'$.profile_id')=? AND created>=?",
             (tenant, profile["id"], now - 86400),
         ).fetchone()[0]
+        from .retained_usage import count
+
+        used += count(db, tenant, "hosted", profile["id"], now - 86400)
         if used >= profile["max_calls_day"]:
             raise HostedQuota(
                 "Decision profile rolling 24-hour call quota is exhausted"

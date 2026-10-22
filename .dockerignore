@@ -56,3 +56,6 @@ dist
 **/htmlcov
 **/.coverage
 **/.coverage.*
+# Private downloaded deletion plans and receipts
+*.[dD][mM][tT][dD][eE][lL][eE][tT][eE]
+**/*.[dD][mM][tT][dD][eE][lL][eE][tT][eE]

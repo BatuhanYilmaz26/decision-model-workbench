@@ -43,3 +43,5 @@ For shared workspaces, [test_enterprise_flows.py](test_enterprise_flows.py) exer
 [Owned local transfer cleanup](test_local_stage_cleanup.py) exercises actual process-held file locks, abrupt producer death, reviewed removal, partial receipts and backup compatibility. It preserves active/unmarked/registered paths. See [the operator guide](../docs/local-stage-cleanup-guide.md).
 
 [Project lifecycle checks](test_project_lifecycle.py) cover archive/restore permissions, stale revisions, accounting retention, in-flight writes/predictions, backup history integrity and real localhost browser use. The cross-node case requires disposable PostgreSQL. See [the user guide](../docs/project-lifecycle-guide.md).
+
+[Project deletion checks](test_project_deletion.py) cover database deletion and retained accounting, including shared cloud-account quotas, teacher-request sources, logical shared-content preservation, atomic rollback, receipt privacy and browser confirmation. The cross-node case uses disposable PostgreSQL. See [the user guide](../docs/project-deletion-guide.md).
