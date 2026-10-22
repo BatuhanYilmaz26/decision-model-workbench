@@ -28,6 +28,7 @@ Follow [testing and compatibility](../docs/verification.md) to install the test 
 | D3 family contracts | Variant/revision isolation, all-shard verification, geometry and storage limits, six-variant/five-provider frozen study combinations | [Family workflow](../docs/models/d3-family.md); larger runtime profiles need separate hardware qualification |
 | D3 native/application contracts | Option/soft-target order, review/role lineage, frozen local/five-provider studies, cloud dispatch, owner-selected interpreters, browser controls, cancellation priority, source-only loading and whole-bundle guards | [D3 workflow](../docs/models/d3.md); model execution and domain-quality evaluation are separate checks |
 | Recovery and operations | Backup integrity, cold recovery, ownership, monitoring and audit windows | [Recovery](../docs/recovery-guide.md), [audit exports](../docs/audit-export-guide.md) |
+| Shared recovery | Consistent PostgreSQL archives, independent artifact copies, installed S3 SDK contracts and cold learned-model restore | [Operator guide](../docs/shared-recovery-guide.md); live S3/account qualification remains separate |
 | Public repository | Exclusion of private files and reusable source/configuration eligibility | [Contributing](../CONTRIBUTING.md) |
 
 [Fixture documentation](fixtures/README.md) explains the included provider-schema excerpts. Helper transports and process runners in this folder are test infrastructure, rather than production endpoints. Keep fictional test data separate from actual domain records.

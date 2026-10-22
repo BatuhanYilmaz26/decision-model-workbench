@@ -68,6 +68,9 @@ def private_path_reason(name):
         in {
             "encrypted-backup.json",
             "backup-manifest.json",
+            "shared-backup.json",
+            "shared-metadata.jsonl",
+            "shared-restore.json",
         }
     ):
         return "private recovery keys, workspace backup data or metadata"
@@ -106,6 +109,13 @@ def publication_violations(root, names):
                         errors.append(
                             f"Private cache maintenance record included in public checkout: {name}"
                         )
+                    if re.search(
+                        rb'"format"\s*:\s*"domain-shared-(?:backup|metadata|restore)-v1"',
+                        prefix,
+                    ):
+                        errors.append(
+                            f"Private shared recovery record included in public checkout: {name}"
+                        )
                     header = json.loads(first)
                     if isinstance(header, dict) and (
                         header.get("format") == "domain-project-deletion-v1"
@@ -132,6 +142,8 @@ def publication_violations(root, names):
                 (ancestor / marker).exists()
                 for marker in (
                     "backup-manifest.json",
+                    "shared-backup.json",
+                    "shared-restore.json",
                     "encrypted-backup.json",
                     "workspace.sqlite3",
                     ".dmt-vault.json",

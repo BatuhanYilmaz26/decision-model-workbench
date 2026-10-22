@@ -1,6 +1,7 @@
 """Keep local instructions and artifacts outside public Git snapshots."""
 
 from pathlib import Path
+import json
 import subprocess
 import sys
 import tempfile
@@ -81,6 +82,8 @@ class PublicationTests(unittest.TestCase):
                 ("custom-encrypted", "encrypted-backup.json"),
                 ("custom-home", "workspace.sqlite3"),
                 ("custom-vault", ".dmt-vault.json"),
+                ("custom-shared", "shared-backup.json"),
+                ("custom-shared-restored", "shared-restore.json"),
             ):
                 nested = home / folder / "artifacts" / "model"
                 nested.mkdir(parents=True)
@@ -123,6 +126,28 @@ class PublicationTests(unittest.TestCase):
                         for error in publication_violations(home, [file.name])
                     )
                 )
+
+    def test_renamed_shared_recovery_records_are_private(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            subprocess.run(
+                ["git", "init", "--quiet"], cwd=home, check=True, capture_output=True
+            )
+            for kind in ("metadata", "backup", "restore"):
+                for indent in (None, 2):
+                    file = home / "renamed-recovery.jsonl"
+                    file.write_text(
+                        json.dumps(
+                            {"format": "domain-shared-" + kind + "-v1"}, indent=indent
+                        ),
+                        encoding="utf-8",
+                    )
+                    self.assertTrue(
+                        any(
+                            "Private shared recovery record" in error
+                            for error in publication_violations(home, [file.name])
+                        )
+                    )
 
     def test_renamed_cache_plans_and_receipts_are_private_in_both_json_styles(self):
         with tempfile.TemporaryDirectory() as directory:

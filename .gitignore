@@ -64,3 +64,7 @@ backup-manifest.json
 # Downloaded project audit records
 *.[dD][mM][tT][lL][oO][gG]
 *.[dD][mM][tT][dD][eE][lL][eE][tT][eE]
+# Shared PostgreSQL/object recovery bundles are private operator data.
+shared-backup.json
+shared-metadata.jsonl
+shared-restore.json

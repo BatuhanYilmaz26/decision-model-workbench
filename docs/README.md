@@ -88,6 +88,7 @@ Use [remote model admission](remote-admission-guide.md) to verify and register a
 | [Authentication](authentication-guide.md) | Provision and rotate credentials or configure trusted access tokens |
 | [Audit exports](audit-export-guide.md) | Capture and verify a bounded immutable project audit window |
 | [Backup and recovery](recovery-guide.md) | Capture a workspace and restore it into a fresh directory |
+| [Shared workspace recovery](shared-recovery-guide.md) | Capture PostgreSQL metadata and versioned S3 artifacts together; restore into a fresh workspace |
 | [Encrypted recovery](encrypted-recovery-guide.md) | Encrypt a backup and verify it against a retained receipt |
 | [Scheduled backups](scheduled-backups-guide.md) | Configure local capture, durable receipts and retention |
 | [Backup monitoring](backup-monitoring-guide.md) | Publish and verify signed backup-health summaries |

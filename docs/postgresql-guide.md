@@ -9,8 +9,8 @@ continues to use SQLite.
 **With metadata-only configuration, keep API and worker on one host with the same
 workspace directory.** The optional [shared-artifact setup](shared-artifacts-guide.md)
 publishes model exports to S3 and supports separate node caches. PostgreSQL alone
-does not move job/staging files, provide interactive enterprise login or supply
-coordinated database/object recovery.
+does not move job/staging files. Configure [organization sign-in](enterprise-sign-in-guide.md)
+and [coordinated database/object recovery](shared-recovery-guide.md) separately.
 
 ## Prepare the database
 
@@ -108,10 +108,10 @@ and typed metadata fields. It is not a general SQLite SQL translator. Queries
 keep values separate from SQL. [Parameter binding](https://www.psycopg.org/psycopg3/docs/basic/params.html),
 [JSON functions](https://www.postgresql.org/docs/18/functions-json.html).
 
-Local SQLite backup commands **do not capture PostgreSQL**. Arrange database
-backups and retain the corresponding workspace artifacts. A local backup does
-not establish recoverability of this backend. Coordinated database/artifact
-recovery is required before multi-host deployment.
+Local SQLite backup commands **do not capture PostgreSQL**. With shared S3 artifacts,
+use [coordinated backup and restore](shared-recovery-guide.md). For metadata-only
+deployments, arrange database backups and retain the corresponding local artifacts.
+Perform a restore drill before relying on either route.
 
 ## Verify a disposable database
 

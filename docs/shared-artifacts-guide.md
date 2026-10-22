@@ -8,8 +8,8 @@ route preserves the model's schema, evaluation report, calibration and file
 hashes. Personal SQLite mode continues to use local artifacts.
 
 This is a model-artifact workflow, not a complete enterprise deployment. Shared
-identity, coordinated recovery, operational acceptance and cloud application
-deployment need their own configuration. Verified remote-admission inputs can
+identity, [coordinated recovery](shared-recovery-guide.md), operational acceptance
+and cloud application deployment need their own configuration. Verified remote-admission inputs can
 also move between these nodes; model environments and unfinished job directories
 remain local to their worker.
 
@@ -162,7 +162,7 @@ workspace and uses no object service.
 
 Do not delete objects solely because a recent upload has no registry row:
 publication may be in progress. Shared-object garbage collection and coordinated
-database/object recovery require an operator policy. SQLite backup commands do
+database/object recovery require an operator policy. Use the [shared recovery commands](shared-recovery-guide.md) for consistent capture and fresh-workspace restoration. SQLite backup commands do
 not back up this backend. Local caches can contain model/domain information;
 include them in access control and deletion procedures.
 

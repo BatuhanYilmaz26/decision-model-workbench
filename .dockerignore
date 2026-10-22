@@ -59,3 +59,7 @@ dist
 # Private downloaded deletion plans and receipts
 *.[dD][mM][tT][dD][eE][lL][eE][tT][eE]
 **/*.[dD][mM][tT][dD][eE][lL][eE][tT][eE]
+# Shared PostgreSQL/object recovery metadata is private.
+**/shared-backup.json
+**/shared-metadata.jsonl
+**/shared-restore.json

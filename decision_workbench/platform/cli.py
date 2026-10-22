@@ -73,6 +73,30 @@ def main():
         "--home", required=True, help="New recovered workspace directory"
     )
     restore.add_argument("--manifest-sha256", required=True)
+    for action, description in (
+        (
+            "backup-shared",
+            "Capture PostgreSQL metadata and independent versioned object copies",
+        ),
+        (
+            "verify-shared-backup",
+            "Verify a shared recovery bundle and its retained object versions",
+        ),
+        (
+            "restore-shared",
+            "Restore shared data into a fresh PostgreSQL schema and artifact scope",
+        ),
+    ):
+        shared = commands.add_parser(action, help=description)
+        shared.add_argument("--timeout", type=float, default=3600)
+        if action != "verify-shared-backup":
+            shared.add_argument("--home", required=True)
+            shared.add_argument("--database-schema", required=True)
+        if action == "backup-shared":
+            shared.add_argument("--output", required=True)
+        else:
+            shared.add_argument("--backup", required=True)
+            shared.add_argument("--manifest-sha256", required=True)
     encrypted_key = commands.add_parser(
         "create-backup-key",
         help="Create a private binary recovery key; existing keys are never overwritten",
@@ -537,6 +561,66 @@ def main():
                     args.timeout,
                 )
         except (ValueError, OSError) as exc:
+            parser.error(str(exc))
+        print(json.dumps(result, indent=2))
+    elif args.action in {"backup-shared", "verify-shared-backup", "restore-shared"}:
+        from .shared_recovery import backup_shared, verify_shared, restore_shared
+        from .artifact_s3 import repository_from_environment
+        from .store import Store
+        import sqlite3
+
+        try:
+            import psycopg
+        except ImportError:
+            parser.error("Install requirements/postgres.txt for shared recovery")
+
+        try:
+            vault = repository_from_environment("DMT_BACKUP_S3_")
+            if vault is None:
+                raise ValueError(
+                    "Set DMT_BACKUP_S3_BUCKET and an independent recovery prefix"
+                )
+            if args.action == "verify-shared-backup":
+                manifest = verify_shared(
+                    args.backup, args.manifest_sha256, vault, timeout=args.timeout
+                )
+                result = {
+                    "verified": True,
+                    "manifest_sha256": args.manifest_sha256,
+                    "snapshot": manifest["snapshot"],
+                    "objects": len(manifest["objects"]),
+                }
+            else:
+                url = os.environ.get("DMT_DATABASE_URL")
+                repository = repository_from_environment()
+                if not url or repository is None:
+                    raise ValueError("Set DMT_DATABASE_URL and DMT_ARTIFACT_S3_BUCKET")
+                if args.action == "backup-shared":
+                    store = Store(
+                        args.home,
+                        database_url=url,
+                        database_schema=args.database_schema,
+                        artifact_store=repository,
+                    )
+                    result = backup_shared(store, args.output, vault, args.timeout)
+                else:
+                    result = restore_shared(
+                        args.backup,
+                        args.home,
+                        args.manifest_sha256,
+                        vault,
+                        repository,
+                        database_url=url,
+                        database_schema=args.database_schema,
+                        timeout=args.timeout,
+                    )
+        except psycopg.Error as exc:
+            parser.error(
+                "Shared metadata operation failed (SQLSTATE "
+                + (exc.sqlstate or "connection")
+                + ")"
+            )
+        except (ValueError, RuntimeError, OSError, sqlite3.DatabaseError) as exc:
             parser.error(str(exc))
         print(json.dumps(result, indent=2))
     elif args.action in ("backup", "verify-backup", "restore"):

@@ -376,9 +376,11 @@ class S3Objects:
                     ) from None
 
 
-def repository_from_environment():
+def repository_from_environment(config_prefix="DMT_ARTIFACT_S3_"):
     """Opt-in storage configuration for the PostgreSQL operator launcher only."""
-    bucket = os.environ.get("DMT_ARTIFACT_S3_BUCKET", "").strip()
+    if config_prefix not in {"DMT_ARTIFACT_S3_", "DMT_BACKUP_S3_"}:
+        raise ValueError("Unsupported object storage configuration prefix")
+    bucket = os.environ.get(config_prefix + "BUCKET", "").strip()
     if not bucket:
         return None
     try:
@@ -390,8 +392,8 @@ def repository_from_environment():
         ) from None
     client = boto3.client(
         "s3",
-        region_name=os.environ.get("DMT_ARTIFACT_S3_REGION", "us-east-1"),
-        endpoint_url=os.environ.get("DMT_ARTIFACT_S3_ENDPOINT") or None,
+        region_name=os.environ.get(config_prefix + "REGION", "us-east-1"),
+        endpoint_url=os.environ.get(config_prefix + "ENDPOINT") or None,
         config=Config(
             signature_version="s3v4",
             connect_timeout=10,
@@ -405,6 +407,6 @@ def repository_from_environment():
         S3Objects(
             client,
             bucket,
-            os.environ.get("DMT_ARTIFACT_S3_PREFIX", "decision-workbench"),
+            os.environ.get(config_prefix + "PREFIX", "decision-workbench"),
         )
     )

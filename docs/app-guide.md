@@ -574,6 +574,7 @@ Operators use the guides below for credentials, infrastructure and maintenance:
   and [semantic encoder configuration](semantic-data-guide.md).
 - [Backup and restore](recovery-guide.md), [encrypted recovery](encrypted-recovery-guide.md),
   [scheduled backups](scheduled-backups-guide.md) and [backup monitoring](backup-monitoring-guide.md).
+- [Shared PostgreSQL/S3 backup and restore](shared-recovery-guide.md): operator commands for coordinated snapshots and recovery into a fresh workspace.
 - [API integration](api-integration-guide.md), [deployment](deployment-guide.md)
   and [current capabilities and limits](capabilities.md).
 
