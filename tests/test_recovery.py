@@ -82,6 +82,30 @@ class RecoveryTests(unittest.TestCase):
         self.assertTrue(verify_backup(result["destination"], result["manifest_sha256"]))
         return result
 
+    def test_learned_backup_validation_never_creates_cache_controls_in_snapshot(self):
+        self.train()
+        captured = backup_workspace(self.home, self.folder / "readonly-backup")
+        folder = Path(captured["destination"])
+        expected = json.loads((folder / "backup-manifest.json").read_text())["files"]
+        before = {
+            p.relative_to(folder).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in folder.rglob("*")
+            if p.is_file()
+        }
+        self.assertEqual(set(before), set(expected) | {"backup-manifest.json"})
+        for _ in range(2):
+            verify_backup(folder, captured["manifest_sha256"])
+        after = {
+            p.relative_to(folder).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in folder.rglob("*")
+            if p.is_file()
+        }
+        self.assertEqual(before, after)
+        self.assertFalse(list(folder.glob(".dmt-cache*")))
+        restore_workspace(
+            folder, self.folder / "readonly-restored", captured["manifest_sha256"]
+        )
+
     def test_restore_live_http_predictions_history_scope_and_job_fencing(self):
         model = self.train()
         appended = self.service.save_examples(
@@ -355,12 +379,17 @@ class RecoveryTests(unittest.TestCase):
         file.write_bytes(original)
         malformed = {**value, "job_id": "0" * 32}
         with self.store.transaction() as db:
-            db.execute("UPDATE entities SET payload=? WHERE id=?", (json.dumps(malformed), model))
+            db.execute(
+                "UPDATE entities SET payload=? WHERE id=?",
+                (json.dumps(malformed), model),
+            )
         with self.assertRaisesRegex(ValueError, "malformed"):
             backup_workspace(self.home, self.folder / "missing-job")
         self.assertFalse((self.folder / "missing-job").exists())
         with self.store.transaction() as db:
-            db.execute("UPDATE entities SET payload=? WHERE id=?", (json.dumps(value), model))
+            db.execute(
+                "UPDATE entities SET payload=? WHERE id=?", (json.dumps(value), model)
+            )
             db.execute(
                 "UPDATE record_contents SET payload=? WHERE hash=(SELECT hash FROM record_contents LIMIT 1)",
                 ('{"state":"tampered"}',),

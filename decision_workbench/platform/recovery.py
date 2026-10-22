@@ -39,6 +39,8 @@ def _validated(function):
 class _SnapshotStore(Store):
     """Reuse store reads without initializing or modifying a captured database."""
 
+    _readonly_snapshot = True
+
     def __init__(self, folder):
         self.folder = Path(folder).resolve()
         self.database = self.folder / "workspace.sqlite3"

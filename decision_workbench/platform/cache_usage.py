@@ -97,6 +97,8 @@ def uses_cache(function):
     @wraps(function)
     def call(self, *args, **kwargs):
         store = getattr(self, "store", self)
+        if getattr(store, "_readonly_snapshot", False):
+            return function(self, *args, **kwargs)
         with use(store.folder):
             return function(self, *args, **kwargs)
 
