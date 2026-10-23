@@ -63,3 +63,10 @@ dist
 **/shared-backup.json
 **/shared-metadata.jsonl
 **/shared-restore.json
+
+**/.terraform
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfplan
+**/*.tfvars
+**/*.tfvars.json

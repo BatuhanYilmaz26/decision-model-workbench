@@ -68,3 +68,11 @@ backup-manifest.json
 shared-backup.json
 shared-metadata.jsonl
 shared-restore.json
+
+# Private Terraform working data and secret-bearing input/plan/state files
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfvars.json

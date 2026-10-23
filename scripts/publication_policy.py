@@ -26,6 +26,7 @@ def private_path_reason(name):
         ".aws",
         ".azure",
         ".gcloud",
+        ".terraform",
         ".ssh",
         "__pycache__",
         ".pytest_cache",
@@ -74,6 +75,11 @@ def private_path_reason(name):
         }
     ):
         return "private recovery keys, workspace backup data or metadata"
+    if (
+        filename.endswith((".tfstate", ".tfplan", ".tfvars", ".tfvars.json"))
+        or ".tfstate." in filename
+    ):
+        return "private Terraform state, plan or operator variable file"
     if filename.endswith((".pyc", ".log")) or ".sqlite3" in filename:
         return "generated runtime output"
     if filename == ".coverage" or filename.startswith(".coverage."):
@@ -89,6 +95,7 @@ def publication_violations(root, names):
         if (reason := private_path_reason(name)) is not None
     ]
     # Custom backup names remain private even outside the ordinary backup vault.
+
     from pathlib import Path
 
     root = Path(root).absolute()

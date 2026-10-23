@@ -10,6 +10,8 @@ For the standard local CPU application, follow the [root quick start](../README.
 |---|---|---|
 | [PostgreSQL metadata](postgres.txt) | API/worker CPU environment | Optional Psycopg driver for the [experimental metadata backend](../docs/postgresql-guide.md) |
 | [Azure artifact storage](azure-artifacts.txt) | API/worker or recovery operator environment | Optional Blob SDK and Entra credential chain for [versioned model artifacts](../docs/azure-artifacts-guide.md) |
+| [Google artifact storage](gcp-artifacts.txt) | API/worker or recovery operator environment | Native GCS client, ADC and generation-pinned [shared artifacts/recovery](../docs/gcs-artifacts-guide.md) |
+| [Google application clients](gcp-application.txt), [image extension](managed-gcp-linux-amd64-py312.txt) | API/worker or managed Linux/amd64 CPython 3.12 CPU image | Native storage and ADC-authenticated Secret Manager startup for [GCP hosting](../docs/application-hosting/gcp.md) |
 | [Managed application extension](managed-application-linux-amd64-py312.txt) | Pinned Linux/amd64 CPython 3.12 CPU image | Hash-pinned PostgreSQL and OIDC wheels for [application hosting](../docs/application-hosting/README.md); no model weights |
 | [Azure application clients](azure-application.txt) | API/worker or operator environment | Key Vault, managed/operator credentials and Blob clients for [Azure hosting](../docs/application-hosting/azure.md) |
 | [Azure image extension](managed-azure-linux-amd64-py312.txt) | Managed Linux/amd64 CPython 3.12 CPU image | Hash-pinned Azure SDK wheels installed after the managed application extension |

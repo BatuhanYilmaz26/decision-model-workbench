@@ -385,9 +385,22 @@ def repository_from_environment(config_prefix="DMT_ARTIFACT_S3_"):
         "DMT_ARTIFACT_S3_": "DMT_ARTIFACT_AZURE_",
         "DMT_BACKUP_S3_": "DMT_BACKUP_AZURE_",
     }[config_prefix]
-    if os.environ.get(azure_prefix + "ACCOUNT_URL") or os.environ.get(
-        azure_prefix + "CONTAINER"
-    ):
+    gcs_prefix = {
+        "DMT_ARTIFACT_S3_": "DMT_ARTIFACT_GCS_",
+        "DMT_BACKUP_S3_": "DMT_BACKUP_GCS_",
+    }[config_prefix]
+    gcs_bucket = os.environ.get(gcs_prefix + "BUCKET")
+    azure_configured = bool(
+        os.environ.get(azure_prefix + "ACCOUNT_URL")
+        or os.environ.get(azure_prefix + "CONTAINER")
+    )
+    if sum(bool(x) for x in (bucket, gcs_bucket, azure_configured)) > 1:
+        raise ValueError("Choose one object transport per live or backup configuration")
+    if gcs_bucket:
+        from .artifact_gcs import repository_from_environment as gcs_repository
+
+        return gcs_repository(gcs_prefix)
+    if azure_configured:
         if bucket:
             raise ValueError(
                 "Choose one object transport per live or backup configuration"

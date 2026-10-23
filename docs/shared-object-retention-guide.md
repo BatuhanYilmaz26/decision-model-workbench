@@ -151,3 +151,5 @@ response fixtures. They do not delete objects in a real account or establish
 production storage scale. The locking contract uses PostgreSQL
 [session advisory locks](https://www.postgresql.org/docs/18/explicit-locking.html#ADVISORY-LOCKS)
 outside short metadata transactions.
+
+For GCS, use the [versioned bucket and dedicated operator permissions](gcs-artifacts-guide.md). Inventory and deletion pin exact generations; cleanup also covers old upload staging objects. Soft-delete retention remains separate.

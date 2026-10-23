@@ -195,3 +195,5 @@ storage account and selected model environment before deployment.
 Use [shared-object retention](shared-object-retention-guide.md) to preview and reconcile deletion of old unreferenced S3 versions. Keep local staging, project deletion and coordinated backup recovery under their separate policies.
 
 Partial transfers created by this release carry local ownership records and OS leases. Use [owned local transfer cleanup](local-stage-cleanup-guide.md) after a process dies; active transfers and unmarked directories are preserved.
+
+For native Google Cloud Storage, follow [GCS artifact setup](gcs-artifacts-guide.md). It uses the same verified-cache and coordinated recovery workflows with ADC and generation-pinned object copies.

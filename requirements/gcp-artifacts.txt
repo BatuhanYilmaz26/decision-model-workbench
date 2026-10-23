@@ -1,0 +1,9 @@
+# Native Google Cloud Storage with application-default credentials.
+google-cloud-storage==3.17.1
+google-cloud-core==2.8.0
+google-api-core==2.43.0
+google-resumable-media==2.11.0
+google-crc32c==1.9.0
+googleapis-common-protos==1.76.0
+proto-plus==1.29.0
+google-auth==2.62.0

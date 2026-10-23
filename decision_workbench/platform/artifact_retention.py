@@ -19,8 +19,14 @@ def require_shared(store):
         raise ValueError(
             "Object cleanup requires the configured PostgreSQL/shared-artifact workspace"
         )
-    if store.artifact_store.descriptor.get("provider") not in {"s3", "azure-blob"}:
-        raise ValueError("Object cleanup requires versioned S3 or Azure blob storage")
+    if store.artifact_store.descriptor.get("provider") not in {
+        "s3",
+        "azure-blob",
+        "gcs",
+    }:
+        raise ValueError(
+            "Object cleanup requires versioned S3, Azure Blob or GCS storage"
+        )
 
 
 def roots(store):

@@ -1,0 +1,18 @@
+{
+  "project_id": "fictional-project",
+  "region": "us-central1",
+  "name_prefix": "dmt",
+  "registry_repository": "fictional-images",
+  "image": "us-central1-docker.pkg.dev/fictional-project/fictional-images/workbench@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "backend_secret": "workbench-backend",
+  "backend_version": "1",
+  "app_secret": "workbench-database-app",
+  "app_version": "1",
+  "admin_secret": "workbench-database-admin",
+  "admin_version": "1",
+  "ui_auth_mode": "workspace",
+  "database_availability": "ZONAL",
+  "worker_replicas": 1,
+  "deploy_services": false,
+  "notification_channels": []
+}

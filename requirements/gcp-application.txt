@@ -1,0 +1,2 @@
+# Managed application startup uses native GCS and ADC-authenticated Secret Manager REST.
+-r gcp-artifacts.txt

@@ -1,0 +1,10 @@
+# Extension to the managed Linux/amd64 CPython 3.12 CPU image.
+# Native Google storage/auth libraries; no GPU runtime or model weights.
+google-cloud-storage==3.17.1 --hash=sha256:287c7919d7bcda710eae6f6b60c756e89140475d9a4daec01b6174e737488ca8
+google-cloud-core==2.8.0 --hash=sha256:e235b0952f7ffe7b9c71a4cf96b506d9cfb557e22557c412f0df9b7068b5d007
+google-api-core==2.43.0 --hash=sha256:dd588ae9de5e372be89b87c68b1e1555fe89add1809d623182b773d14f96859a
+google-resumable-media==2.11.0 --hash=sha256:f43d15e6a7f818f762eaead0f369c551f8275a4179c9d6225d0d259f49b87b5d
+google-crc32c==1.9.0 --hash=sha256:3abb18297d9ef0ab120531838be0e6d68c9fa876570e11c229c48f2edac23ce7
+googleapis-common-protos==1.76.0 --hash=sha256:59e13344a9f3651aa201a03e2bee815a3bf43a4baf1f9ff8a9b62a840ce25fac
+proto-plus==1.29.0 --hash=sha256:8acd070469a7aaf43f440b022ef9757c8cac1a9f866e933f59ae98669ddc6c8b
+google-auth==2.62.0 --hash=sha256:4ff4319aeb4ad128409759d397a9fcafad126d0031d241cc0dd6b9a00b43e3f3

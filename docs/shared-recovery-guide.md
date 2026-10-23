@@ -1,12 +1,12 @@
 # Back up and restore a shared workspace
 
-Use these operator commands when your workspace uses [PostgreSQL metadata](postgresql-guide.md) and shared [S3 artifacts](shared-artifacts-guide.md) or [Azure Blob artifacts](azure-artifacts-guide.md). A backup captures the application tables from one consistent database view and copies every referenced model and incoming training artifact into an independent recovery prefix. Restore creates a new workspace with the original data, model references and release history.
+Use these operator commands when your workspace uses [PostgreSQL metadata](postgresql-guide.md) and shared [S3 artifacts](shared-artifacts-guide.md), [Azure Blob artifacts](azure-artifacts-guide.md) or [Google Cloud artifacts](gcs-artifacts-guide.md). A backup captures the application tables from one consistent database view and copies every referenced model and incoming training artifact into an independent recovery prefix. Restore creates a new workspace with the original data, model references and release history.
 
 For a personal SQLite workspace, use the [local recovery guide](recovery-guide.md) instead. The encrypted and scheduled SQLite backup commands do not capture shared PostgreSQL/object-store workspaces.
 
 ## Before you start
 
-- Install the application, `requirements/postgres.txt` and your chosen transport's optional profile: `requirements/aws-sdk.txt` or `requirements/azure-artifacts.txt`.
+- Install the application, `requirements/postgres.txt` and your chosen transport's optional profile: `requirements/aws-sdk.txt`, `requirements/azure-artifacts.txt` or `requirements/gcp-artifacts.txt`.
 - Configure `DMT_DATABASE_URL` and `DMT_ARTIFACT_S3_BUCKET`, `DMT_ARTIFACT_S3_PREFIX`, and `DMT_ARTIFACT_S3_REGION` for the source workspace. Keep credentials in your normal SDK credential chain or secret manager.
 - Choose a separate recovery bucket or a nonoverlapping prefix. Enable S3 versioning on both buckets. Source and recovery prefixes must not contain each other.
 - Give the operator access to inspect bucket versioning, read source object metadata/versions, and copy objects into the recovery prefix, including multipart-copy permissions. Encrypted buckets also need the relevant KMS permissions. The copying identity must be authorized for both locations.

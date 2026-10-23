@@ -573,12 +573,11 @@ def main():
             import psycopg
         except ImportError:
             parser.error("Install requirements/postgres.txt for shared recovery")
-
         try:
             vault = repository_from_environment("DMT_BACKUP_S3_")
             if vault is None:
                 raise ValueError(
-                    "Configure independent S3 or Azure backup storage and a recovery prefix"
+                    "Configure independent S3, Azure Blob or GCS backup storage and a recovery prefix"
                 )
             if args.action == "verify-shared-backup":
                 manifest = verify_shared(

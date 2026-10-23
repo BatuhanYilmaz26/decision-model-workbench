@@ -80,6 +80,7 @@ Use [remote model admission](remote-admission-guide.md) to verify and register a
 | [PostgreSQL metadata](postgresql-guide.md) | Run experimental metadata persistence with local artifacts and explicit recovery limits |
 | [Shared model artifacts](shared-artifacts-guide.md) | Publish immutable S3 model bundles, retrieve verified node caches and warm large exports |
 | [Azure model artifacts](azure-artifacts-guide.md) | Configure private versioned Blob Storage, verified node caches and coordinated recovery with scoped operator identities |
+| [Google Cloud model artifacts](gcs-artifacts-guide.md) | Configure private versioned GCS storage, verified caches and generation-pinned recovery |
 | [CPU containers](container-guide.md) | Run the local API, worker and browser with persistent storage |
 | [Model containers](model-container-guide.md) | Run the separate Linux Vega/semantic GPU image |
 | [Owned local transfer cleanup](local-stage-cleanup-guide.md) | Preview and reclaim abandoned downloads/intake copies while preserving live transfers and registered models |
@@ -91,7 +92,7 @@ Use [remote model admission](remote-admission-guide.md) to verify and register a
 | [Backup and recovery](recovery-guide.md) | Capture a workspace and restore it into a fresh directory |
 | [Shared workspace recovery](shared-recovery-guide.md) | Capture PostgreSQL metadata and versioned S3 artifacts together; restore into a fresh workspace |
 | [Shared workspace operations](shared-workspace-operations-guide.md) | Use tenant queue limits, truthful readiness and scoped failure monitoring; reproduce the bounded workload |
-| [Application hosting](application-hosting/README.md) | Deploy the browser, API and workers on AWS or Azure with durable metadata/artifacts, HTTPS and scoped service identities/secrets |
+| [Application hosting](application-hosting/README.md) | Deploy the browser, API and workers on AWS, Azure or Google Cloud with durable metadata/artifacts, HTTPS and scoped service identities/secrets |
 | [Encrypted recovery](encrypted-recovery-guide.md) | Encrypt a backup and verify it against a retained receipt |
 | [Scheduled backups](scheduled-backups-guide.md) | Configure local capture, durable receipts and retention |
 | [Backup monitoring](backup-monitoring-guide.md) | Publish and verify signed backup-health summaries |

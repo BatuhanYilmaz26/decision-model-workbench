@@ -34,6 +34,7 @@ jobs:
       - run: python -m pip install -r requirements/postgres.txt
       - run: python -m pip install -r requirements/aws-sdk.txt
       - run: python -m pip install -r requirements/azure-application.txt
+      - run: python -m pip install -r requirements/gcp-application.txt
       - run: python -m pip check
       - run: python -m unittest discover -s tests -p test_postgres.py -v
       - run: python -m unittest discover -s tests -p test_shared_artifacts.py -v
@@ -53,6 +54,9 @@ jobs:
       - run: python -m unittest discover -s tests -p test_azure_artifacts.py -v
       - run: python -m unittest discover -s tests -p test_azure_shared_workflow.py -v
       - run: python -m unittest discover -s tests -p test_azure_deployment.py -v
+      - run: python -m unittest discover -s tests -p test_gcp_deployment.py -v
+      - run: python -m unittest discover -s tests -p test_gcs_artifacts.py -v
+      - run: python -m unittest discover -s tests -p test_gcs_shared_workflow.py -v
   quickstart:
     strategy:
       fail-fast: false
@@ -155,6 +159,19 @@ jobs:
       - run: docker run --rm --network none domain-decision-platform:azure-deployment-ci python -m pip check
       - run: docker run --rm --network none --mount type=bind,source=${{ github.workspace }},target=/work,readonly --workdir /work domain-decision-platform:azure-deployment-ci python -m unittest discover -s tests -p test_azure_deployment.py -v
       - run: python -m decision_workbench.platform.azure_deployment --output data/deploy/azure-stack.json
+      - run: docker build --platform linux/amd64 --build-arg BASE_IMAGE=domain-decision-platform:deployment-ci --tag domain-decision-platform:gcp-deployment-ci -f docker/deployment/Dockerfile.gcp .
+      - run: docker run --rm --network none domain-decision-platform:gcp-deployment-ci python -m pip check
+      - run: docker run --rm --network none --mount type=bind,source=${{ github.workspace }},target=/work,readonly --workdir /work domain-decision-platform:gcp-deployment-ci python -m unittest discover -s tests -p test_gcp_deployment.py -v
+      - run: docker run --rm --network none --mount type=bind,source=${{ github.workspace }},target=/work,readonly --workdir /work domain-decision-platform:gcp-deployment-ci python -m unittest discover -s tests -p test_gcs_artifacts.py -v
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: 1.14.0
+          terraform_wrapper: false
+      - run: python -m decision_workbench.platform.gcp_deployment --output data/deploy/gcp/main.tf.json
+      - run: cp examples/deployment/gcp.tftest.hcl data/deploy/gcp/
+      - run: terraform -chdir=data/deploy/gcp init -backend=false -input=false
+      - run: terraform -chdir=data/deploy/gcp validate
+      - run: terraform -chdir=data/deploy/gcp test -no-color
       - run: python -m decision_workbench.platform.aws_deployment --output data/deploy/aws-stack.json
       - run: python -m venv .venv-cloud-tools
       - run: .venv-cloud-tools/bin/python -m pip install -r requirements/cloud-validation.txt

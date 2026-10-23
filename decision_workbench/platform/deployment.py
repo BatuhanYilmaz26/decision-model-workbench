@@ -39,6 +39,7 @@ def browser_environment(environment):
         "DMT_TEACHER_",
         "DMT_TAXONOMY_",
         "DMT_AZURE_",
+        "DMT_GCP_",
         "AWS_ACCESS_",
         "AWS_SECRET_",
         "AWS_SESSION_",
@@ -89,6 +90,10 @@ def secret_client(environment):
         from .deployment_azure import AzureSecrets
 
         return AzureSecrets.from_environment(environment)
+    if provider == "gcp":
+        from .deployment_gcp import GCPSecrets
+
+        return GCPSecrets.from_environment(environment)
     if provider != "aws":
         raise ValueError("Choose a supported managed deployment provider")
     import boto3
@@ -127,6 +132,7 @@ def backend_configuration(value, folder, environment):
     ):
         raise ValueError("Invalid provider environment configuration")
     # Provider variables may not redirect profile files outside the private directory.
+
     forbidden = {variable for _, variable in FILES.values()}
     if forbidden & set(variables):
         raise ValueError("Use a private mounted file for provider credential documents")
@@ -143,6 +149,12 @@ def database_url(secret, environment):
         for k in ("username", "password")
     ):
         raise ValueError("Database secret needs username and password")
+    if environment.get("DMT_DEPLOYMENT_PROVIDER") == "gcp" and environment.get(
+        "DMT_GCP_CLOUD_SQL_CONNECTION_NAME"
+    ):
+        from .deployment_gcp import socket_database_url
+
+        return socket_database_url(secret, environment)
     host = environment.get("DMT_DATABASE_HOST", "")
     name = environment.get("DMT_DATABASE_NAME", "workbench")
     ca = environment.get("DMT_DATABASE_CA", "/app/certificates/rds-global.pem")
@@ -207,6 +219,7 @@ def initialize_database(admin_url, application_secret, environment):
             )
             # Managed database administrators have CREATEROLE, not SUPERUSER.
             # Grant the creator permission to own/manage the new role's schema.
+
             creator = db.execute("SELECT current_user").fetchone()[0]
             db.execute(
                 sql.SQL("GRANT {} TO {} WITH SET TRUE").format(
@@ -232,6 +245,7 @@ def initialize_database(admin_url, application_secret, environment):
             )
         )
     # Do not rotate an existing role implicitly; verify the supplied app credential.
+
     with psycopg.connect(
         database_url(application_secret, environment), connect_timeout=10
     ) as db:
@@ -297,6 +311,7 @@ def main():
     parser.add_argument("--expected-auth-revision", type=int)
     args = parser.parse_args()
     # Use a fresh task-owned directory; do not overwrite a previous secret file.
+
     import tempfile
 
     try:
@@ -330,6 +345,7 @@ def main():
                 os.chdir(private)
                 # Replace the parent so container signals reach Streamlit directly.
                 # The private directory lives only in this task's ephemeral filesystem.
+
                 os.execve(
                     sys.executable,
                     [

@@ -1,0 +1,14 @@
+# Extend the managed CPU image with small native Google storage/auth libraries.
+ARG BASE_IMAGE=domain-decision-platform:deployment-local
+FROM ${BASE_IMAGE}
+USER root
+COPY requirements/managed-gcp-linux-amd64-py312.txt ./requirements/managed-gcp-linux-amd64-py312.txt
+RUN python -m pip install --no-cache-dir --require-hashes --only-binary=:all: --no-deps \
+    -r requirements/managed-gcp-linux-amd64-py312.txt \
+    && python -m pip check
+COPY decision_workbench ./decision_workbench
+COPY pyproject.toml README.md LICENSE NOTICE THIRD_PARTY_NOTICES.md ./
+COPY app.py ./app.py
+RUN python -m pip install --no-cache-dir --no-deps --no-build-isolation .
+USER platform
+CMD ["python", "-m", "decision_workbench.platform.deployment", "api"]

@@ -8,6 +8,7 @@ Application hosting runs the browser, API and durable workers for your users. It
 |---|---|---|
 | AWS | [ECS Fargate, RDS and S3](aws.md) | [SageMaker training](../remote-training/aws.md) |
 | Azure | [Container Apps, PostgreSQL, Blob and Key Vault](azure.md) | [Machine Learning jobs](../remote-training/azure.md) |
+| Google Cloud | [Cloud Run, Cloud SQL, GCS and Secret Manager](gcp.md) | [Custom GPU training](../remote-training/gcp.md) |
 
 These recipes use pinned CPU control-plane images. They support CPU baseline training, hosted decision policies, data/review workflows and the existing remote-training controllers when their profiles and permissions are configured. Native model execution needs matching runtimes and resources; the supplied hosting profiles do not add a GPU. See [model environments](../setup.md#configure-model-training-and-serving).
 

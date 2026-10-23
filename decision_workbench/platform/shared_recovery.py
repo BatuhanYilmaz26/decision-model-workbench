@@ -12,6 +12,7 @@ import uuid
 from . import shared_metadata
 from .artifact_s3 import S3Objects
 from .artifact_azure import AzureBlobObjects
+from .artifact_gcs import GCSObjects
 from .artifact_storage import (
     ArtifactRepository,
     DirectoryObjects,
@@ -48,7 +49,7 @@ def deadline(seconds):
 
 def scoped_repository(repository, identifier):
     objects = repository.objects
-    if isinstance(objects, AzureBlobObjects):
+    if isinstance(objects, (AzureBlobObjects, GCSObjects)):
         return ArtifactRepository(objects.scoped(identifier))
     if isinstance(objects, DirectoryObjects):
         return ArtifactRepository(DirectoryObjects(objects.root / identifier))

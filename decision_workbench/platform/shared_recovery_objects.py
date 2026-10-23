@@ -6,6 +6,7 @@ import re
 
 from .artifact_s3 import S3Objects
 from .artifact_azure import AzureBlobObjects
+from .artifact_gcs import GCSObjects
 from .artifact_storage import (
     ArtifactUnavailable,
     DirectoryObjects,
@@ -56,6 +57,15 @@ def independent(left, right):
         ):
             raise ValueError("Recovery storage prefixes must not overlap")
         return
+    if isinstance(left, GCSObjects) and isinstance(right, GCSObjects):
+        a, b = left.descriptor, right.descriptor
+        if a["bucket"] == b["bucket"] and (
+            a["prefix"] == b["prefix"]
+            or a["prefix"].startswith(b["prefix"] + "/")
+            or b["prefix"].startswith(a["prefix"] + "/")
+        ):
+            raise ValueError("Recovery storage prefixes must not overlap")
+        return
     if not isinstance(left, S3Objects) or not isinstance(right, S3Objects):
         raise ValueError("Recovery copies require matching object transports")
     a, b = left.descriptor, right.descriptor
@@ -78,7 +88,7 @@ class RecoveryObjects:
 
     def __init__(self, objects):
         self.objects = objects
-        if isinstance(objects, AzureBlobObjects):
+        if isinstance(objects, (AzureBlobObjects, GCSObjects)):
             objects.require_versioning()
         elif isinstance(objects, S3Objects):
             try:
@@ -104,7 +114,7 @@ class RecoveryObjects:
         }
         validate_item(item)
         objects = self.objects
-        if isinstance(objects, AzureBlobObjects):
+        if isinstance(objects, (AzureBlobObjects, GCSObjects)):
             return objects.recovery_pin(key, sha, size, version)
         if isinstance(objects, DirectoryObjects):
             if version is not None and version != sha:
@@ -143,7 +153,7 @@ class RecoveryObjects:
             raise ValueError("Recovery manifest exceeds its bounded size")
         objects = self.objects
         try:
-            if isinstance(objects, AzureBlobObjects):
+            if isinstance(objects, (AzureBlobObjects, GCSObjects)):
                 body = objects.recovery_read(item, limit)
                 stream = None
             elif isinstance(objects, DirectoryObjects):
@@ -173,7 +183,7 @@ class RecoveryObjects:
         check()
         self.verify(item)
         source, destination = self.objects, target.objects
-        if isinstance(source, AzureBlobObjects):
+        if isinstance(source, (AzureBlobObjects, GCSObjects)):
             source.recovery_copy_to(item, destination, check)
         elif isinstance(source, DirectoryObjects):
             destination.put_file(
