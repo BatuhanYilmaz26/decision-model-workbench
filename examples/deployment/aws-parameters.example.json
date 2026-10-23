@@ -1,0 +1,11 @@
+[
+  {"ParameterKey": "VpcId", "ParameterValue": "vpc-YOUR_VPC"},
+  {"ParameterKey": "PublicSubnets", "ParameterValue": "subnet-PUBLIC_A,subnet-PUBLIC_B"},
+  {"ParameterKey": "PrivateSubnets", "ParameterValue": "subnet-PRIVATE_A,subnet-PRIVATE_B"},
+  {"ParameterKey": "VpcCidr", "ParameterValue": "10.0.0.0/16"},
+  {"ParameterKey": "ImageUri", "ParameterValue": "123456789012.dkr.ecr.us-east-1.amazonaws.com/decision-model-workbench@sha256:REPLACE_WITH_64_CHARACTER_DIGEST"},
+  {"ParameterKey": "CertificateArn", "ParameterValue": "arn:aws:acm:us-east-1:123456789012:certificate/YOUR_CERTIFICATE_ID"},
+  {"ParameterKey": "Hostname", "ParameterValue": "workbench.example.com"},
+  {"ParameterKey": "BackendSecretArn", "ParameterValue": "arn:aws:secretsmanager:us-east-1:123456789012:secret:YOUR_BACKEND_SECRET"},
+  {"ParameterKey": "ServicesEnabled", "ParameterValue": "false"}
+]

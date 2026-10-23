@@ -9,6 +9,8 @@ For the standard local CPU application, follow the [root quick start](../README.
 | Profile | Target | Purpose |
 |---|---|---|
 | [PostgreSQL metadata](postgres.txt) | API/worker CPU environment | Optional Psycopg driver for the [experimental metadata backend](../docs/postgresql-guide.md) |
+| [Managed application extension](managed-application-linux-amd64-py312.txt) | Pinned Linux/amd64 CPython 3.12 CPU image | Hash-pinned PostgreSQL and OIDC wheels for [application hosting](../docs/application-hosting/README.md); no model weights |
+| [Cloud template validation](cloud-validation.txt) | Separate tooling environment | CloudFormation schema validation; keep it outside the application/model environment |
 | [Linux CPU lock](platform-linux-amd64-py312.txt) | Linux/amd64, CPython 3.12.15 | 87 hash-locked external dependencies for API, UI, CPU training and five provider control clients |
 | [Linux Vega/semantic lock](vega-linux-amd64-py312-cu126.txt) | Linux/amd64, CPython 3.12.15, CUDA 12.6 | 124 hash-locked dependencies for the application, Vega and semantic encoder; use the separate [official Torch/Triton stage](torch-linux-amd64-py312-cu126.txt) |
 | [Windows CPU lock](platform-windows-py313.txt) | Windows/amd64, CPython 3.13.5 | 88 hash-locked external dependencies for API, UI, CPU training and five provider control clients |

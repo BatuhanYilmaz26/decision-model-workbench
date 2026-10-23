@@ -1,6 +1,6 @@
 # Container entry points
 
-[Project overview](../README.md) · [All guides](../docs/README.md)
+[Project overview](../README.md) Â· [All guides](../docs/README.md)
 
 Choose the CPU application image for data review, preparation, comparison training and local API serving. Use the separate model image when you need the supported Linux Vega or semantic-encoder runtime.
 
@@ -13,3 +13,7 @@ Choose the CPU application image for data review, preparation, comparison traini
 | [compose.models.yaml](../compose.models.yaml) | Apply the model-runtime Compose configuration | [GPU container workflow](../docs/model-container-guide.md) |
 
 Prepare private credentials and approved model assets using the selected guide. Build and run its lifecycle verifier on your own machine; a dependency lock does not establish that your GPU, volumes or deployment configuration work. These are single-host workflows. Use [deployment](../docs/deployment-guide.md) for enterprise cloud integration and [recovery](../docs/recovery-guide.md) for backups.
+
+## Managed application hosting
+
+Use the [deployment image](deployment/README.md) and [AWS application guide](../docs/application-hosting/aws.md) to run the shared-workspace CPU control plane with PostgreSQL, S3 and service-private secrets.

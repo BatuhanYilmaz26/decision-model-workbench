@@ -30,6 +30,7 @@ Follow [testing and compatibility](../docs/verification.md) to install the test 
 | Recovery and operations | Backup integrity, cold recovery, ownership, monitoring and audit windows | [Recovery](../docs/recovery-guide.md), [audit exports](../docs/audit-export-guide.md) |
 | Shared recovery | Consistent PostgreSQL archives, independent artifact copies, installed S3 SDK contracts and cold learned-model restore | [Operator guide](../docs/shared-recovery-guide.md); live S3/account qualification remains separate |
 | Shared workspace operations | Two API/worker instances, tenant quota races, CPU studies, storage readiness and scoped failure recovery | [Workload and operator guide](../docs/shared-workspace-operations-guide.md) |
+| AWS application hosting | Generated resource and permission contracts, installed Secrets Manager SDK, real PostgreSQL bootstrap/authorization, API/worker wiring and browser credential isolation | [AWS deployment](../docs/application-hosting/aws.md); local checks do not establish deployed AWS compatibility or billing |
 | Public repository | Exclusion of private files and reusable source/configuration eligibility | [Contributing](../CONTRIBUTING.md) |
 
 [Fixture documentation](fixtures/README.md) explains the included provider-schema excerpts. Helper transports and process runners in this folder are test infrastructure, rather than production endpoints. Keep fictional test data separate from actual domain records.

@@ -164,6 +164,7 @@ Follow [testing](docs/verification.md) and [runtime compatibility and upgrades](
 | Shared workspace storage | [Shared artifacts](docs/shared-artifacts-guide.md), [inactive model caches](docs/cache-retention-guide.md), [unreferenced S3 version cleanup](docs/shared-object-retention-guide.md), [abandoned local transfer cleanup](docs/local-stage-cleanup-guide.md) |
 | Shared workspace recovery | [Consistent PostgreSQL and object backup, verification and fresh-workspace restore](docs/shared-recovery-guide.md) |
 | Shared workspace operations | [Queue limits, node readiness, failure monitoring and a reproducible bounded workload](docs/shared-workspace-operations-guide.md) |
+| Application hosting | [AWS ECS Fargate, RDS and S3 deployment](docs/application-hosting/aws.md), [hosting directory](docs/application-hosting/README.md) |
 | Research | [Primary sources](research/sources.md), [10 October comparison](research/decision-model-expansion-2026-10-10.md), [12 October refresh](research/decision-model-refresh-2026-10-12.md) |
 
 The existing model and benchmark comparison snapshots are dated **9–12 October 2026**; the [runtime and cloud API comparison](docs/compatibility-and-upgrades.md) is dated **14 October 2026**. The [Liquid preparation guide](docs/models/liquid.md) pins its model and notebook revisions separately. Prices, aliases, APIs and rankings can change. Benchmark figures are attributed to their publishers; use the pinned versions and methods when comparing results.

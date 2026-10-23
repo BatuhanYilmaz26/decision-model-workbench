@@ -1,6 +1,6 @@
 # Examples and configuration templates
 
-[Project overview](../README.md) · [All guides](../docs/README.md)
+[Project overview](../README.md) Â· [All guides](../docs/README.md)
 
 Use these fictional records to understand the data format and adapt the templates to your own deployment. They do not establish model quality or provide ready-to-use cloud credentials.
 
@@ -20,3 +20,7 @@ For your own domain, describe the policy and data needs in the application, defi
 To add synthetic coverage, configure a teacher and follow [generate and review synthetic candidates](../docs/data-guide.md#generate-and-review-synthetic-candidates). Keep real evaluation data independent and review generated labels before adding them to training.
 
 Replace fictional account, tenant and resource values using the linked guide. Keep secrets and actual domain records in your private configuration and workspace; avoid editing public fixtures to contain enterprise data.
+
+## Application hosting
+
+Use [deployment parameters](deployment/README.md) with the [AWS application guide](../docs/application-hosting/aws.md). These configure the running browser/API/workers; the separate cloud-training examples configure individual training jobs.

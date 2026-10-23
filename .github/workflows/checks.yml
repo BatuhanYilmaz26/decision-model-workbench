@@ -46,6 +46,9 @@ jobs:
       - run: python -m unittest discover -s tests -p test_shared_recovery_objects.py -v
       - run: python -m unittest discover -s tests -p test_shared_recovery.py -v
       - run: python -m unittest discover -s tests -p test_shared_operations.py -v
+      - run: python -m unittest discover -s tests -p test_aws_deployment.py -v
+      - run: python -m unittest discover -s tests -p test_shared_authentication.py -v
+      - run: python -m unittest discover -s tests -p test_deployment_runtime.py -v
   quickstart:
     strategy:
       fail-fast: false
@@ -142,3 +145,9 @@ jobs:
       - run: docker compose version
       - run: docker build --platform linux/amd64 --tag domain-decision-platform:ci .
       - run: python scripts/verify_containers.py --image domain-decision-platform:ci
+      - run: docker build --platform linux/amd64 --build-arg BASE_IMAGE=domain-decision-platform:ci --tag domain-decision-platform:deployment-ci -f docker/deployment/Dockerfile .
+      - run: docker run --rm --network none domain-decision-platform:deployment-ci python -m pip check
+      - run: python -m decision_workbench.platform.aws_deployment --output data/deploy/aws-stack.json
+      - run: python -m venv .venv-cloud-tools
+      - run: .venv-cloud-tools/bin/python -m pip install -r requirements/cloud-validation.txt
+      - run: .venv-cloud-tools/bin/cfn-lint --regions us-east-1 --template data/deploy/aws-stack.json

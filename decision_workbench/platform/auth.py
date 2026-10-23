@@ -306,18 +306,38 @@ class KeySet:
 
 
 class Authentication:
-    def __init__(self, keys=None, keys_file=None, sso_file=None):
+    def __init__(
+        self, keys=None, keys_file=None, sso_file=None, configuration_reader=None
+    ):
         self.keys = copy.deepcopy(validate_keys(keys)) if keys is not None else None
         self.keys_file = Path(keys_file).absolute() if keys_file else None
         self.sso_file = Path(sso_file).absolute() if sso_file else None
         self.providers = {}
         self.lock = threading.Lock()
-        if self.keys is None and self.keys_file is None and self.sso_file is None:
+        self.configuration_reader = configuration_reader
+        if configuration_reader is not None and (
+            not callable(configuration_reader)
+            or keys is not None
+            or keys_file
+            or sso_file
+        ):
+            raise ValueError("Choose one trusted authentication configuration source")
+        if (
+            self.keys is None
+            and self.keys_file is None
+            and self.sso_file is None
+            and configuration_reader is None
+        ):
             raise ValueError("Configure DMT_KEYS_FILE and/or DMT_SSO_FILE")
         self.configuration()
 
     def configuration(self):
         try:
+            if self.configuration_reader is not None:
+                value = self.configuration_reader()
+                return validate_keys(value["keys"]), (
+                    validate_sso(value["sso"]) if value["sso"] is not None else None
+                )
             keys = (
                 self.keys
                 if self.keys is not None

@@ -265,11 +265,18 @@ def create_app(
     database_url=None,
     database_schema="decision_workbench",
     artifact_store=None,
+    authentication=None,
 ):
-    auth = Authentication(
-        keys=keys,
-        keys_file=os.environ.get("DMT_KEYS_FILE") if keys is None else None,
-        sso_file=os.environ.get("DMT_SSO_FILE") if keys is None else None,
+    if authentication is not None and keys is not None:
+        raise ValueError("Choose explicit credentials or a trusted authenticator")
+    auth = (
+        authentication
+        if authentication is not None
+        else Authentication(
+            keys=keys,
+            keys_file=os.environ.get("DMT_KEYS_FILE") if keys is None else None,
+            sso_file=os.environ.get("DMT_SSO_FILE") if keys is None else None,
+        )
     )
     store = Store(
         home or os.environ.get("DMT_HOME", "data/workspace"),
