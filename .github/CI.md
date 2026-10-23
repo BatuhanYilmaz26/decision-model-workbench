@@ -8,9 +8,9 @@ The quick-start jobs create fresh virtual environments on Windows and Linux, ins
 
 The [continuous journey](../tests/test_complete_journey.py) follows one newly created personal project through import, review, reservation, generation with a fictional localhost teacher, reviewed training-data extension, CPU training, release, prediction and reopening. It checks that evaluation data stays unchanged. Streamlit AppTest supplies the upload at the widget boundary, so this does not test a native file picker or visual accessibility. The teacher and data are fictional; no pretrained weights or paid service are needed.
 
-Quick-start checks also exercise the [four workspace roles](../docs/authentication-guide.md#choose-a-workspace-role) and resident-process reuse across separate API request threads. The resident check uses a weight-free framed fixture and verifies shutdown and broker-parent death on Windows/Linux; it does not establish GPU or model quality.
+Quick-start checks also exercise the [four workspace roles](../docs/authentication-guide.md#workspace-credentials--choose-a-workspace-role) and resident-process reuse across separate API request threads. The resident check uses a weight-free framed fixture and verifies shutdown and broker-parent death on Windows/Linux; it does not establish GPU or model quality.
 
-This workflow does not submit paid cloud jobs or qualify every real GPU model. Follow [provider compatibility checks](../docs/verification.md#provider-compatibility-checks), [model container verification](../docs/model-container-guide.md) and [runtime upgrades](../docs/compatibility-and-upgrades.md) for those separate paths.
+This workflow does not submit paid cloud jobs or qualify every real GPU model. Follow [provider compatibility checks](../docs/verification.md#provider-compatibility-checks), [model container verification](../docs/model-container-guide.md#linux-model-image) and [runtime upgrades](../docs/compatibility-and-upgrades.md) for those separate paths.
 
 The Liquid data jobs install the optional CPU-only [data preparation profile](../requirements/liquid-data.txt) on Windows and Linux, check dependencies and exercise export failure/lineage contracts. They do not fetch model weights or run GPU training; offline fixtures do not establish native model quality.
 
@@ -22,7 +22,7 @@ The PostgreSQL job starts a digest-pinned disposable server, installs the
 schemas and fictional data. They include actual API/worker/CPU release behavior,
 independent process claims and SQL/transaction failure checks; they do not
 establish shared artifact storage or production database operations. Follow the
-[PostgreSQL guide](../docs/postgresql-guide.md) for configuration and limits.
+[PostgreSQL guide](../docs/shared-artifacts-guide.md#postgresql-metadata) for configuration and limits.
 
 That job also installs the pinned AWS SDK and exercises
 [shared artifacts](../tests/test_shared_artifacts.py): actual PostgreSQL CPU

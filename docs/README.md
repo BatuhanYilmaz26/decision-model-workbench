@@ -1,134 +1,70 @@
 # Documentation
 
-<a id="guide-directory"></a>
-
 [Project overview and installation](../README.md#run-on-your-computer)
 
-Choose the outcome you want. Each walkthrough contains the common steps from prerequisites to a usable result. Read a model or provider reference only when configuring that integration.
+Choose one task. Each walkthrough includes the common steps from prerequisites to a usable result. Consult a model or provider reference only when configuring that integration.
 
-| Your goal | Start here | You need |
-|---|---|---|
-| Use an existing model | [Make an API call and integrate it](api-integration-guide.md) | A supported provider account/key; no GPU |
-| Train on your domain data | [Create, train and use a domain model](product-workflow.md) | Reviewed examples; a compatible local environment or rented GPU |
-| Generate more training examples | [Generate and review candidates](synthetic-generation-guide.md) | A configured generative teacher; real evaluation records stay separate |
+| Your goal | Start here |
+|---|---|
+| Use an existing model | [Make an API call and integrate it](api-integration-guide.md) |
+| Train on your domain data | [Create, train and use a domain model](product-workflow.md) |
+| Generate training examples | [Generate, review and export candidates](synthetic-generation-guide.md) |
 
-Already using the app? Open the [screen manual](app-guide.md#find-the-right-screen) for help with the current control. Deploying for a team? Start with [application hosting](application-hosting/README.md). Contributors can start with [contributing](../CONTRIBUTING.md).
-
-You do not need the reference catalog to complete the common CPU workflow. Native-model and cloud paths need only the chosen integration's additional setup.
+For help with a specific app control, use the [screen manual](app-guide.md). For a shared deployment, start with [application hosting](application-hosting/README.md).
 
 <details>
-<summary>Reference catalog: model setup, advanced workflows, operations and research</summary>
+<summary>Reference library</summary>
 
-The following pages document optional features and integration-specific contracts. Use them when that requirement arises; they are not an onboarding checklist.
+Related topics share one authoritative page. Choose its section from the page's opening menu; you do not need to read every section.
 
-## Start and choose a model
+## Data, policy and evaluation
 
-| Guide | Use it to |
+| Reference | Includes |
 |---|---|
-| [Streamlit application user guide](app-guide.md) | Follow every screen, optional workflow, role and recovery action, starting with a first project |
-| [Local setup](setup.md) | Configure optional runtimes, teachers and shared-workspace services |
-| [Complete project workflow](product-workflow.md) | Describe a domain, prepare data, train, evaluate and release a model |
-| [Support-routing walkthrough](domain-adoption-guide.md) | Follow a concrete domain example with clear data and evaluation requirements |
-| [Capabilities](capabilities.md) | Understand the supported local workflows and their limits |
-| [Decision-model concepts](concepts.md) | Understand typed outcomes, probabilities and decision policies |
-| [Model landscape](model-landscape.md) | Compare hosted and open-weight model options |
-| [Benchmarks](benchmarks.md) | Interpret published scores, costs, latency and uncertainty |
+| [Domain schema](domain-schema-guide.md) | Teacher-drafted questions, category discovery and owner confirmation |
+| [Data import and review](data-guide.md) | Canonical formats, file mapping, labels and reviewer assignments |
+| [Evaluation reservations](reservation-guide.md) | Source groups, chronological boundaries and optional semantic review |
+| [Evaluation and release criteria](evaluation-guide.md) | Metrics, calibration, error costs and critical outcomes |
+| [Project lifecycle](project-lifecycle-guide.md) | Archive/restore, policy successors and permanent database deletion |
+| [Worked domain example](domain-adoption-guide.md) | Adapt the general workflow to support routing |
 
-## Build and review domain data
+## Models and application integration
 
-| Guide | Use it to |
+| Reference | Includes |
 |---|---|
-| [Synthetic candidate generation](synthetic-generation-guide.md) | Preview and approve requests, inspect outcomes, review candidates and retry explicitly |
-| [Data preparation and synthetic generation](data-guide.md) | Define questions, import files, review labels and add training-only synthetic candidates |
-| [Preview and import](import-guide.md) | Map files, validate all records and save or append a batch for review |
-| [Teacher-assisted schema drafting](schema-assistant-guide.md) | Request, review and edit proposed decision questions before creating a project |
-| [Reviewer assignments](review-workflow.md) | Assign annotation work and review immutable dataset revisions |
-| [Temporal boundaries](temporal-data-guide.md) | Keep future information and related source families out of held-out evaluation |
-| [Explicit evaluation reservations](reservation-guide.md) | Assign source groups or date cutoffs, preview counts and confirm an immutable study |
-| [Semantic review](semantic-data-guide.md) | Inspect possible related examples before reserving a study |
-| [Category discovery](taxonomy-guide.md) | Review proposed categories and confirm a successor schema |
-| [Applicability data](applicability-guide.md) | Prepare positive and negative examples for deciding when a model applies |
-| [Policy versions](policy-versioning-guide.md) | Change a domain policy while retaining earlier project and release contracts |
-
-Configure the teacher in [setup](setup.md#configure-a-teacher), then follow [synthetic generation](data-guide.md#generate-and-review-synthetic-candidates). The [example directory](../examples/README.md) provides data formats and configuration templates.
-
-## Train, evaluate and integrate
-
-Browse the [model and workflow directory](models/README.md) for delivered routes
-and separate publisher references for integrations not included here.
-
-| Guide | Use it to |
-|---|---|
-| [Laya and Unsloth training](training-guide.md) | Select a compatible local model environment and produce a complete export |
-| [Vega training](vega-guide.md) | Use Vega's separate engine, domain-adapter and applicability contracts |
-| [Liquid hosted d1/d1-ultra](models/liquid-hosted.md) | Call the direct API or evaluate and release a hosted domain policy |
-| [Perplexity Full/Flash v1.2](models/perplexity.md) | Configure your key, evaluate joint-question decisions and release a calibrated hosted policy |
-| [Perplexity open native workflow](models/perplexity-native.md) | Convert reviewed data on CPU; use the experimental Linux/CUDA full-weight trainer and offline domain predictions |
-| [Liquid d1-3B](models/liquid.md) | Prepare native domain data, run standalone local LoRA training and use a calibrated export |
-| [Liquid d1-omni-600M](models/liquid-omni.md) | Adapt the native decision head on text/JSON, calibrate and use a domain export in the local app |
-| [Liquid remote GPU training](remote-training/liquid.md) | Prepare model-specific images/studies for five providers and independently admit returned exports |
-| [Decision 3.0 family](models/d3-family.md) | Choose among six pinned native profiles, prepare variant-specific data and provision their CPU/GPU/cloud resources |
-| [D3 Edge](models/d3.md) | Prepare native targets, train locally or through the [five-provider cloud workflow](remote-training/d3.md), and release/use a calibrated model |
-| [Evaluation and calibration](evaluation-guide.md) | Assess class-level quality, probabilities, abstention and independent reload |
-| [Error costs and critical outcomes](error-policy-guide.md) | Freeze domain-specific release criteria before training |
-| [API integration](api-integration-guide.md) | Call decision providers, validate responses and handle failures |
-| [Application blueprints](application-blueprints.md) | Add a bounded decision to an existing application's workflow |
-| [Hosted decision studies](hosted-decisions-guide.md) | Evaluate a provider and fit a local calibration policy through the platform |
-
-## Train on remote GPUs
-
-Follow the [shared remote-training protocol](remote-training-guide.md) and [provider selection](remote-training/provider-selection.md) first. The [provider directory](remote-training/README.md) indexes all five direct walkthroughs.
-
-| Provider | Direct submission | Application-managed workflow |
-|---|---|---|
-| AWS | [SageMaker AI](remote-training/aws.md) | [Managed AWS](managed-cloud-training.md) |
-| Azure | [Machine Learning](remote-training/azure.md) | [Managed Azure](managed-azure-training.md) |
-| Google Cloud | [Custom GPU jobs](remote-training/gcp.md) | [Managed GCP](managed-gcp-training.md) |
-| Modal | [GPU Functions](remote-training/modal.md) | [Managed Sandboxes](managed-modal-training.md) |
-| RunPod | [GPU Pods](remote-training/runpod.md) | [Managed RunPod](managed-runpod-training.md) |
-
-Use [remote model admission](remote-admission-guide.md) to verify and register a returned export. Provider adapters are experimental; complete the [account-specific checks](verification.md#provider-compatibility-checks) before sending enterprise data.
+| [Model directory](models/README.md) | Supported backends, native formats, hardware limits and model-specific guides |
+| [Training reference](training-guide.md) | Compatible adapters, native training protocols and model environments |
+| [Vega](vega-guide.md) | Engine/domain adaptation, applicability data, evaluation and serving |
+| [Hosted policies](hosted-decisions-guide.md) | Operator profiles, user keys, evaluation, calibration, accounting and release |
+| [Application blueprints](application-blueprints.md) | Add bounded decisions to existing or new applications |
+| [Remote training](remote-training-guide.md) | Provider selection, frozen studies, submission and returned-model admission |
+| [Provider directory](remote-training/README.md) | AWS, Azure, GCP, Modal and RunPod; direct and app-managed instructions on each provider's page |
 
 ## Deploy and operate
 
-| Guide | Use it to |
+| Reference | Includes |
 |---|---|
-| [Deployment](deployment-guide.md) | Choose complete application hosting or separate native-model serving |
-| [PostgreSQL metadata](postgresql-guide.md) | Run experimental metadata persistence with local artifacts and explicit recovery limits |
-| [Shared model artifacts](shared-artifacts-guide.md) | Publish immutable S3 model bundles, retrieve verified node caches and warm large exports |
-| [Azure model artifacts](azure-artifacts-guide.md) | Configure private versioned Blob Storage, verified node caches and coordinated recovery with scoped operator identities |
-| [Google Cloud model artifacts](gcs-artifacts-guide.md) | Configure private versioned GCS storage, verified caches and generation-pinned recovery |
-| [CPU containers](container-guide.md) | Run the local API, worker and browser with persistent storage |
-| [Model containers](model-container-guide.md) | Run the separate Linux Vega/semantic GPU image |
-| [Owned local transfer cleanup](local-stage-cleanup-guide.md) | Preview and reclaim abandoned downloads/intake copies while preserving live transfers and registered models |
-| [Inactive model cache cleanup](cache-retention-guide.md) | Stop one shared-workspace node, review eligible caches, reclaim space and resume interrupted cleanup |
-| [Permanent project database deletion](project-deletion-guide.md) | Review and delete archived project records while preserving quotas and shared references |
-| [Project lifecycle](project-lifecycle-guide.md) | Archive and restore a project without deleting data or repeating paid requests |
-| [Authentication](authentication-guide.md) | Provision and rotate credentials or configure trusted access tokens |
-| [Audit exports](audit-export-guide.md) | Capture and verify a bounded immutable project audit window |
-| [Backup and recovery](recovery-guide.md) | Capture a workspace and restore it into a fresh directory |
-| [Shared workspace recovery](shared-recovery-guide.md) | Capture PostgreSQL metadata and versioned S3, Azure Blob or GCS artifacts together; restore into a fresh workspace |
-| [Shared workspace operations](shared-workspace-operations-guide.md) | Use tenant queue limits, truthful readiness and scoped failure monitoring; reproduce the bounded workload |
-| [Application hosting](application-hosting/README.md) | Deploy the browser, API and workers on AWS, Azure or Google Cloud with durable metadata/artifacts, HTTPS and scoped service identities/secrets |
-| [Encrypted recovery](encrypted-recovery-guide.md) | Encrypt a backup and verify it against a retained receipt |
-| [Scheduled backups](scheduled-backups-guide.md) | Configure local capture, durable receipts and retention |
-| [Backup monitoring](backup-monitoring-guide.md) | Publish and verify signed backup-health summaries |
-| [Windows process ownership](windows-process-guide.md) | Understand training, inference and cancellation process controls |
+| [Advanced setup](setup.md) | Optional runtimes, separate services, resource coordination and external tools |
+| [Credentials and organization sign-in](authentication-guide.md) | Workspace keys, enterprise tokens, OIDC and revocation |
+| [Shared workspace storage](shared-artifacts-guide.md) | PostgreSQL metadata, S3, Azure Blob and GCS configuration |
+| [Shared operations](shared-workspace-operations-guide.md) | Queue limits, readiness, failure monitoring and capacity boundaries |
+| [Backup and recovery](recovery-guide.md) | Personal/shared capture and restore, encryption, scheduling and monitoring |
+| [Storage maintenance](storage-maintenance-guide.md) | Local caches, abandoned transfers and exact remote object-version cleanup |
+| [CPU containers](container-guide.md) | Browser, API and worker with persistent volumes |
+| [Native model runtimes](model-container-guide.md) | Linux model images and Windows process ownership |
+| [Testing and compatibility](verification.md) | Installation checks and model/provider/account qualification boundaries |
+| [Compatibility and upgrades](compatibility-and-upgrades.md) | Dependency profiles, interface changes and advisories |
+| [Architecture and capabilities](architecture.md) | Runtime boundaries and supported workflows |
 
-## Verify and extend
+## Concepts, research and development
 
-| Guide | Use it to |
-|---|---|
-| [Testing and compatibility](verification.md) | Check an installation and distinguish fixtures from real model/provider qualification |
-| [Runtime compatibility and upgrades](compatibility-and-upgrades.md) | Select compatible versions and review current interfaces and advisories |
-| [Architecture](architecture.md) | Understand the API, persistence, worker, browser and model boundaries |
-| [Optional tools](tools.md) | Select teacher, registry, tracking or enterprise-data integrations |
+[Decision-model concepts and landscape](concepts.md) · [Benchmark methodology](benchmarks.md) · [Research and primary sources](../research/README.md) · [Examples](../examples/README.md) · [Dependency profiles](../requirements/README.md) · [Helper commands](../scripts/README.md) · [Tests](../tests/README.md) · [Contributing](../CONTRIBUTING.md).
 
-See [dependency profiles](../requirements/README.md), [helper commands](../scripts/README.md), [tests](../tests/README.md), [research](../research/README.md) and [contributing](../CONTRIBUTING.md) for the supporting files.
+</details>
 
-For organizational browser access, follow [enterprise OIDC sign-in](enterprise-sign-in-guide.md) to configure the client, API roles, expiry, revocation and secret rotation.
+<details>
+<summary>Looking for an older guide filename?</summary>
 
-For operator storage maintenance, follow [shared-object retention](shared-object-retention-guide.md) for version-specific preview, deletion and interrupted-operation reconciliation.
-
+Related guides have been merged into the reference pages above. The [page-move map](page-moves.json) records former filenames and their current sections, including heading mappings. GitHub does not automatically redirect a deleted file URL; use the current link or inspect the file's Git history for its older version.
 
 </details>

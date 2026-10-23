@@ -71,7 +71,7 @@ configurations need separate qualification; the adapter does not select MPS.
    or upload CSV, XLSX, TSV, JSON or JSONL records.
 2. Review labels and reserve independent real validation, calibration and test
    records. Reserve at least eight calibration records. Prepare a snapshot using
-   the [dataset guide](../data-guide.md).
+   the [dataset guide](../data-guide.md#data-contract).
 3. Optionally generate [synthetic training candidates](../synthetic-generation-guide.md)
    with a separate compatible teacher. Describe the examples you need and review
    each candidate before including it in training. Omni scores allowed answers;
@@ -95,7 +95,7 @@ subsequent offline runs require its complete cache. No paid API key is required.
 
 ## Export native training data
 
-Use the [canonical record format](../data-guide.md) and
+Use the [canonical record format](../data-guide.md#data-contract) and
 [Liquid example specification and CSV](../../examples/liquid/README.md).
 All four nonempty files are required:
 `train.jsonl`, `validation.jsonl`, `calibration.jsonl`, `test.jsonl`.

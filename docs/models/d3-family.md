@@ -93,14 +93,14 @@ personal localhost use. Restart services after changing their environment.
 For large exports, configure finite `DMT_MODEL_LOAD_TIMEOUT_SECONDS` and
 `DMT_INFERENCE_TIMEOUT_SECONDS` values appropriate to cold loading and inference
 on your storage/hardware. Set `DMT_UI_MODEL_TIMEOUT_SECONDS` in the web process
-to cover those deadlines plus response overhead. See [resident model settings](../setup.md)
+to cover those deadlines plus response overhead. See [resident model settings](../setup.md#configuration)
 and inspect the active version after a client timeout before retrying a release.
 
 ## Prepare your domain and train in the app
 
 1. Describe the decision and the data you need. Define allowed outcomes and the
    evidence available at decision time. Enter examples or upload
-   [CSV, XLSX, TSV, JSON or JSONL](../import-guide.md).
+   [CSV, XLSX, TSV, JSON or JSONL](../data-guide.md#file-import).
 2. Review/correct labels. Optional [synthetic generation](../synthetic-generation-guide.md)
    proposes training candidates through a separate generative teacher. Reviewed
    candidates remain training-only; protect independent real holdouts.

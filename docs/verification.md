@@ -14,7 +14,7 @@ Select a runtime profile, check your installation and validate the model before 
 | Linux Vega/semantic container | Vega training and semantic audits with CUDA 12.6 dependencies | GPU/device access, pinned assets, eight-file inputs and authenticated lifecycle checks |
 | Hosted APIs and managed cloud controllers | Experimental provider adapters and remote job workflows | Account-specific API behavior, returned artifacts, shutdown and billing |
 
-The detailed dependency constraints are in [requirements](../requirements/README.md). Review [current runtime versions and GPU advisories](compatibility-and-upgrades.md) before installation or upgrades. Use [CPU containers](container-guide.md), [model containers](model-container-guide.md) and [Windows process ownership](windows-process-guide.md) for platform-specific checks.
+The detailed dependency constraints are in [requirements](../requirements/README.md). Review [current runtime versions and GPU advisories](compatibility-and-upgrades.md) before installation or upgrades. Use [CPU containers](container-guide.md), [model containers](model-container-guide.md#linux-model-image) and [Windows process ownership](model-container-guide.md#windows-process-ownership) for platform-specific checks.
 
 ## Run repository checks
 
@@ -53,7 +53,7 @@ After installing the root application requirements, run:
 python -m unittest discover -s tests -p test_access_roles.py -v
 ```
 
-The check uses temporary workspace keys for all four [documented roles](authentication-guide.md#choose-a-workspace-role). It exercises API read and mutation permissions, verifies that denied requests leave project/job/release state unchanged, and trains a fictional CPU model as an editor before an owner releases it. It also checks tenant boundaries and refuses identity-header overrides. It uses the in-process HTTP test client, no external account or pretrained weights. Enterprise identity-provider deployment and operator filesystem permissions need their own checks.
+The check uses temporary workspace keys for all four [documented roles](authentication-guide.md#workspace-credentials--choose-a-workspace-role). It exercises API read and mutation permissions, verifies that denied requests leave project/job/release state unchanged, and trains a fictional CPU model as an editor before an owner releases it. It also checks tenant boundaries and refuses identity-header overrides. It uses the in-process HTTP test client, no external account or pretrained weights. Enterprise identity-provider deployment and operator filesystem permissions need their own checks.
 
 ## Check shared model capacity
 
@@ -68,7 +68,7 @@ exercise exclusion across different workspace roots, cancellation, recovery afte
 parent death on Windows/Linux, the existing workspace lock and rejection before
 launching a competing inference process. A CPU training check runs while the
 model resource is held. They do not allocate a GPU or download weights. Configure
-the same [shared model lock](setup.md#shared-model-capacity-on-one-host) in all
+the same [shared model lock](setup.md#configuration--shared-model-capacity-on-one-host) in all
 participants and qualify the actual model image/filesystem before deployment.
 
 To check that a resident model survives independent API request threads and ends
@@ -89,7 +89,7 @@ docker build --platform linux/amd64 --tag domain-decision-platform:local .
 python scripts/verify_containers.py --image domain-decision-platform:local
 ```
 
-The maintained verifier creates its own fictional workspace and removes its owned resources. It checks authentication, real CPU training, release/inference, persistent service replacement and backup/restore. It does not use a configured teacher or cloud account. The [model container guide](model-container-guide.md#verify-authenticated-container-lifecycle) provides a separate GPU route and optional cancellation/parent-crash checks.
+The maintained verifier creates its own fictional workspace and removes its owned resources. It checks authentication, real CPU training, release/inference, persistent service replacement and backup/restore. It does not use a configured teacher or cloud account. The [model container guide](model-container-guide.md#linux-model-image--verify-authenticated-container-lifecycle) provides a separate GPU route and optional cancellation/parent-crash checks.
 
 ## Provider compatibility checks
 
@@ -103,7 +103,7 @@ Before using an adapter with enterprise data:
 4. Test cancellation and an interrupted operation. Observe the same provider resource until terminal; check retained storage and actual charges.
 5. Record the accepted configuration and versions, then repeat the relevant checks after changes.
 
-Direct provider walkthroughs are configurable examples, not account-certified deployments. Use the provider's current documentation alongside the [remote training guide](remote-training-guide.md).
+Direct provider walkthroughs are configurable examples, not account-certified deployments. Use the provider's current documentation alongside the [remote training guide](remote-training-guide.md#study-protocol).
 
 ## Validate your domain and deployment
 
@@ -115,4 +115,4 @@ Pagination tests enumerate every public GET route exposing `offset`. Oversized, 
 
 Use independently reviewed operational gold to compare rules, a CPU baseline, an unadapted model and an adapted model. Freeze thresholds before test inspection; measure calibration, abstention coverage, critical errors, subgroup behavior and complete workflow cost. Evaluate the exact exported serving runtime and its longest legitimate inputs.
 
-For a cloud run, retain the accepted image/configuration, provider job identity, logs, measured resource usage, complete export hashes, terminal resource observation and actual billing information. Independently reload and evaluate the returned model before admission. Validate enterprise identity, private networking, storage, monitoring, load, backup and rollback in the target environment. [Evaluation](evaluation-guide.md), [remote training](remote-training-guide.md), [deployment](deployment-guide.md)
+For a cloud run, retain the accepted image/configuration, provider job identity, logs, measured resource usage, complete export hashes, terminal resource observation and actual billing information. Independently reload and evaluate the returned model before admission. Validate enterprise identity, private networking, storage, monitoring, load, backup and rollback in the target environment. [Evaluation](evaluation-guide.md#evaluation), [remote training](remote-training-guide.md#study-protocol), [deployment](application-hosting/README.md#native-model-serving)

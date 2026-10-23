@@ -10,7 +10,7 @@ executes any action.
 1. Read [the specification](spec.json), then replace its policy/questions with
    your own domain and data needs.
 2. Adapt [the CSV template](examples.csv), or use the application's manual entry
-   and CSV/XLSX/TSV/JSON/JSONL [import workflow](../../docs/import-guide.md).
+   and CSV/XLSX/TSV/JSON/JSONL [import workflow](../../docs/data-guide.md#file-import).
 3. Review labels and reserve independent operational evaluation records. These
    six pending examples are not an adequate train/evaluation dataset.
 4. Follow [native data export](../../docs/models/liquid.md#export-native-data) to

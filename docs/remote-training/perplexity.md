@@ -1,6 +1,6 @@
 # Train native Perplexity Decider on a cloud GPU
 
-[Provider directory](README.md) · [Native model and data](../models/perplexity-native.md) · [App user guide](../app-guide.md)
+[Provider directory](README.md) · [Native model and data](../models/perplexity-native.md) · [App user guide](../app-guide.md#screen-manual)
 
 Train the pinned open `pplx-decider-v1.1-27b` for your domain using AWS,
 Azure, GCP, Modal or RunPod. The same frozen study carries your reviewed data,
@@ -103,11 +103,11 @@ digest/source fingerprint and declare `"training_backends": ["perplexity-native"
 
 | Provider | Setup and submission path | Template |
 |---|---|---|
-| AWS | [SageMaker training API](aws.md), [managed app controls](../managed-cloud-training.md) | [AWS](../../examples/cloud/aws-profiles.json) |
-| Azure | [Azure ML command jobs](azure.md), [managed app controls](../managed-azure-training.md) | [Azure](../../examples/cloud/azure-profiles.json) |
-| GCP | [Custom training jobs](gcp.md), [managed app controls](../managed-gcp-training.md) | [GCP](../../examples/cloud/gcp-profiles.json) |
-| Modal | [GPU Sandbox and Volume](modal.md), [managed app controls](../managed-modal-training.md) | [Modal](../../examples/cloud/modal-profiles.json) |
-| RunPod | [GPU Pods and network volumes](runpod.md), [managed app controls](../managed-runpod-training.md) | [RunPod](../../examples/cloud/runpod-profiles.json) |
+| AWS | [SageMaker training API](aws.md#direct-submission), [managed app controls](aws.md#application-managed-training) | [AWS](../../examples/cloud/aws-profiles.json) |
+| Azure | [Azure ML command jobs](azure.md#direct-submission), [managed app controls](azure.md#application-managed-training) | [Azure](../../examples/cloud/azure-profiles.json) |
+| GCP | [Custom training jobs](gcp.md#direct-submission), [managed app controls](gcp.md#application-managed-training) | [GCP](../../examples/cloud/gcp-profiles.json) |
+| Modal | [GPU Sandbox and Volume](modal.md#direct-submission), [managed app controls](modal.md#application-managed-training) | [Modal](../../examples/cloud/modal-profiles.json) |
+| RunPod | [GPU Pods and network volumes](runpod.md#direct-submission), [managed app controls](runpod.md#application-managed-training) | [RunPod](../../examples/cloud/runpod-profiles.json) |
 
 - **AWS:** publish to the ECR account/region in your profile. Grant the training
   role access to the approved input/output prefix and confirm SageMaker training
@@ -144,7 +144,7 @@ requires no local model environment or GPU.
 
 ## Prepare, submit and follow your study
 
-1. Follow [domain intake and review](../app-guide.md#first-project-walkthrough).
+1. Follow [domain intake and review](../app-guide.md#screen-manual--first-project-walkthrough).
    Use **Choice** or **Noul** questions with text/JSON evidence. Reserve real
    validation, calibration and test records before generating reviewed synthetic
    training candidates. Preserve soft training targets; heldouts need one-hot gold.
@@ -187,6 +187,6 @@ does not activate a model.
 Inspect **Models and releases** and the frozen acceptance results. An owner can
 activate an eligible version or roll back. Use Text/JSON in **Decisions and audit**,
 or integrate the [decision API](../api-integration-guide.md) with abstention and
-fallback behavior. See [returned-model admission](../remote-admission-guide.md)
+fallback behavior. See [returned-model admission](../remote-training-guide.md#returned-model-admission)
 for manual staging and [standalone native prediction](../models/perplexity-native.md#use-the-exported-model-for-your-domain)
 for use outside the application.

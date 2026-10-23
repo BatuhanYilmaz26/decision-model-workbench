@@ -9,7 +9,7 @@ generate an answer, perform a search or authorize an action.
 
 1. Read and adapt the [specification](spec.json) to your domain and decision policy.
 2. Use the [CSV layout](examples.csv) to supply examples, or use the shared
-   [file/manual intake](../../docs/import-guide.md). JSON evidence is quoted inside
+   [file/manual intake](../../docs/data-guide.md#file-import). JSON evidence is quoted inside
    the CSV `state` column; labels use the specification's names and outcome keys.
 3. Review each label before approving it. The six rows are pending synthetic
    illustrations, not operational gold or an adequate training/evaluation dataset.

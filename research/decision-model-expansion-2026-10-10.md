@@ -26,7 +26,7 @@ A decision model turns decision-time evidence and allowed outcomes into scores o
 
 Decision models use several mechanisms: encoder/head training such as Laya, decoder-derived heads, frozen-feature engines such as Vega, and constrained token/log-probability readouts such as Blink. The same `state/questions` interface can hide different execution paths. Multiple questions in one request do not imply one backbone pass or equal marginal cost; measure the full path for the intended workload.
 
-The hosted request-contract guide covers direct Jev, OpenRouter, Perplexity and Workers AI, plus TypeLLM and self-hosted models. Provider availability is not permission to train proprietary weights. Open-weight domain adaptation and hosted inference selection are separate product routes. [API integration guide](../docs/api-integration-guide.md), [remote training guide](../docs/remote-training-guide.md)
+The hosted request-contract guide covers direct Jev, OpenRouter, Perplexity and Workers AI, plus TypeLLM and self-hosted models. Provider availability is not permission to train proprietary weights. Open-weight domain adaptation and hosted inference selection are separate product routes. [API integration guide](../docs/api-integration-guide.md), [remote training guide](../docs/remote-training-guide.md#study-protocol)
 
 ### TypeLLM: discover, review, then freeze the taxonomy
 

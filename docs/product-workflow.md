@@ -122,4 +122,4 @@ Keep the launcher running for local predictions. Stop with **Ctrl+C**; projects 
 | Release refused | Frozen criteria, test counts, runtime/artifact availability and the displayed report; do not relabel synthetic rows as real |
 | Timeout or interrupted job | Inspect saved status and upstream work before retrying; a missing local response does not prove no paid work happened |
 
-For an unfamiliar control, open the [screen manual](app-guide.md#when-a-control-is-unavailable). Team deployment, organization sign-in and operator recovery are in [application hosting](application-hosting/README.md); they are not required for personal localhost use.
+For an unfamiliar control, open the [screen manual](app-guide.md#screen-manual--when-a-control-is-unavailable). Team deployment, organization sign-in and operator recovery are in [application hosting](application-hosting/README.md#application-hosting); they are not required for personal localhost use.

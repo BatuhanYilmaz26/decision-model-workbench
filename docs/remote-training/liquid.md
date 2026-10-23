@@ -85,11 +85,11 @@ assertion; an image digest alone does not certify its contents.
 
 | Provider | Service and launcher | Storage and completion | Configuration and official contract |
 |---|---|---|---|
-| AWS | SageMaker AI training; `cloud_runner` via explicit container entrypoint/arguments | S3 input channel; `/opt/ml/model` collected into the model artifact | [Managed AWS](../managed-cloud-training.md), [AWS container contract](https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo-dockerfile.html) |
-| Azure | Azure ML command job; `azure_runner` invokes the shared launcher | Named downloaded input and uploaded output | [Managed Azure](../managed-azure-training.md), [Azure environments](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-manage-environments-v2?view=azureml-api-2) |
-| GCP | CustomJob; `gcp_runner` invokes the shared launcher | Generation-bound GCS input/output; training runs on ordinary local disk | [Managed GCP](../managed-gcp-training.md), [Google custom containers](https://cloud.google.com/vertex-ai/docs/training/create-custom-container) |
-| Modal | SDK GPU Sandbox; `modal_runner` invokes the shared launcher | Dedicated durable Volume; committed output and shutdown observation | [Managed Modal](../managed-modal-training.md), [Modal Sandboxes](https://modal.com/docs/guide/sandboxes) |
-| RunPod | Dedicated GPU Pod; `runpod_runner` invokes the shared launcher | Network Volume output; Pod termination is separate from trainer exit | [Managed RunPod](../managed-runpod-training.md), [RunPod Pod lifecycle](https://docs.runpod.io/pods/manage-pods) |
+| AWS | SageMaker AI training; `cloud_runner` via explicit container entrypoint/arguments | S3 input channel; `/opt/ml/model` collected into the model artifact | [Managed AWS](aws.md#application-managed-training), [AWS container contract](https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-training-algo-dockerfile.html) |
+| Azure | Azure ML command job; `azure_runner` invokes the shared launcher | Named downloaded input and uploaded output | [Managed Azure](azure.md#application-managed-training), [Azure environments](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-manage-environments-v2?view=azureml-api-2) |
+| GCP | CustomJob; `gcp_runner` invokes the shared launcher | Generation-bound GCS input/output; training runs on ordinary local disk | [Managed GCP](gcp.md#application-managed-training), [Google custom containers](https://cloud.google.com/vertex-ai/docs/training/create-custom-container) |
+| Modal | SDK GPU Sandbox; `modal_runner` invokes the shared launcher | Dedicated durable Volume; committed output and shutdown observation | [Managed Modal](modal.md#application-managed-training), [Modal Sandboxes](https://modal.com/docs/guide/sandboxes) |
+| RunPod | Dedicated GPU Pod; `runpod_runner` invokes the shared launcher | Network Volume output; Pod termination is separate from trainer exit | [Managed RunPod](runpod.md#application-managed-training), [RunPod Pod lifecycle](https://docs.runpod.io/pods/manage-pods) |
 
 The provider-specific identity, upload, stop, uncertain-outcome and artifact
 retrieval protocols remain in those guides. No provider job is created when you
@@ -115,7 +115,7 @@ incur charges when you submit or retain resources.
    A failed or uncertain run must be reconciled before another allocation.
 6. Configure the corresponding model interpreter for local admission and serving:
    `DMT_LIQUID_PYTHON`, `DMT_LIQUID_UNSLOTH_PYTHON` or `DMT_OMNI_PYTHON`.
-   Follow [remote admission](../remote-admission-guide.md) to stage the export or
+   Follow [remote admission](../remote-training-guide.md#returned-model-admission) to stage the export or
    use managed retrieval to queue it. Inspect the independently recomputed metrics
    and activate an eligible version. Use **Make decision** or the
    [decision API](../product-workflow.md#6-release-and-integrate).

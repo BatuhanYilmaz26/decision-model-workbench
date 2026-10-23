@@ -8,18 +8,18 @@ For the standard local CPU application, follow the [root quick start](../README.
 
 | Profile | Target | Purpose |
 |---|---|---|
-| [PostgreSQL metadata](postgres.txt) | API/worker CPU environment | Optional Psycopg driver for the [experimental metadata backend](../docs/postgresql-guide.md) |
-| [Azure artifact storage](azure-artifacts.txt) | API/worker or recovery operator environment | Optional Blob SDK and Entra credential chain for [versioned model artifacts](../docs/azure-artifacts-guide.md) |
-| [Google artifact storage](gcp-artifacts.txt) | API/worker or recovery operator environment | Native GCS client, ADC and generation-pinned [shared artifacts/recovery](../docs/gcs-artifacts-guide.md) |
+| [PostgreSQL metadata](postgres.txt) | API/worker CPU environment | Optional Psycopg driver for the [experimental metadata backend](../docs/shared-artifacts-guide.md#postgresql-metadata) |
+| [Azure artifact storage](azure-artifacts.txt) | API/worker or recovery operator environment | Optional Blob SDK and Entra credential chain for [versioned model artifacts](../docs/shared-artifacts-guide.md#azure-blob) |
+| [Google artifact storage](gcp-artifacts.txt) | API/worker or recovery operator environment | Native GCS client, ADC and generation-pinned [shared artifacts/recovery](../docs/shared-artifacts-guide.md#google-cloud-storage) |
 | [Google application clients](gcp-application.txt), [image extension](managed-gcp-linux-amd64-py312.txt) | API/worker or managed Linux/amd64 CPython 3.12 CPU image | Native storage and ADC-authenticated Secret Manager startup for [GCP hosting](../docs/application-hosting/gcp.md) |
-| [Managed application extension](managed-application-linux-amd64-py312.txt) | Pinned Linux/amd64 CPython 3.12 CPU image | Hash-pinned PostgreSQL and OIDC wheels for [application hosting](../docs/application-hosting/README.md); no model weights |
+| [Managed application extension](managed-application-linux-amd64-py312.txt) | Pinned Linux/amd64 CPython 3.12 CPU image | Hash-pinned PostgreSQL and OIDC wheels for [application hosting](../docs/application-hosting/README.md#application-hosting); no model weights |
 | [Azure application clients](azure-application.txt) | API/worker or operator environment | Key Vault, managed/operator credentials and Blob clients for [Azure hosting](../docs/application-hosting/azure.md) |
 | [Azure image extension](managed-azure-linux-amd64-py312.txt) | Managed Linux/amd64 CPython 3.12 CPU image | Hash-pinned Azure SDK wheels installed after the managed application extension |
 | [Cloud template validation](cloud-validation.txt) | Separate tooling environment | CloudFormation schema validation; keep it outside the application/model environment |
 | [Linux CPU lock](platform-linux-amd64-py312.txt) | Linux/amd64, CPython 3.12.15 | 87 hash-locked external dependencies for API, UI, CPU training and five provider control clients |
 | [Linux Vega/semantic lock](vega-linux-amd64-py312-cu126.txt) | Linux/amd64, CPython 3.12.15, CUDA 12.6 | 124 hash-locked dependencies for the application, Vega and semantic encoder; use the separate [official Torch/Triton stage](torch-linux-amd64-py312-cu126.txt) |
 | [Windows CPU lock](platform-windows-py313.txt) | Windows/amd64, CPython 3.13.5 | 88 hash-locked external dependencies for API, UI, CPU training and five provider control clients |
-| [Enterprise browser login](enterprise-ui.txt) | UI server, in addition to the application profile | Direct pins for Streamlit 1.65.0, Authlib 1.9.1 and Joserfc 1.7.7; [OIDC setup](../docs/enterprise-sign-in-guide.md). This is an optional client profile, not a complete transitive lock. |
+| [Enterprise browser login](enterprise-ui.txt) | UI server, in addition to the application profile | Direct pins for Streamlit 1.65.0, Authlib 1.9.1 and Joserfc 1.7.7; [OIDC setup](../docs/authentication-guide.md#organization-sign-in). This is an optional client profile, not a complete transitive lock. |
 | [Windows model snapshot](models-windows-py312-cu126.txt) | CPython 3.12.13, CUDA 12.6 | Pinned native Laya and Unsloth encoder training/reload dependencies |
 | [Vega runtime pins](vega-runtime.txt) | Matching model environment | vegaml 0.8.0 and direct runtime pins; not a complete transitive lock |
 | [Liquid native-data profile](liquid-data.txt) | Separate CPU environment | Tokenizers 0.23.3 and project source for [d1-3B data preparation](../docs/models/liquid.md); no Torch, Transformers or weights |
@@ -40,7 +40,7 @@ For the standard local CPU application, follow the [root quick start](../README.
 
 The [CPU Linux input constraints](platform-linux-amd64-py312.in) and [Vega Linux input constraints](vega-linux-amd64-py312-cu126.in) are maintenance inputs for their corresponding locks. Use the `.txt` lock for installation; consult [runtime compatibility](../docs/compatibility-and-upgrades.md) before regenerating a profile. The [Torch/Triton Linux stage](torch-linux-amd64-py312-cu126.txt) supplies accelerator packages from their intended index.
 
-Linux recipes pin the Python base digest, require hashed wheels and install project source without dependency resolution or build isolation. Build the selected image and run its checks before use. Model snapshots and direct runtime pins are platform-specific profiles rather than complete cross-platform locks. Review the [current versions and GPU dependency advisories](../docs/compatibility-and-upgrades.md) before selecting a training environment. Follow [testing](../docs/verification.md), [CPU containers](../docs/container-guide.md) or [model containers](../docs/model-container-guide.md).
+Linux recipes pin the Python base digest, require hashed wheels and install project source without dependency resolution or build isolation. Build the selected image and run its checks before use. Model snapshots and direct runtime pins are platform-specific profiles rather than complete cross-platform locks. Review the [current versions and GPU dependency advisories](../docs/compatibility-and-upgrades.md) before selecting a training environment. Follow [testing](../docs/verification.md), [CPU containers](../docs/container-guide.md) or [model containers](../docs/model-container-guide.md#linux-model-image).
 
 ## Windows CPU application
 
@@ -75,4 +75,4 @@ Use uv 0.11.23 with the retained [CPU input pins](platform-linux-amd64-py312.in)
 uv --no-config pip compile pyproject.toml requirements/platform-linux-amd64-py312.in --extra ui --extra platform --extra aws --extra azure --extra gcp --extra runpod --extra modal --python-version 3.12.15 --python-platform x86_64-unknown-linux-gnu --only-binary :all: --generate-hashes --default-index https://pypi.org/simple --output-file requirements/platform-linux-amd64-py312.txt
 ```
 
-Vega regeneration and Torch/Triton index routing are described in the [model image guide](../docs/model-container-guide.md). Review changes, rebuild, reconcile installed packages and run the appropriate lifecycle/model checks before accepting an upgrade. Hashes bind distributions; they do not establish package safety, byte-identical images or domain quality. [uv locking](https://docs.astral.sh/uv/pip/compile/), [pip hash checking](https://pip.pypa.io/en/stable/topics/secure-installs/)
+Vega regeneration and Torch/Triton index routing are described in the [model image guide](../docs/model-container-guide.md#linux-model-image). Review changes, rebuild, reconcile installed packages and run the appropriate lifecycle/model checks before accepting an upgrade. Hashes bind distributions; they do not establish package safety, byte-identical images or domain quality. [uv locking](https://docs.astral.sh/uv/pip/compile/), [pip hash checking](https://pip.pypa.io/en/stable/topics/secure-installs/)

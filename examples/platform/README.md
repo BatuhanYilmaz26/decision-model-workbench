@@ -8,8 +8,8 @@ Use the same endpoint for a released CPU baseline, native model or hosted decisi
 
 For an experimental PostgreSQL metadata workspace, use
 [postgres_workspace.py](postgres_workspace.py) with the
-[PostgreSQL guide](../../docs/postgresql-guide.md). Metadata-only configuration
-keeps artifacts local; use the [shared-artifact guide](../../docs/shared-artifacts-guide.md)
+[PostgreSQL guide](../../docs/shared-artifacts-guide.md#postgresql-metadata). Metadata-only configuration
+keeps artifacts local; use the [shared-artifact guide](../../docs/shared-artifacts-guide.md#s3-artifacts)
 to configure S3 storage and separate model caches.
 
 Follow the [local quick start](../../README.md#run-on-your-computer), prepare data, train/evaluate and activate an eligible version. Keep its model/provider environment configured. The default personal browser app connects automatically and needs no workspace key from you. External applications still authenticate to its API.
@@ -22,7 +22,7 @@ domain-platform provision-key --file data/local-api-keys.json --tenant local --a
 domain-platform run --home data/local-workspace --keys-file data/local-api-keys.json
 ```
 
-Each provision command prints its token once. Use the owner token for the browser connection and the inference token for this client. The file stores hashes, is under the ignored `data/` directory, and must remain private. Use the actual home/tenant for an existing managed workspace rather than the personal defaults above. Reuse an existing key configuration or follow [key rotation](../../docs/authentication-guide.md#workspace-key-lifecycle) if an actor was already provisioned. Shared deployments can supply a compatible API access token instead.
+Each provision command prints its token once. Use the owner token for the browser connection and the inference token for this client. The file stores hashes, is under the ignored `data/` directory, and must remain private. Use the actual home/tenant for an existing managed workspace rather than the personal defaults above. Reuse an existing key configuration or follow [key rotation](../../docs/authentication-guide.md#workspace-credentials--workspace-key-lifecycle) if an actor was already provisioned. Shared deployments can supply a compatible API access token instead.
 
 The launcher prints the API/browser addresses. Keep the model environment and any approved provider profile/key settings used by your workspace; changing authentication mode does not install or replace a model runtime.
 
@@ -82,4 +82,4 @@ The CLI exits with `0` for accepted output and `2` when review/fallback is requi
 
 ## Organization sign-in configuration
 
-Use [streamlit-secrets.toml.example](streamlit-secrets.toml.example) as the format for a private UI-server configuration. Replace every example value and follow [the OIDC guide](../../docs/enterprise-sign-in-guide.md) for API trust, PKCE, secret handling and deployment checks. Keep the completed secrets file outside public source and container images.
+Use [streamlit-secrets.toml.example](streamlit-secrets.toml.example) as the format for a private UI-server configuration. Replace every example value and follow [the OIDC guide](../../docs/authentication-guide.md#organization-sign-in) for API trust, PKCE, secret handling and deployment checks. Keep the completed secrets file outside public source and container images.

@@ -1,6 +1,6 @@
 # Host Decision Model Workbench on Google Cloud
 
-[Application hosting](README.md) · [Project overview](../../README.md) · [Google GPU training](../remote-training/gcp.md)
+[Application hosting](README.md#application-hosting) · [Project overview](../../README.md) · [Google GPU training](../remote-training/gcp.md#direct-submission)
 
 Run the API and Streamlit browser as Cloud Run services and the durable worker as a Cloud Run worker pool. Cloud SQL stores workspace metadata; private versioned Cloud Storage buckets hold artifacts and recovery copies. Secret Manager supplies approved configuration through each role's service account.
 
@@ -70,7 +70,7 @@ Inspect the actual enabled version numbers for all three secrets and use those n
 
 The backend accepts the same [typed provider, teacher, cloud and SSO configuration](aws.md#prepare-service-private-configuration) as the other managed deployments. Include only approved profiles and credentials. Secret Manager payloads are limited to 64 KiB. The startup adapter validates the returned payload's CRC32C before loading bounded JSON. [Access API](https://docs.cloud.google.com/secret-manager/docs/reference/rest/v1/projects.secrets.versions/access), [integrity checks](https://docs.cloud.google.com/secret-manager/docs/data-integrity).
 
-For optional OIDC, create a separate `workbench-ui` secret containing only `secrets_toml` in the [enterprise sign-in format](../enterprise-sign-in-guide.md). Set `ui_auth_mode=oidc` and its exact version after registering the deployed HTTPS callback. Workspace-key mode needs no UI secret or UI secret grant.
+For optional OIDC, create a separate `workbench-ui` secret containing only `secrets_toml` in the [enterprise sign-in format](../authentication-guide.md#organization-sign-in). Set `ui_auth_mode=oidc` and its exact version after registering the deployed HTTPS callback. Workspace-key mode needs no UI secret or UI secret grant.
 
 ## Generate and review the infrastructure
 
@@ -99,7 +99,7 @@ The first phase creates persistence, identities, grants and initialization jobs,
 
 Cloud SQL uses PostgreSQL 18, 32 GiB initial storage, automatic growth, seven retained backups and point-in-time recovery. Availability defaults to `ZONAL`; choose `REGIONAL` for supported HA and its additional cost. The instance has a public IP but **requires the Cloud SQL connector**; the template adds no authorized networks for direct database access. The managed connector authenticates the workload and encrypts the database transport. Libpq connects only to its local `/cloudsql/...` Unix socket. [Cloud Run database connections](https://docs.cloud.google.com/sql/docs/postgres/connect-run).
 
-Live and backup buckets have uniform access, public-access prevention, versioning and seven-day soft delete. Normal backend access is limited to read/create in the live bucket. Recovery and cleanup need separate operator permissions; see [GCS artifacts and staging costs](../gcs-artifacts-guide.md).
+Live and backup buckets have uniform access, public-access prevention, versioning and seven-day soft delete. Normal backend access is limited to read/create in the live bucket. Recovery and cleanup need separate operator permissions; see [GCS artifacts and staging costs](../shared-artifacts-guide.md#google-cloud-storage).
 
 ## Initialize, then start the application
 
@@ -117,11 +117,11 @@ gcloud run jobs execute OPERATOR_JOB --region=REGION --project=PROJECT --wait
 
 Inspect the execution and Cloud Logging if either fails. Do not enable services before both complete. Bootstrap does not silently rotate an existing application database password.
 
-Set `deploy_services=true`, create and review another saved plan, then apply it. Open output `web_url`, select **Shared workspace**, enter output `api_url` and the bearer token saved earlier. Follow [the first-project walkthrough](../app-guide.md#first-project-walkthrough) through CPU training, release and prediction. Confirm `api_url/ready` and workspace operations before enabling external teachers or GPU jobs.
+Set `deploy_services=true`, create and review another saved plan, then apply it. Open output `web_url`, select **Shared workspace**, enter output `api_url` and the bearer token saved earlier. Follow [the first-project walkthrough](../app-guide.md#screen-manual--first-project-walkthrough) through CPU training, release and prediction. Confirm `api_url/ready` and workspace operations before enabling external teachers or GPU jobs.
 
 Defaults keep two API instances, one browser instance and one worker instance. The worker has 2 vCPU/4 GiB and no public HTTP endpoint. Worker pools use manual positive instance counts rather than waiting for HTTP traffic; adjust `worker_replicas` within the supported bounds. [Cloud Run worker pools](https://docs.cloud.google.com/run/docs/overview/what-is-cloud-run).
 
-The browser uses one instance with session affinity. Cloud Run request/WebSocket timeout is set to one hour; reconnect if a browser session expires. Project data persists in PostgreSQL; unfinished files and local caches are ephemeral. This image supports CPU baseline and configured hosted/remote-training workflows. Native foundation-model execution still needs [matching runtimes and hardware](../setup.md#configure-model-training-and-serving); [Google GPU training](../managed-gcp-training.md) remains a separate workflow.
+The browser uses one instance with session affinity. Cloud Run request/WebSocket timeout is set to one hour; reconnect if a browser session expires. Project data persists in PostgreSQL; unfinished files and local caches are ephemeral. This image supports CPU baseline and configured hosted/remote-training workflows. Native foundation-model execution still needs [matching runtimes and hardware](../setup.md#configuration--configure-model-training-and-serving); [Google GPU training](../remote-training/gcp.md#application-managed-training) remains a separate workflow.
 
 ## Monitor, update and rotate
 
@@ -149,7 +149,7 @@ Rotate database passwords and their matching Secret Manager versions together. `
 
 ## Recover or remove resources
 
-Use [coordinated recovery](../shared-recovery-guide.md) with the [GCS live/vault configuration](../gcs-artifacts-guide.md#back-up-and-restore) from an authorized operator environment connected to Cloud SQL. Database backups alone do not contain model objects. Keep recovery copies and their identities separate from ordinary application access.
+Use [coordinated recovery](../recovery-guide.md#shared-workspace-recovery) with the [GCS live/vault configuration](../shared-artifacts-guide.md#google-cloud-storage--back-up-and-restore) from an authorized operator environment connected to Cloud SQL. Database backups alone do not contain model objects. Keep recovery copies and their identities separate from ordinary application access.
 
 Restore into a fresh schema, home and object prefix, then set `database_schema` and `artifact_prefix` to those restored values before exposing replacement services. When rebuilding Terraform management around retained resources, import them into the approved state rather than attempting to recreate or destroy their buckets/database. Publish current trust/revocation policy and verify cold predictions and tenant isolation before restoring traffic.
 

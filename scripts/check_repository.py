@@ -97,6 +97,43 @@ def heading_anchors(text):
 
 
 anchors = {path: heading_anchors(text) for path, text in document_text.items()}
+
+# A retired guide must lead to a real section without leaving a duplicate page.
+page_moves = root / "docs/page-moves.json"
+if page_moves in files:
+    registry = json.loads(page_moves.read_text(encoding="utf-8-sig"))
+    if registry.get("version") != 1 or not isinstance(registry.get("moves"), list):
+        errors.append("docs/page-moves.json: invalid page-move registry")
+    else:
+        former_paths = set()
+        for move in registry["moves"]:
+            if not isinstance(move, dict) or not all(
+                isinstance(move.get(field), str) for field in ("from", "to")
+            ):
+                errors.append("docs/page-moves.json: invalid page-move entry")
+                continue
+            former = (root / move["from"]).resolve()
+            destination, _, fragment = move["to"].partition("#")
+            target = (root / destination).resolve()
+            if (
+                not former.is_relative_to(root)
+                or not target.is_relative_to(root)
+                or former.suffix != ".md"
+                or former in files
+                or former in former_paths
+            ):
+                errors.append(f"Invalid retired guide path: {move['from']}")
+            former_paths.add(former)
+            if target not in anchors or fragment not in anchors[target]:
+                errors.append(f"Page-move target is missing: {move['to']}")
+            aliases = move.get("anchors")
+            if not isinstance(aliases, dict) or not all(
+                isinstance(old, str)
+                and isinstance(new, str)
+                and new in anchors.get(target, set())
+                for old, new in aliases.items()
+            ):
+                errors.append(f"Invalid heading mappings for: {move['from']}")
 navigation = {path: set() for path in documents}
 links = 0
 blocks = 0

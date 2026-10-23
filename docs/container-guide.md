@@ -2,13 +2,13 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-Run the API, independent worker and browser with a Linux/amd64 CPU image using CPython 3.12.15. Compose keeps workspace data in a named volume. The verifier checks CPU training, release, inference, service replacement and recovery using fictional examples. For GPU training and serving, use a separate [model image](model-container-guide.md) or [model environment](setup.md#configure-model-training-and-serving).
+Run the API, independent worker and browser with a Linux/amd64 CPU image using CPython 3.12.15. Compose keeps workspace data in a named volume. The verifier checks CPU training, release, inference, service replacement and recovery using fictional examples. For GPU training and serving, use a separate [model image](model-container-guide.md#linux-model-image) or [model environment](setup.md#configuration--configure-model-training-and-serving).
 
-The [Vega/semantic image](model-container-guide.md) has its own CUDA dependencies and GPU checks. Native Laya and Unsloth need separately validated Linux training images.
+The [Vega/semantic image](model-container-guide.md#linux-model-image) has its own CUDA dependencies and GPU checks. Native Laya and Unsloth need separately validated Linux training images.
 
 ## Start your own workspace
 
-Install Docker Engine/Desktop with Linux containers and Docker Compose supporting `--wait`. Start the engine. Run the following from the repository root in a Python environment installed according to [local setup](setup.md):
+Install Docker Engine/Desktop with Linux containers and Docker Compose supporting `--wait`. Start the engine. Run the following from the repository root in a Python environment installed according to [local setup](setup.md#configuration):
 
 ```bash
 domain-platform provision-key --file data/config/operator-keys.json --tenant my-enterprise --actor owner --role admin
@@ -34,7 +34,7 @@ Stop without deleting the named workspace volume:
 docker compose down
 ```
 
-Use the same Compose project identity when reopening the workspace. Named volumes survive ordinary container replacement and `down`; adding `--volumes` deletes them. Back up before deliberate data removal or migration. [Compose lifecycle](https://docs.docker.com/reference/cli/docker/compose/up/), [down/volume semantics](https://docs.docker.com/reference/cli/docker/compose/down/), [operator recovery](recovery-guide.md)
+Use the same Compose project identity when reopening the workspace. Named volumes survive ordinary container replacement and `down`; adding `--volumes` deletes them. Back up before deliberate data removal or migration. [Compose lifecycle](https://docs.docker.com/reference/cli/docker/compose/up/), [down/volume semantics](https://docs.docker.com/reference/cli/docker/compose/down/), [operator recovery](recovery-guide.md#local-backups)
 
 ## Verify a build without touching your workspace
 
@@ -59,7 +59,7 @@ The check performs these actual operations:
 
 Each run retains its receipt, generated configuration and private Docker log under a new directory in `data/container-checks`. `--output` changes that parent; existing runs are not overwritten. A failed operation or failed cleanup produces a nonzero exit. If cleanup fails, inspect the recorded project and resources before removing anything. The check does not delete your normal application workspace.
 
-The same maintained command has an explicit Vega route using a retained model image, approved offline cache and selected local GPU; follow the [model image lifecycle check](model-container-guide.md#verify-authenticated-container-lifecycle). The default CPU route remains separate.
+The same maintained command has an explicit Vega route using a retained model image, approved offline cache and selected local GPU; follow the [model image lifecycle check](model-container-guide.md#linux-model-image--verify-authenticated-container-lifecycle). The default CPU route remains separate.
 
 The CI workflow includes a Docker build and the maintained acceptance command. Confirm the GitHub Actions result for your revision; local execution does not establish a hosted CI pass.
 

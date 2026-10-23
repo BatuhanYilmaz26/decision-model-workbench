@@ -108,7 +108,7 @@ does not establish support for model training on macOS or a particular GPU.
 Start with the [fictional example specification and CSV](../../examples/liquid/README.md).
 Describe your domain, allowed outcomes, edge cases and desired training coverage
 in natural language. Define the questions, enter examples or upload CSV, XLSX,
-TSV, JSON or JSONL using the [application's import workflow](../import-guide.md).
+TSV, JSON or JSONL using the [application's import workflow](../data-guide.md#file-import).
 Review labels and source families before reserving the data.
 
 For synthetic coverage, use a compatible local or hosted **generative teacher**
@@ -420,7 +420,7 @@ is a different adapter and must not be substituted.
 
 Keep `canonical/calibration.jsonl` and `canonical/test.jsonl` outside training.
 After training, independently reload the complete saved model through Liquid's
-native API and follow [evaluation and calibration](../evaluation-guide.md).
+native API and follow [evaluation and calibration](../evaluation-guide.md#evaluation).
 An SFT loss curve alone does not establish calibrated decisions or application
 release readiness. For the native loading/`system_one` interface, see the
 [publisher's d1-3B guide](https://docs.liquid.ai/lfm/models/d1-3b).

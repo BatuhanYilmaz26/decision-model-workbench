@@ -6,12 +6,12 @@ These templates describe operator-approved resources for the application-managed
 
 | Template | Configuration guide | Direct provider walkthrough |
 |---|---|---|
-| [aws-profiles.json](aws-profiles.json) | [Managed AWS](../../docs/managed-cloud-training.md) | [SageMaker AI](../../docs/remote-training/aws.md) |
-| [azure-profiles.json](azure-profiles.json) | [Managed Azure](../../docs/managed-azure-training.md) | [Azure Machine Learning](../../docs/remote-training/azure.md) |
-| [gcp-profiles.json](gcp-profiles.json) | [Managed GCP](../../docs/managed-gcp-training.md) | [Google Cloud](../../docs/remote-training/gcp.md) |
-| [modal-profiles.json](modal-profiles.json) | [Managed Modal](../../docs/managed-modal-training.md) | [Modal Function](../../docs/remote-training/modal.md) |
-| [runpod-profiles.json](runpod-profiles.json) | [Managed RunPod](../../docs/managed-runpod-training.md) | [RunPod Pod](../../docs/remote-training/runpod.md) |
+| [aws-profiles.json](aws-profiles.json) | [Managed AWS](../../docs/remote-training/aws.md#application-managed-training) | [SageMaker AI](../../docs/remote-training/aws.md#direct-submission) |
+| [azure-profiles.json](azure-profiles.json) | [Managed Azure](../../docs/remote-training/azure.md#application-managed-training) | [Azure Machine Learning](../../docs/remote-training/azure.md#direct-submission) |
+| [gcp-profiles.json](gcp-profiles.json) | [Managed GCP](../../docs/remote-training/gcp.md#application-managed-training) | [Google Cloud](../../docs/remote-training/gcp.md#direct-submission) |
+| [modal-profiles.json](modal-profiles.json) | [Managed Modal](../../docs/remote-training/modal.md#application-managed-training) | [Modal Function](../../docs/remote-training/modal.md#direct-submission) |
+| [runpod-profiles.json](runpod-profiles.json) | [Managed RunPod](../../docs/remote-training/runpod.md#application-managed-training) | [RunPod Pod](../../docs/remote-training/runpod.md#direct-submission) |
 
 Confirm the account, tenant scope, region, GPU, image digest, source identity, storage and limits. Supply credentials through the guide's private operator configuration, and obtain the required data-transfer and compute approvals before submission.
 
-Use [provider compatibility checks](../../docs/verification.md#provider-compatibility-checks) with non-sensitive examples. Verify cancellation, resource termination, retained storage and charges. Follow [remote admission](../../docs/remote-admission-guide.md) before registering a returned model export.
+Use [provider compatibility checks](../../docs/verification.md#provider-compatibility-checks) with non-sensitive examples. Verify cancellation, resource termination, retained storage and charges. Follow [remote admission](../../docs/remote-training-guide.md#returned-model-admission) before registering a returned model export.

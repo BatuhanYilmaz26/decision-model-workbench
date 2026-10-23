@@ -1,6 +1,6 @@
 # Host Decision Model Workbench on AWS
 
-[Application hosting](README.md) · [Project overview](../../README.md) · [AWS training jobs](../remote-training/aws.md)
+[Application hosting](README.md#application-hosting) · [Project overview](../../README.md) · [AWS training jobs](../remote-training/aws.md#direct-submission)
 
 This recipe generates a CloudFormation stack for separate API, worker and Streamlit services on ECS Fargate. It creates private RDS PostgreSQL metadata, a private versioned S3 artifact bucket, HTTPS load balancing, service roles, CloudWatch logs and basic infrastructure alarms.
 
@@ -58,7 +58,7 @@ The backend JSON supports:
 | Field | Use |
 |---|---|
 | `operator_keys` | The complete approved workspace-key hash/tenant/actor/role inventory |
-| `sso` | Optional trusted API issuer, audience, bindings and revocations from the [enterprise sign-in guide](../enterprise-sign-in-guide.md) |
+| `sso` | Optional trusted API issuer, audience, bindings and revocations from the [enterprise sign-in guide](../authentication-guide.md#organization-sign-in) |
 | `decision_profiles` | Supported hosted decision profiles |
 | `cloud_profiles` | Approved remote-training account/image/resource profiles |
 | `taxonomy_profiles` | Optional category-discovery provider profiles |
@@ -66,9 +66,9 @@ The backend JSON supports:
 | `semantic_profile` | Optional semantic-audit profile for an explicitly provisioned matching runtime |
 | `environment` | String-valued provider/cloud/teacher/generation/schema/taxonomy/semantic settings, documented model-runtime Python paths and `DMT_MODEL_CACHE` |
 
-Use the existing [hosted API](../hosted-decisions-guide.md), [teacher](../setup.md#configure-a-teacher) and [five-provider training](../remote-training-guide.md) guides for the file formats, allowed settings, credentials and approval controls. Put credential documents in their typed fields rather than redirecting profile-file paths through `environment`. Secret values are limited to Secrets Manager's 64 KiB string size.
+Use the existing [hosted API](../hosted-decisions-guide.md), [teacher](../setup.md#configuration--configure-a-teacher) and [five-provider training](../remote-training-guide.md#study-protocol) guides for the file formats, allowed settings, credentials and approval controls. Put credential documents in their typed fields rather than redirecting profile-file paths through `environment`. Secret values are limited to Secrets Manager's 64 KiB string size.
 
-The browser receives neither this secret nor database/provider credentials. For OIDC, create a **separate** UI JSON secret containing only `secrets_toml`, whose value is the Streamlit auth TOML described in [enterprise sign-in](../enterprise-sign-in-guide.md). Use the public HTTPS callback URL. Set `UiSecretArn` and `UiAuthMode=oidc`; otherwise the shared-workspace key login remains available. The API's issuer configuration and the browser's OAuth client are separate settings.
+The browser receives neither this secret nor database/provider credentials. For OIDC, create a **separate** UI JSON secret containing only `secrets_toml`, whose value is the Streamlit auth TOML described in [enterprise sign-in](../authentication-guide.md#organization-sign-in). Use the public HTTPS callback URL. Set `UiSecretArn` and `UiAuthMode=oidc`; otherwise the shared-workspace key login remains available. The API's issuer configuration and the browser's OAuth client are separate settings.
 
 If your imported secrets use a customer-managed KMS key, supply its ARN as `SecretsKmsKeyArn` and authorize the relevant roles in the key policy. Provider credentials stay server-side. The normal backend role has artifact read/write permissions, not object deletion, bucket administration or database-administrator access.
 
@@ -152,17 +152,17 @@ Change `ServicesEnabled` to `true` in the approved parameter file. Create/review
 aws ecs wait services-stable --cluster CLUSTER --services API_SERVICE WORKER_SERVICE UI_SERVICE --region REGION
 ```
 
-Open `https://YOUR_HOSTNAME`. Use the OIDC login or choose **Shared workspace**, enter that same HTTPS API URL, and use the bearer token saved earlier. Follow the [first-project walkthrough](../app-guide.md#first-project-walkthrough). Start with a reviewed CPU baseline study to exercise data intake, worker preparation, training, release and prediction before enabling external teachers or paid GPU jobs.
+Open `https://YOUR_HOSTNAME`. Use the OIDC login or choose **Shared workspace**, enter that same HTTPS API URL, and use the bearer token saved earlier. Follow the [first-project walkthrough](../app-guide.md#screen-manual--first-project-walkthrough). Start with a reviewed CPU baseline study to exercise data intake, worker preparation, training, release and prediction before enabling external teachers or paid GPU jobs.
 
 `/v1/*`, `/health`, `/ready` and API documentation routes go to the API; the remaining paths go to Streamlit. HTTP redirects to HTTPS. The browser service has no database or artifact permissions. Normal API/worker tasks cannot read the RDS administrator secret.
 
-For AWS training, attach your approved scoped policy through `AdditionalBackendPolicyArn`. Other providers need their own configured profiles/credentials. These permissions do not authorize automatic paid jobs: the existing owner review and submission controls still apply. Fargate supplies no GPU, and this image does not contain Torch or foundation weights. Select the appropriate [remote GPU workflow](../remote-training-guide.md) or qualify a suitable native runtime/topology for model execution.
+For AWS training, attach your approved scoped policy through `AdditionalBackendPolicyArn`. Other providers need their own configured profiles/credentials. These permissions do not authorize automatic paid jobs: the existing owner review and submission controls still apply. Fargate supplies no GPU, and this image does not contain Torch or foundation weights. Select the appropriate [remote GPU workflow](../remote-training-guide.md#study-protocol) or qualify a suitable native runtime/topology for model execution.
 
 ## Monitor, update and recover
 
 - Use `/ready`, [project operations](../shared-workspace-operations-guide.md), ECS service events and CloudWatch logs. The stack includes API unhealthy-target and low database-storage alarms. Supply an existing SNS topic ARN through `AlarmTopicArn` if you want alarm delivery; configure and confirm its subscriptions yourself.
 - Completed projects, datasets, jobs, models and releases persist in RDS/S3. Local caches and unfinished task files are ephemeral. An interrupted job needs inspection and explicit resubmission; do not replay uncertain provider operations automatically.
-- Use [coordinated shared recovery](../shared-recovery-guide.md) from an approved private-network operator environment and a dedicated backup role. RDS's seven-day database backups alone do not capture model objects. Protect an independent recovery vault; normal application roles deliberately lack its administrative permissions.
+- Use [coordinated shared recovery](../recovery-guide.md#shared-workspace-recovery) from an approved private-network operator environment and a dedicated backup role. RDS's seven-day database backups alone do not capture model objects. Protect an independent recovery vault; normal application roles deliberately lack its administrative permissions.
 - To inspect the authorization revision and pending-job count, run `ApiTask` once with the command override `python -m decision_workbench.platform.deployment status` and read its private log.
 - To change workspace keys, roles, issuers or revocations, update the complete approved backend secret and run `publish-auth` with the current expected revision. Changed content with a stale revision is refused; an identical publication can be retried without creating another revision. An explicit empty `operator_keys` list with no SSO denies all keys. Local credential-file commands do not edit the cloud authority.
 - Changing provider secrets/profiles or browser OIDC settings requires a new task deployment to reload them. Do not assume updating Secrets Manager refreshes running process environments/files. [AWS secret refresh behavior](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
@@ -174,7 +174,7 @@ Before production traffic, validate the deployed DNS/TLS chain, IAM permissions,
 
 ### Restore to replacement infrastructure
 
-Create replacement infrastructure with services disabled and run the database bootstrap. When recovering an existing workspace, leave authorization publication until after the restore. From your approved private-network operator environment, follow [shared recovery](../shared-recovery-guide.md) using the replacement database and an independent target artifact scope. The database security group accepts application-task security-group members; arrange equivalent approved operator access without making RDS public.
+Create replacement infrastructure with services disabled and run the database bootstrap. When recovering an existing workspace, leave authorization publication until after the restore. From your approved private-network operator environment, follow [shared recovery](../recovery-guide.md#shared-workspace-recovery) using the replacement database and an independent target artifact scope. The database security group accepts application-task security-group members; arrange equivalent approved operator access without making RDS public.
 
 Set the stack's `DatabaseSchema` and `ArtifactPrefix` parameters to the restored schema and returned object prefix. Review that update before starting any service; both application configuration and its S3 policy must use the same restored scope. Run the `status` task to inspect the recovered authorization revision, then publish your current approved configuration with that expected revision. Verify cold predictions, role isolation and unfinished-job state before promoting the replacement hostname. Isolate the original deployment and reconcile upstream work before permitting new requests.
 

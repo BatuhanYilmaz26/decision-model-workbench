@@ -17,7 +17,7 @@ Compare the decision API contracts and Vega results published by **12 October 20
 | [vegaml source](https://github.com/NandhaKishorM/vegaml/tree/3bf76b71437fc58d5ffa21b680e30fb5887a1bb4) | Version 0.8.0; loader, prompt builder, gates and fitting inspected | Explicit engine mode and separate domain adapter required |
 | [Vega card](https://huggingface.co/nandakishorm/vega-08b-public-intents/blob/42ac8d4fa9efb61f96e53d80962cf28f6dfe667e/README.md) | New author comparison: 3,841 decisions/system on 11 October | Do not combine with the earlier 5,096-decision run |
 
-The original Jev launch, LangChain harness, Laya source and Unsloth training guide provide the foundations. They remain the foundation for [concepts](../docs/concepts.md) and [training](../docs/training-guide.md). A typed output can select the wrong allowed outcome; schema safety is distinct from factual/workflow correctness.
+The original Jev launch, LangChain harness, Laya source and Unsloth training guide provide the foundations. They remain the foundation for [concepts](../docs/concepts.md#decision-concepts) and [training](../docs/training-guide.md). A typed output can select the wrong allowed outcome; schema safety is distinct from factual/workflow correctness.
 
 ## API implications
 
@@ -53,6 +53,6 @@ These versioned extracts are historical snapshots, not a complete current leader
 
 ## Training and implementation
 
-Train open-weight models using the [AWS, Azure, GCP, Modal and RunPod walkthroughs](../docs/remote-training-guide.md). Each covers staging, submission, observation, retrieval and stopping. Use [provider selection](../docs/remote-training/provider-selection.md) to compare capacity, total cost and retained-resource charges, and validate the selected image and account before a domain study.
+Train open-weight models using the [AWS, Azure, GCP, Modal and RunPod walkthroughs](../docs/remote-training-guide.md#study-protocol). Each covers staging, submission, observation, retrieval and stopping. Use [provider selection](../docs/remote-training-guide.md#choosing-a-provider) to compare capacity, total cost and retained-resource charges, and validate the selected image and account before a domain study.
 
-Vega 0.8.0 changes default readout selection. Source inspection also finds inner prompt shortening and fitting minimums. [The Vega guide](../docs/vega-guide.md) records complete asset pins, applicability negatives and four-role adaptation requirements.
+Vega 0.8.0 changes default readout selection. Source inspection also finds inner prompt shortening and fitting minimums. [The Vega guide](../docs/vega-guide.md#vega-model) records complete asset pins, applicability negatives and four-role adaptation requirements.

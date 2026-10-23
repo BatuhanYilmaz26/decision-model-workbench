@@ -2,7 +2,7 @@
 
 Install the ``postgres`` extra. This adapter preserves the workspace's short,
 serialized transactions across processes. It does not move model artifacts or
-turn a local filesystem into shared storage; see docs/postgresql-guide.md.
+turn a local filesystem into shared storage; see docs/shared-artifacts-guide.md#postgresql-metadata.
 """
 
 from contextlib import contextmanager

@@ -2,7 +2,7 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-Use decision models for support routing, invoice categorization, retrieval filtering, agent action review or model cascades. The designs below explain where to insert a model, what evidence to collect and how to measure the result. Connect them using the [API examples](api-integration-guide.md), then follow the [evaluation guide](evaluation-guide.md) before automating a branch.
+Use decision models for support routing, invoice categorization, retrieval filtering, agent action review or model cascades. The designs below explain where to insert a model, what evidence to collect and how to measure the result. Connect them using the [API examples](api-integration-guide.md), then follow the [evaluation guide](evaluation-guide.md#evaluation) before automating a branch.
 
 ## Extend an existing application
 
@@ -45,7 +45,7 @@ Collect examples by ticket family and time, including unresolved, ambiguous and 
 
 Extract descriptions and verified business context before classification. Keep tax calculations, duplicate checks, approval limits and payment execution in code. Define canonical category IDs with owner-approved descriptions. Missing context and unfamiliar vendors should reach review rather than force a familiar category.
 
-Use TypeLLM's [invoice discovery notebook](https://github.com/TypeLLM/TypeLLM/blob/fd9b97a06386d1898d2c241796c3c81bd10db9c0/examples/notebooks/discover_invoice_categories.ipynb) to understand enum-plus-conditional-name generation. In this project, proposed names go through [taxonomy review](taxonomy-guide.md). An owner confirms a successor schema; categories do not grow inside concurrent inference requests. Keep discovery examples and known relatives out of independent holdouts. Train the fixed-schema specialist only after category review. Evaluate category agreement, unseen-category recall, review effort and duplicate/alias behavior.
+Use TypeLLM's [invoice discovery notebook](https://github.com/TypeLLM/TypeLLM/blob/fd9b97a06386d1898d2c241796c3c81bd10db9c0/examples/notebooks/discover_invoice_categories.ipynb) to understand enum-plus-conditional-name generation. In this project, proposed names go through [taxonomy review](domain-schema-guide.md#category-discovery). An owner confirms a successor schema; categories do not grow inside concurrent inference requests. Keep discovery examples and known relatives out of independent holdouts. Train the fixed-schema specialist only after category review. Evaluate category agreement, unseen-category recall, review effort and duplicate/alias behavior.
 
 ### 3. Retrieval evidence filter
 
@@ -68,10 +68,10 @@ Optimize against total cost per successfully completed task at a frozen quality 
 ## A new domain-model project from intake to release
 
 1. Ask the owner to describe the decision, available evidence, outcomes, exclusions and error costs in natural language. Show the proposed question contract and request explicit confirmation.
-2. Offer the exact [data format](data-guide.md), a few editable examples and CSV/XLSX/TSV/JSON/JSONL intake. Preview worksheets and map columns before saving. Preserve missing-label drafts rather than silently inventing gold.
+2. Offer the exact [data format](data-guide.md#data-contract), a few editable examples and CSV/XLSX/TSV/JSON/JSONL intake. Preview worksheets and map columns before saving. Preserve missing-label drafts rather than silently inventing gold.
 3. Review real examples and reserve independent validation, calibration and locked test roles before synthesis. Group entities, duplicates, known relationships and seed descendants. Record decision/evidence/label times when available.
 4. Ask what additional training coverage is needed. Generate candidates from approved training seeds, record teacher/prompt/source lineage and require review. Generated candidates remain training-only; a large synthetic corpus does not replace real gold.
-5. Train a CPU comparison and a chosen decision backend locally or using one of the [five cloud workflows](remote-training-guide.md). Keep identical study inputs and acceptance policy across compute locations.
+5. Train a CPU comparison and a chosen decision backend locally or using one of the [five cloud workflows](remote-training-guide.md#study-protocol). Keep identical study inputs and acceptance policy across compute locations.
 6. Fit calibration on its reserved role, evaluate the final exported runtime and inspect abstention, subgroup and business-cost behavior. Select model settings using validation rather than repeated test inspection.
 7. Admit the full export, obtain owner release approval and expose the scoped inference endpoint. Application-side policy validates release identity before acting; monitoring and rollback retain the previous accepted version.
 

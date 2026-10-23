@@ -11,7 +11,7 @@ every model, device or cloud combination is supported.
 | CPU comparison baseline | Local domain training, evaluation, release and predictions | [Complete application workflow](../product-workflow.md) |
 | Laya | Native decision-head training and exported-model serving on compatible profiles | [Training](../training-guide.md#native-laya-adapter) |
 | Unsloth decision training | Compatible decision-head fine-tuning, export and serving | [Unsloth adapter](../training-guide.md#unsloth-adapter) |
-| Vega | Domain adapters, paired applicability data, local/five-provider cloud training, evaluation and serving | [Vega workflow](../vega-guide.md), [cloud training](../remote-training/vega.md) |
+| Vega | Domain adapters, paired applicability data, local/five-provider cloud training, evaluation and serving | [Vega workflow](../vega-guide.md#vega-model), [cloud training](../remote-training/vega.md) |
 | Jev / TypeSafe | Direct hosted requests and application-managed evaluation | [API integration](../api-integration-guide.md), [hosted studies](../hosted-decisions-guide.md) |
 | OpenRouter | Hosted decision requests through supported model routes | [OpenRouter integration](../api-integration-guide.md) |
 | Perplexity Decider v1.2 / Flash v1.2 | Hosted evaluation/releases; separate open v1.1 CPU data conversion, experimental Linux/CUDA app/CLI and five-provider cloud studies, native admission and prediction | [Hosted guide](perplexity.md), [native workflow](perplexity-native.md), [cloud training](../remote-training/perplexity.md), [API example](../../examples/perplexity/README.md) |
@@ -21,11 +21,11 @@ every model, device or cloud combination is supported.
 | Liquid d1-omni-600M | Native text/JSON head adaptation on CPU/CUDA, soft labels, native data export, calibration, release and inference | [Omni guide](liquid-omni.md) |
 | Decision 3.0 family | Six pinned native profiles with distinct weights, geometry, data identities and hardware floors; larger profiles are experimental | [Family guide](d3-family.md), [cloud training](../remote-training/d3.md) |
 | D3 Edge | Local application/CLI and five-provider cloud studies, native-readout training, soft targets, calibrated exports, release and inference | [D3 workflow](d3.md), [cloud training](../remote-training/d3.md), [examples](../../examples/d3/README.md) |
-| Local or hosted generative teacher | Reviewed synthetic candidates and optional schema assistance | [Synthetic generation](../synthetic-generation-guide.md), [schema assistant](../schema-assistant-guide.md) |
-| TypeLLM category discovery | Review proposed categories before adopting a schema | [Taxonomy workflow](../taxonomy-guide.md) |
+| Local or hosted generative teacher | Reviewed synthetic candidates and optional schema assistance | [Synthetic generation](../synthetic-generation-guide.md), [schema assistant](../domain-schema-guide.md#question-drafting) |
+| TypeLLM category discovery | Review proposed categories before adopting a schema | [Taxonomy workflow](../domain-schema-guide.md#category-discovery) |
 
-For every training workflow, use [reviewed data](../data-guide.md),
-[independent evaluation](../evaluation-guide.md) and a compatible
+For every training workflow, use [reviewed data](../data-guide.md#data-contract),
+[independent evaluation](../evaluation-guide.md#evaluation) and a compatible
 [dependency profile](../../requirements/README.md). For rented GPUs, the
 [five-provider directory](../remote-training/README.md) distinguishes direct
 submission instructions from application-managed jobs. It does not establish
@@ -45,6 +45,6 @@ training/serving adapters for the routes below are not delivered here yet.
 | Interfaze Lite | [Model card](https://huggingface.co/interfaze-ai/interfaze-1-lite) | A generative/perception companion, not an interchangeable typed-probability backend. |
 | Amos 1 | [Publisher models](https://amos.scira.ai/models/), [API documentation](https://amos.scira.ai/docs/) | Verify model identity, request-retention terms and availability of training artifacts. |
 
-Use the [model landscape](../model-landscape.md) and
+Use the [model landscape](../concepts.md#model-landscape) and
 [benchmark guide](../benchmarks.md) for dated comparisons. Check the publisher's
 current model identity and terms before selecting a route.

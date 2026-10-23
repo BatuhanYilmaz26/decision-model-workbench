@@ -108,7 +108,7 @@ Successful output is a **pending, unreviewed** dataset. Every row retains synthe
 
 Open the data tab, refresh collections and select the returned dataset. Check evidence and labels independently, correct mistakes, reject unusable examples and record review notes. Inspect copying, personal data, class balance, duplicates and policy consistency. Teacher confidence is not ground truth.
 
-Prepare an extension using the original snapshot as the base and the reviewed synthetic revision as additional data. The original real evaluation roles remain fixed; seed descendants stay in training. Then follow [training](training-guide.md) and [evaluation](evaluation-guide.md). More candidates do not establish improved domain performance.
+Prepare an extension using the original snapshot as the base and the reviewed synthetic revision as additional data. The original real evaluation roles remain fixed; seed descendants stay in training. Then follow [training](training-guide.md) and [evaluation](evaluation-guide.md#evaluation). More candidates do not establish improved domain performance.
 
 ### Download data or continue training
 
@@ -174,7 +174,7 @@ Leave `DMT_TEACHER_RESPONSE_FORMAT` unset or blank to preserve `json_object`. Th
 
 JSON Schema mode sends a schema with `strict: false`, allowing arbitrary text/JSON evidence and teacher-proposed question names. This is a format hint, not a promise of schema adherence or correct labels. Complete responses are validated and still require human review. Check your selected model/server's compatibility. [LM Studio structured output](https://lmstudio.ai/docs/developer/openai-compat/structured-output), [vLLM structured output](https://docs.vllm.ai/en/latest/features/structured_outputs/)
 
-The optional [schema assistant](schema-assistant-guide.md) uses the same teacher to draft questions before project creation. Configure the API and worker consistently, then approve the domain-brief request in the browser. Its timeout and daily request limit are configurable separately; every proposed question still requires owner review.
+The optional [schema assistant](domain-schema-guide.md#question-drafting) uses the same teacher to draft questions before project creation. Configure the API and worker consistently, then approve the domain-brief request in the browser. Its timeout and daily request limit are configurable separately; every proposed question still requires owner review.
 
 If your teacher requires `max_completion_tokens` or rejects temperature, set
 `DMT_SCHEMA_TOKEN_PARAMETER=max_completion_tokens` and
@@ -182,7 +182,7 @@ If your teacher requires `max_completion_tokens` or rejects temperature, set
 `DMT_GENERATION_TOKEN_PARAMETER` and `DMT_GENERATION_TEMPERATURE` for synthetic
 candidates. In direct personal startup, **Teacher token limit parameter** and
 **Omit teacher temperature** apply those choices to both workflows. Detailed
-[schema controls](schema-assistant-guide.md#set-up-the-teacher) and
+[schema controls](domain-schema-guide.md#question-drafting--set-up-the-teacher) and
 [generation controls](synthetic-generation-guide.md) explain their independent
 output allowances. Restart services after changing settings.
 
@@ -227,7 +227,7 @@ Submission `config` requires `data_approved=true`, `cost_approved=true` and `exp
 
 ## Recovery and maintenance
 
-Stop all services before upgrading a workspace to schema 11, and restart them with the same application version. Older schema-8/9/10 applications refuse the newer workspace. [Recovery](recovery-guide.md) validates the archived request, response, candidate dataset and retry/settlement references without regenerating historical prompts. Restoring unfinished jobs does not replay teacher calls. Historical generation jobs without a request archive cannot dispatch under this workflow; approve a new request instead.
+Stop all services before upgrading a workspace to schema 11, and restart them with the same application version. Older schema-8/9/10 applications refuse the newer workspace. [Recovery](recovery-guide.md#local-backups) validates the archived request, response, candidate dataset and retry/settlement references without regenerating historical prompts. Restoring unfinished jobs does not replay teacher calls. Historical generation jobs without a request archive cannot dispatch under this workflow; approve a new request instead.
 
 The standalone generation helper is a maintenance tool with bounded output and a socket timeout. It does not provide the application's durable approvals, supervised whole-call deadline, budget history or retry reconciliation. Use the application or workspace API when those controls are required.
 

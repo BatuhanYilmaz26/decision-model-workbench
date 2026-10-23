@@ -2,15 +2,15 @@
 
 [All guides](../docs/README.md) · [Project overview](../README.md)
 
-The application workflow starts in [local setup](../docs/setup.md). These commands support training, reproducible checks and research maintenance; they do not replace the browser/API workflow.
+The application workflow starts in [local setup](../docs/setup.md#configuration). These commands support training, reproducible checks and research maintenance; they do not replace the browser/API workflow.
 
 | Command | Purpose | Guide |
 |---|---|---|
 | `python scripts/check_repository.py` | Validate local files/headings, guide reachability, folder indexes, Python examples, source syntax, data examples and benchmark identity | [Testing](../docs/verification.md) |
-| `python scripts/verify_containers.py --help` | Run an isolated fictional CPU or Vega lifecycle and retain a local report | [CPU containers](../docs/container-guide.md), [model containers](../docs/model-container-guide.md) |
+| `python scripts/verify_containers.py --help` | Run an isolated fictional CPU or Vega lifecycle and retain a local report | [CPU containers](../docs/container-guide.md), [model containers](../docs/model-container-guide.md#linux-model-image) |
 | `python scripts/train_unsloth.py --help` | Thin entry point for the shared Unsloth trainer | [Training](../docs/training-guide.md) |
 | `python scripts/predict_unsloth.py --help` | Load a selected Unsloth checkpoint and typed request | [Training](../docs/training-guide.md) |
-| `python scripts/create_semantic_profile.py --help` | Record operator-selected encoder assets for local semantic review | [Semantic data](../docs/semantic-data-guide.md) |
+| `python scripts/create_semantic_profile.py --help` | Record operator-selected encoder assets for local semantic review | [Semantic data](../docs/reservation-guide.md#semantic-relatives) |
 
 ## Capture a new source snapshot
 

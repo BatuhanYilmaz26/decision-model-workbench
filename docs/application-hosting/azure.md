@@ -1,6 +1,6 @@
 # Host Decision Model Workbench on Azure
 
-[Application hosting](README.md) · [Project overview](../../README.md) · [Azure GPU training](../remote-training/azure.md)
+[Application hosting](README.md#application-hosting) · [Project overview](../../README.md) · [Azure GPU training](../remote-training/azure.md#direct-submission)
 
 Run separate API, worker and Streamlit services in Azure Container Apps, with private-network PostgreSQL metadata, versioned Blob artifacts and Key Vault configuration. The generated ARM template also supplies managed identities, initialization jobs, logs, a database-storage alert and deletion locks on durable resources.
 
@@ -71,7 +71,7 @@ Use the database administrator secret's exact version in the ARM parameter refer
 
 The backend JSON accepts the same [typed provider, teacher, cloud and SSO fields](aws.md#prepare-service-private-configuration) as the other managed deployment. Put only approved profiles and credentials there. Key Vault secrets have a 25 KiB limit, so keep the configuration inventory bounded; datasets and model files belong in their normal stores. [Key Vault limits](https://learn.microsoft.com/en-us/azure/key-vault/general/service-limits).
 
-For optional browser OIDC, create a separate `workbench-ui` JSON secret with only `secrets_toml`, using the [enterprise sign-in format](../enterprise-sign-in-guide.md). Set `uiAuthMode` to `oidc` after registering the deployed UI's HTTPS callback. Workspace-key mode requires no UI secret. The browser identity has no database or artifact permissions.
+For optional browser OIDC, create a separate `workbench-ui` JSON secret with only `secrets_toml`, using the [enterprise sign-in format](../authentication-guide.md#organization-sign-in). Set `uiAuthMode` to `oidc` after registering the deployed UI's HTTPS callback. Workspace-key mode requires no UI secret. The browser identity has no database or artifact permissions.
 
 ## Review and create infrastructure
 
@@ -119,11 +119,11 @@ Restrict Azure job-start/update permissions to infrastructure operators. An exec
 
 Set `deployServices=true` in the same private parameter file, review a new What-If result, then deploy it in Incremental mode. Open output `webUrl`. Select **Shared workspace**, use output `apiUrl`, and enter the bearer token saved earlier. For OIDC, register `webUrl/oauth2callback`, configure the separate UI secret and enable the issuer settings described in the sign-in guide.
 
-Follow [the first-project walkthrough](../app-guide.md#first-project-walkthrough): import/review examples, prepare independent holdouts, train the CPU baseline, release it and make predictions. Check `apiUrl/ready` and project operations before enabling external generation or GPU jobs.
+Follow [the first-project walkthrough](../app-guide.md#screen-manual--first-project-walkthrough): import/review examples, prepare independent holdouts, train the CPU baseline, release it and make predictions. Check `apiUrl/ready` and project operations before enabling external generation or GPU jobs.
 
 The worker has ingress disabled and a positive minimum replica count, so the durable queue can be processed without an HTTP request. Worker jobs and API instances share PostgreSQL/Blob state. Local caches and unfinished files are ephemeral. [Background-service scaling](https://learn.microsoft.com/en-us/azure/container-apps/scale-app).
 
-This CPU image supports baseline training, hosted decision policies, data/review/generation workflows and configured remote-training controllers. Provider accounts, keys, images and approvals remain necessary. Native foundation-model execution needs its [matching runtime/resources](../setup.md#configure-model-training-and-serving); installing this hosting image does not add GPU support. Keep [remote Azure GPU training](../managed-azure-training.md) separate from application hosting.
+This CPU image supports baseline training, hosted decision policies, data/review/generation workflows and configured remote-training controllers. Provider accounts, keys, images and approvals remain necessary. Native foundation-model execution needs its [matching runtime/resources](../setup.md#configuration--configure-model-training-and-serving); installing this hosting image does not add GPU support. Keep [remote Azure GPU training](../remote-training/azure.md#application-managed-training) separate from application hosting.
 
 ## Monitor, rotate and update
 
@@ -151,7 +151,7 @@ Rotate a database login and its matching Key Vault value through one approved pr
 
 ## Recover or remove the deployment
 
-Use [coordinated recovery](../shared-recovery-guide.md) with [Azure live/vault configuration](../azure-artifacts-guide.md) from an authorized private-network operator environment. Database backups alone do not capture model objects. Keep independent recovery copies protected by their own identities and retention policy.
+Use [coordinated recovery](../recovery-guide.md#shared-workspace-recovery) with [Azure live/vault configuration](../shared-artifacts-guide.md#azure-blob) from an authorized private-network operator environment. Database backups alone do not capture model objects. Keep independent recovery copies protected by their own identities and retention policy.
 
 Restore into a fresh database schema, private home and object prefix. This transport copies within one storage account; it does not provide cross-account recovery. Replacement application infrastructure can reuse that retained account by setting `createArtifactAccount=false`, `artifactAccountName` and `artifactContainer` to the existing resources in this resource group. Set `databaseSchema` and `artifactPrefix` to the restored values before starting services. Configure the existing account's versioning and permissions deliberately; the template leaves its storage policy unchanged in reuse mode. Isolate the original deployment, publish current trust/revocation policy and verify cold predictions before exposing restored traffic.
 

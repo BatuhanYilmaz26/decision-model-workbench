@@ -1,0 +1,395 @@
+{
+  "version": 1,
+  "description": "Former guide paths and their current sections. GitHub does not automatically redirect deleted Markdown file URLs. Follow the current links or consult Git history for an older version.",
+  "moves": [
+    {
+      "from": "docs/applicability-guide.md",
+      "to": "docs/vega-guide.md#applicability-data",
+      "anchors": {
+        "review-and-reserve-applicability-evidence": "applicability-data--review-and-reserve-applicability-evidence",
+        "collect-and-review-source-evidence": "applicability-data--collect-and-review-source-evidence",
+        "reserve-alongside-positive-holdouts": "applicability-data--reserve-alongside-positive-holdouts",
+        "revision-and-access-contracts": "applicability-data--revision-and-access-contracts"
+      }
+    },
+    {
+      "from": "docs/audit-export-guide.md",
+      "to": "docs/app-guide.md#audit-export-api",
+      "anchors": {
+        "export-and-verify-project-audit-history": "audit-export-api--export-and-verify-project-audit-history",
+        "capture-in-the-browser": "audit-export-api--capture-in-the-browser",
+        "verify-a-downloaded-file": "audit-export-api--verify-a-downloaded-file",
+        "use-the-api": "audit-export-api--use-the-api",
+        "recover-and-retain-records": "audit-export-api--recover-and-retain-records"
+      }
+    },
+    {
+      "from": "docs/azure-artifacts-guide.md",
+      "to": "docs/shared-artifacts-guide.md#azure-blob",
+      "anchors": {
+        "store-shared-model-artifacts-in-azure-blob-storage": "azure-blob--store-shared-model-artifacts-in-azure-blob-storage",
+        "prepare-storage-and-identity": "azure-blob--prepare-storage-and-identity",
+        "configure-api-and-worker-instances": "azure-blob--configure-api-and-worker-instances",
+        "back-up-and-restore-shared-state": "azure-blob--back-up-and-restore-shared-state",
+        "clean-up-deliberately": "azure-blob--clean-up-deliberately"
+      }
+    },
+    {
+      "from": "docs/backup-monitoring-guide.md",
+      "to": "docs/recovery-guide.md#backup-monitoring",
+      "anchors": {
+        "monitor-backup-freshness-and-failures": "backup-monitoring--monitor-backup-freshness-and-failures",
+        "create-a-separate-monitoring-key": "backup-monitoring--create-a-separate-monitoring-key",
+        "configure-the-api-trust-profile": "backup-monitoring--configure-the-api-trust-profile",
+        "publish-and-maintain-heartbeats": "backup-monitoring--publish-and-maintain-heartbeats",
+        "read-health-and-incidents": "backup-monitoring--read-health-and-incidents",
+        "upgrade-and-container-setup": "backup-monitoring--upgrade-and-container-setup"
+      }
+    },
+    {
+      "from": "docs/cache-retention-guide.md",
+      "to": "docs/storage-maintenance-guide.md#model-caches",
+      "anchors": {
+        "reclaim-inactive-model-caches-on-a-workspace-node": "model-caches--reclaim-inactive-model-caches-on-a-workspace-node",
+        "before-you-start": "model-caches--before-you-start",
+        "preview-and-apply-a-retention-policy": "model-caches--preview-and-apply-a-retention-policy",
+        "recover-from-an-interrupted-cleanup": "model-caches--recover-from-an-interrupted-cleanup",
+        "use-the-model-again": "model-caches--use-the-model-again"
+      }
+    },
+    {
+      "from": "docs/capabilities.md",
+      "to": "docs/architecture.md#supported-capabilities",
+      "anchors": {
+        "use-the-local-platform": "supported-capabilities--use-the-local-platform",
+        "other-documented-paths": "supported-capabilities--other-documented-paths"
+      }
+    },
+    {
+      "from": "docs/deployment-guide.md",
+      "to": "docs/application-hosting/README.md#native-model-serving",
+      "anchors": {
+        "run-locally-or-on-enterprise-cloud": "native-model-serving--run-locally-or-on-enterprise-cloud",
+        "preserve-the-complete-contract": "native-model-serving--preserve-the-complete-contract",
+        "local-usage": "native-model-serving--local-usage",
+        "enterprise-design": "native-model-serving--enterprise-design",
+        "host-the-workbench": "native-model-serving--host-the-workbench",
+        "separate-managed-model-serving-options": "native-model-serving--separate-managed-model-serving-options",
+        "economics-and-operating-acceptance": "native-model-serving--economics-and-operating-acceptance",
+        "training-and-application-integration": "native-model-serving--training-and-application-integration"
+      }
+    },
+    {
+      "from": "docs/encrypted-recovery-guide.md",
+      "to": "docs/recovery-guide.md#encrypted-backups",
+      "anchors": {
+        "encrypt-and-recover-a-local-workspace": "encrypted-backups--encrypt-and-recover-a-local-workspace",
+        "prepare-private-storage-and-a-recovery-key": "encrypted-backups--prepare-private-storage-and-a-recovery-key",
+        "capture-an-encrypted-backup": "encrypted-backups--capture-an-encrypted-backup",
+        "verify-before-recovery": "encrypted-backups--verify-before-recovery",
+        "restore-into-a-fresh-workspace": "encrypted-backups--restore-into-a-fresh-workspace",
+        "capacity-and-encryption-format": "encrypted-backups--capacity-and-encryption-format"
+      }
+    },
+    {
+      "from": "docs/enterprise-sign-in-guide.md",
+      "to": "docs/authentication-guide.md#organization-sign-in",
+      "anchors": {
+        "sign-in-through-your-organizations-identity-provider": "organization-sign-in--sign-in-through-your-organizations-identity-provider",
+        "prepare-the-identity-provider-and-api": "organization-sign-in--prepare-the-identity-provider-and-api",
+        "configure-the-ui-server": "organization-sign-in--configure-the-ui-server",
+        "sign-in-change-accounts-and-end-a-session": "organization-sign-in--sign-in-change-accounts-and-end-a-session",
+        "revoke-or-rotate-access": "organization-sign-in--revoke-or-rotate-access",
+        "check-your-deployment": "organization-sign-in--check-your-deployment"
+      }
+    },
+    {
+      "from": "docs/error-policy-guide.md",
+      "to": "docs/evaluation-guide.md#error-cost-policy",
+      "anchors": {
+        "evaluate-costly-mistakes-and-critical-outcomes": "error-cost-policy--evaluate-costly-mistakes-and-critical-outcomes",
+        "choose-the-costs-and-limits": "error-cost-policy--choose-the-costs-and-limits",
+        "configure-a-policy": "error-cost-policy--configure-a-policy",
+        "read-the-results": "error-cost-policy--read-the-results",
+        "analyze-a-standalone-report": "error-cost-policy--analyze-a-standalone-report",
+        "upgrade-safely": "error-cost-policy--upgrade-safely"
+      }
+    },
+    {
+      "from": "docs/gcs-artifacts-guide.md",
+      "to": "docs/shared-artifacts-guide.md#google-cloud-storage",
+      "anchors": {
+        "store-shared-model-artifacts-in-google-cloud-storage": "google-cloud-storage--store-shared-model-artifacts-in-google-cloud-storage",
+        "prepare-a-private-versioned-bucket": "google-cloud-storage--prepare-a-private-versioned-bucket",
+        "install-the-storage-profile-and-configure-credentials": "google-cloud-storage--install-the-storage-profile-and-configure-credentials",
+        "publication-and-storage-costs": "google-cloud-storage--publication-and-storage-costs",
+        "back-up-and-restore": "google-cloud-storage--back-up-and-restore"
+      }
+    },
+    {
+      "from": "docs/import-guide.md",
+      "to": "docs/data-guide.md#file-import",
+      "anchors": {
+        "preview-and-import-your-examples": "file-import--preview-and-import-your-examples",
+        "before-you-start": "file-import--before-you-start",
+        "import-a-file": "file-import--import-a-file",
+        "enter-examples-without-a-file": "file-import--enter-examples-without-a-file",
+        "resolve-import-errors": "file-import--resolve-import-errors",
+        "use-the-api": "file-import--use-the-api"
+      }
+    },
+    {
+      "from": "docs/local-stage-cleanup-guide.md",
+      "to": "docs/storage-maintenance-guide.md#transfer-stages",
+      "anchors": {
+        "reclaim-abandoned-local-transfer-stages": "transfer-stages--reclaim-abandoned-local-transfer-stages",
+        "choose-the-affected-node": "transfer-stages--choose-the-affected-node",
+        "preview-the-exact-files": "transfer-stages--preview-the-exact-files",
+        "apply-the-reviewed-plan": "transfer-stages--apply-the-reviewed-plan",
+        "handle-an-interruption": "transfer-stages--handle-an-interruption",
+        "run-the-local-checks": "transfer-stages--run-the-local-checks"
+      }
+    },
+    {
+      "from": "docs/managed-azure-training.md",
+      "to": "docs/remote-training/azure.md#application-managed-training",
+      "anchors": {
+        "managed-azure-training-through-the-application": "application-managed-training--managed-azure-training-through-the-application",
+        "prepare-the-approved-infrastructure": "application-managed-training--prepare-the-approved-infrastructure",
+        "configure-credentials-and-resource-limits": "application-managed-training--configure-credentials-and-resource-limits",
+        "freeze-approve-and-submit": "application-managed-training--freeze-approve-and-submit",
+        "train-on-ordinary-local-disk": "application-managed-training--train-on-ordinary-local-disk",
+        "observe-cancel-and-retrieve": "application-managed-training--observe-cancel-and-retrieve",
+        "cluster-shutdown-and-recovery": "application-managed-training--cluster-shutdown-and-recovery"
+      }
+    },
+    {
+      "from": "docs/managed-cloud-training.md",
+      "to": "docs/remote-training/aws.md#application-managed-training",
+      "anchors": {
+        "managed-cloud-training-through-the-platform": "application-managed-training--managed-cloud-training-through-the-platform",
+        "operator-configuration": "application-managed-training--operator-configuration",
+        "qualify-the-training-image": "application-managed-training--qualify-the-training-image",
+        "owner-workflow": "application-managed-training--owner-workflow",
+        "interruption-and-spending-limits": "application-managed-training--interruption-and-spending-limits",
+        "artifact-bounds-and-admission-boundary": "application-managed-training--artifact-bounds-and-admission-boundary"
+      }
+    },
+    {
+      "from": "docs/managed-gcp-training.md",
+      "to": "docs/remote-training/gcp.md#application-managed-training",
+      "anchors": {
+        "managed-gcp-training-through-the-application": "application-managed-training--managed-gcp-training-through-the-application",
+        "configure-an-approved-operator-profile": "application-managed-training--configure-an-approved-operator-profile",
+        "freeze-approve-and-submit": "application-managed-training--freeze-approve-and-submit",
+        "run-the-actual-decision-trainer": "application-managed-training--run-the-actual-decision-trainer",
+        "observe-cancel-and-retrieve": "application-managed-training--observe-cancel-and-retrieve",
+        "recovery-and-cost-controls": "application-managed-training--recovery-and-cost-controls"
+      }
+    },
+    {
+      "from": "docs/managed-modal-training.md",
+      "to": "docs/remote-training/modal.md#application-managed-training",
+      "anchors": {
+        "managed-modal-training": "application-managed-training--managed-modal-training",
+        "prepare-an-approved-workspace-and-image": "application-managed-training--prepare-an-approved-workspace-and-image",
+        "freeze-approve-and-submit-once": "application-managed-training--freeze-approve-and-submit-once",
+        "run-the-frozen-trainer-and-persist-output": "application-managed-training--run-the-frozen-trainer-and-persist-output",
+        "observe-terminate-and-admit": "application-managed-training--observe-terminate-and-admit"
+      }
+    },
+    {
+      "from": "docs/managed-runpod-training.md",
+      "to": "docs/remote-training/runpod.md#application-managed-training",
+      "anchors": {
+        "managed-runpod-training": "application-managed-training--managed-runpod-training",
+        "prepare-approved-infrastructure-and-identity": "application-managed-training--prepare-approved-infrastructure-and-identity",
+        "approve-a-frozen-study-and-submit-once": "application-managed-training--approve-a-frozen-study-and-submit-once",
+        "train-package-and-inspect-results": "application-managed-training--train-package-and-inspect-results",
+        "terminate-observe-and-retrieve": "application-managed-training--terminate-observe-and-retrieve",
+        "recovery-and-operating-limits": "application-managed-training--recovery-and-operating-limits"
+      }
+    },
+    {
+      "from": "docs/model-landscape.md",
+      "to": "docs/concepts.md#model-landscape",
+      "anchors": {
+        "model-landscape": "model-landscape--model-landscape",
+        "releases-and-training-relevance": "model-landscape--releases-and-training-relevance",
+        "hosted-input-tariffs": "model-landscape--hosted-input-tariffs",
+        "shortlist-for-your-use-case": "model-landscape--shortlist-for-your-use-case",
+        "the-wider-ecosystem": "model-landscape--the-wider-ecosystem",
+        "10-october-expansion-vega-and-additional-candidates": "model-landscape--10-october-expansion-vega-and-additional-candidates"
+      }
+    },
+    {
+      "from": "docs/policy-versioning-guide.md",
+      "to": "docs/project-lifecycle-guide.md#policy-successors",
+      "anchors": {
+        "create-and-operate-a-policy-successor": "policy-successors--create-and-operate-a-policy-successor",
+        "review-the-successor-in-the-browser": "policy-successors--review-the-successor-in-the-browser",
+        "add-and-evaluate-data-for-the-new-policy": "policy-successors--add-and-evaluate-data-for-the-new-policy",
+        "create-a-successor-through-the-api": "policy-successors--create-a-successor-through-the-api",
+        "recover-both-policy-versions": "policy-successors--recover-both-policy-versions"
+      }
+    },
+    {
+      "from": "docs/postgresql-guide.md",
+      "to": "docs/shared-artifacts-guide.md#postgresql-metadata",
+      "anchors": {
+        "run-workspace-metadata-on-postgresql": "postgresql-metadata--run-workspace-metadata-on-postgresql",
+        "prepare-the-database": "postgresql-metadata--prepare-the-database",
+        "start-the-services": "postgresql-metadata--start-the-services",
+        "transaction-and-recovery-limits": "postgresql-metadata--transaction-and-recovery-limits",
+        "verify-a-disposable-database": "postgresql-metadata--verify-a-disposable-database"
+      }
+    },
+    {
+      "from": "docs/project-deletion-guide.md",
+      "to": "docs/project-lifecycle-guide.md#database-deletion",
+      "anchors": {
+        "delete-an-archived-projects-database-records": "database-deletion--delete-an-archived-projects-database-records",
+        "prepare-the-project": "database-deletion--prepare-the-project",
+        "delete-through-the-browser": "database-deletion--delete-through-the-browser",
+        "use-the-api": "database-deletion--use-the-api",
+        "understand-what-remains": "database-deletion--understand-what-remains",
+        "capacity-upgrades-and-recovery": "database-deletion--capacity-upgrades-and-recovery"
+      }
+    },
+    {
+      "from": "docs/remote-admission-guide.md",
+      "to": "docs/remote-training-guide.md#returned-model-admission",
+      "anchors": {
+        "bring-a-remotely-trained-decision-model-into-the-platform": "returned-model-admission--bring-a-remotely-trained-decision-model-into-the-platform",
+        "1-freeze-an-owner-approved-remote-study": "returned-model-admission--1-freeze-an-owner-approved-remote-study",
+        "2-download-and-train-the-frozen-inputs": "returned-model-admission--2-download-and-train-the-frozen-inputs",
+        "3-retain-the-export-checksum-and-provider-receipt": "returned-model-admission--3-retain-the-export-checksum-and-provider-receipt",
+        "4-stage-and-queue-admission-as-an-authenticated-operator": "returned-model-admission--4-stage-and-queue-admission-as-an-authenticated-operator",
+        "5-qualify-review-and-release": "returned-model-admission--5-qualify-review-and-release",
+        "vega-eight-file-studies-and-independent-admission": "returned-model-admission--vega-eight-file-studies-and-independent-admission"
+      }
+    },
+    {
+      "from": "docs/remote-training/provider-selection.md",
+      "to": "docs/remote-training-guide.md#choosing-a-provider",
+      "anchors": {
+        "choose-remote-training-infrastructure": "choosing-a-provider--choose-remote-training-infrastructure",
+        "match-the-provider-to-the-organization": "choosing-a-provider--match-the-provider-to-the-organization",
+        "size-the-study-before-renting-capacity": "choosing-a-provider--size-the-study-before-renting-capacity",
+        "compare-the-complete-cost": "choosing-a-provider--compare-the-complete-cost",
+        "storage-deadlines-and-final-acceptance": "choosing-a-provider--storage-deadlines-and-final-acceptance"
+      }
+    },
+    {
+      "from": "docs/review-workflow.md",
+      "to": "docs/data-guide.md#assigned-review",
+      "anchors": {
+        "assign-and-review-domain-examples": "assigned-review--assign-and-review-domain-examples",
+        "prepare-reviewer-access": "assigned-review--prepare-reviewer-access",
+        "assign-work-in-the-browser": "assigned-review--assign-work-in-the-browser",
+        "complete-assigned-work": "assigned-review--complete-assigned-work",
+        "assign-a-batch-through-the-api": "assigned-review--assign-a-batch-through-the-api",
+        "upgrade-and-recover-a-workspace": "assigned-review--upgrade-and-recover-a-workspace"
+      }
+    },
+    {
+      "from": "docs/scheduled-backups-guide.md",
+      "to": "docs/recovery-guide.md#scheduled-backups",
+      "anchors": {
+        "schedule-encrypted-backups-and-retain-verified-copies": "scheduled-backups--schedule-encrypted-backups-and-retain-verified-copies",
+        "configure-private-storage": "scheduled-backups--configure-private-storage",
+        "run-once-or-continuously": "scheduled-backups--run-once-or-continuously",
+        "inspect-receipts-and-failures": "scheduled-backups--inspect-receipts-and-failures",
+        "review-and-apply-retention": "scheduled-backups--review-and-apply-retention",
+        "capacity-and-deployment-checks": "scheduled-backups--capacity-and-deployment-checks"
+      }
+    },
+    {
+      "from": "docs/schema-assistant-guide.md",
+      "to": "docs/domain-schema-guide.md#question-drafting",
+      "anchors": {
+        "draft-decision-questions-with-a-teacher": "question-drafting--draft-decision-questions-with-a-teacher",
+        "set-up-the-teacher": "question-drafting--set-up-the-teacher",
+        "request-and-review-a-draft": "question-drafting--request-and-review-a-draft",
+        "understand-what-is-sent-and-saved": "question-drafting--understand-what-is-sent-and-saved",
+        "handle-failures-and-cancellation": "question-drafting--handle-failures-and-cancellation",
+        "api-integration": "question-drafting--api-integration"
+      }
+    },
+    {
+      "from": "docs/semantic-data-guide.md",
+      "to": "docs/reservation-guide.md#semantic-relatives",
+      "anchors": {
+        "find-and-review-semantic-relatives-before-reservation": "semantic-relatives--find-and-review-semantic-relatives-before-reservation",
+        "operator-setup": "semantic-relatives--operator-setup",
+        "process-memory-and-interrupted-audits": "semantic-relatives--process-memory-and-interrupted-audits",
+        "owner-and-reviewer-workflow": "semantic-relatives--owner-and-reviewer-workflow",
+        "application-and-portable-contracts": "semantic-relatives--application-and-portable-contracts",
+        "combined-positive-and-applicability-audits": "semantic-relatives--combined-positive-and-applicability-audits",
+        "limits-of-the-result": "semantic-relatives--limits-of-the-result"
+      }
+    },
+    {
+      "from": "docs/shared-object-retention-guide.md",
+      "to": "docs/storage-maintenance-guide.md#shared-object-versions",
+      "anchors": {
+        "clean-up-unreferenced-shared-object-versions": "shared-object-versions--clean-up-unreferenced-shared-object-versions",
+        "prepare-the-workspace-and-operator-identity": "shared-object-versions--prepare-the-workspace-and-operator-identity",
+        "preview-the-candidates": "shared-object-versions--preview-the-candidates",
+        "apply-the-reviewed-plan": "shared-object-versions--apply-the-reviewed-plan",
+        "reconcile-an-interrupted-cleanup": "shared-object-versions--reconcile-an-interrupted-cleanup",
+        "retention-and-recovery-boundaries": "shared-object-versions--retention-and-recovery-boundaries"
+      }
+    },
+    {
+      "from": "docs/shared-recovery-guide.md",
+      "to": "docs/recovery-guide.md#shared-workspace-recovery",
+      "anchors": {
+        "back-up-and-restore-a-shared-workspace": "shared-workspace-recovery--back-up-and-restore-a-shared-workspace",
+        "before-you-start": "shared-workspace-recovery--before-you-start",
+        "capture-a-backup": "shared-workspace-recovery--capture-a-backup",
+        "verify-retained-recovery-data": "shared-workspace-recovery--verify-retained-recovery-data",
+        "restore-into-a-new-workspace": "shared-workspace-recovery--restore-into-a-new-workspace",
+        "recovery-boundaries-and-retention": "shared-workspace-recovery--recovery-boundaries-and-retention"
+      }
+    },
+    {
+      "from": "docs/taxonomy-guide.md",
+      "to": "docs/domain-schema-guide.md#category-discovery",
+      "anchors": {
+        "discover-and-confirm-a-domain-taxonomy": "category-discovery--discover-and-confirm-a-domain-taxonomy",
+        "user-workflow": "category-discovery--user-workflow",
+        "operator-configuration": "category-discovery--operator-configuration",
+        "api-and-evidence": "category-discovery--api-and-evidence",
+        "recover-interrupted-discovery": "category-discovery--recover-interrupted-discovery"
+      }
+    },
+    {
+      "from": "docs/temporal-data-guide.md",
+      "to": "docs/reservation-guide.md#time-boundaries",
+      "anchors": {
+        "reserve-data-using-information-available-at-decision-time": "time-boundaries--reserve-data-using-information-available-at-decision-time",
+        "declare-operational-timestamps": "time-boundaries--declare-operational-timestamps",
+        "reserve-chronological-roles": "time-boundaries--reserve-chronological-roles",
+        "inspect-and-preserve-the-audit": "time-boundaries--inspect-and-preserve-the-audit",
+        "limits-and-domain-validation": "time-boundaries--limits-and-domain-validation"
+      }
+    },
+    {
+      "from": "docs/tools.md",
+      "to": "docs/setup.md#optional-tools",
+      "anchors": {
+        "tools-and-integrations": "optional-tools--tools-and-integrations"
+      }
+    },
+    {
+      "from": "docs/windows-process-guide.md",
+      "to": "docs/model-container-guide.md#windows-process-ownership",
+      "anchors": {
+        "windows-model-process-ownership": "windows-process-ownership--windows-model-process-ownership",
+        "capacity-and-shutdown": "windows-process-ownership--capacity-and-shutdown",
+        "verification-boundaries": "windows-process-ownership--verification-boundaries"
+      }
+    }
+  ]
+}

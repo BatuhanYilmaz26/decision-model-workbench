@@ -1,8 +1,25 @@
 # Streamlit screen reference
 
+[Documentation](README.md) · [Project overview](../README.md)
+
+For an end-to-end task, use the three walkthroughs in the documentation home. This manual explains specific screens, optional controls and audit export APIs; it is not required reading before starting.
+
+## Choose a section
+
+- [Browser screens and controls](#screen-manual)
+
+- [Audit export and verification reference](#audit-export-api)
+
+<a id="screen-manual"></a>
+
+## Browser screens and controls
+
+<a id="screen-manual--streamlit-screen-reference"></a>
+
+<a id="screen-manual--use-the-streamlit-application"></a>
+
 <a id="use-the-streamlit-application"></a>
 
-[Project overview](../README.md) · [Install and start](setup.md) · [All guides](README.md)
 
 Use the browser application to define a decision, collect and review examples,
 reserve evaluation data, train or evaluate a model, release an eligible version
@@ -16,18 +33,22 @@ then open the localhost address printed in the terminal, normally
 without a GPU, model download, cloud account or workspace credential. Other
 models and external services have separate requirements below.
 
-## Choose a workflow
+<a id="screen-manual--choose-a-workflow"></a>
+
+### Choose a workflow
 
 | Your goal | Start with | What you get |
 |---|---|---|
-| Learn the local workflow | [First project walkthrough](#first-project-walkthrough) and the CPU comparison baseline | A reviewed dataset, evaluated local model version and, if eligible, an active release |
-| Train your own domain model | [Define questions](#create-a-project), [review examples](#add-and-review-examples), [reserve data](#reserve-data-and-generate-candidates), then [choose a compatible backend](#train-on-this-computer) | A separately evaluated version of your trained model |
-| Use an existing hosted model | [Configure a provider profile](hosted-decisions-guide.md), then [evaluate its API](#evaluate-a-hosted-decision-api) against your reserved data | A calibrated hosted policy that can be released without training provider weights |
-| Train without enough local VRAM | [Cloud GPU training](#train-on-a-cloud-gpu) | A frozen study and, for supported configured profiles, a managed training run and independently admitted model |
-| Expand a small training set | [Synthetic candidate generation](#generate-and-review-training-candidates), after reserving real evaluation data | Candidates to review and add to training; generation does not release or retrain a model |
-| Use a released model | [Make decisions](#make-decisions-and-export-audit-history) or [connect your application](api-integration-guide.md) | Answers, probabilities and abstention flags for new evidence |
+| Learn the local workflow | [First project walkthrough](#screen-manual--first-project-walkthrough) and the CPU comparison baseline | A reviewed dataset, evaluated local model version and, if eligible, an active release |
+| Train your own domain model | [Define questions](#screen-manual--create-a-project), [review examples](#screen-manual--add-and-review-examples), [reserve data](#screen-manual--reserve-data-and-generate-candidates), then [choose a compatible backend](#screen-manual--train-on-this-computer) | A separately evaluated version of your trained model |
+| Use an existing hosted model | [Configure a provider profile](hosted-decisions-guide.md), then [evaluate its API](#screen-manual--evaluate-a-hosted-decision-api) against your reserved data | A calibrated hosted policy that can be released without training provider weights |
+| Train without enough local VRAM | [Cloud GPU training](#screen-manual--train-on-a-cloud-gpu) | A frozen study and, for supported configured profiles, a managed training run and independently admitted model |
+| Expand a small training set | [Synthetic candidate generation](#screen-manual--generate-and-review-training-candidates), after reserving real evaluation data | Candidates to review and add to training; generation does not release or retrain a model |
+| Use a released model | [Make decisions](#screen-manual--make-decisions-and-export-audit-history) or [connect your application](api-integration-guide.md) | Answers, probabilities and abstention flags for new evidence |
 
-### Terms used in the app
+<a id="screen-manual--terms-used-in-the-app"></a>
+
+#### Terms used in the app
 
 | Term | Meaning |
 |---|---|
@@ -40,29 +61,35 @@ models and external services have separate requirements below.
 | Model version | An evaluated local artifact or hosted policy; registration alone does not make it active |
 | Release | The version currently used for project predictions; an owner activates or rolls back a release |
 
-## Find the right screen
+<a id="screen-manual--find-the-right-screen"></a>
+
+### Find the right screen
 
 | Screen or control | What you do there |
 |---|---|
-| [Permanent project deletion](project-deletion-guide.md) | Owners preview and confirm archived database cleanup, choose audit retention and retrieve private receipts |
-| [Project lifecycle](project-lifecycle-guide.md) | Owners pause or restore a project, with explicit confirmation and active-work checks |
-| [Connection and computer setup](#start-or-connect-to-a-workspace) | Start personal mode, connect to a shared API and inspect model environments |
-| [Create a domain project](#create-a-project) | Describe the policy, define outcomes or review teacher-suggested questions |
-| [Data and review](#add-and-review-examples) | Enter/import examples, map columns, review labels, assign work and discover categories |
-| [Prepare and generate](#reserve-data-and-generate-candidates) | Reserve the four data roles, review semantic relatives and generate training candidates |
-| [Training jobs](#train-or-evaluate-a-model) | Set acceptance criteria, train locally, evaluate a hosted API, manage cloud studies and follow jobs |
-| [Models and releases](#inspect-results-release-and-roll-back) | Inspect metrics and provenance, activate a version or roll back |
-| [Decisions and audit](#make-decisions-and-export-audit-history) | Test the active release and capture/download audit history |
-| [Applicability](#prepare-vega-applicability-data) | Prepare the additional negative examples required by Vega |
-| [Create a policy successor](#change-an-existing-policy) | Start a separately reviewed policy version without changing an existing release |
+| [Permanent project deletion](project-lifecycle-guide.md#database-deletion) | Owners preview and confirm archived database cleanup, choose audit retention and retrieve private receipts |
+| [Project lifecycle](project-lifecycle-guide.md#archive-restore) | Owners pause or restore a project, with explicit confirmation and active-work checks |
+| [Connection and computer setup](#screen-manual--start-or-connect-to-a-workspace) | Start personal mode, connect to a shared API and inspect model environments |
+| [Create a domain project](#screen-manual--create-a-project) | Describe the policy, define outcomes or review teacher-suggested questions |
+| [Data and review](#screen-manual--add-and-review-examples) | Enter/import examples, map columns, review labels, assign work and discover categories |
+| [Prepare and generate](#screen-manual--reserve-data-and-generate-candidates) | Reserve the four data roles, review semantic relatives and generate training candidates |
+| [Training jobs](#screen-manual--train-or-evaluate-a-model) | Set acceptance criteria, train locally, evaluate a hosted API, manage cloud studies and follow jobs |
+| [Models and releases](#screen-manual--inspect-results-release-and-roll-back) | Inspect metrics and provenance, activate a version or roll back |
+| [Decisions and audit](#screen-manual--make-decisions-and-export-audit-history) | Test the active release and capture/download audit history |
+| [Applicability](#screen-manual--prepare-vega-applicability-data) | Prepare the additional negative examples required by Vega |
+| [Create a policy successor](#screen-manual--change-an-existing-policy) | Start a separately reviewed policy version without changing an existing release |
 
-## First project walkthrough
+<a id="screen-manual--first-project-walkthrough"></a>
+
+### First project walkthrough
 
 For the complete first project, follow [Train and use a model for your domain](product-workflow.md). It includes prerequisites, data format, exact browser steps, optional generation, model selection, evaluation, release and predictions in one place. You can choose a native model directly; the CPU baseline is an optional introduction.
 
 The screen order is **Data and review → Prepare and generate → Training jobs → Models and releases → Decisions and audit**. **Applicability** is an extra requirement for Vega. Return to the matching section below when you need help with a particular control. You do not need to read this manual from beginning to end.
 
-## Start or connect to a workspace
+<a id="screen-manual--start-or-connect-to-a-workspace"></a>
+
+### Start or connect to a workspace
 
 `domain-platform run` normally opens its personal workspace automatically. If
 you start a loopback-bound Streamlit server directly, choose **On this computer**
@@ -81,10 +108,10 @@ an optional teacher endpoint/model/key. **Teacher response format** selects
 JSON object or JSON Schema output. **Teacher token limit parameter** and
 **Omit teacher temperature** handle teachers with different Chat Completions
 parameters. Keep **Use configured default** to preserve environment settings;
-see [teacher setup](setup.md#configure-a-teacher). Leave model paths empty for
+see [teacher setup](setup.md#configuration--configure-a-teacher). Leave model paths empty for
 the CPU baseline. These fields do not install packages or weights. Restart the app
 to change settings after services have started. Launcher-based configuration and
-provider secrets are described in [setup](setup.md).
+provider secrets are described in [setup](setup.md#configuration).
 
 Owners can expand **Computer, model environment and provider setup** and choose
 **Check available hardware and model packages**. This inspects configured
@@ -94,7 +121,9 @@ Use the linked model guides for dependency, weight-storage and hardware needs.
 **Cloud GPU and hosted API setup** links to provider configuration guides; merely
 selecting a guide does not provision a service.
 
-### Sidebar, refresh and access
+<a id="screen-manual--sidebar-refresh-and-access"></a>
+
+#### Sidebar, refresh and access
 
 Use **Project** to switch domains. Project and dataset history page controls are
 zero-based: page 0 is the first page. Projects load 100 per page, dataset versions
@@ -112,10 +141,12 @@ terminal's Ctrl+C. Keep the workspace data directory for the next session.
 
 Personal mode provides owner access. Shared permissions are configured by the
 operator; the browser has no general account-management screen. See
-[authentication](authentication-guide.md). Controls may be hidden or disabled
+[authentication](authentication-guide.md#workspace-credentials). Controls may be hidden or disabled
 for your role even when described in this guide.
 
-## Create a project
+<a id="screen-manual--create-a-project"></a>
+
+### Create a project
 
 Under **Create a domain project**, give each question a stable identifier and
 choose its **Answer format**:
@@ -134,13 +165,15 @@ Fill **Project name**, the domain/policy description and **Describe the data you
 need**. State the available evidence, exceptions, missing-information behavior,
 rare outcomes and languages. Confirm the schema/policy and choose **Create
 project**. Creation does not collect data or start a model run. The new project
-appears in the sidebar. [Decision and data formats](data-guide.md)
+appears in the sidebar. [Decision and data formats](data-guide.md#data-contract)
 
 Leave **Policy successor of** unset for an independent project. Owners branching
-an existing policy can use the [reviewed successor workflow](#change-an-existing-policy)
+an existing policy can use the [reviewed successor workflow](#screen-manual--change-an-existing-policy)
 to inspect the copied policy and criteria before creating the new version.
 
-### Optional teacher-suggested questions
+<a id="screen-manual--optional-teacher-suggested-questions"></a>
+
+#### Optional teacher-suggested questions
 
 An owner can enable **Suggest decision questions with a teacher**. Describe the
 domain, inspect the configured teacher, approve sending the brief and any charges,
@@ -149,9 +182,11 @@ Use the saved suggestion selector and refresh control to follow its job. Review
 the proposed policy/questions, edit them, confirm each outcome and choose
 **Create project from reviewed suggestions**. Reopen a confirmed project rather
 than creating another copy. A teacher draft is not approved policy or labelled
-training data. [Schema assistant](schema-assistant-guide.md)
+training data. [Schema assistant](domain-schema-guide.md#question-drafting)
 
-### Change an existing policy
+<a id="screen-manual--change-an-existing-policy"></a>
+
+#### Change an existing policy
 
 Owners use **Create a policy successor → Plan a policy successor** above the tabs.
 Review the copied description, questions and optionally selected acceptance
@@ -159,14 +194,18 @@ criteria. Name the successor, give a reason, explicitly approve it and create.
 It receives a new project/endpoint and starts without data, models or a release.
 The original remains available. Review labels and reserve evaluation data for the
 new policy; do not rewrite an old artifact or loosen locked criteria after seeing
-its test results. [Policy successors](policy-versioning-guide.md)
+its test results. [Policy successors](project-lifecycle-guide.md#policy-successors)
 
-## Add and review examples
+<a id="screen-manual--add-and-review-examples"></a>
+
+### Add and review examples
 
 Open **Data and review**. **Download this project's CSV format** gives you the
 current question columns; the collapsible question JSON shows the full schema.
 
-### Enter examples without a file
+<a id="screen-manual--enter-examples-without-a-file"></a>
+
+#### Enter examples without a file
 
 Expand **Enter a few examples without a file**. Choose a new collection or append
 to an existing one. For **One example**, enter evidence, optionally mark it as
@@ -181,7 +220,9 @@ are ignored. All new records remain pending review. A source family groups recor
 from the same document, customer or original event; keep related examples together
 so they cannot leak between training and evaluation.
 
-### Upload, map and preview a file
+<a id="screen-manual--upload-map-and-preview-a-file"></a>
+
+#### Upload, map and preview a file
 
 Upload CSV, TSV, XLSX, JSON or JSONL. Select the XLSX worksheet when applicable.
 Choose canonical `state/questions/gold` records or map ordinary columns into
@@ -197,9 +238,11 @@ validation feedback before **Save new collection for review** or **Append file t
 collection**. The first-ten-record preview abbreviates evidence; saving preserves
 the full accepted content. A changed file or mapping needs a new preview.
 Appending creates a new immutable revision. Imported approval flags do not replace
-authenticated review. [File and column mapping](import-guide.md)
+authenticated review. [File and column mapping](data-guide.md#file-import)
 
-### Review records and assign work
+<a id="screen-manual--review-records-and-assign-work"></a>
+
+#### Review records and assign work
 
 Select **Dataset version**, use the example page control or **Find example by ID**,
 then select **Example to review**. Check the actual evidence and every outcome.
@@ -218,9 +261,11 @@ examples represent production.
 **Review work queue** lets reviewers filter to their assignments and **Open assigned
 example**. Owners can **Assign review work**, supply an exact trusted reviewer
 actor ID, assign/reassign or cancel an assignment, and inspect assignment history.
-Assignment itself does not approve labels. [Review workflow](review-workflow.md)
+Assignment itself does not approve labels. [Review workflow](data-guide.md#assigned-review)
 
-### Discover or change categories
+<a id="screen-manual--discover-or-change-categories"></a>
+
+#### Discover or change categories
 
 Enable **Open taxonomy workspace** for a selected dataset. Select the choice
 question and source examples on the displayed page. Propose categories manually,
@@ -232,9 +277,11 @@ alias target and reason. Once no candidates remain pending, an owner confirms
 the taxonomy and creates a successor project. It does not silently relabel current
 records or change a released schema. Uncertain calls have an owner settlement
 form; verify both local and provider completion before using it.
-[Taxonomy discovery](taxonomy-guide.md)
+[Taxonomy discovery](domain-schema-guide.md#category-discovery)
 
-## Reserve data and generate candidates
+<a id="screen-manual--reserve-data-and-generate-candidates"></a>
+
+### Reserve data and generate candidates
 
 In **Prepare and generate**, select one reviewed revision per collection in
 **Dataset versions to prepare**. Unreviewed or duplicate records prevent
@@ -253,9 +300,11 @@ required timestamps, otherwise grouped random roles. **chronological** enforces
 availability/time boundaries; **group-random** keeps known source families together.
 Use **Reserve train / validation / calibration / test**, then follow the preparation
 job in **Training jobs**. Select the resulting **Reserved data snapshot** to inspect
-counts and any temporal audit. [Reservations](reservation-guide.md)
+counts and any temporal audit. [Reservations](reservation-guide.md#reservations)
 
-### Download reserved study data
+<a id="screen-manual--download-reserved-study-data"></a>
+
+#### Download reserved study data
 
 With a **Reserved data snapshot** selected, expand **Download reserved study
 data**. Confirm **I approve downloading this snapshot's evidence and reviewed
@@ -271,7 +320,9 @@ labels. The archive is limited to 64 MiB. If integrity/reservation checks fail,
 inspect the preparation result instead of editing the saved snapshot. Preparing
 records an audit event; it does not prove that the browser saved the file.
 
-### Choose source groups or date cutoffs
+<a id="screen-manual--choose-source-groups-or-date-cutoffs"></a>
+
+#### Choose source groups or date cutoffs
 
 Owners can enable **Choose holdout groups or date cutoffs yourself**, then
 **Inspect reservation inputs**. Choose **Source groups** or **Date cutoffs**.
@@ -285,7 +336,9 @@ the source groups/time boundaries. Finally use the main reservation button.
 Previewing and confirming do not themselves create the prepared snapshot. Existing
 reserved families cannot be reassigned to improve a test score.
 
-### Review semantic relatives
+<a id="screen-manual--review-semantic-relatives"></a>
+
+#### Review semantic relatives
 
 If your operator configured a semantic encoder profile, **Find and review semantic
 relatives** appears. An owner queues an audit for the selected revisions and
@@ -293,9 +346,11 @@ optional base snapshot. Select the completed audit, page through proposed pairs,
 inspect both states, mark each **related** or **independent**, give a reason and
 save the review. A required audit blocks reservation until all pairs are reviewed.
 The encoder's similarity score proposes relationships; it does not establish
-semantic independence. [Semantic review](semantic-data-guide.md)
+semantic independence. [Semantic review](reservation-guide.md#semantic-relatives)
 
-### Generate and review training candidates
+<a id="screen-manual--generate-and-review-training-candidates"></a>
+
+#### Generate and review training candidates
 
 After reserving real evaluation data, use **Generate training candidates**. A
 separate local or hosted generative teacher must be configured. An owner describes
@@ -317,12 +372,16 @@ the checked outcome. **Prepare an explicit retry**, when offered, creates a new
 separately approved attempt; it is not automatic or guaranteed free.
 [Generation, budgets and recovery](synthetic-generation-guide.md)
 
-## Train or evaluate a model
+<a id="screen-manual--train-or-evaluate-a-model"></a>
+
+### Train or evaluate a model
 
 Open **Training jobs** after a snapshot exists. All three paths below use the
 owner's acceptance criteria and produce a separately evaluated model or policy.
 
-### Set acceptance criteria
+<a id="screen-manual--set-acceptance-criteria"></a>
+
+#### Set acceptance criteria
 
 Expand **Acceptance criteria — set before the first training run**. An owner sets
 minimum accuracy/macro-F1, maximum calibration error, minimum real test counts and
@@ -334,9 +393,11 @@ you plan to use Vega.
 
 The first training/hosted-study submission freezes these criteria. Inspect failures
 and improve data/model behavior; changed policy or gates require a successor.
-[Error costs and critical outcomes](error-policy-guide.md)
+[Error costs and critical outcomes](evaluation-guide.md#error-cost-policy)
 
-### Train on this computer
+<a id="screen-manual--train-on-this-computer"></a>
+
+#### Train on this computer
 
 Choose **Training snapshot**, **Training backend** and **This computer**. Configure
 the displayed backend settings, inspect capability warnings and choose **Queue
@@ -346,7 +407,7 @@ training**.
 |---|---|
 | CPU comparison baseline | Built-in lexical comparison model; no pretrained weight download. It is not decision-head fine-tuning. |
 | Laya / Unsloth | Separate compatible model environment, pinned encoder/checkpoint and backend-specific training settings. [Training guide](training-guide.md) |
-| Vega | Paired positive/applicability reservations and Vega acceptance gates. [Vega guide](vega-guide.md) |
+| Vega | Paired positive/applicability reservations and Vega acceptance gates. [Vega guide](vega-guide.md#vega-model) |
 | Liquid d1-3B TRL / Unsloth | Separate runtime profiles, supported compute device, LoRA/batch/length/step settings and explicit checkpoint download choice. [Liquid guide](models/liquid.md) |
 | Liquid omni | Native text/JSON decision-head adaptation and its own resource requirements. [Omni guide](models/liquid-omni.md) |
 | D3 family | Variant-specific native readout, memory/storage/context settings; larger runtime profiles remain experimental. [Family guide](models/d3-family.md) |
@@ -382,7 +443,9 @@ request. Cloud study preparation does not require a local GPU or model environme
 follow the [native cloud guide](remote-training/perplexity.md) for compatible
 images, provider resources and independent admission.
 
-### Evaluate a hosted decision API
+<a id="screen-manual--evaluate-a-hosted-decision-api"></a>
+
+#### Evaluate a hosted decision API
 
 An owner expands **Evaluate a hosted decision model**, selects an approved profile,
 approves sending study data and future inference states, then **Queue hosted
@@ -398,7 +461,9 @@ groups jointly; its returned model name is an echo, not an immutable weight pin.
 checking the required local/provider completion evidence; settlement does not
 retry it. [Hosted setup and operations](hosted-decisions-guide.md)
 
-### Train on a cloud GPU
+<a id="screen-manual--train-on-a-cloud-gpu"></a>
+
+#### Train on a cloud GPU
 
 An owner selects a compatible backend and **Cloud GPU**, then opens **Train on a
 cloud GPU**. Approve study-data transfer, choose AWS, Azure, GCP, Modal or RunPod,
@@ -420,10 +485,12 @@ For a completed run, **Retrieve and queue independent admission** validates the
 returned export locally. It remains inactive until admission and owner release.
 Vega keeps its eight-file study and requires an image profile declaring its backend.
 Follow the [Vega cloud guide](remote-training/vega.md),
-[provider directory](remote-training/README.md), [returned-model admission](remote-admission-guide.md)
+[provider directory](remote-training/README.md), [returned-model admission](remote-training-guide.md#returned-model-admission)
 and the selected model guide for exact supported combinations.
 
-### Follow jobs and operational alerts
+<a id="screen-manual--follow-jobs-and-operational-alerts"></a>
+
+#### Follow jobs and operational alerts
 
 The job table shows job kind, status, progress and errors. Expand saved result
 JSON for the resulting snapshot, dataset, model or study ID. Use **Refresh
@@ -436,9 +503,11 @@ heartbeat, queued work and incidents. Owners can acknowledge alerts, add action
 notes and resolve eligible incidents; some recover automatically when their
 underlying condition clears. **Show alert history** displays prior actions.
 Acknowledgement does not repair the cause, and a worker heartbeat does not prove
-GPU/provider readiness. [Monitoring and operations](deployment-guide.md)
+GPU/provider readiness. [Monitoring and operations](application-hosting/README.md#native-model-serving)
 
-## Inspect results, release and roll back
+<a id="screen-manual--inspect-results-release-and-roll-back"></a>
+
+### Inspect results, release and roll back
 
 In **Models and releases**, inspect the active model/release revision and select
 an **Evaluated model version**. Read the per-question test table, **Confusion
@@ -453,9 +522,11 @@ server checks frozen gates, artifacts and runtime/profile availability. Selectin
 an earlier eligible version and activating it is rollback; the release revision
 increases. Hosted profiles must still match their evaluated contract. Choosing a
 version in the dropdown alone does not change predictions.
-[Evaluation](evaluation-guide.md) · [Release integration](product-workflow.md#6-release-and-integrate)
+[Evaluation](evaluation-guide.md#evaluation) · [Release integration](product-workflow.md#6-release-and-integrate)
 
-## Make decisions and export audit history
+<a id="screen-manual--make-decisions-and-export-audit-history"></a>
+
+### Make decisions and export audit history
 
 Choose **Text** or **JSON** under **Evidence format**. Text sends exactly what
 you type. JSON parses an object, array or JSON string, preserving structured
@@ -482,7 +553,9 @@ Repeated browser predictions are fresh calls and may incur hosted charges; the
 browser does not expose an inference request-key field. Keep secrets and unnecessary
 personal information out of evidence.
 
-### Capture and download audit windows
+<a id="screen-manual--capture-and-download-audit-windows"></a>
+
+#### Capture and download audit windows
 
 Owners see the recent audit table and can enable **Open audit exports**. Enter an
 after-event identifier (`0` for the beginning, or the prior window's `last_id`),
@@ -494,9 +567,11 @@ verified audit window**. Inspect its manifest and page through the frozen events
 when reviewing a captured window. Retain its manifest checksum separately for later
 verification. Use history pages for older captures. These exports are audit
 records, not training data exports or workspace backups.
-[Audit export guide](audit-export-guide.md)
+[Audit export guide](app-guide.md#audit-export-api)
 
-## Prepare Vega applicability data
+<a id="screen-manual--prepare-vega-applicability-data"></a>
+
+### Prepare Vega applicability data
 
 The **Applicability** tab is an additional Vega workflow, not a prerequisite for
 other backends. Collect actual cases where particular project questions should
@@ -513,9 +588,11 @@ the paired applicability snapshot when training Vega in **Training jobs**.
 Use **Download current applicability revision** to export the selected negative
 collection separately from a reserved study.
 **Prepare eight-file Vega study download** also provides reserved positive and
-negative roles for a standalone study. [Applicability guide](applicability-guide.md)
+negative roles for a standalone study. [Applicability guide](vega-guide.md#applicability-data)
 
-## When a control is unavailable
+<a id="screen-manual--when-a-control-is-unavailable"></a>
+
+### When a control is unavailable
 
 | What you see | What to do next |
 |---|---|
@@ -529,30 +606,103 @@ negative roles for a standalone study. [Applicability guide](applicability-guide
 | Timeout or unknown external outcome | Inspect the saved job/call and provider state. Do not assume no data was sent or automatically create another billable attempt. |
 | Stale edit, assignment or release conflict | Refresh, inspect the latest version/revision and review your action again. |
 | No active model or release refused | Inspect the frozen criteria, test counts/metrics, export/runtime/profile availability and error message. Training success alone is insufficient. |
-| Shared model needs cache warming | Ask the operator to [warm the selected export on each serving node](shared-artifacts-guide.md#train-release-and-warm-a-cache), then retry release or prediction. Personal local mode does not require S3. |
-| Shared-workspace node is low on disk space | Ask the operator to [review inactive cache retention](cache-retention-guide.md). It runs from the operator terminal while that node's API and worker are stopped; the browser cannot apply it to its own running server. |
+| Shared model needs cache warming | Ask the operator to [warm the selected export on each serving node](shared-artifacts-guide.md#s3-artifacts--train-release-and-warm-a-cache), then retry release or prediction. Personal local mode does not require S3. |
+| Shared-workspace node is low on disk space | Ask the operator to [review inactive cache retention](storage-maintenance-guide.md#model-caches). It runs from the operator terminal while that node's API and worker are stopped; the browser cannot apply it to its own running server. |
 | Decision abstains or fails | Use the fallback. Evaluate evidence coverage and the deployed profile before changing thresholds or collecting further training data. |
 
-## Operator tasks outside the browser
+<a id="screen-manual--operator-tasks-outside-the-browser"></a>
+
+### Operator tasks outside the browser
 
 The UI links to setup instructions; it does not configure every external service.
 Operators use the guides below for credentials, infrastructure and maintenance:
 
-- [Installation, persistence and teacher settings](setup.md), [authentication](authentication-guide.md)
+- [Installation, persistence and teacher settings](setup.md#configuration), [authentication](authentication-guide.md#workspace-credentials)
   and [dependency profiles](../requirements/README.md).
 - [Hosted provider keys/profiles](hosted-decisions-guide.md), [cloud training profiles](remote-training/README.md)
-  and [semantic encoder configuration](semantic-data-guide.md).
-- [Backup and restore](recovery-guide.md), [encrypted recovery](encrypted-recovery-guide.md),
-  [scheduled backups](scheduled-backups-guide.md) and [backup monitoring](backup-monitoring-guide.md).
-- [Shared PostgreSQL/object-storage backup and restore](shared-recovery-guide.md): coordinated snapshots and recovery into a fresh workspace using S3, Azure Blob or GCS.
+  and [semantic encoder configuration](reservation-guide.md#semantic-relatives).
+- [Backup and restore](recovery-guide.md#local-backups), [encrypted recovery](recovery-guide.md#encrypted-backups),
+  [scheduled backups](recovery-guide.md#scheduled-backups) and [backup monitoring](recovery-guide.md#backup-monitoring).
+- [Shared PostgreSQL/object-storage backup and restore](recovery-guide.md#shared-workspace-recovery): coordinated snapshots and recovery into a fresh workspace using S3, Azure Blob or GCS.
 - [Shared workspace operations](shared-workspace-operations-guide.md): tenant queue limits, cached storage readiness, worker/queue incidents and recovery checks.
-- [API integration](api-integration-guide.md), [deployment](deployment-guide.md)
-  and [current capabilities and limits](capabilities.md).
+- [API integration](api-integration-guide.md), [deployment](application-hosting/README.md#native-model-serving)
+  and [current capabilities and limits](architecture.md#supported-capabilities).
 
 Model and cloud support is profile-specific. A guide link, available dropdown or
 successful fixture test is not proof of production quality, provider billing
 behavior or compatibility with every machine.
 
-## Organization sign-in
+<a id="screen-manual--organization-sign-in"></a>
 
-An operator can enable [OIDC sign-in](enterprise-sign-in-guide.md) for a shared deployment. Select **Sign in with your organization**, complete the identity-provider redirect and use the workspace role shown in the sidebar. No workspace credential needs copying. If the API refuses an expired, revoked or unmapped token, use **Sign out and choose an account** and sign in again. Account/role changes clear the previous session's drafts. Personal localhost mode still uses the ordinary local entry screen.
+### Organization sign-in
+
+An operator can enable [OIDC sign-in](authentication-guide.md#organization-sign-in) for a shared deployment. Select **Sign in with your organization**, complete the identity-provider redirect and use the workspace role shown in the sidebar. No workspace credential needs copying. If the API refuses an expired, revoked or unmapped token, use **Sign out and choose an account** and sign in again. Account/role changes clear the previous session's drafts. Personal localhost mode still uses the ordinary local entry screen.
+
+<a id="audit-export-api"></a>
+
+## Audit export and verification reference
+
+<a id="audit-export-api--export-and-verify-project-audit-history"></a>
+
+Capture an owner-approved audit window, download its canonical JSONL records and verify the file against a separately retained manifest checksum. Use this when a review, incident investigation or operational archive needs more than the recent audit view's 500 events.
+
+Audit exports contain actor identities, action names, target identifiers and timestamps. Owner-supplied action notes may contain confidential information. Protect downloaded files as project data; the default `.dmtlog` extension is excluded from Git. The publication checker also refuses renamed files whose header identifies this export format.
+
+<a id="audit-export-api--capture-in-the-browser"></a>
+
+### Capture in the browser
+
+1. Connect with an owner credential (`admin` role) and select the project.
+2. Open **Decisions and audit**, enable **Open audit exports**, and leave **Audit after event identifier** at `0` for the first window.
+3. Describe the export purpose, approve the audit data download, and select **Capture audit window**.
+4. Save the displayed manifest checksum in a separate trusted location. Inspect the captured pages, then select **Prepare verified audit download** and **Download verified audit window**.
+
+The browser verifies the complete response before making the download available. It retains at most one prepared audit file in the browser session. Larger histories need multiple windows: when `has_more` is true, continue from the manifest's `last_id` and use its original `until_id` as the frozen end. Stop when a verified window reports `has_more: false`.
+
+Captures contain up to **100,000 events** and **64 MiB of event records**, with pages of at most 200 events. The 20-second capture deadline is checked while scanning and before commit, including elapsed transaction waiting and authorization. A failed deadline check rolls back the capture. Blocking database, filesystem or identity-provider calls can extend response time. Existing write contention may cause an earlier database timeout; retry the same request rather than assuming it failed before publication.
+
+The captured end excludes subsequent audit events, including the capture's own audit entry. Multiple windows with the same frozen end describe the same historical range even while new changes occur. A lower explicitly selected end exports only that selected range; it does not establish that the whole current history was exported.
+
+<a id="audit-export-api--verify-a-downloaded-file"></a>
+
+### Verify a downloaded file
+
+Use the checksum retained when you approved the capture:
+
+```bash
+domain-platform verify-audit-export --file project-audit.dmtlog --manifest-sha256 YOUR_RETAINED_MANIFEST_SHA256
+```
+
+Successful output includes `verified: true`, the event count, `has_more`, `next_after_id` and the frozen `until_id`. The verifier checks manifest identity, ordered and scoped events, per-page and complete-content hashes, byte counts, the mandatory completion footer and absence of trailing content. Missing, reordered, duplicated, altered or truncated records are refused. It does not print event contents.
+
+A trusted checksum detects modification relative to that retained receipt. It does not prove the database was unmodified before capture, establish an external witness or provide WORM storage. SHA-256 is computed incrementally using Python's standard hashing interface. [Python `hashlib`](https://docs.python.org/3/library/hashlib.html)
+
+<a id="audit-export-api--use-the-api"></a>
+
+### Use the API
+
+Owners can create and inspect exports through these routes:
+
+| Route | Result |
+|---|---|
+| `POST /v1/projects/{project}/audit-exports` | Frozen manifest and export identifier; HTTP 201 |
+| `GET /v1/projects/{project}/audit-exports?limit=50&offset=0` | Owner-scoped export history |
+| `GET /v1/projects/{project}/audit-exports/{export}` | Captured metadata and checksum |
+| `GET /v1/projects/{project}/audit-exports/{export}/pages/{index}` | Verified event page, starting at index 0 |
+| `GET /v1/projects/{project}/audit-exports/{export}/download` | Canonical JSONL stream with `X-Audit-Manifest-SHA256` |
+
+The capture body contains `note`, a stable `request_key`, `after_id` (default `0`) and an optional `until_id`. Keep the same key and content when retrying an uncertain request; it returns the original export. Different content with an already-used key returns HTTP 409. **Start a new audit capture** creates a fresh browser draft and request key.
+
+An export begins with its manifest, followed by event envelopes, then a completion footer. Save the manifest checksum separately and verify the entire file. A streaming response may begin with HTTP 200 and later be interrupted by revoked authorization, a transport error or changed source records. A successful HTTP status alone does not establish a complete export.
+
+Authorization is checked before capture publication and between streamed pages. Editors, reviewers, inference credentials and other tenants cannot retrieve the export. Source events are read using project-scoped indexed cursors, and captures use the application's local SQLite transaction. [SQLite transaction behavior](https://www.sqlite.org/lang_transaction.html)
+
+<a id="audit-export-api--recover-and-retain-records"></a>
+
+### Recover and retain records
+
+Workspace backups include export metadata and its source audit events. Current recovery validates the captured pages before publishing a restored workspace; later recovery events do not change an earlier frozen file. Follow the [recovery guide](recovery-guide.md#local-backups) and compare retained audit checksums after restoration.
+
+Capture and download do not delete audit events, datasets, models or backups. Configure your enterprise archive's access, retention and key custody separately. Dataset deletion, automatic audit retention, offsite/WORM ingestion and distributed enterprise acceptance require additional controls. This feature exports existing project audit events; it does not add audit coverage for every possible read, external provider operation or infrastructure event.
+
+[Primary source metadata](../research/provenance/audit-export-sources-2026-10-14.json) records the hashing and transaction references.

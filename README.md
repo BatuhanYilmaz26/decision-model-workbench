@@ -87,7 +87,7 @@ Suitable tasks include document classification, search relevance, content review
 
 ## What the application supports
 
-The browser covers projects, imports and review, synthetic candidates, training or hosted evaluation, model releases, predictions and audit history. Shared deployments add PostgreSQL, organization sign-in and versioned object storage. Follow [application hosting](docs/application-hosting/README.md) to deploy on AWS, Azure or GCP.
+The browser covers projects, imports and review, synthetic candidates, training or hosted evaluation, model releases, predictions and audit history. Shared deployments add PostgreSQL, organization sign-in and versioned object storage. Follow [application hosting](docs/application-hosting/README.md#application-hosting) to deploy on AWS, Azure or GCP.
 
 Native models require their compatible runtimes, weights and resources. Hosted/cloud adapters and larger model profiles retain documented experimental limits. The historical GPU dependency profiles need advisory review before production use. Validate your chosen account, hardware and domain quality; repository tests do not establish production readiness.
 
@@ -98,12 +98,12 @@ Native models require their compatible runtimes, weights and resources. Hosted/c
 |---|---|
 | CPU comparison baseline | [Training walkthrough](docs/product-workflow.md) |
 | Laya / Unsloth | [Training reference](docs/training-guide.md) |
-| Vega | [Vega workflow](docs/vega-guide.md) |
+| Vega | [Vega workflow](docs/vega-guide.md#vega-model) |
 | Liquid d1-3B / d1-omni | [d1-3B](docs/models/liquid.md), [omni](docs/models/liquid-omni.md) |
 | Decision 3.0 family / Edge | [Family](docs/models/d3-family.md), [Edge](docs/models/d3.md) |
 | Open Perplexity Decider | [Native workflow](docs/models/perplexity-native.md) |
 | Hosted providers | [TypeSafe/Jev, Liquid, OpenRouter, Perplexity and Cloudflare contracts](docs/api-integration-guide.md#choose-the-contract-before-the-model) |
-| Teachers / category discovery | [Synthetic data](docs/synthetic-generation-guide.md), [TypeLLM category discovery](docs/taxonomy-guide.md) |
+| Teachers / category discovery | [Synthetic data](docs/synthetic-generation-guide.md), [TypeLLM category discovery](docs/domain-schema-guide.md#category-discovery) |
 
 The [model directory](docs/models/README.md) lists exact capabilities, dependencies and additional publisher references. API-only integrations have no local trainer. Published models may support modalities that this workbench's adapters do not.
 
@@ -111,12 +111,12 @@ The [model directory](docs/models/README.md) lists exact capabilities, dependenc
 
 ## Guide index
 
-Open the [documentation home](docs/README.md) for the three walkthroughs and an expandable reference catalog. The [app manual](docs/app-guide.md) explains individual screens and troubleshooting; it is not required reading before starting.
+Open the [documentation home](docs/README.md) for the three walkthroughs and an expandable reference catalog. The [app manual](docs/app-guide.md#screen-manual) explains individual screens and troubleshooting; it is not required reading before starting.
 
 <details>
 <summary>Research, developer references and repository layout</summary>
 
-Research comparisons are dated snapshots, with sources and methodology: [concepts](docs/concepts.md), [benchmarks](docs/benchmarks.md), [model landscape](docs/model-landscape.md) and [research directory](research/README.md). Check current publisher terms and pricing before choosing a service.
+Research comparisons are dated snapshots, with sources and methodology: [concepts](docs/concepts.md#decision-concepts), [benchmarks](docs/benchmarks.md), [model landscape](docs/concepts.md#model-landscape) and [research directory](research/README.md). Check current publisher terms and pricing before choosing a service.
 
 <a id="repository-layout"></a>
 
@@ -130,7 +130,7 @@ Research comparisons are dated snapshots, with sources and methodology: [concept
 | [tests/](tests/README.md) | Behavioral tests and provider fixtures |
 | [.github/](.github/CI.md) | CI checks |
 
-[Architecture](docs/architecture.md) · [Contributing](CONTRIBUTING.md) · [Compatibility and advisories](docs/compatibility-and-upgrades.md).
+[Architecture](docs/architecture.md#architecture) · [Contributing](CONTRIBUTING.md) · [Compatibility and advisories](docs/compatibility-and-upgrades.md).
 
 </details>
 

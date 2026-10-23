@@ -1,12 +1,30 @@
-# Linux Vega and semantic model image
+# Configure native model runtimes
 
-[All guides](README.md) · [Project overview](../README.md)
+<a id="linux-vega-and-semantic-model-image"></a>
+
+[Documentation](README.md) · [Project overview](../README.md)
+
+Native model images and process ownership are separate from the lightweight CPU application. Select the compatible model profile, install only its required runtime and qualify the chosen hardware.
+
+## Choose a section
+
+- [Linux Vega and semantic model image](#linux-model-image)
+
+- [Windows model process ownership](#windows-process-ownership)
+
+<a id="linux-model-image"></a>
+
+## Linux Vega and semantic model image
+
+<a id="linux-model-image--linux-vega-and-semantic-model-image"></a>
 
 Train and serve Vega models, or run semantic data audits, in a Linux GPU container. The image supplies vegaml 0.8.0, Torch 2.10.0+cu126, Transformers 5.17.0 and NumPy 2.5.2 for Linux/amd64 CPython 3.12.15, alongside the application dependencies. Use the [CPU container](container-guide.md) for CPU workflows. Native Laya and Unsloth require separate compatible model images.
 
 The pinned Torch profile has [dependency advisories](compatibility-and-upgrades.md#gpu-dependency-advisories). Remediate and requalify the model environment before production use; a successful image build does not establish model safety or quality.
 
-## Build the model image
+<a id="linux-model-image--build-the-model-image"></a>
+
+### Build the model image
 
 ```bash
 docker build --platform linux/amd64 --file docker/models/Dockerfile.vega --tag domain-decision-platform:vega-local .
@@ -24,9 +42,11 @@ uv --no-config pip compile pyproject.toml requirements/vega-linux-amd64-py312-cu
 
 Reextract the exact `torch==2.10.0+cu126` and `triton==3.6.0` hash blocks into the wheel-stage file after regenerating; review changes and qualify the new image before use.
 
-## Standalone offline training
+<a id="linux-model-image--standalone-offline-training"></a>
 
-Prepare all eight reviewed, reserved files using the [Vega data contract](vega-guide.md): four positive roles and their four applicability-negative counterparts. Preserve source families, semantic/temporal reservations and independent calibration partitions. Supply an approved cached engine/backbone, a qualified retained image and an empty writable output directory. Container UID 10001 must be able to write the output. This shell example uses operator-selected absolute host paths:
+### Standalone offline training
+
+Prepare all eight reviewed, reserved files using the [Vega data contract](vega-guide.md#vega-model): four positive roles and their four applicability-negative counterparts. Preserve source families, semantic/temporal reservations and independent calibration partitions. Supply an approved cached engine/backbone, a qualified retained image and an empty writable output directory. Container UID 10001 must be able to write the output. This shell example uses operator-selected absolute host paths:
 
 ```bash
 docker run --rm --gpus "device=${DMT_GPU_DEVICE}" --network none --read-only \
@@ -45,9 +65,11 @@ docker run --rm --gpus "device=${DMT_GPU_DEVICE}" --network none --read-only \
   --learning-rate "${DMT_VEGA_LEARNING_RATE}" --gate-weight 1 --resource-lock /out/gpu.lock
 ```
 
-The standalone lease coordinates processes using the output lock; it does not coordinate a separate application workspace or other GPU consumers. Reserve a device for this route or use the application's shared lease. The trainer verifies the eight-file contract and writes a hash-manifest export. Load the verified manifest checkpoint. Use [independent admission](remote-admission-guide.md) and owner gates before release; select resource bounds and hyperparameters using your data and hardware.
+The standalone lease coordinates processes using the output lock; it does not coordinate a separate application workspace or other GPU consumers. Reserve a device for this route or use the application's shared lease. The trainer verifies the eight-file contract and writes a hash-manifest export. Load the verified manifest checkpoint. Use [independent admission](remote-training-guide.md#returned-model-admission) and owner gates before release; select resource bounds and hyperparameters using your data and hardware.
 
-## Verify authenticated container lifecycle
+<a id="linux-model-image--verify-authenticated-container-lifecycle"></a>
+
+### Verify authenticated container lifecycle
 
 Build/retain the CPU browser and model images first, then supply an approved public Hub cache and a separately available local device. This qualification creates a new fictional workspace; it does not use your existing application records, provider profiles or teacher credentials:
 
@@ -63,11 +85,15 @@ The Vega route reviews 800 positive and 240 applicability-negative fictional exa
 
 The verifier creates its own configuration and fictional data. Run a separate check for your `compose.yaml`/`compose.models.yaml` settings, JWT configuration, provider profiles and domain data. Inspect the verifier's report before proceeding; a configured command is not a completed check.
 
-### Queued eviction and real-child cancellation
+<a id="linux-model-image--queued-eviction-and-real-child-cancellation"></a>
+
+#### Queued eviction and real-child cancellation
 
 Add `--vega-resource-checks` to the same Vega command to exercise the supervised resource transitions. It temporarily stops only its owned worker, queues an actual Vega job and observes eviction of the API's resident model process before requesting inference. A queued owner cancellation then reopens the original released model. The worker restarts and begins a second actual training child; the verifier waits for feature extraction before requesting owner cancellation, checks inference-role denial, terminal process/lease cleanup and absence of a new registration, then reloads the original model. This option requires `--backend vega`; CPU defaults retain their existing checks.
 
-### Worker-parent death and lease handoff
+<a id="linux-model-image--worker-parent-death-and-lease-handoff"></a>
+
+#### Worker-parent death and lease handoff
 
 Linux model training, resident inference, imported-runtime admission and semantic auditing pass their held resource-lease file descriptor to the direct child. Before importing model packages, the child checks the exact creating parent process/thread, arms kernel `SIGKILL` on parent-thread death, rechecks the startup race and prevents descriptor inheritance by subsequent executed children. Keeping the inherited file description open retains the lock if the parent dies before protection is armed. Normal cancellation still waits for the child before unlocking. Standalone training without application supervision retains its separate resource contract. [Linux parent-death API](https://www.man7.org/linux/man-pages/man2/PR_SET_PDEATHSIG.2const.html), [Python descriptor inheritance](https://docs.python.org/3.12/library/subprocess.html).
 
@@ -79,11 +105,13 @@ The check verifies child termination, GPU lease release, inference refusal while
 
 The verifier uses a PID-1 reaper and targets an ordinary worker process. PID-1 signals have special restrictions; check that the intended worker is suspended before starting a competitor. [Linux PID namespace behavior](https://www.man7.org/linux/man-pages/man7/pid_namespaces.7.html)
 
-The cancellation and crash checks exercise local Vega lifecycle mechanics. Validate other model families, optimizer-phase crashes, concurrency, provider subprocesses, power loss and hardware/load separately. Windows has a different [ownership contract](windows-process-guide.md). Fixture results do not establish domain efficacy or enterprise deployment.
+The cancellation and crash checks exercise local Vega lifecycle mechanics. Validate other model families, optimizer-phase crashes, concurrency, provider subprocesses, power loss and hardware/load separately. Windows has a different [ownership contract](model-container-guide.md#windows-process-ownership). Fixture results do not establish domain efficacy or enterprise deployment.
 
-## Configure application services
+<a id="linux-model-image--configure-application-services"></a>
 
-Model weights are not baked into the image. Predownload the approved exact engine/backbone snapshots described in the [Vega guide](vega-guide.md), validate their hashes and licenses, and mount only the selected cache read-only. No Hub token or home credential directory is needed for offline execution. Semantic profiles additionally require their pinned encoder/tokenizer assets and Linux-visible paths; follow the [semantic guide](semantic-data-guide.md).
+### Configure application services
+
+Model weights are not baked into the image. Predownload the approved exact engine/backbone snapshots described in the [Vega guide](vega-guide.md#vega-model), validate their hashes and licenses, and mount only the selected cache read-only. No Hub token or home credential directory is needed for offline execution. Semantic profiles additionally require their pinned encoder/tokenizer assets and Linux-visible paths; follow the [semantic guide](reservation-guide.md#semantic-relatives).
 
 The optional [model Compose override](../compose.models.yaml) selects a model image for API and worker, the same operator-selected GPU device, and a read-only Hub cache. Both services retain the shared workspace volume and GPU lease. The browser remains in the CPU application image and calls the API. [Docker GPU device configuration](https://docs.docker.com/compose/how-tos/gpu-support/). Set these operator values after qualification:
 
@@ -125,6 +153,41 @@ selected local filesystem. Docker Desktop and mixed Windows/Linux processes need
 separate coordination checks; use a dedicated device until those pass.
 Keep other GPU applications
 and multi-host scheduling under separate controls. See
-[shared model capacity](setup.md#shared-model-capacity-on-one-host).
+[shared model capacity](setup.md#configuration--shared-model-capacity-on-one-host).
 
-Use approved paired data and frozen owner criteria with the [training/release workflow](vega-guide.md). Evaluate accuracy, calibration and coverage on operational gold before release. For managed cloud studies, check the selected account and image through [provider compatibility checks](verification.md#provider-compatibility-checks).
+Use approved paired data and frozen owner criteria with the [training/release workflow](vega-guide.md#vega-model). Evaluate accuracy, calibration and coverage on operational gold before release. For managed cloud studies, check the selected account and image through [provider compatibility checks](verification.md#provider-compatibility-checks).
+
+<a id="windows-process-ownership"></a>
+
+## Windows model process ownership
+
+<a id="windows-process-ownership--windows-model-process-ownership"></a>
+
+Run Windows model workloads through the application worker so training, inference, model validation and semantic subprocesses share the GPU/CPU capacity lease. The launcher assigns workloads to a Windows Job Object before model imports and refuses work when assignment fails. Standalone CLI commands use a separate process-ownership path.
+
+The parent owns the durable job handle. The child closes its temporary joining handle immediately. Kill-on-last-handle-close covers job members and ordinary `CreateProcess` descendants; this implementation enables neither breakaway option. Windows job assignment can conflict with an existing host job policy, so qualify the actual service host and preserve refusal. [Microsoft job-object semantics](https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects).
+
+<a id="windows-process-ownership--capacity-and-shutdown"></a>
+
+### Capacity and shutdown
+
+Windows byte-range locks do not provide Linux's inherited open-file-description behavior. Admission therefore takes the file lock and checks the bounded prior-job marker and active-process accounting before granting capacity. Invalid metadata or unavailable accounting refuses admission. An observer that retains a job handle may delay termination; positive membership still withholds capacity after parent death. [Microsoft file-lock inheritance](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-lockfileex).
+
+Normal shutdown waits for direct-child exit, closes and waits for the owned job, then releases capacity. The resident broker stops owned descendants before joining its output reader or closing pipes. Preserve this order: a descendant can retain a pipe handle after its direct parent exits. The marker is internal coordination metadata; do not edit it to force capacity while a model job may still be active.
+
+Do not use exit status alone to confirm training completion: a forced Windows Job Object termination can report zero. Require a valid result, complete manifest, current job ownership and independent model checks. Virtual-environment launchers may add processes to the job, so inspect membership rather than assuming a fixed process count.
+
+<a id="windows-process-ownership--verification-boundaries"></a>
+
+### Verification boundaries
+
+Run the maintained native tests from the repository's platform environment:
+
+```powershell
+python -m unittest discover -s tests -p test_windows_job.py -v
+python -m unittest discover -s tests -v
+```
+
+Six actual Windows OS tests cover normal descendant cleanup, parent crash, death before joining, unavailable job/malformed marker refusal, retained-handle capacity fencing and launch preconditions. They use CPU sleepers and completion markers; they do not exercise model training or establish domain quality. Linux skips these six tests. Windows skips seven Linux kernel/FD/thread cases. Report applicable counts explicitly rather than presenting skipped cases as executed.
+
+Validate runtime crashes, training-worker crashes and durable recovery separately on the target host. Other Windows versions, service identities, nested host jobs, network filesystems, power loss, broad load and provider subprocesses need their own checks. Hosted HTTP and cloud transport subprocesses do not inherit this model-launch contract.

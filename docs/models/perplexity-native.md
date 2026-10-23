@@ -25,11 +25,11 @@ fields instead of silently changing them. See the pinned
 [trainer](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b/blob/14c9d90137962d300f3de95633f7b6535e80c5ce/source/src/autojev/train.py)
 and [evaluator](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b/blob/14c9d90137962d300f3de95633f7b6535e80c5ce/source/src/autojev/evaluate.py).
 
-1. Follow the [app walkthrough](../app-guide.md#first-project-walkthrough) to
+1. Follow the [app walkthrough](../app-guide.md#screen-manual--first-project-walkthrough) to
    describe your domain, define outcomes and enter or upload examples. The app
    accepts CSV, XLSX, TSV, JSON and JSONL. Review and approve the records.
 2. Reserve independent real validation, calibration and test data. Optional
-   [synthetic generation](../app-guide.md#generate-and-review-training-candidates)
+   [synthetic generation](../app-guide.md#screen-manual--generate-and-review-training-candidates)
    uses a separate teacher. Review the candidates and extend only training,
    preserving the original holdouts.
 3. In **Prepare and generate**, select the **Reserved data snapshot** and expand
@@ -37,7 +37,7 @@ and [evaluator](https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b/blob/
    **Download reserved canonical study**. Extract the ZIP privately with all four
    JSONL files together.
 
-Alternatively, supply reviewed canonical files using the [data contract](../data-guide.md).
+Alternatively, supply reviewed canonical files using the [data contract](../data-guide.md#data-contract).
 The converter checks declared review, origin, schema and family separation.
 You remain responsible for those declarations and representative domain coverage;
 setting metadata does not establish human review or independence.
@@ -55,7 +55,7 @@ python -m pip check
 
 On Windows, create it with `py -3.12 -m venv .venv-perplexity-data` and activate
 `.venv-perplexity-data\Scripts\Activate.ps1`; the pip commands stay the same.
-See [setup](../setup.md) for activation troubleshooting. The
+See [setup](../setup.md#configuration) for activation troubleshooting. The
 [profile](../../requirements/perplexity-data.txt) installs Tokenizers and Jinja2,
 without Torch, Transformers or GPU libraries.
 
@@ -379,9 +379,9 @@ domain quality or deployment readiness.
 
 ## Rent hardware if local memory is insufficient
 
-The [AWS](../remote-training/aws.md), [Azure](../remote-training/azure.md),
-[GCP](../remote-training/gcp.md), [Modal](../remote-training/modal.md) and
-[RunPod](../remote-training/runpod.md) guides explain GPU job/storage primitives.
+The [AWS](../remote-training/aws.md#direct-submission), [Azure](../remote-training/azure.md#direct-submission),
+[GCP](../remote-training/gcp.md#direct-submission), [Modal](../remote-training/modal.md#direct-submission) and
+[RunPod](../remote-training/runpod.md#direct-submission) guides explain GPU job/storage primitives.
 For native Perplexity, follow the [five-provider native cloud workflow](../remote-training/perplexity.md)
 for the compatible image, H200 resource declarations, study submission and
 independent returned-model admission. Transfer only approved data. An image for

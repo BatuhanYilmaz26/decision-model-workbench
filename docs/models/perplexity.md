@@ -59,7 +59,7 @@ project schema in every request and does not split it automatically.
    workspace-login field or commit it to Git. `.env` files are not loaded
    automatically. For containers, follow [operator configuration](../hosted-decisions-guide.md#configure-operator-owned-profiles).
 4. Describe the decision, define allowed outcomes, upload or enter examples,
-   review labels and [reserve independent data](../reservation-guide.md).
+   review labels and [reserve independent data](../reservation-guide.md#reservations).
    Set owner acceptance criteria before the first study. Reviewed synthetic
    candidates may extend training data; they do not replace real heldouts.
 5. Open **Training jobs → Evaluate a hosted decision model**, choose a profile,

@@ -1,13 +1,13 @@
 # Train Vega on a cloud GPU
 
-[Provider directory](README.md) | [Vega workflow](../vega-guide.md) | [Project overview](../../README.md)
+[Provider directory](README.md) | [Vega workflow](../vega-guide.md#vega-model) | [Project overview](../../README.md)
 
 Train a domain adapter on AWS, Azure, GCP, Modal or RunPod when your computer cannot run Vega. The application freezes paired positive/applicability data and the shared cloud runner invokes the native Vega trainer. Retrieval reuses independent Vega admission before owner release. The image recipe is experimental; select and qualify the GPU, dependencies and provider account you will use.
 
 ## Prepare the domain and its paired data
 
-1. Describe the decision, confirm the allowed outcomes and [upload or enter examples](../data-guide.md). Review the labels and reserve independent training, validation, calibration and test roles.
-2. Prepare [applicability negatives](../applicability-guide.md), review them and reserve the paired snapshot. Set the owner's applicability/coverage criteria before submitting a study. At least sixty independent positive calibration families are required for the two disjoint fitting partitions; that minimum does not establish statistical adequacy.
+1. Describe the decision, confirm the allowed outcomes and [upload or enter examples](../data-guide.md#data-contract). Review the labels and reserve independent training, validation, calibration and test roles.
+2. Prepare [applicability negatives](../vega-guide.md#applicability-data), review them and reserve the paired snapshot. Set the owner's applicability/coverage criteria before submitting a study. At least sixty independent positive calibration families are required for the two disjoint fitting partitions; that minimum does not establish statistical adequacy.
 3. Optionally [generate and review synthetic candidates](../synthetic-generation-guide.md) for training gaps. Preserve reserved real holdouts and seed lineage. The same canonical data and native Vega conversion apply on every provider.
 
 The ZIP contains `request.json`, four `data/{role}.jsonl` positives and four `data/gate_{role}.jsonl` negatives. It has no `data/manifest.json`. The request binds both reservations, all eight file hashes, the question schema, source and pinned engine/backbone, trainer settings and applicability preflight. Keep the complete ZIP unchanged.
@@ -30,7 +30,7 @@ docker build --platform linux/amd64 -f docker/models/Dockerfile.vega-cloud \
 docker push YOUR_REGISTRY/vega-cloud:YOUR_TAG
 ```
 
-The derived image retains the base's model/provider dependencies and project source. It runs as root for provider-mounted training outputs; use the separate base/application images for the web service. Its build uses the same pinned asset helper as native training and stores both checkpoints at `DMT_MODEL_CACHE=/opt/dmt/vega-hub`, then enables offline execution. Leave the study's cached-assets setting enabled. An incomplete cache must fail rather than switch versions. Managed Modal Sandboxes block outbound networking, so downloading missing weights during that job is not an alternative; prepare the complete image first. Refer to the [model container guide](../model-container-guide.md) for approved assets and the [dependency guide](../compatibility-and-upgrades.md) for profile limits/advisories.
+The derived image retains the base's model/provider dependencies and project source. It runs as root for provider-mounted training outputs; use the separate base/application images for the web service. Its build uses the same pinned asset helper as native training and stores both checkpoints at `DMT_MODEL_CACHE=/opt/dmt/vega-hub`, then enables offline execution. Leave the study's cached-assets setting enabled. An incomplete cache must fail rather than switch versions. Managed Modal Sandboxes block outbound networking, so downloading missing weights during that job is not an alternative; prepare the complete image first. Refer to the [model container guide](../model-container-guide.md#linux-model-image) for approved assets and the [dependency guide](../compatibility-and-upgrades.md) for profile limits/advisories.
 
 Record the final training image digest and the source fingerprint from that image:
 
@@ -47,11 +47,11 @@ Use its existing profile template and managed setup. Set `training_backends` to 
 
 | Provider | Configure and approve the run | Provider runtime |
 |---|---|---|
-| AWS | [SageMaker setup](../managed-cloud-training.md), [profile](../../examples/cloud/aws-profiles.json) | SageMaker training job, study input channel and complete model export |
-| Azure | [Azure ML setup](../managed-azure-training.md), [profile](../../examples/cloud/azure-profiles.json) | Managed command job with its mounted input/output paths |
-| GCP | [Custom job setup](../managed-gcp-training.md), [profile](../../examples/cloud/gcp-profiles.json) | Regional custom GPU job with generation-bound object storage |
-| Modal | [Sandbox setup](../managed-modal-training.md), [profile](../../examples/cloud/modal-profiles.json) | GPU Sandbox and persistent Volume |
-| RunPod | [Pod setup](../managed-runpod-training.md), [profile](../../examples/cloud/runpod-profiles.json) | GPU Pod, approved SSH runtime and retained network storage |
+| AWS | [SageMaker setup](aws.md#application-managed-training), [profile](../../examples/cloud/aws-profiles.json) | SageMaker training job, study input channel and complete model export |
+| Azure | [Azure ML setup](azure.md#application-managed-training), [profile](../../examples/cloud/azure-profiles.json) | Managed command job with its mounted input/output paths |
+| GCP | [Custom job setup](gcp.md#application-managed-training), [profile](../../examples/cloud/gcp-profiles.json) | Regional custom GPU job with generation-bound object storage |
+| Modal | [Sandbox setup](modal.md#application-managed-training), [profile](../../examples/cloud/modal-profiles.json) | GPU Sandbox and persistent Volume |
+| RunPod | [Pod setup](runpod.md#application-managed-training), [profile](../../examples/cloud/runpod-profiles.json) | GPU Pod, approved SSH runtime and retained network storage |
 
 Each controller invokes the shared archive validator and cloud runner. It rechecks both data roles and builds a fixed `decision_workbench.training.vega_runner` command with the frozen model/backbone and options, `--study-request` and `--device cuda`. It does not pass the eight-file study to a Laya, chat-SFT or Unsloth trainer. Provider-specific identity, submission, observation, stopping and storage controls remain in the linked guides.
 
@@ -63,4 +63,4 @@ Each controller invokes the shared archive validator and cloud runner. It rechec
 4. Inspect the admitted version and release it only if the frozen owner gates pass. Use the authenticated [prediction workflow](../product-workflow.md#6-release-and-integrate); a closed gate or ambiguous prediction set must reach your fallback.
 5. Stop paid resources and review retained storage separately. Cancellation or local failure does not prove billing has stopped. Vega has no optimizer-state resume or distributed-training path here.
 
-For operator-managed execution, use the unchanged [eight-file request and standalone command](../remote-admission-guide.md#vega-eight-file-studies-and-independent-admission), then stage the export and provider receipt. Physical GPU/image execution, provider access/billing and quality on your domain require your own qualification; local contract/fixture checks do not establish those outcomes.
+For operator-managed execution, use the unchanged [eight-file request and standalone command](../remote-training-guide.md#returned-model-admission--vega-eight-file-studies-and-independent-admission), then stage the export and provider receipt. Physical GPU/image execution, provider access/billing and quality on your domain require your own qualification; local contract/fixture checks do not establish those outcomes.

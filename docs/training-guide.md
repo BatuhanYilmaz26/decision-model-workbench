@@ -14,10 +14,10 @@ In the browser app, select a reserved **Training snapshot**, then choose a **Tra
 
 | Training backend | What you train | Setup and workflow |
 |---|---|---|
-| CPU comparison baseline (`cpu-baseline`) | A fixed-schema lexical classifier on your CPU | [Local setup](setup.md), [first project](app-guide.md#first-project-walkthrough) |
-| Laya (`laya-native`) | The native decision head, with the encoder frozen by default | [Model environment](setup.md#configure-model-training-and-serving), [native adapter](#native-laya-adapter) |
-| Unsloth decision fine-tuning (`unsloth`) | A compatible decision checkpoint using its decision trainer | [Model environment](setup.md#configure-model-training-and-serving), [Unsloth adapter](#unsloth-adapter) |
-| Vega domain adapter (`vega`) | An adapter with separate positive and out-of-domain examples | [Vega data, training and gate calibration](vega-guide.md) |
+| CPU comparison baseline (`cpu-baseline`) | A fixed-schema lexical classifier on your CPU | [Local setup](setup.md#configuration), [first project](app-guide.md#screen-manual--first-project-walkthrough) |
+| Laya (`laya-native`) | The native decision head, with the encoder frozen by default | [Model environment](setup.md#configuration--configure-model-training-and-serving), [native adapter](#native-laya-adapter) |
+| Unsloth decision fine-tuning (`unsloth`) | A compatible decision checkpoint using its decision trainer | [Model environment](setup.md#configuration--configure-model-training-and-serving), [Unsloth adapter](#unsloth-adapter) |
+| Vega domain adapter (`vega`) | An adapter with separate positive and out-of-domain examples | [Vega data, training and gate calibration](vega-guide.md#vega-model) |
 | Liquid d1-3B (`liquid-trl` or `liquid-unsloth`) | The same pinned model through one of two distinct training environments | [Liquid setup and training](models/liquid.md) |
 | Liquid d1-omni-600M (`liquid-omni`) | The native text/JSON decision head | [Omni setup and training](models/liquid-omni.md) |
 | Decision 3.0 variants | The selected variant's native readout, with variant-specific resource requirements | [D3 family and backend names](models/d3-family.md), [D3 workflow](models/d3.md) |
@@ -25,9 +25,9 @@ In the browser app, select a reserved **Training snapshot**, then choose a **Tra
 
 Each model guide defines compatible questions, labels, input limits, devices and dependencies. A shared backend interface does not make their native formats or environments interchangeable. The **CPU baseline** is a separate choice; an unavailable model backend does not silently become that baseline. Hosted decision APIs use [hosted studies](hosted-decisions-guide.md) rather than local fine-tuning.
 
-Prepare and review examples through the [data workflow](data-guide.md), reserve independent evaluation roles, and optionally add [reviewed synthetic candidates](synthetic-generation-guide.md) to training. The model adapters convert the reserved canonical records into their native formats. Vega also needs its paired applicability datasets; native Perplexity supports Choice/Noul rather than Score training. Follow the selected guide before exporting data for a standalone publisher recipe.
+Prepare and review examples through the [data workflow](data-guide.md#data-contract), reserve independent evaluation roles, and optionally add [reviewed synthetic candidates](synthetic-generation-guide.md) to training. The model adapters convert the reserved canonical records into their native formats. Vega also needs its paired applicability datasets; native Perplexity supports Choice/Noul rather than Score training. Follow the selected guide before exporting data for a standalone publisher recipe.
 
-When a job succeeds, inspect its training and [evaluation report](evaluation-guide.md), including role counts, per-question results, calibration and export/reload comparison. Release an eligible version through the [application workflow](product-workflow.md#6-release-and-integrate); a standalone CLI export is not automatically registered. A failed job or export check must be resolved before release. For insufficient local VRAM, use the compatible [remote training workflow](remote-training-guide.md) and its provider/model-specific instructions.
+When a job succeeds, inspect its training and [evaluation report](evaluation-guide.md#evaluation), including role counts, per-question results, calibration and export/reload comparison. Release an eligible version through the [application workflow](product-workflow.md#6-release-and-integrate); a standalone CLI export is not automatically registered. A failed job or export check must be resolved before release. For insufficient local VRAM, use the compatible [remote training workflow](remote-training-guide.md#study-protocol) and its provider/model-specific instructions.
 
 Experimental profiles and unexecuted hardware/image combinations remain identified in their guides. Successful contract tests do not establish model quality on your domain or qualify a different device, image or dependency set.
 
@@ -37,7 +37,7 @@ Compare rules, the CPU specialist baseline, an unadapted decision checkpoint and
 
 ## Reserve four splits
 
-Export reviewed `train.jsonl`, `validation.jsonl`, `calibration.jsonl` and `test.jsonl`. Training may include approved synthetic records with training-seed lineage; the other roles require independent operational examples. The adapters reject known record, group and normalized-state overlap plus held-out seed descendants. Use [temporal checks](temporal-data-guide.md) and [semantic review](semantic-data-guide.md) before reserving the study, and verify source independence with the data owner.
+Export reviewed `train.jsonl`, `validation.jsonl`, `calibration.jsonl` and `test.jsonl`. Training may include approved synthetic records with training-seed lineage; the other roles require independent operational examples. The adapters reject known record, group and normalized-state overlap plus held-out seed descendants. Use [temporal checks](reservation-guide.md#time-boundaries) and [semantic review](reservation-guide.md#semantic-relatives) before reserving the study, and verify source independence with the data owner.
 
 Validation monitors training and qualifies export. Calibration alone fits temperatures. The final test report is computed from the exact exported runtime; no temperature fitting or hyperparameter selection uses that test. If findings from a test inform a policy/model change, use fresh independent gold for the successor study.
 
@@ -77,11 +77,11 @@ Per-question reports include confusion, macro-F1, precision/recall, NLL/Brier ag
 
 ## Train without local GPU capacity
 
-Train on [AWS, Azure, GCP, Modal or RunPod](remote-training-guide.md) using the same four data files, pinned checkpoint and export/reload checks. Validate the selected image and account with a small study, then [admit the returned model](remote-admission-guide.md) before release. Use a decision-head trainer; generic managed chat fine-tuning does not implement this contract.
+Train on [AWS, Azure, GCP, Modal or RunPod](remote-training-guide.md#study-protocol) using the same four data files, pinned checkpoint and export/reload checks. Validate the selected image and account with a small study, then [admit the returned model](remote-training-guide.md#returned-model-admission) before release. Use a decision-head trainer; generic managed chat fine-tuning does not implement this contract.
 
 ## Vega local application and standalone adapter paths
 
-The [Vega guide](vega-guide.md) covers a separate engine/domain-adapter route with four additional applicability-negative files. The application supports paired reservations, local worker training, applicability criteria and resident serving. Its trainer pins the engine/backbone, checks complete prompts and separates probability/conformal calibration. The upstream recipe below explains the architectural differences; use the project adapter for the application's data contract. Domain efficacy and real cloud execution require separate validation.
+The [Vega guide](vega-guide.md#vega-model) covers a separate engine/domain-adapter route with four additional applicability-negative files. The application supports paired reservations, local worker training, applicability criteria and resident serving. Its trainer pins the engine/backbone, checks complete prompts and separates probability/conformal calibration. The upstream recipe below explains the architectural differences; use the project adapter for the application's data contract. Domain efficacy and real cloud execution require separate validation.
 
 The [pinned Vega recipe](https://github.com/NandhaKishorM/vegaml/blob/01d2850408084034e27174621c19e01f0f0b9e92/notebooks/vega_finetune.py) extracts frozen features, trains a gated engine adapter and refits its uncertainty parameters. Its input loader is hard-wired to emotion labels/news negatives; replacing a CSV path is insufficient. For a domain implementation:
 

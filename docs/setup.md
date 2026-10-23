@@ -1,16 +1,37 @@
 # Advanced setup and integration configuration
 
+[Documentation](README.md) · [Project overview](../README.md)
+
+Use the root quick start and task walkthroughs for personal use. This reference covers optional model runtimes, integration settings, separate services and shared-host resource configuration.
+
+## Choose a section
+
+- [Runtime and service configuration](#configuration)
+
+- [Optional tools and external integrations](#optional-tools)
+
+<a id="configuration"></a>
+
+## Runtime and service configuration
+
+<a id="configuration--advanced-setup-and-integration-configuration"></a>
+
+<a id="configuration--local-setup-and-user-workflow"></a>
+
 <a id="local-setup-and-user-workflow"></a>
 
-[All guides](README.md) · [Project overview](../README.md)
 
 Use this reference when configuring an optional model runtime, teacher or shared workspace. For installation and the common workflows, start with the root README. Run commands from the repository root. Data preparation supports Python 3.10+; the Windows application profile uses Python 3.13. CPU baseline training uses the application environment; Laya, Unsloth and Vega use separately configured model environments. See [dependency profiles](../requirements/README.md) for the Linux container and Windows model versions.
 
-## Install and start
+<a id="configuration--install-and-start"></a>
+
+### Install and start
 
 Use the [root quick start](../README.md#run-on-your-computer) for prerequisites, clone, virtual environment, installation, startup, persistence and shutdown. Personal mode needs no account, GPU or workspace key. The three [user walkthroughs](README.md) cover the common tasks; the settings below are for optional runtimes, integrations and shared services.
 
-## Personal and shared workspaces
+<a id="configuration--personal-and-shared-workspaces"></a>
+
+### Personal and shared workspaces
 
 Personal mode is for one person on a loopback-bound server. Browsers able to access that server share the same local owner identity. The API still authenticates every request using a random credential created for each service lifetime; only its hash is written to temporary service configuration. The browser never asks you to copy that credential. Bind shared deployments to their intended network address and use authenticated shared-workspace connections instead; personal mode is disabled when the browser server is not bound to a literal loopback address.
 
@@ -25,9 +46,11 @@ domain-platform run --keys-file data/operator-keys.json
 
 Provisioning prints a bearer credential once and stores its hash. Choose **Shared workspace**, enter the API address and that credential, then connect. This mode retains the existing default `data/workspace`; it does not merge projects with the personal workspace. For a team-hosted API, use its HTTPS address and the administrator-issued credential. Selecting cloud training does not require moving your workspace: you can retain local projects while sending an explicitly approved training study to a provider.
 
-The credential file must stay operator-controlled. Roles are admin, editor, reviewer and inference. Provision separate people/applications with separate actor names. Live key rotation/revocation is implemented; see the [authentication guide](authentication-guide.md). The trusted JWT adapter is available, while interactive enterprise SSO and real identity-provider qualification require separate operational validation.
+The credential file must stay operator-controlled. Roles are admin, editor, reviewer and inference. Provision separate people/applications with separate actor names. Live key rotation/revocation is implemented; see the [authentication guide](authentication-guide.md#workspace-credentials). The trusted JWT adapter is available, while interactive enterprise SSO and real identity-provider qualification require separate operational validation.
 
-## Use the application
+<a id="configuration--use-the-application"></a>
+
+### Use the application
 
 The entry screen links local installation, hosted decision APIs, synthetic teacher configuration and AWS, Azure, GCP, Modal and RunPod training guides. After connection, **Computer, model environment and provider setup → Check available hardware and model packages** inspects the configured worker and serving environments without downloading models. It reports installed packages, CUDA/MPS availability and GPU memory. Availability is separate from successful backend execution, sufficient free memory and domain quality. CPU baseline is the default training backend. **Training location** selects this computer or cloud GPU; provider selection and approval appear under **Train on a cloud GPU** after reserving data. Hosted evaluation is a separate action because it does not train provider weights.
 
@@ -40,21 +63,27 @@ The entry screen links local installation, hosted decision APIs, synthetic teach
 7. **Evaluate/release.** Inspect sample counts, class coverage, accuracy/F1/calibration and confusion matrices. Admin activation applies the accuracy, macro-F1, ECE and sample-count criteria frozen before training, and requires every test class. The default form requests 100 real test examples per question. Criteria cannot be changed at release time. These basic gates do not replace domain-owner qualification.
 8. **Use/rollback.** Call Decisions or the HTTP endpoint. Low-confidence answers are marked abstained. Activate an earlier eligible model version with a rollback reason; release history remains in audit.
 
-The release endpoint supports CPU baseline, native Laya, the pinned Unsloth profile and the separately pinned [Vega engine/domain-adapter profile](vega-guide.md). Decision-head releases require qualified export/reload, complete file integrity, matching schema and the frozen owner gates. Vega also requires paired reviewed applicability data and explicit positive-acceptance/negative-false-open criteria.
+The release endpoint supports CPU baseline, native Laya, the pinned Unsloth profile and the separately pinned [Vega engine/domain-adapter profile](vega-guide.md#vega-model). Decision-head releases require qualified export/reload, complete file integrity, matching schema and the frozen owner gates. Vega also requires paired reviewed applicability data and explicit positive-acceptance/negative-false-open criteria.
 
-## Policy changes and workspace upgrades
+<a id="configuration--policy-changes-and-workspace-upgrades"></a>
+
+### Policy changes and workspace upgrades
 
 An owner can create a new project with **Policy successor of** pointing to an existing project. Supply and confirm the successor schema/policy. Its policy version increments, and its data, jobs and releases have a separate scope; the earlier project/model remains available. Data is not silently copied. If previous test outcomes informed the new policy or gates, reserve fresh independent gold for the new study.
 
-The local store upgrades supported older schemas to schema 11 in a transaction on startup. Existing dataset hashes and pinned snapshots are preserved; old full-row JSON is converted to normalized roots. New reviews store a single changed record; appends add compact membership manifests. Historical membership and hashes remain pinned. Back up and stop all services before an upgrade using the [operator recovery commands](recovery-guide.md); that guide lists the supported backup schema versions and recovery constraints. Older applications refuse schema 11 rather than ignore its lifecycle/deletion, retained accounting, generation and reservation contracts; mixed-version operation is unsupported. A legacy training run without frozen criteria cannot be newly activated; retrain under approved criteria in a successor project. An already active version is preserved by migration.
+The local store upgrades supported older schemas to schema 11 in a transaction on startup. Existing dataset hashes and pinned snapshots are preserved; old full-row JSON is converted to normalized roots. New reviews store a single changed record; appends add compact membership manifests. Historical membership and hashes remain pinned. Back up and stop all services before an upgrade using the [operator recovery commands](recovery-guide.md#local-backups); that guide lists the supported backup schema versions and recovery constraints. Older applications refuse schema 11 rather than ignore its lifecycle/deletion, retained accounting, generation and reservation contracts; mixed-version operation is unsupported. A legacy training run without frozen criteria cannot be newly activated; retrain under approved criteria in a successor project. An already active version is preserved by migration.
 
 Dataset lists return compact metadata. `GET /v1/projects/{project}/datasets/{dataset}/rows?limit=50&offset=0` returns a bounded page; the maximum is 200. Historical versions are readable, and only the latest collection revision accepts another review or append. Downloads reconstruct and integrity-check the immutable version.
 
-## Configure a teacher
+<a id="configuration--configure-a-teacher"></a>
+
+### Configure a teacher
 
 Follow [synthetic teacher setup](synthetic-generation-guide.md#configure-a-local-or-hosted-teacher) for the personal startup form. The same page's expandable environment reference contains launcher commands, key handling, response formats and schema-assistant settings. Configure before startup and restart services after changes. Ordinary training on existing examples does not need a teacher.
 
-## Configure model training and serving
+<a id="configuration--configure-model-training-and-serving"></a>
+
+### Configure model training and serving
 
 Use the [tested dependency profiles](../requirements/README.md) and [training guide](training-guide.md). Install this project into the isolated model environment. In PowerShell, configure both the worker and resident inference runtime before starting the launcher:
 
@@ -75,7 +104,9 @@ Laya/Unsloth jobs need a Hub model ID, an exact 40-character revision, bounded s
 
 One resident model process serves head requests. Its OS resource lease is shared with training within the workspace. Queued/running GPU work unloads inference and returns HTTP 503 with a retry hint; inference resumes when that work finishes or is cancelled. Idle models unload after 30 seconds by default. Operator variables `DMT_INFERENCE_IDLE_SECONDS`, `DMT_INFERENCE_TIMEOUT_SECONDS` and `DMT_MODEL_LOAD_TIMEOUT_SECONDS` bound residency/request/loading. The browser allows 420 seconds for release/decision requests, covering the default 240-second model load and 120-second inference deadlines plus response overhead. Set `DMT_UI_MODEL_TIMEOUT_SECONDS` in the web process when changing those deadlines. If a client/network timeout occurs, refresh and inspect the active version before retrying: an in-flight release may commit after the client disconnects. This is single-host coordination; multiple workspaces and multi-host capacity scheduling need separate qualification.
 
-### Configure native Perplexity training and serving
+<a id="configuration--configure-native-perplexity-training-and-serving"></a>
+
+#### Configure native Perplexity training and serving
 
 The open v1.1 profile uses a separate Linux/CUDA environment and a complete
 preinstalled checkpoint. Set `DMT_PERPLEXITY_PYTHON` and
@@ -89,7 +120,9 @@ resource floors and model-load/UI deadlines. Native full-weight jobs use a
 follow the [Perplexity cloud training guide](remote-training/perplexity.md).
 The [hosted API workflow](models/perplexity.md) needs no native GPU.
 
-## Run services individually
+<a id="configuration--run-services-individually"></a>
+
+### Run services individually
 
 For the Linux CPU application image and a repeatable isolated end-to-end check, see the [container setup and qualification guide](container-guide.md). GPU model environments remain separately qualified.
 
@@ -113,7 +146,9 @@ Content-Type: application/json
 
 Tenant and role come from the credential, not request-supplied identifiers. Responses include model, release revision, schema hash and probabilities.
 
-## Portable containers
+<a id="configuration--portable-containers"></a>
+
+### Portable containers
 
 For Compose, provision `data/config/operator-keys.json` and mount its directory so atomic key rotation becomes visible. Local launcher credentials can remain at `data/operator-keys.json`. The manifests can be inspected with:
 
@@ -124,9 +159,11 @@ docker compose up --build
 
 Ports bind to loopback. The named workspace volume persists data and artifacts; the operator file mounts read-only. The web service's operator-configured internal API address may use HTTP on its private container network. Arbitrary remote user-entered addresses require HTTPS.
 
-Follow the [CPU container guide](container-guide.md) or the separate [GPU model guide](model-container-guide.md), then run the lifecycle verifier on your built image. Check mounted data, permissions and restart behavior in the target environment. This SQLite profile coordinates services on one host; use a separate storage and scheduling design for multi-host deployment.
+Follow the [CPU container guide](container-guide.md) or the separate [GPU model guide](model-container-guide.md#linux-model-image), then run the lifecycle verifier on your built image. Check mounted data, permissions and restart behavior in the target environment. This SQLite profile coordinates services on one host; use a separate storage and scheduling design for multi-host deployment.
 
-## Checks and maintenance
+<a id="configuration--checks-and-maintenance"></a>
+
+### Checks and maintenance
 
 ```bash
 python -m unittest discover -s tests -v
@@ -136,19 +173,25 @@ python -m pip check
 
 The standalone preparation CLI and research scripts remain maintenance tools. They do not replace the application lifecycle. Research refresh requires manual review of narrative, prices and benchmark methods.
 
-For consistent workspace/model backups, trusted checksum verification and fresh-directory recovery, follow the [operator recovery guide](recovery-guide.md). Restored unfinished jobs require explicit resubmission; credentials are supplied separately.
+For consistent workspace/model backups, trusted checksum verification and fresh-directory recovery, follow the [operator recovery guide](recovery-guide.md#local-backups). Restored unfinished jobs require explicit resubmission; credentials are supplied separately.
 
-Use the [authentication guide](authentication-guide.md) for key rotation, revocation and trusted JWT configuration. Shared users can paste an API access token into the credential field, or use the optional [organization sign-in](enterprise-sign-in-guide.md) configured by their administrator. The OIDC route obtains a resource access token through authorization-code/S256 PKCE; automatic access-token refresh is not available.
+Use the [authentication guide](authentication-guide.md#workspace-credentials) for key rotation, revocation and trusted JWT configuration. Shared users can paste an API access token into the credential field, or use the optional [organization sign-in](authentication-guide.md#organization-sign-in) configured by their administrator. The OIDC route obtains a resource access token through authorization-code/S256 PKCE; automatic access-token refresh is not available.
 
-## Hosted provider alternative
+<a id="configuration--hosted-provider-alternative"></a>
+
+### Hosted provider alternative
 
 Use the [hosted decision workflow](hosted-decisions-guide.md) to evaluate provider weights and fit a local calibration policy. Studies and later inference send state to the selected provider. Configure scoped profiles, check account behavior and data-use terms, and set measured release criteria before enabling the route.
 
-## Managed cloud training
+<a id="configuration--managed-cloud-training"></a>
 
-Choose [managed AWS](managed-cloud-training.md), [GCP](managed-gcp-training.md), [Azure](managed-azure-training.md), [RunPod](managed-runpod-training.md) or [Modal](managed-modal-training.md) to submit frozen studies from the application. Install the selected provider's control dependencies in the API/worker environment, configure approved infrastructure and obtain separate owner approvals for data transfer and paid compute. Check the provider's retained-storage charges and termination behavior. [Provider compatibility checks](verification.md#provider-compatibility-checks)
+### Managed cloud training
 
-## Shared model capacity on one host
+Choose [managed AWS](remote-training/aws.md#application-managed-training), [GCP](remote-training/gcp.md#application-managed-training), [Azure](remote-training/azure.md#application-managed-training), [RunPod](remote-training/runpod.md#application-managed-training) or [Modal](remote-training/modal.md#application-managed-training) to submit frozen studies from the application. Install the selected provider's control dependencies in the API/worker environment, configure approved infrastructure and obtain separate owner approvals for data transfer and paid compute. Check the provider's retained-storage charges and termination behavior. [Provider compatibility checks](verification.md#provider-compatibility-checks)
+
+<a id="configuration--shared-model-capacity-on-one-host"></a>
+
+### Shared model capacity on one host
 
 Native training, resident native inference and returned-model admission take an
 exclusive shared model lock as well as their workspace lock. By default, processes
@@ -172,20 +215,26 @@ returns a resource-unavailable error; this is mutual exclusion, not a fair queue
 a VRAM quota or a cluster scheduler. Locks do not partition multiple devices
 automatically. Keep one shared lock for all processes that may use the same GPU.
 
-For containers, follow the [shared model volume setup](model-container-guide.md#configure-application-services).
-The [standalone Vega runner](vega-guide.md) uses the shared default unless you
+For containers, follow the [shared model volume setup](model-container-guide.md#linux-model-image--configure-application-services).
+The [standalone Vega runner](vega-guide.md#vega-model) uses the shared default unless you
 explicitly select its `--resource-lock` override. An override coordinates only
 processes using that same file.
 
-## Local semantic review
+<a id="configuration--local-semantic-review"></a>
 
-Before reserving a domain study, optionally configure the [local semantic audit workflow](semantic-data-guide.md). Its operator profile pins approved cached model/tokenizer assets and an isolated CPU runtime; the baseline application image does not supply those model assets. Required scoped profiles block unchecked reservations and require immutable owner/reviewer adjudication of every candidate pair. This complements source-family and temporal checks; domain threshold/recall qualification remains required.
+### Local semantic review
 
-## Reviewed category discovery
+Before reserving a domain study, optionally configure the [local semantic audit workflow](reservation-guide.md#semantic-relatives). Its operator profile pins approved cached model/tokenizer assets and an isolated CPU runtime; the baseline application image does not supply those model assets. Required scoped profiles block unchecked reservations and require immutable owner/reviewer adjudication of every candidate pair. This complements source-family and temporal checks; domain threshold/recall qualification remains required.
 
-Use the [taxonomy workflow](taxonomy-guide.md) for manual proposals or consented TypeLLM discovery. Configure scoped operator profiles and keep credentials in server/worker configuration. Review proposals and confirm a successor schema; discovery examples stay training-only, and existing labels/releases are not transferred. Evaluate category quality and provider costs on representative records before relying on discovery.
+<a id="configuration--reviewed-category-discovery"></a>
 
-## Separate Liquid model environment
+### Reviewed category discovery
+
+Use the [taxonomy workflow](domain-schema-guide.md#category-discovery) for manual proposals or consented TypeLLM discovery. Configure scoped operator profiles and keep credentials in server/worker configuration. Review proposals and confirm a successor schema; discovery examples stay training-only, and existing labels/releases are not transferred. Evaluate category quality and provider costs on representative records before relying on discovery.
+
+<a id="configuration--separate-liquid-model-environment"></a>
+
+### Separate Liquid model environment
 
 For d1-3B, install the separate [Liquid profile](models/liquid.md#train-with-the-local-trl-runner), set `DMT_LIQUID_PYTHON` in the API and worker environments, and restart the services. The [application workflow](models/liquid.md#train-and-release-through-the-localhost-application) uses that interpreter for training and resident serving while keeping the CPU application and existing Laya/Unsloth/Vega profiles separate. Optional `DMT_LIQUID_CACHE` selects its private checkpoint cache. Configure these before starting personal mode, or use its optional Liquid interpreter field.
 
@@ -198,3 +247,27 @@ startup. Optional `DMT_D3_CACHE` selects its public checkpoint cache. Follow
 [D3 application training](models/d3.md#train-and-release-in-the-app) for review,
 CPU/CUDA selection, frozen studies, release and prediction. The CPU application
 process does not import or install the model runtime.
+
+<a id="optional-tools"></a>
+
+## Optional tools and external integrations
+
+<a id="optional-tools--tools-and-integrations"></a>
+
+Start with manual examples or a CSV/XLSX upload. Add integrations when you need a private synthesis endpoint, model registry, experiment tracking or controlled access to enterprise records.
+
+| Need | Optional route | Boundary |
+|---|---|---|
+| Training | Unsloth environment/notebooks | Separate GPU dependencies |
+| Encoder experiments | Laya native tools | Pin source/checkpoint |
+| Private synthesis | Local chat endpoint or approved enterprise API | Review teacher/data usage terms |
+| Distribution | Existing private model registry or Hugging Face | Bundle head/processor and pin revision |
+| Tracking | Existing MLflow/W&B equivalent | Avoid raw-record upload by default |
+| Agent composition | LangChain/LangGraph if already used | Evaluate complete workflows |
+| Source control | GitHub repository and pull requests | Keep data and secrets private |
+
+Follow the upstream setup guides for [Unsloth](https://unsloth.ai/docs/basics/train-your-own-decision-model-with-unsloth), [Laya](https://github.com/NandhaKishorM/laya) or [LangChain](https://www.langchain.com/blog/building-a-harness-with-jev) when selecting those integrations.
+
+
+
+An authorized Drive/SharePoint or policy-system connector can later retrieve selected enterprise examples. It is optional; a file upload is enough to start. A connector does not replace provenance or permission checks.

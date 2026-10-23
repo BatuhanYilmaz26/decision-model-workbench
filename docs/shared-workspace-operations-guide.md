@@ -1,6 +1,6 @@
 # Operate a shared workspace within explicit limits
 
-Use this guide with [PostgreSQL metadata](postgresql-guide.md), [shared model artifacts](shared-artifacts-guide.md) and your organization's [authentication configuration](authentication-guide.md). The same domain, review, synthetic-data, training, release and inference workflows remain available. API and worker instances can have separate local caches while using the same database/schema, artifact repository and identity configuration.
+Use this guide with [PostgreSQL metadata](shared-artifacts-guide.md#postgresql-metadata), [shared model artifacts](shared-artifacts-guide.md#s3-artifacts) and your organization's [authentication configuration](authentication-guide.md#workspace-credentials). The same domain, review, synthetic-data, training, release and inference workflows remain available. API and worker instances can have separate local caches while using the same database/schema, artifact repository and identity configuration.
 
 ## Queue limits and concurrent work
 
@@ -8,9 +8,9 @@ The application permits **four pending jobs per tenant**, counted across that te
 
 Use an 8–128 character request key when submitting jobs. Retrying the same request with its original key returns the same job, including when the queue is full. Changing the request body requires a new key; do not create new keys automatically after an uncertain response. Teacher calls, hosted decisions and cloud runs have their own approval, accounting and [reconciliation controls](synthetic-generation-guide.md).
 
-Workers claim durable jobs through the shared database. Only the current ownership token can commit a result. Multiple workers do not grant unlimited GPU capacity: keep the [shared model-capacity configuration](setup.md#shared-model-capacity-on-one-host) for workers sharing physical hardware. A job's queue limit, resource ownership, transport deadline and upstream account quota are separate controls.
+Workers claim durable jobs through the shared database. Only the current ownership token can commit a result. Multiple workers do not grant unlimited GPU capacity: keep the [shared model-capacity configuration](setup.md#configuration--shared-model-capacity-on-one-host) for workers sharing physical hardware. A job's queue limit, resource ownership, transport deadline and upstream account quota are separate controls.
 
-Follow [managed cloud training](remote-training-guide.md) for AWS, Azure, GCP, Modal and RunPod. Adding application workers does not increase provider quotas or authorize extra paid compute.
+Follow [managed cloud training](remote-training-guide.md#study-protocol) for AWS, Azure, GCP, Modal and RunPod. Adding application workers does not increase provider quotas or authorize extra paid compute.
 
 ## Check node readiness
 
@@ -48,7 +48,7 @@ Use these settings to adjust detection:
 
 Connect your deployment's monitoring to HTTP readiness and the authenticated project operations API. Durable incidents and health responses are available; they do not send email, Slack messages or pager notifications by themselves. Configure your preferred alerting service in your own infrastructure.
 
-Protect the metadata database and artifact vault with [coordinated backup and recovery](shared-recovery-guide.md). Backup freshness monitoring for a personal SQLite workspace has a [separate setup](backup-monitoring-guide.md).
+Protect the metadata database and artifact vault with [coordinated backup and recovery](recovery-guide.md#shared-workspace-recovery). Backup freshness monitoring for a personal SQLite workspace has a [separate setup](recovery-guide.md#backup-monitoring).
 
 ## Reproduce the bounded shared-workspace check
 

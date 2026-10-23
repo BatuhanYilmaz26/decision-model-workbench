@@ -18,7 +18,7 @@ The version and API comparisons below are dated **14 October 2026**. Refer to th
 | Modal | SDK 1.6.1; Sandbox and persisted Volumes; direct Function walkthrough | Mount the volume at the path expected by the runner. Confirm GPU type, timeouts, committed outputs and resource termination. [Sandbox reference](https://modal.com/docs/reference/modal.Sandbox), [GPU selection](https://modal.com/docs/guide/gpu), [Volumes](https://modal.com/docs/guide/volumes) |
 | RunPod | REST API v2 at `https://api.runpod.io/v2`; S3-compatible artifact transport | Use the v2 schema. RunPod's v1 retirement is scheduled for 15 November 2026. Verify Pod termination and retained storage separately. [Migration guide](https://docs.runpod.io/api-reference-v2/migrate-from-v1), [v2 schema](https://github.com/runpod/docs/blob/main/api-reference-v2/openapi.json) |
 
-These adapters are experimental. Validate job submission, artifact retrieval, cancellation and charges in your own account using non-sensitive examples before sending enterprise data. Follow [provider compatibility checks](verification.md#provider-compatibility-checks) and the [five provider walkthroughs](remote-training-guide.md).
+These adapters are experimental. Validate job submission, artifact retrieval, cancellation and charges in your own account using non-sensitive examples before sending enterprise data. Follow [provider compatibility checks](verification.md#provider-compatibility-checks) and the [five provider walkthroughs](remote-training-guide.md#study-protocol).
 
 RunPod's current v2 schema adds optional global volumes and expresses `Mounts` through `BaseMounts`. The existing `mounts.network` and `mounts.persistent` fields remain supported. The managed adapter selects one approved network volume; it does not enable global volumes. Retain the selected mount configuration when updating a job. [Official v2 schema](https://github.com/runpod/docs/blob/main/api-reference-v2/openapi.json)
 
@@ -57,4 +57,4 @@ For a new deployment, start with the CPU application or a hosted decision adapte
 4. For model changes, run real training, calibration, export, independent reload and serving parity on the target hardware. Test longest inputs and frozen acceptance criteria on reserved domain data.
 5. For provider changes, verify actual account submission, retrieval, interruption/cancellation, terminal state and billing. For deployment changes, measure concurrency, memory, latency, recovery and identity behavior under your expected load.
 
-See [testing](verification.md), [evaluation](evaluation-guide.md), [model containers](model-container-guide.md) and [deployment](deployment-guide.md) for the corresponding checks.
+See [testing](verification.md), [evaluation](evaluation-guide.md#evaluation), [model containers](model-container-guide.md#linux-model-image) and [deployment](application-hosting/README.md#native-model-serving) for the corresponding checks.
