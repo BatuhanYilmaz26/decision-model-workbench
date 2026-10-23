@@ -2,7 +2,7 @@
 
 [All guides](README.md) · [Shared artifact setup](shared-artifacts-guide.md) · [PostgreSQL setup](postgresql-guide.md)
 
-Use an operator preview/apply workflow to remove old S3 or Azure blob versions that are
+Use an operator preview/apply workflow to remove old S3 or Azure blob versions, or GCS generations, that are
 not needed by the current workspace's model registry or recorded remote imports.
 The collector retains every registered model, including inactive versions, and
 every recorded admission input, including failed or cancelled jobs. It also
@@ -18,7 +18,12 @@ collector erases all copies of domain data.
 For Azure, configure [versioned Blob Storage and its dedicated cleanup identity](azure-artifacts-guide.md)
 before using the preview/apply commands below. Azure deletion obeys soft-delete,
 legal-hold and immutability policies; it is not proof of immediate physical erasure
-or removal of storage charges. The S3-specific prerequisites follow.
+or removal of storage charges.
+
+For GCS, configure the [versioned bucket and dedicated operator permissions](gcs-artifacts-guide.md).
+Inventory and deletion pin exact generations; cleanup also covers old upload staging
+objects. Soft-delete retention remains separate. The commands below use the selected
+workspace transport; the following prerequisites are specific to S3.
 
 Use the [PostgreSQL/shared S3 configuration](shared-artifacts-guide.md) with
 **S3 bucket versioning Enabled**. New cleanup plans refuse unversioned or suspended
@@ -151,5 +156,3 @@ response fixtures. They do not delete objects in a real account or establish
 production storage scale. The locking contract uses PostgreSQL
 [session advisory locks](https://www.postgresql.org/docs/18/explicit-locking.html#ADVISORY-LOCKS)
 outside short metadata transactions.
-
-For GCS, use the [versioned bucket and dedicated operator permissions](gcs-artifacts-guide.md). Inventory and deletion pin exact generations; cleanup also covers old upload staging objects. Soft-delete retention remains separate.

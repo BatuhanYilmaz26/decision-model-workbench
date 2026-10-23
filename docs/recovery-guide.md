@@ -4,7 +4,7 @@
 
 The local platform provides operator commands to back up the SQLite workspace and its registered model exports. Recovery restores into a new directory and preserves immutable project/data/model history and the active release revision. It does not replay unfinished work.
 
-For PostgreSQL with shared S3 artifacts, use [shared-workspace backup and restore](shared-recovery-guide.md). The local commands below capture SQLite workspaces only.
+For PostgreSQL with shared S3, Azure Blob or GCS artifacts, use [shared-workspace backup and restore](shared-recovery-guide.md). The local commands below capture SQLite workspaces only.
 
 This is the single-host local profile.
 

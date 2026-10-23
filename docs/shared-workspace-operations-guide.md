@@ -26,9 +26,9 @@ For shared artifacts, the background collector also checks one registered manife
 | `probe` | `one-registered-manifest-head`, `none-no-model`, or `local-workspace` |
 | `checked_at` | Timestamp of the successful check |
 
-A workspace without a registered model reports `none-no-model`; this does **not** prove S3 access. Complete a small training/publish/cold-prediction workflow before routing application traffic to a new deployment. One successful manifest probe establishes bounded connectivity, not integrity of every artifact, free GPU capacity or domain accuracy. Cache hydration still verifies file hashes.
+A workspace without a registered model reports `none-no-model`; this does **not** prove access to the configured S3, Azure Blob or GCS repository. Complete a small training/publish/cold-prediction workflow before routing application traffic to a new deployment. One successful manifest probe establishes bounded connectivity, not integrity of every artifact, free GPU capacity or domain accuracy. Cache hydration still verifies file hashes.
 
-Database failures, a mismatched storage binding, or a failed/stale collector return HTTP `503`. Raw connection strings and storage error details are not returned to clients. Shared-storage probes run in the background, so readiness reflects the latest collector result rather than a new S3 request on every health check. SDK request timeouts and the collector's freshness window apply.
+Database failures, a mismatched storage binding, or a failed/stale collector return HTTP `503`. Raw connection strings and storage error details are not returned to clients. Shared-storage probes run in the background, so readiness reflects the latest collector result rather than a new object-storage request on every health check. SDK request timeouts and the collector's freshness window apply.
 
 Tune `DMT_MONITOR_INTERVAL_SECONDS` between 1 and 300 seconds; its default is 5. The collector is considered stale after the greater of 30 seconds and three intervals. Shared probes can incur object-request charges on each API node. For example, use a 30-second interval if that fits your detection requirements and request budget. The probe needs the existing object-read permission and adds no bucket-listing permission.
 

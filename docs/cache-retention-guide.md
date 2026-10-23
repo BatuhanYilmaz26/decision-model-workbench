@@ -2,7 +2,8 @@
 
 [All guides](README.md) · [Shared artifacts](shared-artifacts-guide.md) · [Temporary transfers](local-stage-cleanup-guide.md)
 
-Use cache cleanup to free disk space on a PostgreSQL/S3 workspace node without
+Use cache cleanup to free disk space on a PostgreSQL workspace node using shared
+S3, Azure Blob or GCS artifacts without
 deleting its model registry or shared objects. Stop that node's services, preview
 the eligible directories, then apply the exact reviewed plan. Restart the node
 afterward. Other nodes keep their own caches.
@@ -19,7 +20,7 @@ workspace, where the filesystem may contain the only model copy.
 ## Before you start
 
 - Use an operator environment with the [PostgreSQL and shared-storage setup](shared-artifacts-guide.md).
-  Supply its existing `DMT_DATABASE_URL`, database schema and S3 configuration.
+  Supply its existing `DMT_DATABASE_URL`, database schema and selected storage configuration.
   The command uses operator database/storage access, not a browser workspace key.
 - Stop the API, worker and cache warmers using the selected local workspace.
   Wait for model subprocesses to exit. Stop any custom scripts reading its files.
@@ -31,7 +32,7 @@ workspace, where the filesystem may contain the only model copy.
   versions refuse to reopen the upgraded database. Stop all old nodes before
   upgrading; already-running old processes cannot acquire the new file leases.
 - Keep appropriate database and object backups. Cache eviction does not replace
-  [backup and recovery](recovery-guide.md) or repair a damaged shared object store.
+  [shared backup and recovery](shared-recovery-guide.md) or repair a damaged shared object store.
 
 New verified publications and downloads record their ownership and last-use
 time outside the model directory. Older registered models can be selected only
@@ -68,7 +69,9 @@ evicting a registered model, it also reads the remote manifest and checks that
 each recovery blob exists with the expected size. S3 uses
 [`HeadObject`](https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html),
 which returns metadata without downloading model weights and requires
-`s3:GetObject`. These checks can incur storage request charges. They are
+`s3:GetObject`. Azure and GCS use their configured transports' version metadata;
+see [Azure permissions](azure-artifacts-guide.md) or [GCS permissions](gcs-artifacts-guide.md).
+These checks can incur storage request charges. They are
 availability checks, not a fresh cryptographic validation of every remote blob;
 normal cache restoration verifies the downloaded content hashes. External bucket
 changes after preview can still affect later restoration.

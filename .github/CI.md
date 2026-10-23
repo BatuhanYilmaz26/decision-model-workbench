@@ -44,3 +44,16 @@ The PostgreSQL job also runs [shared-object retention checks](../tests/test_arti
 [Project deletion checks](../tests/test_project_deletion.py) exercise confirmed database erasure, rollback, stale-request fencing, shared-record and tenant isolation, retained quotas, linked schema intakes, recovery and real browser controls. PostgreSQL checks deletion across independent nodes; no provider compute or model download is required.
 
 [Cache retention checks](../tests/test_cache_retention.py) exercise node-user leases, cold reload, release/input preservation, CLI preview/apply and partial quarantine recovery. PostgreSQL provides real reference/fencing behavior; S3 uses SDK metadata-response fixtures without downloading model weights.
+
+The PostgreSQL job also installs the Azure and Google Cloud application profiles.
+[Azure storage contracts](../tests/test_azure_artifacts.py),
+[Azure shared-workspace workflows](../tests/test_azure_shared_workflow.py) and
+[GCS storage contracts](../tests/test_gcs_artifacts.py) and
+[GCS shared-workspace workflows](../tests/test_gcs_shared_workflow.py) check
+version/generation-pinned publication, recovery and retention.
+[Azure deployment checks](../tests/test_azure_deployment.py)
+and [GCP deployment checks](../tests/test_gcp_deployment.py) exercise secret loading,
+role separation and generated infrastructure configuration. The container job builds
+both cloud application images and validates the GCP Terraform configuration with
+mocked provider plans. These checks do not allocate paid cloud resources or prove
+account-specific IAM, networking, quotas or billing.

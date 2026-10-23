@@ -7,8 +7,9 @@ reservations, job ownership, releases and audit events. Personal localhost mode
 continues to use SQLite.
 
 **With metadata-only configuration, keep API and worker on one host with the same
-workspace directory.** The optional [shared-artifact setup](shared-artifacts-guide.md)
-publishes model exports to S3 and supports separate node caches. PostgreSQL alone
+workspace directory.** Optional shared-artifact profiles publish model exports to
+[S3](shared-artifacts-guide.md), [Azure Blob Storage](azure-artifacts-guide.md) or
+[GCS](gcs-artifacts-guide.md) and support separate node caches. PostgreSQL alone
 does not move job/staging files. Configure [organization sign-in](enterprise-sign-in-guide.md)
 and [coordinated database/object recovery](shared-recovery-guide.md) separately.
 
@@ -108,7 +109,7 @@ and typed metadata fields. It is not a general SQLite SQL translator. Queries
 keep values separate from SQL. [Parameter binding](https://www.psycopg.org/psycopg3/docs/basic/params.html),
 [JSON functions](https://www.postgresql.org/docs/18/functions-json.html).
 
-Local SQLite backup commands **do not capture PostgreSQL**. With shared S3 artifacts,
+Local SQLite backup commands **do not capture PostgreSQL**. With shared object artifacts,
 use [coordinated backup and restore](shared-recovery-guide.md). For metadata-only
 deployments, arrange database backups and retain the corresponding local artifacts.
 Perform a restore drill before relying on either route.
@@ -131,4 +132,4 @@ cases skip when the variable is absent; SQL-adapter checks still run. The
 [CI job](../.github/CI.md) supplies a disposable server. These checks do not
 establish production scale, cloud availability or domain model quality.
 
-Use [shared-object retention](shared-object-retention-guide.md) to preview and reconcile deletion of old unreferenced S3 versions. Keep local staging, project deletion and coordinated backup recovery under their separate policies.
+Use [shared-object retention](shared-object-retention-guide.md) to preview and reconcile deletion of old unreferenced S3 versions, Azure blob versions or GCS generations. Keep local staging, project deletion and coordinated backup recovery under their separate policies.

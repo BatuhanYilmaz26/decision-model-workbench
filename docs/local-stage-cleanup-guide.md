@@ -93,7 +93,7 @@ storage. Retain them separately when needed; the registered workspace backup
 does not include these temporary-file receipts. Project/data deletion, registered
 model-cache eviction and coordinated metadata/object recovery remain separate
 policies. Use [shared-object retention](shared-object-retention-guide.md) for
-unreferenced S3 versions rather than treating a local deletion as cloud erasure.
+unreferenced S3 versions, Azure blob versions or GCS generations rather than treating a local deletion as cloud erasure.
 
 ## Run the local checks
 

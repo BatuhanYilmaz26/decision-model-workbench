@@ -50,7 +50,7 @@ export DMT_ARTIFACT_AZURE_PREFIX=live
 
 In PowerShell, use `$env:DMT_ARTIFACT_AZURE_ACCOUNT_URL='https://YOURACCOUNT.blob.core.windows.net'` and the same syntax for the other variables. Keep database credentials, identity credentials and workspace keys in the restricted operator environment described in the PostgreSQL guide.
 
-Leave `DMT_ARTIFACT_S3_BUCKET` unset when choosing Azure; configuring both transports is refused. Restart the API/worker services after changing configuration. A workspace is bound to its storage descriptor, so pointing an existing workspace at a different container/prefix is refused. Use the recovery workflow to migrate or restore state deliberately.
+Leave `DMT_ARTIFACT_S3_BUCKET` and `DMT_ARTIFACT_GCS_BUCKET` unset when choosing Azure; configuring multiple live transports is refused. Restart the API/worker services after changing configuration. A workspace is bound to its storage descriptor, so pointing an existing workspace at a different container/prefix is refused. Use the recovery workflow to migrate or restore state deliberately.
 
 Train and release a reviewed CPU baseline through the [application walkthrough](app-guide.md#first-project-walkthrough). A second instance using the same database and storage configuration can retrieve the released export into its own verified cache. `/ready` checks metadata and, when a registered model exists, one artifact manifest's availability. It does not verify every stored file or your domain model's quality.
 

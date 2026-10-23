@@ -62,8 +62,8 @@ Reference: [Python virtual environments](https://docs.python.org/3/library/venv.
 
 Browse the [complete guide directory](docs/README.md), or choose a workflow below.
 The [model and workflow directory](docs/models/README.md) lists delivered training,
-hosted API and data-preparation routes, plus separate publisher references for
-models whose application adapters are still being built.
+hosted API and data-preparation routes, plus publisher references for additional
+models whose application adapters are not included.
 
 | What you want to do | What you will use | Start here |
 |---|---|---|
@@ -144,7 +144,7 @@ Check [provider selection](docs/remote-training/provider-selection.md), [account
 
 ## What the application supports
 
-The local application supports persistent domain projects, file/manual intake, reviewed dataset revisions, synthetic-candidate jobs, model evaluation, versioned releases and authenticated inference. It also provides reviewer queues, owner-defined release criteria, policy successors, audit exports and backup/recovery. The [capability guide](docs/capabilities.md) explains the supported behavior and limits. Advanced operators can use experimental [PostgreSQL metadata](docs/postgresql-guide.md) and [shared S3 model artifacts](docs/shared-artifacts-guide.md), with separately configured [organization sign-in](docs/enterprise-sign-in-guide.md) and [coordinated shared-workspace recovery](docs/shared-recovery-guide.md). Complete cloud application deployments require separate infrastructure configuration and acceptance.
+The local application supports persistent domain projects, file/manual intake, reviewed dataset revisions, synthetic-candidate jobs, model evaluation, versioned releases and authenticated inference. It also provides reviewer queues, owner-defined release criteria, policy successors, audit exports and backup/recovery. The [capability guide](docs/capabilities.md) explains the supported behavior and limits. Advanced operators can use experimental [PostgreSQL metadata](docs/postgresql-guide.md) with shared artifacts in [S3](docs/shared-artifacts-guide.md), [Azure Blob Storage](docs/azure-artifacts-guide.md) or [Google Cloud Storage](docs/gcs-artifacts-guide.md), plus [organization sign-in](docs/enterprise-sign-in-guide.md) and [coordinated shared-workspace recovery](docs/shared-recovery-guide.md). Follow the [AWS, Azure or GCP application-hosting recipes](docs/application-hosting/README.md) for infrastructure setup and account-specific acceptance.
 
 Choose a local trainer and its separate model environment from the [complete model and workflow directory](docs/models/README.md). It covers the CPU baseline, Laya, Unsloth, Vega, Liquid, D3 and native Perplexity routes, with each profile's hardware requirements and experimental limits. Hosted adapters and managed cloud controllers are experimental; validate provider behavior, model outputs and billing in your account before use. Review synthetic candidates and evaluate model quality on independent domain records. Personal mode uses single-host SQLite; shared workspaces can configure optional organization sign-in.
 

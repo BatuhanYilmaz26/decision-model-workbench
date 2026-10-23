@@ -90,7 +90,7 @@ Use [remote model admission](remote-admission-guide.md) to verify and register a
 | [Authentication](authentication-guide.md) | Provision and rotate credentials or configure trusted access tokens |
 | [Audit exports](audit-export-guide.md) | Capture and verify a bounded immutable project audit window |
 | [Backup and recovery](recovery-guide.md) | Capture a workspace and restore it into a fresh directory |
-| [Shared workspace recovery](shared-recovery-guide.md) | Capture PostgreSQL metadata and versioned S3 artifacts together; restore into a fresh workspace |
+| [Shared workspace recovery](shared-recovery-guide.md) | Capture PostgreSQL metadata and versioned S3, Azure Blob or GCS artifacts together; restore into a fresh workspace |
 | [Shared workspace operations](shared-workspace-operations-guide.md) | Use tenant queue limits, truthful readiness and scoped failure monitoring; reproduce the bounded workload |
 | [Application hosting](application-hosting/README.md) | Deploy the browser, API and workers on AWS, Azure or Google Cloud with durable metadata/artifacts, HTTPS and scoped service identities/secrets |
 | [Encrypted recovery](encrypted-recovery-guide.md) | Encrypt a backup and verify it against a retained receipt |

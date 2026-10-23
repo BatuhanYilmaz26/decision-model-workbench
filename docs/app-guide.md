@@ -574,7 +574,7 @@ Operators use the guides below for credentials, infrastructure and maintenance:
   and [semantic encoder configuration](semantic-data-guide.md).
 - [Backup and restore](recovery-guide.md), [encrypted recovery](encrypted-recovery-guide.md),
   [scheduled backups](scheduled-backups-guide.md) and [backup monitoring](backup-monitoring-guide.md).
-- [Shared PostgreSQL/S3 backup and restore](shared-recovery-guide.md): operator commands for coordinated snapshots and recovery into a fresh workspace.
+- [Shared PostgreSQL/object-storage backup and restore](shared-recovery-guide.md): coordinated snapshots and recovery into a fresh workspace using S3, Azure Blob or GCS.
 - [Shared workspace operations](shared-workspace-operations-guide.md): tenant queue limits, cached storage readiness, worker/queue incidents and recovery checks.
 - [API integration](api-integration-guide.md), [deployment](deployment-guide.md)
   and [current capabilities and limits](capabilities.md).

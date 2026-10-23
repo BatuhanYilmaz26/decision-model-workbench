@@ -2,7 +2,7 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-Serve a trained decision model locally or package its runtime for your enterprise cloud. Start with a local release, then configure the target platform's request routes, identity, storage, monitoring and recovery. The cloud options below describe custom-container integration; they are not turnkey deployment templates.
+Run the complete workbench locally or host it for your team. Use the [AWS, Azure and GCP application-hosting recipes](application-hosting/README.md) for the browser, API, workers, PostgreSQL, shared artifacts and service identities. These CPU application profiles are separate from native-model serving and GPU training. The managed inference options below describe custom-container contracts for a model service; they require a runtime-specific wrapper.
 
 ## Preserve the complete contract
 
@@ -40,7 +40,17 @@ Return model/policy version, outcome, probabilities and request identifier. Enfo
 
 Partition tenant data, caches, artifacts and training jobs. Derive tenant identity from authenticated service context.
 
-## Cloud paths
+## Host the workbench
+
+| Target | Application stack | Walkthrough |
+|---|---|---|
+| AWS | ECS Fargate, RDS PostgreSQL, S3, ALB and Secrets Manager | [AWS application hosting](application-hosting/aws.md) |
+| Azure | Container Apps, PostgreSQL, Blob Storage and Key Vault | [Azure application hosting](application-hosting/azure.md) |
+| Google Cloud | Cloud Run services and worker pool, Cloud SQL, GCS and Secret Manager | [GCP application hosting](application-hosting/gcp.md) |
+
+Follow the selected guide's prerequisites, bootstrap and authentication steps before exposing services. Configure organization sign-in, monitoring and recovery for your deployment. A CPU hosting image does not supply native model weights or a GPU runtime.
+
+## Separate managed model-serving options
 
 | Target | Integration | Official contract |
 |---|---|---|
@@ -59,7 +69,7 @@ Measure monthly service cost divided by successful completed cases. Include upti
 
 Verify readiness, authentication, tenant separation, bounded queues, deadlines, memory recovery, metrics, drift, canary and rollback. Use enterprise policy for raw-state logging.
 
-The default local platform provides an authenticated API, SQLite persistence, independent jobs and release/inference routes for compatible exports. Experimental [PostgreSQL metadata](postgresql-guide.md) can be paired with [shared S3 model artifacts](shared-artifacts-guide.md); remaining node, identity and operational requirements still apply. Follow [local backup and recovery](recovery-guide.md) for SQLite workspace/model retention and [authentication](authentication-guide.md) for credentials and trusted JWT mappings. PostgreSQL requires separate database backups with matching artifacts.
+The default local platform provides an authenticated API, SQLite persistence, independent jobs and release/inference routes for compatible exports. Experimental [PostgreSQL metadata](postgresql-guide.md) can be paired with shared artifacts in [S3](shared-artifacts-guide.md), [Azure Blob Storage](azure-artifacts-guide.md) or [GCS](gcs-artifacts-guide.md). Follow [local backup and recovery](recovery-guide.md) for SQLite, [coordinated recovery](shared-recovery-guide.md) for PostgreSQL/object storage and [authentication](authentication-guide.md) for credentials and trusted JWT mappings. Metadata-only PostgreSQL deployments need database backups with the corresponding local artifacts.
 
 ## Training and application integration
 

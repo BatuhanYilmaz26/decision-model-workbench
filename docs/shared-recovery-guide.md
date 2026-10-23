@@ -7,17 +7,22 @@ For a personal SQLite workspace, use the [local recovery guide](recovery-guide.m
 ## Before you start
 
 - Install the application, `requirements/postgres.txt` and your chosen transport's optional profile: `requirements/aws-sdk.txt`, `requirements/azure-artifacts.txt` or `requirements/gcp-artifacts.txt`.
-- Configure `DMT_DATABASE_URL` and `DMT_ARTIFACT_S3_BUCKET`, `DMT_ARTIFACT_S3_PREFIX`, and `DMT_ARTIFACT_S3_REGION` for the source workspace. Keep credentials in your normal SDK credential chain or secret manager.
-- Choose a separate recovery bucket or a nonoverlapping prefix. Enable S3 versioning on both buckets. Source and recovery prefixes must not contain each other.
-- Give the operator access to inspect bucket versioning, read source object metadata/versions, and copy objects into the recovery prefix, including multipart-copy permissions. Encrypted buckets also need the relevant KMS permissions. The copying identity must be authorized for both locations.
+- Configure `DMT_DATABASE_URL` and one live artifact transport using the matching guide below. Keep credentials in its SDK credential chain or secret manager.
+- Choose independent versioned recovery storage. Source and recovery prefixes must not contain each other. Live, backup and restore-target stores must use the same transport for server-side copies.
+- Give the operator access to inspect versioning, read source metadata/versions and create recovery/target objects. Include your encryption-key permissions where required. The copying identity must be authorized for both locations; normal application identities need no cleanup permission.
 - Choose private local storage for the metadata bundle and retain its checksum separately. Treat the bundle as sensitive data from **every tenant** in the workspace. It is plaintext; protect it with your storage encryption and access policy.
 
 Standard AWS S3 supports regional server-side copies. Custom S3-compatible services must use the same endpoint and support the required versioning/copy APIs; qualify your service before relying on it. These commands do not transfer model weights through the operator's computer.
 
-For Azure, replace the S3-specific configuration and permissions above with the
-[Azure live/vault settings and identity permissions](azure-artifacts-guide.md#back-up-and-restore-shared-state).
-Use separate containers or nonoverlapping prefixes in the same account, with versioning enabled.
-The capture, verify and restore commands below are unchanged; do not set an S3 bucket alongside the Azure profile.
+Select one row; the capture, verify and restore commands are the same for all three transports:
+
+| Transport | Live configuration | Recovery configuration | Restored prefix variable | Storage and permissions |
+|---|---|---|---|---|
+| S3 | `DMT_ARTIFACT_S3_*` | `DMT_BACKUP_S3_*` | `DMT_ARTIFACT_S3_PREFIX` | [S3 setup](shared-artifacts-guide.md); enable bucket versioning and allow server-side/multipart copies |
+| Azure Blob | `DMT_ARTIFACT_AZURE_*` | `DMT_BACKUP_AZURE_*` | `DMT_ARTIFACT_AZURE_PREFIX` | [Azure live/vault settings](azure-artifacts-guide.md#back-up-and-restore-shared-state); use independent containers in the same account |
+| GCS | `DMT_ARTIFACT_GCS_*` | `DMT_BACKUP_GCS_*` | `DMT_ARTIFACT_GCS_PREFIX` | [GCS live/vault settings](gcs-artifacts-guide.md#back-up-and-restore); independent buckets are supported |
+
+Leave other transports' settings unset. Set the selected row's `BUCKET`/`CONTAINER`, location and identity settings as described in its guide. Configuration prefixes in the table denote a group of variables, not literal environment-variable names.
 
 ## Capture a backup
 
@@ -48,7 +53,7 @@ Ordinary data edits can continue during capture. Shared artifact publication, re
 
 ## Verify retained recovery data
 
-With the same `DMT_BACKUP_S3_*` configuration:
+Keep the same selected recovery configuration (`DMT_BACKUP_S3_*`, `DMT_BACKUP_AZURE_*` or `DMT_BACKUP_GCS_*`):
 
 ```text
 domain-platform verify-shared-backup --backup backups/shared-2026-10-22 --manifest-sha256 YOUR_RETAINED_SHA256 --timeout 3600
@@ -60,7 +65,7 @@ Verification checks the local metadata checksum, table inventory, workspace iden
 
 1. Stop or isolate the original deployment before promoting a replacement. Reconcile external teacher requests and cloud jobs; restoration cannot stop work already running in provider accounts.
 2. Provision an empty, dedicated PostgreSQL schema with the normal application role. Keep the same compatible application version for the restore.
-3. Set `DMT_DATABASE_URL` to the **target** database. Set `DMT_ARTIFACT_S3_*` to an independent target bucket/prefix; keep `DMT_BACKUP_S3_*` pointing to the recovery vault. The restore command creates a unique artifact subprefix under your target prefix.
+3. Set `DMT_DATABASE_URL` to the **target** database. Point the selected live configuration at an independent target bucket/container and prefix; keep the matching backup configuration pointing to the recovery vault. The restore command creates a unique artifact subprefix under your target prefix. For example, S3 uses `DMT_ARTIFACT_S3_*` for the target and `DMT_BACKUP_S3_*` for the retained vault; Azure and GCS use their own table row.
 4. Run:
 
 ```text
@@ -69,7 +74,7 @@ domain-platform restore-shared --backup backups/shared-2026-10-22 --manifest-sha
 
 The home must be new. Existing domain records in the target schema are refused. Referenced artifacts are copied first; metadata is then imported transactionally. A corrupt or incomplete metadata stream rolls back the import. A failed restore may leave bootstrap tables, copied objects or an imported target schema if final local publication fails. Inspect the result before retrying; do not overwrite an existing workspace to hide an incomplete attempt.
 
-5. Use the returned `artifact_storage.prefix` as `DMT_ARTIFACT_S3_PREFIX` for the recovered deployment. Use its target database/schema and the returned home. Reprovision workspace keys, organization sign-in, provider credentials and other operator configuration separately.
+5. Use the returned `artifact_storage.prefix` as the selected transport's **restored prefix variable** from the table. Use its target database/schema and the returned home. Reprovision workspace keys, organization sign-in, provider credentials and other operator configuration separately.
 6. Start the API/worker/browser using your normal [shared-workspace setup](setup.md#personal-and-shared-workspaces). Check a representative prediction and its release version, data/review history, tenant permissions and readiness before routing traffic to it.
 
 The recovered workspace keeps its original workspace UUID, immutable references and usage history. Worker heartbeats are cleared. Queued/running jobs become interrupted; cancellation requests become cancelled. None are automatically replayed. Inspect upstream state before explicitly submitting replacement work. The restore adds audit events and records its result in `shared-restore.json` in the new home.
@@ -80,6 +85,6 @@ This is an application-level logical backup, not PostgreSQL physical backup or p
 
 Every registered model and remote-import input reference is retained, including references from terminal jobs. Source object cleanup cannot delete independent recovery copies. Bucket lifecycle rules, version deletion or lost encryption keys can still invalidate a backup; protect the vault and verify it periodically.
 
-Current bounds are 16 GiB of logical metadata, 8 MiB per JSONL line, ten million rows, 250,000 distinct objects and a 64 MiB completion manifest. Individual model bundles retain the [shared-artifact limits](shared-artifacts-guide.md). The operator timeout is positive and at most 24 hours; individual SDK requests also have transport timeouts. Server-side copies incur storage/request charges and may incur transfer charges. No paid account or deployed S3 service is implied by the repository's SDK contract tests.
+Current bounds are 16 GiB of logical metadata, 8 MiB per JSONL line, ten million rows, 250,000 distinct objects and a 64 MiB completion manifest. Individual model bundles retain the [shared-artifact limits](shared-artifacts-guide.md). The operator timeout is positive and at most 24 hours; individual SDK requests also have transport timeouts. Server-side copies incur storage/request charges and may incur transfer charges. SDK contract tests do not establish paid-account behavior or deployed cloud-storage acceptance.
 
 Implementation references: [PostgreSQL repeatable-read snapshots](https://www.postgresql.org/docs/18/transaction-iso.html#XACT-REPEATABLE-READ), [Psycopg server-side cursors](https://www.psycopg.org/psycopg3/docs/advanced/cursors.html#server-side-cursors), [Boto3 managed object copying](https://docs.aws.amazon.com/boto3/latest/reference/services/s3/client/copy.html).

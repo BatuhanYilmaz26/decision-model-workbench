@@ -2,7 +2,7 @@
 
 [All guides](README.md) · [Project overview](../README.md)
 
-The platform combines a browser interface, authenticated HTTP API, durable workspace and independent worker. SQLite is the personal default; explicit [PostgreSQL metadata](postgresql-guide.md) and [shared S3 model artifacts](shared-artifacts-guide.md) are experimental alternatives. Training runs outside web requests. Multi-host operation still requires compatible node environments, staging access, identity and operational configuration; shared model files alone do not supply those controls.
+The platform combines a browser interface, authenticated HTTP API, durable workspace and independent worker. SQLite is the personal default; experimental [PostgreSQL metadata](postgresql-guide.md) can use shared model artifacts in [S3](shared-artifacts-guide.md), [Azure Blob Storage](azure-artifacts-guide.md) or [Google Cloud Storage](gcs-artifacts-guide.md). Training runs outside web requests. Multi-host operation still requires compatible node environments, staging access, identity and operational configuration; shared model files alone do not supply those controls.
 
 ```mermaid
 flowchart LR
@@ -30,7 +30,7 @@ Projects pin policy and questions. Reviews append immutable dataset revisions; j
 
 ## Training and serving
 
-CPU, native Laya, Unsloth and Vega are explicit adapters with different dependency and data contracts. Training separates selection, calibration and locked evaluation. Exports include weights, configuration, tokenizer, calibration, reports and a file manifest. Release checks the model contract and frozen owner criteria; a failed run does not replace the active release. Resident native model processes, native training and model admission share a host capacity lease while retaining workspace ownership locks. Participating services must use the same lock file and filesystem; CPU baseline jobs remain independent. [Capacity configuration](setup.md#shared-model-capacity-on-one-host), [training](training-guide.md), [Vega](vega-guide.md)
+The [model directory](models/README.md) lists CPU, Laya, Unsloth, Vega, Liquid, D3 and native Perplexity adapters, each with distinct dependency, data and hardware contracts. Training separates selection, calibration and locked evaluation. Native exports include the required weights, configuration, tokenizer or processor, calibration, reports and a file manifest; the CPU baseline uses its own JSON contract. Release checks the model contract and frozen owner criteria; a failed run does not replace the active release. Resident native model processes, native training and model admission share a host capacity lease while retaining workspace ownership locks. Participating services must use the same lock file and filesystem; CPU baseline jobs remain independent. [Capacity configuration](setup.md#shared-model-capacity-on-one-host), [training](training-guide.md), [Vega](vega-guide.md)
 
 ## External operations
 
@@ -38,4 +38,4 @@ Hosted studies retain route identity, a local calibration policy and call accoun
 
 ## Enterprise extension
 
-The [deployment guide](deployment-guide.md) describes the required serving, identity, storage, networking and operational contracts for AWS, Azure and GCP. A provider SDK integration or working local container is only one component of an enterprise deployment.
+The [application-hosting recipes](application-hosting/README.md) configure the browser, API, durable workers, PostgreSQL, shared artifacts and service identities on AWS, Azure and GCP. The [deployment guide](deployment-guide.md) also covers separate native-model serving contracts. Supplied hosting images run the CPU control plane; native model execution needs matching runtimes and resources. Validate identity, networking, recovery and model quality in the target deployment.
