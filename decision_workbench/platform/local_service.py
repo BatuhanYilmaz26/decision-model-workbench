@@ -1,4 +1,4 @@
-"""Personal service entrypoint with desktop-process ownership before app imports."""
+"""Owned local service entrypoint with desktop-process supervision before imports."""
 
 import os
 import sys
@@ -16,6 +16,7 @@ def main():
     else:
         # The Streamlit script thread ends on each rerun. Track the server process,
         # not that thread, so a rerun cannot kill durable background work.
+
         def watch():
             while True:
                 if os.getppid() != parent:
@@ -33,8 +34,13 @@ def main():
         from .worker import main as worker
 
         worker()
+    elif kind == "web":
+        import runpy
+
+        sys.argv[0] = "streamlit"
+        runpy.run_module("streamlit", run_name="__main__")
     else:
-        raise ValueError("Unknown personal service")
+        raise ValueError("Unknown local service")
 
 
 if __name__ == "__main__":

@@ -29,7 +29,7 @@ domain-platform run
 
 The root requirements file installs the project with its UI and CPU application dependencies, using the definitions in `pyproject.toml`. It does not install GPU training runtimes or every optional provider client. Select a [dependency profile](../requirements/README.md) when you need an exact platform lock or optional model/provider packages.
 
-Open the displayed browser address. Your personal workspace opens automatically: no account, workspace key or cloud subscription is required. The launcher starts an authenticated loopback API, independent worker and Streamlit client. CPU baseline training needs no GPU or model download. Projects persist in `data/local-workspace`; Ctrl+C stops the services. Use `--home` to choose a different personal directory.
+Open the displayed browser address. Your personal workspace opens automatically: no account, workspace key or cloud subscription is required. The launcher starts an authenticated loopback API, independent worker and Streamlit client. CPU baseline training needs no GPU or model download. Projects persist in `data/local-workspace`; Ctrl+C stops the services. Wait for the launcher to exit before reopening the workspace. Shutdown also closes its child Python processes on Windows; closing a browser tab alone leaves the running launcher active. Use `--home` to choose a different personal directory.
 
 Personal mode defaults model and generated-module caches to a private `model-cache` directory beside your workspace (`data/model-cache` with the default layout). Explicit `DMT_MODEL_CACHE`, `HF_HOME` and `UNSLOTH_COMPILE_LOCATION` settings take precedence. Use writable storage for these caches; a read-only global cache can prevent model-library startup.
 

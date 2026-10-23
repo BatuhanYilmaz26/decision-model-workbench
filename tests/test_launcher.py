@@ -73,6 +73,13 @@ class LauncherTests(unittest.TestCase):
                     thread.join(timeout=30)
                 self.assertFalse(thread.is_alive())
                 self.assertEqual(errors, [])
+                for port in (args.api_port, args.ui_port):
+                    with self.assertRaises(httpx.HTTPError):
+                        httpx.get(
+                            f"http://127.0.0.1:{port}/health",
+                            timeout=1,
+                            trust_env=False,
+                        )
                 self.assertTrue((Path(folder) / "personal/workspace.sqlite3").is_file())
                 with self.assertRaises(httpx.HTTPError):
                     httpx.get(f"http://127.0.0.1:{args.api_port}/health", timeout=1)
@@ -147,6 +154,13 @@ class LauncherTests(unittest.TestCase):
                     thread.join(timeout=25)
                 self.assertFalse(thread.is_alive())
                 self.assertEqual(errors, [])
+                for port in (args.api_port, args.ui_port):
+                    with self.assertRaises(httpx.HTTPError):
+                        httpx.get(
+                            f"http://127.0.0.1:{port}/health",
+                            timeout=1,
+                            trust_env=False,
+                        )
 
 
 if __name__ == "__main__":

@@ -755,6 +755,7 @@ def launch(args, stop_event=None):
         DMT_KEYS_FILE=str(keys),
         DMT_HOME=str(Path(args.home or "data/workspace").resolve()),
         DMT_API_URL=f"http://127.0.0.1:{args.api_port}",
+        DMT_LOCAL_PARENT_PID=str(os.getpid()),
     )
     # Complete an upgrade before API and worker can race their startup migrations.
 
@@ -765,20 +766,22 @@ def launch(args, stop_event=None):
         [
             sys.executable,
             "-m",
-            "decision_workbench.platform.cli",
-            "serve",
+            "decision_workbench.platform.local_service",
+            "api",
             "--port",
             str(args.api_port),
         ],
         [
             environment.get("DMT_WORKER_PYTHON") or sys.executable,
             "-m",
-            "decision_workbench.platform.worker",
+            "decision_workbench.platform.local_service",
+            "worker",
         ],
         [
             sys.executable,
             "-m",
-            "streamlit",
+            "decision_workbench.platform.local_service",
+            "web",
             "run",
             str(app_path),
             "--server.address",
@@ -789,11 +792,14 @@ def launch(args, stop_event=None):
             "true",
         ],
     ]
-    processes = []
+    processes, leases = [], []
+    import tempfile
+
+    ownership = tempfile.TemporaryDirectory(prefix="dmt-launch-")
     try:
         for command in commands:
             child_environment = environment
-            if command[2] == "streamlit":
+            if command[3] == "web":
                 child_environment = {
                     k: v
                     for k, v in environment.items()
@@ -805,8 +811,19 @@ def launch(args, stop_event=None):
                         "TEACHER_API_KEY",
                     )
                 }
+            options = {"env": child_environment}
+            if sys.platform == "win32":
+                from decision_workbench.training.resources import ResourceLease
+                from decision_workbench.training.process_guard import (
+                    leased_process_options,
+                )
+
+                lease = ResourceLease(Path(ownership.name) / f"{len(leases)}.lock")
+                lease.acquire()
+                leases.append(lease)
+                options = leased_process_options(lease, child_environment)
             processes.append(
-                subprocess.Popen(command, cwd=root, env=child_environment, shell=False)
+                subprocess.Popen(command, cwd=root, shell=False, **options)
             )
         print(
             f"Open http://127.0.0.1:{args.ui_port} and connect using your workspace credential.",
@@ -834,6 +851,11 @@ def launch(args, stop_event=None):
             except subprocess.TimeoutExpired:
                 process.kill()
                 process.wait()
+        try:
+            for lease in leases:
+                lease.release()
+        finally:
+            ownership.cleanup()
 
 
 if __name__ == "__main__":

@@ -76,6 +76,7 @@ class LocalWorkspace:
                 self.check()
                 return self
             # Separate personal storage from existing operator-managed workspaces.
+
             self.home.parent.mkdir(parents=True, exist_ok=True)
             name = hashlib.sha256(str(self.home).encode()).hexdigest()[:24]
             self._lease = ResourceLease(self.home.parent / f".dmt-local-{name}.lock")
@@ -107,6 +108,7 @@ class LocalWorkspace:
                     DMT_LOCAL_PARENT_PID=str(os.getpid()),
                 )
                 # Personal mode never inherits enterprise identity configuration.
+
                 self.environment.pop("DMT_SSO_FILE", None)
                 from .store import Store
 
@@ -150,6 +152,7 @@ class LocalWorkspace:
                             lease = self._worker_lease
                         # Distinct jobs support virtualenv launchers with separate
                         # inherited Windows job hierarchies.
+
                         process_options = leased_process_options(
                             lease, child_environment
                         )
@@ -226,17 +229,25 @@ def launch_personal(args, app_path, stop_event=None):
     """CLI supervisor: personal services outlive individual browser sessions."""
     home = getattr(args, "home", None) or "data/local-workspace"
     workspace = LocalWorkspace(home, app_path.parent, api_port=args.api_port).start()
-    web = None
+    web, web_lease = None, None
     try:
         environment = browser_environment(workspace.environment)
         environment.update(
             DMT_LOCAL_API_URL=workspace.url, DMT_LOCAL_TOKEN=workspace.token
         )
+        options = {"env": environment}
+        if sys.platform == "win32":
+            from decision_workbench.training.process_guard import leased_process_options
+
+            web_lease = ResourceLease(workspace.home / ".dmt-browser.lock")
+            web_lease.acquire()
+            options = leased_process_options(web_lease, environment)
         web = subprocess.Popen(
             [
                 sys.executable,
                 "-m",
-                "streamlit",
+                "decision_workbench.platform.local_service",
+                "web",
                 "run",
                 str(app_path),
                 "--server.address",
@@ -247,8 +258,8 @@ def launch_personal(args, app_path, stop_event=None):
                 "true",
             ],
             cwd=app_path.parent,
-            env=environment,
             shell=False,
+            **options,
         )
         print(
             f"Open http://127.0.0.1:{args.ui_port} — your personal workspace is ready.",
@@ -275,4 +286,8 @@ def launch_personal(args, app_path, stop_event=None):
             except subprocess.TimeoutExpired:
                 web.kill()
                 web.wait(timeout=10)
-        workspace.close()
+        try:
+            if web_lease is not None:
+                web_lease.release()
+        finally:
+            workspace.close()
