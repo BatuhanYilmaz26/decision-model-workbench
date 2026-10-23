@@ -1,15 +1,32 @@
-# Guide directory
+# Documentation
 
-[Project overview](../README.md)
+<a id="guide-directory"></a>
 
-Choose a workflow below. Start with local setup for the browser application, API integration for an existing project, or remote training when you need a rented GPU. Each guide explains its prerequisites, inputs, steps and relevant limits.
+[Project overview and installation](../README.md#run-on-your-computer)
+
+Choose the outcome you want. Each walkthrough contains the common steps from prerequisites to a usable result. Read a model or provider reference only when configuring that integration.
+
+| Your goal | Start here | You need |
+|---|---|---|
+| Use an existing model | [Make an API call and integrate it](api-integration-guide.md) | A supported provider account/key; no GPU |
+| Train on your domain data | [Create, train and use a domain model](product-workflow.md) | Reviewed examples; a compatible local environment or rented GPU |
+| Generate more training examples | [Generate and review candidates](synthetic-generation-guide.md) | A configured generative teacher; real evaluation records stay separate |
+
+Already using the app? Open the [screen manual](app-guide.md#find-the-right-screen) for help with the current control. Deploying for a team? Start with [application hosting](application-hosting/README.md). Contributors can start with [contributing](../CONTRIBUTING.md).
+
+You do not need the reference catalog to complete the common CPU workflow. Native-model and cloud paths need only the chosen integration's additional setup.
+
+<details>
+<summary>Reference catalog: model setup, advanced workflows, operations and research</summary>
+
+The following pages document optional features and integration-specific contracts. Use them when that requirement arises; they are not an onboarding checklist.
 
 ## Start and choose a model
 
 | Guide | Use it to |
 |---|---|
 | [Streamlit application user guide](app-guide.md) | Follow every screen, optional workflow, role and recovery action, starting with a first project |
-| [Local setup](setup.md) | Install the application, provision a credential and start its services |
+| [Local setup](setup.md) | Configure optional runtimes, teachers and shared-workspace services |
 | [Complete project workflow](product-workflow.md) | Describe a domain, prepare data, train, evaluate and release a model |
 | [Support-routing walkthrough](domain-adoption-guide.md) | Follow a concrete domain example with clear data and evaluation requirements |
 | [Capabilities](capabilities.md) | Understand the supported local workflows and their limits |
@@ -38,7 +55,7 @@ Configure the teacher in [setup](setup.md#configure-a-teacher), then follow [syn
 ## Train, evaluate and integrate
 
 Browse the [model and workflow directory](models/README.md) for delivered routes
-and separate references to models whose integrations are still in development.
+and separate publisher references for integrations not included here.
 
 | Guide | Use it to |
 |---|---|
@@ -76,7 +93,7 @@ Use [remote model admission](remote-admission-guide.md) to verify and register a
 
 | Guide | Use it to |
 |---|---|
-| [Deployment](deployment-guide.md) | Plan local serving and custom-container enterprise cloud integration |
+| [Deployment](deployment-guide.md) | Choose complete application hosting or separate native-model serving |
 | [PostgreSQL metadata](postgresql-guide.md) | Run experimental metadata persistence with local artifacts and explicit recovery limits |
 | [Shared model artifacts](shared-artifacts-guide.md) | Publish immutable S3 model bundles, retrieve verified node caches and warm large exports |
 | [Azure model artifacts](azure-artifacts-guide.md) | Configure private versioned Blob Storage, verified node caches and coordinated recovery with scoped operator identities |
@@ -112,3 +129,6 @@ See [dependency profiles](../requirements/README.md), [helper commands](../scrip
 For organizational browser access, follow [enterprise OIDC sign-in](enterprise-sign-in-guide.md) to configure the client, API roles, expiry, revocation and secret rotation.
 
 For operator storage maintenance, follow [shared-object retention](shared-object-retention-guide.md) for version-specific preview, deletion and interrupted-operation reconciliation.
+
+
+</details>

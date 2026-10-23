@@ -1,6 +1,6 @@
 # Container entry points
 
-[Project overview](../README.md) Â· [All guides](../docs/README.md)
+[Project overview](../README.md) · [All guides](../docs/README.md)
 
 Choose the CPU application image for data review, preparation, comparison training and local API serving. Use the separate model image when you need the supported Linux Vega or semantic-encoder runtime.
 

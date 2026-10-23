@@ -1,6 +1,6 @@
 # Examples and configuration templates
 
-[Project overview](../README.md) Â· [All guides](../docs/README.md)
+[Project overview](../README.md) · [All guides](../docs/README.md)
 
 Use these fictional records to understand the data format and adapt the templates to your own deployment. They do not establish model quality or provide ready-to-use cloud credentials.
 

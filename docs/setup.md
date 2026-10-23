@@ -1,45 +1,14 @@
-# Local setup and user workflow
+# Advanced setup and integration configuration
+
+<a id="local-setup-and-user-workflow"></a>
 
 [All guides](README.md) · [Project overview](../README.md)
 
-Install the application, start its API and worker, then open the browser interface. Run the commands from the repository root. Data preparation supports Python 3.10+; the Windows application profile uses Python 3.13. CPU baseline training uses the application environment; Laya, Unsloth and Vega use separately configured model environments. See [dependency profiles](../requirements/README.md) for the Linux container and Windows model versions.
+Use this reference when configuring an optional model runtime, teacher or shared workspace. For installation and the common workflows, start with the root README. Run commands from the repository root. Data preparation supports Python 3.10+; the Windows application profile uses Python 3.13. CPU baseline training uses the application environment; Laya, Unsloth and Vega use separately configured model environments. See [dependency profiles](../requirements/README.md) for the Linux container and Windows model versions.
 
 ## Install and start
 
-For complete Windows and Linux/macOS commands, including cloning and activation, follow the [local quick start](../README.md#run-on-your-computer). If you have not cloned the repository yet:
-
-```bash
-git clone https://github.com/BatuhanYilmaz26/decision-model-workbench.git
-cd decision-model-workbench
-```
-
-Using your selected application Python (3.13 on Windows or 3.12 on Linux), create a virtual environment:
-
-```bash
-python -m venv .venv
-```
-
-Activate using `.venv\Scripts\Activate.ps1` in PowerShell or `source .venv/bin/activate` on Linux/macOS. Then:
-
-```bash
-python -m pip install -r requirements.txt
-python -m pip check
-domain-platform run
-```
-
-The root requirements file installs the project with its UI and CPU application dependencies, using the definitions in `pyproject.toml`. It does not install GPU training runtimes or every optional provider client. Select a [dependency profile](../requirements/README.md) when you need an exact platform lock or optional model/provider packages.
-
-Open the displayed browser address. Your personal workspace opens automatically: no account, workspace key or cloud subscription is required. The launcher starts an authenticated loopback API, independent worker and Streamlit client. CPU baseline training needs no GPU or model download. Projects persist in `data/local-workspace`; Ctrl+C stops the services. Wait for the launcher to exit before reopening the workspace. Shutdown also closes its child Python processes on Windows; closing a browser tab alone leaves the running launcher active. Use `--home` to choose a different personal directory.
-
-Personal mode defaults model and generated-module caches to a private `model-cache` directory beside your workspace (`data/model-cache` with the default layout). Explicit `DMT_MODEL_CACHE`, `HF_HOME` and `UNSLOTH_COMPILE_LOCATION` settings take precedence. Use writable storage for these caches; a read-only global cache can prevent model-library startup.
-
-Alternatively, start the browser app directly from the repository root:
-
-```bash
-python -m streamlit run app.py --server.address 127.0.0.1
-```
-
-Choose **On this computer → Start local workspace**. The app starts its API and worker once for the browser-server lifetime, rather than on every page refresh. Optional local settings let you select an existing model-environment Python executable and a local or approved hosted synthetic teacher before starting. Restart the browser server to change those settings; uploads and project history are retained. Closing a browser tab does not cancel jobs. Stopping the browser server stops the personal services; unfinished jobs are reconciled after restart and are not automatically replayed.
+Use the [root quick start](../README.md#run-on-your-computer) for prerequisites, clone, virtual environment, installation, startup, persistence and shutdown. Personal mode needs no account, GPU or workspace key. The three [user walkthroughs](README.md) cover the common tasks; the settings below are for optional runtimes, integrations and shared services.
 
 ## Personal and shared workspaces
 
@@ -83,41 +52,7 @@ Dataset lists return compact metadata. `GET /v1/projects/{project}/datasets/{dat
 
 ## Configure a teacher
 
-The API and worker read matching `DMT_TEACHER_BASE_URL` and `DMT_TEACHER_MODEL` settings. Only the worker needs `DMT_TEACHER_API_KEY`. It does not load `.env` automatically. Configure these before starting services. Only the operator chooses endpoints; user job payloads cannot store credentials or arbitrary teacher URLs.
-
-Use an approved generative endpoint supporting `POST /chat/completions` and either `json_object` or `json_schema` output. Localhost HTTP or remote HTTPS are supported. Choose the format documented by your teacher; the workbench does not automatically translate other APIs or retry with another format. No generation occurs simply by opening the application. Follow the [synthetic-generation guide](synthetic-generation-guide.md) for previews, approvals, cost estimates, history and explicit retries.
-
-For a local teacher already running at port 1234, set these before starting the workbench. Replace the model identifier with the name served by your endpoint:
-
-```powershell
-$env:DMT_TEACHER_BASE_URL = "http://127.0.0.1:1234/v1"
-$env:DMT_TEACHER_MODEL = "YOUR_SERVED_MODEL_ID"
-$env:DMT_TEACHER_RESPONSE_FORMAT = "json_schema"
-domain-platform run
-```
-
-```bash
-export DMT_TEACHER_BASE_URL="http://127.0.0.1:1234/v1"
-export DMT_TEACHER_MODEL="YOUR_SERVED_MODEL_ID"
-export DMT_TEACHER_RESPONSE_FORMAT="json_schema"
-domain-platform run
-```
-
-Leave `DMT_TEACHER_RESPONSE_FORMAT` unset or blank to preserve `json_object`. The setting applies to synthetic candidates and schema suggestions; set it identically in API and worker services. In a directly started Streamlit app, expand **Optional local model and synthetic generation settings**, enter the teacher address/model/key and choose **Teacher response format** before **Start local workspace**. **Use configured default** preserves the environment setting. The launcher `domain-platform run` connects automatically, so configure its teacher through the environment before startup. Restart services to change settings; queued requests need their approved configuration or a new approval.
-
-JSON Schema mode sends a schema with `strict: false`, allowing arbitrary text/JSON evidence and teacher-proposed question names. This is a format hint, not a promise of schema adherence or correct labels. Complete responses are validated and still require human review. Check your selected model/server's compatibility. [LM Studio structured output](https://lmstudio.ai/docs/developer/openai-compat/structured-output), [vLLM structured output](https://docs.vllm.ai/en/latest/features/structured_outputs/)
-
-The optional [schema assistant](schema-assistant-guide.md) uses the same teacher to draft questions before project creation. Configure the API and worker consistently, then approve the domain-brief request in the browser. Its timeout and daily request limit are configurable separately; every proposed question still requires owner review.
-
-If your teacher requires `max_completion_tokens` or rejects temperature, set
-`DMT_SCHEMA_TOKEN_PARAMETER=max_completion_tokens` and
-`DMT_SCHEMA_TEMPERATURE=omit` for schema drafts, plus the corresponding
-`DMT_GENERATION_TOKEN_PARAMETER` and `DMT_GENERATION_TEMPERATURE` for synthetic
-candidates. In direct personal startup, **Teacher token limit parameter** and
-**Omit teacher temperature** apply those choices to both workflows. Detailed
-[schema controls](schema-assistant-guide.md#set-up-the-teacher) and
-[generation controls](synthetic-generation-guide.md) explain their independent
-output allowances. Restart services after changing settings.
+Follow [synthetic teacher setup](synthetic-generation-guide.md#configure-a-local-or-hosted-teacher) for the personal startup form. The same page's expandable environment reference contains launcher commands, key handling, response formats and schema-assistant settings. Configure before startup and restart services after changes. Ordinary training on existing examples does not need a teacher.
 
 ## Configure model training and serving
 

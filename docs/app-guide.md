@@ -1,4 +1,6 @@
-# Use the Streamlit application
+# Streamlit screen reference
+
+<a id="use-the-streamlit-application"></a>
 
 [Project overview](../README.md) · [Install and start](setup.md) · [All guides](README.md)
 
@@ -8,7 +10,7 @@ and make predictions. Projects, reviewed versions and jobs are saved by the
 workspace service. The sidebar's **Complete app user guide** opens this manual;
 short explanations beside the controls link to the relevant step.
 
-Start the app with the [installation instructions](../README.md#run-on-your-computer),
+For a complete task, start with the [user walkthroughs](README.md). Start the app with the [installation instructions](../README.md#run-on-your-computer),
 then open the localhost address printed in the terminal, normally
 `http://127.0.0.1:8501`. Keep that terminal running. You can use the CPU baseline
 without a GPU, model download, cloud account or workspace credential. Other
@@ -56,41 +58,9 @@ models and external services have separate requirements below.
 
 ## First project walkthrough
 
-1. Follow the [root quick start](../README.md#run-on-your-computer). Personal
-   localhost mode needs no workspace key, cloud account or GPU.
-2. Open **Create a domain project**. Add a question, describe its decision rule
-   and outcomes, enter your domain/data requirements, confirm and create.
-3. In **Data and review**, download the project's CSV template or enter examples.
-   Use real operational records for evaluation. Imported and manually entered
-   records need authenticated review even when their labels are already filled.
-4. Approve the eligible records, run **Analyze data readiness**, then open
-   **Prepare and generate**. Select one reviewed revision per collection and
-   reserve train, validation, calibration and test roles.
-5. In **Training jobs**, have an owner save acceptance criteria before the first
-   study. Choose **CPU comparison baseline** and **This computer** to try the
-   local data/training workflow without downloading model weights. Choose a
-   supported native model, hosted API or cloud GPU path when appropriate.
-6. Refresh the workspace until the job finishes. Inspect the registered version
-   in **Models and releases**. An owner activates it only if it meets the frozen
-   release criteria.
-7. In **Decisions and audit**, enter new evidence and choose **Make decision**.
-   Inspect the answers and abstention flags before connecting a business action.
+For the complete first project, follow [Train and use a model for your domain](product-workflow.md). It includes prerequisites, data format, exact browser steps, optional generation, model selection, evaluation, release and predictions in one place. You can choose a native model directly; the CPU baseline is an optional introduction.
 
-To add synthetic examples between reservation and training, use
-[Generate training candidates](#generate-and-review-training-candidates) with a
-configured teacher. Review the resulting collection, then select its reviewed
-revision in **Prepare and generate** and select the original reservation in
-**Preserve holdouts from an existing snapshot when adding synthetic data**.
-Prepare the extended snapshot and select that new snapshot for training.
-Validation, calibration and test records remain reserved; generation never
-automatically approves candidates or retrains a released model.
-
-A few examples are useful for learning intake and review. They are not enough
-to establish domain quality or necessarily satisfy training/release coverage.
-The default acceptance form requires 100 real test records per question; class
-coverage and other limits also apply. Collect adequate independent data rather
-than lowering gates merely to obtain a release. Optional workflows below can be
-introduced as the project needs them.
+The screen order is **Data and review → Prepare and generate → Training jobs → Models and releases → Decisions and audit**. **Applicability** is an extra requirement for Vega. Return to the matching section below when you need help with a particular control. You do not need to read this manual from beginning to end.
 
 ## Start or connect to a workspace
 

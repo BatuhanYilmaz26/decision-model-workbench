@@ -1,8 +1,70 @@
-# Integrate decision models into an application
+# Use a decision model in your application
 
-[All guides](README.md) · [Project overview](../README.md)
+<a id="integrate-decision-models-into-an-application"></a>
 
-Add a decision model to your application's backend using a hosted API or a released local model. This guide covers provider contracts, Python and TypeScript calls, response validation and fallback handling. Start with labeled, non-sensitive examples before connecting a model to business actions. For an end-to-end rollout, see [application blueprints](application-blueprints.md) and the [API and model comparison dated 12 October](../research/decision-model-refresh-2026-10-12.md).
+[Install the Python application](../README.md#run-on-your-computer) · [Other workflows](README.md)
+
+Start with one hosted call, inspect its result, then put it behind your application's decision policy. No training, local GPU or running workbench server is required for a direct call. The example uses Perplexity; other supported providers have separate contracts in the expandable reference below.
+
+## 1. Prepare your environment and account
+
+Follow the root README through virtual-environment activation, installation and `pip check`. You can stop before `domain-platform run` for this workflow. Run the commands below from the repository root in that environment.
+
+Create an API key in your selected provider account and enable any required billing/access. The example submits fictional text to Perplexity and may incur a charge. It does not use your workspace-login key. Perplexity documents bearer authentication, the `/v1/decisions` endpoint and the Full/Flash v1.2 model names in its [official Decisions quickstart](https://docs.perplexity.ai/docs/decisions/quickstart).
+
+### Windows PowerShell
+
+```powershell
+$decisionKey = Read-Host "Perplexity API key" -AsSecureString
+$env:DMT_PROVIDER_PERPLEXITY_API_KEY = [System.Net.NetworkCredential]::new("", $decisionKey).Password
+Remove-Variable decisionKey
+```
+
+### Bash or Zsh
+
+```bash
+export DMT_PROVIDER_PERPLEXITY_API_KEY="$(python -c 'import getpass; print(getpass.getpass("Perplexity API key: "))')"
+```
+
+Keep the key out of request files, source control, URLs and frontend code. These assignments apply to the current terminal and its child processes; close the terminal or unset the variable when finished.
+
+## 2. Make one request
+
+```bash
+python examples/perplexity/predict.py --request examples/perplexity/request.json
+```
+
+The supplied JSON asks whether a fictional change proposal is missing approval or recovery information. The script makes one request and prints a validated JSON result with probabilities and available usage/identity metadata. It does not perform an action or retry automatically. A failure returns exit code **2** and an error on stderr; route it to fallback rather than assuming a negative answer.
+
+To use the Flash route instead:
+
+```bash
+python examples/perplexity/predict.py --request examples/perplexity/request.json --model pplx-decider-flash-v1.2
+```
+
+Each invocation is a separate potentially billable call. The direct script has no persistent daily quota or billing ledger.
+
+## 3. Adapt the decision to your domain
+
+Create a private `data/` folder in the repository root and copy `examples/perplexity/request.json` into it as `my-decision.json`. Edit:
+
+- **`state`:** evidence available when your application must decide. Use text or supported JSON; omit labels and unnecessary personal information.
+- **`questions`:** stable question IDs, supported outcome types, instructions and criteria. Keep these under application control.
+
+Run the same command with `--request data/my-decision.json`. Perplexity supports yes/no (`noul`), category (`choice`) and ordered-rubric (`score`) questions; their exact fields and limits are in the provider reference. A score can be fractional. A response model name identifies the route and does not attest immutable provider weights.
+
+For TypeSafe/Jev, Liquid, OpenRouter or Cloudflare, expand **Provider contracts and integration reference** below and use that provider's endpoint, authentication and response parser. A shared decision concept does not make HTTP payloads interchangeable. OpenRouter documents its separate [Decisions endpoint and request schema](https://openrouter.ai/docs/api/api-reference/alphadecisions/submit-a-decisions-request).
+
+## 4. Connect the result to your application
+
+Build a small backend boundary: collect trusted context → call the provider → validate the response → apply your evaluated threshold/policy → choose an allowed action or fallback. Compare predictions against independent labeled domain records before enabling actions. Probabilities are not authorization, and there is no universal safe cutoff.
+
+Keep timeouts, request limits and credentials on the server. On errors, malformed output, unsupported outcomes or insufficient confidence, use an explicit handler or human review. Do not automatically replay uncertain paid calls or downstream writes. Add your own business-action idempotency where needed.
+
+**You now have:** a runnable API call and the input/output boundary for your application. For durable evaluation, calibration, approval, accounting and released-policy inference in the workbench, use [hosted studies](hosted-decisions-guide.md). To call a model you trained here, use the [released-model client](../examples/platform/README.md).
+
+<details>
+<summary>Provider contracts and integration reference</summary>
 
 ## Choose the contract before the model
 
@@ -278,3 +340,6 @@ Compare `provider charges + fallback charges + review time + errors + operations
 ## Platform provider integration
 
 Use the [hosted decision workflow](hosted-decisions-guide.md) to evaluate a provider against reserved project data, fit local calibration, register a policy and release it through authenticated inference. Check access, response identity, costs and domain quality with your selected account before release. See [provider compatibility checks](verification.md#provider-compatibility-checks).
+
+
+</details>

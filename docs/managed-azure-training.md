@@ -16,7 +16,7 @@ accepts `Standard_ND96isr_H200_v5`. This dedicated node has eight H200 GPUs and
 the image, quota and free container scratch space before submitting.
 [H200 specifications](https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/gpu-accelerated/nd-h200-v5-series)
 
-It requires a cluster minimum of zero, maximum of one, explicitly disabled public SSH and the exact configured idle scale-down duration (1â€“300 seconds). Workspace and compute use their approved system-assigned managed identities. The environment version must reference the approved ACR image digest directly, with no automatic rebuild, build context or Conda overlay. The GPU image contains this exact package source and the separately qualified native Laya/Unsloth dependencies; the CPU API Dockerfile is a different image. Regional availability, quota, measured VRAM and image ABI remain real-provider acceptance tasks.
+It requires a cluster minimum of zero, maximum of one, explicitly disabled public SSH and the exact configured idle scale-down duration (1–300 seconds). Workspace and compute use their approved system-assigned managed identities. The environment version must reference the approved ACR image digest directly, with no automatic rebuild, build context or Conda overlay. The GPU image contains this exact package source and the separately qualified native Laya/Unsloth dependencies; the CPU API Dockerfile is a different image. Regional availability, quota, measured VRAM and image ABI remain real-provider acceptance tasks.
 
 The workspace, compute and storage account must match the profile region and subscription/resource group. The workspace storage/registry IDs and datastore account/container must match the approved resources. Datastore credentials must be `None`, its protocol HTTPS, endpoint `core.windows.net`, and service data access must use the workspace system-assigned identity. The approved storage account disables public Blob access and requires TLS 1.2. Profile identifiers describe resources; they are not storage keys or SAS tokens. [Identity-based datastore access](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-read-write-data-v2?view=azureml-api-2)
 
@@ -38,7 +38,7 @@ The transport requests scoped client-credentials tokens from the fixed directory
 
 The operator application needs approved subscription/resource inspection, ML job read/write/cancel and private input/output Blob access. The workspace/compute identities need appropriate datastore, image and platform access. Assign effective least-privilege roles through the enterprise administrator and validate them on real resources; a broad Owner role is not a prerequisite prescribed by the project. Client-secret mode is an implemented starting route, not completion of enterprise workload-identity support.
 
-Limits include a 60â€“14,400-second running timeout, 1â€“100 locally reserved runs per rolling day, 1â€“4 unresolved local runs and a bounded artifact size up to 64 GiB. Shared local quotas group tenant/profile aliases by provider, subscription and region. They do not cover other workspaces/direct submissions or enforce a global monetary budget.
+Limits include a 60–14,400-second running timeout, 1–100 locally reserved runs per rolling day, 1–4 unresolved local runs and a bounded artifact size up to 64 GiB. Shared local quotas group tenant/profile aliases by provider, subscription and region. They do not cover other workspaces/direct submissions or enforce a global monetary budget.
 
 ## Freeze, approve and submit
 
