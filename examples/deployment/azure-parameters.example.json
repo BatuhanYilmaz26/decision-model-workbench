@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "namePrefix": {"value": "dmt"},
+    "location": {"value": "westeurope"},
+    "infrastructureSubnetId": {"value": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/YOUR_GROUP/providers/Microsoft.Network/virtualNetworks/YOUR_VNET/subnets/apps"},
+    "databaseSubnetId": {"value": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/YOUR_GROUP/providers/Microsoft.Network/virtualNetworks/YOUR_VNET/subnets/database"},
+    "databasePrivateDnsZoneId": {"value": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/YOUR_GROUP/providers/Microsoft.Network/privateDnsZones/private.postgres.database.azure.com"},
+    "trustedProxyCidrs": {"value": "10.20.0.0/23"},
+    "registryName": {"value": "YOUR_REGISTRY"},
+    "registryServer": {"value": "YOUR_REGISTRY.azurecr.io"},
+    "imageDigest": {"value": "0000000000000000000000000000000000000000000000000000000000000000"},
+    "keyVaultName": {"value": "replace-with-vault"},
+    "databaseAdministratorConfiguration": {
+      "reference": {
+        "keyVault": {"id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/YOUR_GROUP/providers/Microsoft.KeyVault/vaults/replace-with-vault"},
+        "secretName": "workbench-database-admin",
+        "secretVersion": "REPLACE_WITH_THE_SECRET_VERSION_FROM_YOUR_VAULT"
+      }
+    },
+    "deployServices": {"value": false}
+  }
+}

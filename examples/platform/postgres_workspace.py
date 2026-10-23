@@ -1,4 +1,4 @@
-"""Start a PostgreSQL workspace with optional S3 model artifact storage.
+"""Start a PostgreSQL workspace with optional S3 or Azure model artifact storage.
 
 Set DMT_DATABASE_URL and DMT_KEYS_FILE in the operator environment. Keep API and
 worker on the same host when shared artifact storage is not configured.

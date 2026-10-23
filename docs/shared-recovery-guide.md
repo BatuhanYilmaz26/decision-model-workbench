@@ -1,12 +1,12 @@
 # Back up and restore a shared workspace
 
-Use these operator commands when your workspace uses [PostgreSQL metadata](postgresql-guide.md) and [shared S3 artifacts](shared-artifacts-guide.md). A backup captures the application tables from one consistent database view and copies every referenced model and incoming training artifact into an independent recovery prefix. Restore creates a new workspace with the original data, model references and release history.
+Use these operator commands when your workspace uses [PostgreSQL metadata](postgresql-guide.md) and shared [S3 artifacts](shared-artifacts-guide.md) or [Azure Blob artifacts](azure-artifacts-guide.md). A backup captures the application tables from one consistent database view and copies every referenced model and incoming training artifact into an independent recovery prefix. Restore creates a new workspace with the original data, model references and release history.
 
-For a personal SQLite workspace, use the [local recovery guide](recovery-guide.md) instead. The encrypted and scheduled SQLite backup commands do not capture shared PostgreSQL/S3 workspaces.
+For a personal SQLite workspace, use the [local recovery guide](recovery-guide.md) instead. The encrypted and scheduled SQLite backup commands do not capture shared PostgreSQL/object-store workspaces.
 
 ## Before you start
 
-- Install the application, `requirements/postgres.txt` and `requirements/aws-sdk.txt` in your operator environment.
+- Install the application, `requirements/postgres.txt` and your chosen transport's optional profile: `requirements/aws-sdk.txt` or `requirements/azure-artifacts.txt`.
 - Configure `DMT_DATABASE_URL` and `DMT_ARTIFACT_S3_BUCKET`, `DMT_ARTIFACT_S3_PREFIX`, and `DMT_ARTIFACT_S3_REGION` for the source workspace. Keep credentials in your normal SDK credential chain or secret manager.
 - Choose a separate recovery bucket or a nonoverlapping prefix. Enable S3 versioning on both buckets. Source and recovery prefixes must not contain each other.
 - Give the operator access to inspect bucket versioning, read source object metadata/versions, and copy objects into the recovery prefix, including multipart-copy permissions. Encrypted buckets also need the relevant KMS permissions. The copying identity must be authorized for both locations.
@@ -14,9 +14,14 @@ For a personal SQLite workspace, use the [local recovery guide](recovery-guide.m
 
 Standard AWS S3 supports regional server-side copies. Custom S3-compatible services must use the same endpoint and support the required versioning/copy APIs; qualify your service before relying on it. These commands do not transfer model weights through the operator's computer.
 
+For Azure, replace the S3-specific configuration and permissions above with the
+[Azure live/vault settings and identity permissions](azure-artifacts-guide.md#back-up-and-restore-shared-state).
+Use separate containers or nonoverlapping prefixes in the same account, with versioning enabled.
+The capture, verify and restore commands below are unchanged; do not set an S3 bucket alongside the Azure profile.
+
 ## Capture a backup
 
-Set the recovery location in addition to your existing source configuration. For example, in PowerShell:
+Set the recovery location in addition to your existing source configuration. For S3, in PowerShell:
 
 ```powershell
 $env:DMT_BACKUP_S3_BUCKET = "your-recovery-bucket"
@@ -37,7 +42,7 @@ The directory contains:
 | `shared-metadata.jsonl` | Logical snapshot of all application tables, including datasets, reviews, jobs, audit history and releases |
 | `shared-backup.json` | Completion manifest binding the database snapshot to exact recovery object versions |
 
-Model files remain in S3 under a unique snapshot subprefix. **Both the metadata directory and those object versions are necessary for recovery.** Keep the base recovery configuration so the commands can locate that snapshot again.
+Model files remain in the configured object storage under a unique snapshot subprefix. **Both the metadata directory and those object versions are necessary for recovery.** Keep the base recovery configuration so the commands can locate that snapshot again.
 
 Ordinary data edits can continue during capture. Shared artifact publication, release operations and artifact maintenance wait behind the backup's coordination lock. The manifest is published only after object copies finish. A failed capture can leave an incomplete snapshot prefix in the recovery bucket; it has no completed local bundle. Inspect and remove only that operation's prefix according to your retention policy, then retry with a new output directory. This command does not automatically prune backup objects.
 

@@ -38,6 +38,7 @@ def browser_environment(environment):
         "DMT_BACKUP_",
         "DMT_TEACHER_",
         "DMT_TAXONOMY_",
+        "DMT_AZURE_",
         "AWS_ACCESS_",
         "AWS_SECRET_",
         "AWS_SESSION_",
@@ -50,6 +51,11 @@ def browser_environment(environment):
         "TEACHER_API_KEY",
         "GOOGLE_APPLICATION_CREDENTIALS",
         "AZURE_CLIENT_SECRET",
+        "AZURE_CLIENT_ID",
+        "AZURE_TENANT_ID",
+        "AZURE_FEDERATED_TOKEN_FILE",
+        "IDENTITY_ENDPOINT",
+        "IDENTITY_HEADER",
         "MODAL_TOKEN_ID",
         "MODAL_TOKEN_SECRET",
     }
@@ -61,7 +67,7 @@ def browser_environment(environment):
 
 
 def read_secret(client, identifier):
-    """Read a bounded JSON Secrets Manager value; never include its contents in errors."""
+    """Read a bounded JSON cloud secret; never include its contents in errors."""
     try:
         response = client.get_secret_value(SecretId=identifier)
         text = response["SecretString"]
@@ -75,6 +81,19 @@ def read_secret(client, identifier):
         raise ValueError(
             "Deployment secret is unavailable or is not a bounded JSON object"
         ) from None
+
+
+def secret_client(environment):
+    provider = environment.get("DMT_DEPLOYMENT_PROVIDER", "aws")
+    if provider == "azure":
+        from .deployment_azure import AzureSecrets
+
+        return AzureSecrets.from_environment(environment)
+    if provider != "aws":
+        raise ValueError("Choose a supported managed deployment provider")
+    import boto3
+
+    return boto3.client("secretsmanager", region_name=environment.get("AWS_REGION"))
 
 
 def private_file(folder, name, content):
@@ -186,7 +205,7 @@ def initialize_database(admin_url, application_secret, environment):
                     sql.Identifier(role), sql.Literal(password)
                 )
             )
-            # RDS administrators have CREATEROLE, not PostgreSQL SUPERUSER.
+            # Managed database administrators have CREATEROLE, not SUPERUSER.
             # Grant the creator permission to own/manage the new role's schema.
             creator = db.execute("SELECT current_user").fetchone()[0]
             db.execute(
@@ -281,10 +300,10 @@ def main():
     import tempfile
 
     try:
-        import boto3
-
-        client = boto3.client(
-            "secretsmanager", region_name=os.environ.get("AWS_REGION")
+        client = (
+            None
+            if args.role == "web" and not os.environ.get("DMT_UI_SECRET_ID")
+            else secret_client(os.environ)
         )
         with tempfile.TemporaryDirectory(prefix="dmt-service-") as temporary:
             private = Path(temporary)

@@ -1,0 +1,5 @@
+# Optional Azure-native shared artifacts and operator/managed identity credentials.
+azure-storage-blob==12.31.0
+azure-core==1.41.0
+azure-identity==1.26.0
+isodate==0.7.2

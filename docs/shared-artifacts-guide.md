@@ -7,6 +7,10 @@ exports once and retrieve them into separate API/worker caches. This experimenta
 route preserves the model's schema, evaluation report, calibration and file
 hashes. Personal SQLite mode continues to use local artifacts.
 
+For Azure-native storage, follow [the Azure Blob profile](azure-artifacts-guide.md).
+It uses the same model publication, verified-cache and recovery workflows with
+different storage credentials and versioning permissions. The setup examples below use S3.
+
 This is a model-artifact workflow, not a complete enterprise deployment. Shared
 identity, [coordinated recovery](shared-recovery-guide.md), operational acceptance
 and cloud application deployment need their own configuration. Verified remote-admission inputs can

@@ -17,6 +17,8 @@ These modules provide the persistent local application and authenticated decisio
 | [store.py](store.py) | SQLite or PostgreSQL state and immutable history | [Architecture](../../docs/architecture.md), [recovery](../../docs/recovery-guide.md) |
 | [storage_health.py](storage_health.py) | Bounded metadata/binding and shared-manifest connectivity checks | [Shared operations](../../docs/shared-workspace-operations-guide.md) |
 | [deployment.py](deployment.py), [aws_deployment.py](aws_deployment.py) | Managed service startup, database bootstrap and AWS application-stack generation | [AWS application hosting](../../docs/application-hosting/aws.md) |
+| [azure_deployment.py](azure_deployment.py), [deployment_azure.py](deployment_azure.py) | Azure ARM generation, Key Vault startup and private configuration preparation | [Azure application hosting](../../docs/application-hosting/azure.md) |
+| [artifact_azure.py](artifact_azure.py) | Immutable Blob publication, verified caches and version-pinned recovery copies | [Azure artifacts](../../docs/azure-artifacts-guide.md) |
 | [shared_authentication.py](shared_authentication.py) | Atomic workspace authorization revisions shared by API instances | [Publish and update cloud authorization](../../docs/application-hosting/aws.md#initialize-the-database-and-shared-authorization) |
 
 For other capabilities, follow [hosted decisions](../../docs/hosted-decisions-guide.md), [managed cloud training](../../docs/remote-training/README.md), [reviewer assignments](../../docs/review-workflow.md), [policy successors](../../docs/policy-versioning-guide.md) and [audit exports](../../docs/audit-export-guide.md).

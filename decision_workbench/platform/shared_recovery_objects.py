@@ -5,6 +5,7 @@ import hashlib
 import re
 
 from .artifact_s3 import S3Objects
+from .artifact_azure import AzureBlobObjects
 from .artifact_storage import (
     ArtifactUnavailable,
     DirectoryObjects,
@@ -44,6 +45,17 @@ def independent(left, right):
         ):
             raise ValueError("Recovery storage must be independent of live storage")
         return
+    if isinstance(left, AzureBlobObjects) and isinstance(right, AzureBlobObjects):
+        a, b = left.descriptor, right.descriptor
+        if a["endpoint"] != b["endpoint"]:
+            raise ValueError("Azure recovery copies require the same storage account")
+        if a["container"] == b["container"] and (
+            a["prefix"] == b["prefix"]
+            or a["prefix"].startswith(b["prefix"] + "/")
+            or b["prefix"].startswith(a["prefix"] + "/")
+        ):
+            raise ValueError("Recovery storage prefixes must not overlap")
+        return
     if not isinstance(left, S3Objects) or not isinstance(right, S3Objects):
         raise ValueError("Recovery copies require matching object transports")
     a, b = left.descriptor, right.descriptor
@@ -66,7 +78,9 @@ class RecoveryObjects:
 
     def __init__(self, objects):
         self.objects = objects
-        if isinstance(objects, S3Objects):
+        if isinstance(objects, AzureBlobObjects):
+            objects.require_versioning()
+        elif isinstance(objects, S3Objects):
             try:
                 status = objects.client.get_bucket_versioning(Bucket=objects.bucket)
                 if status.get("Status") != "Enabled":
@@ -90,6 +104,8 @@ class RecoveryObjects:
         }
         validate_item(item)
         objects = self.objects
+        if isinstance(objects, AzureBlobObjects):
+            return objects.recovery_pin(key, sha, size, version)
         if isinstance(objects, DirectoryObjects):
             if version is not None and version != sha:
                 raise ValueError("Local recovery object identity differs")
@@ -127,7 +143,10 @@ class RecoveryObjects:
             raise ValueError("Recovery manifest exceeds its bounded size")
         objects = self.objects
         try:
-            if isinstance(objects, DirectoryObjects):
+            if isinstance(objects, AzureBlobObjects):
+                body = objects.recovery_read(item, limit)
+                stream = None
+            elif isinstance(objects, DirectoryObjects):
                 stream = objects.open(item["key"])
             else:
                 stream = objects.client.get_object(
@@ -136,8 +155,9 @@ class RecoveryObjects:
                     VersionId=item["version_id"],
                     IfMatch=item["etag"],
                 )["Body"]
-            with closing(stream):
-                body = stream.read(limit + 1)
+            if stream is not None:
+                with closing(stream):
+                    body = stream.read(limit + 1)
         except Exception:
             raise ArtifactUnavailable("Cannot read pinned recovery manifest") from None
         if (
@@ -153,7 +173,9 @@ class RecoveryObjects:
         check()
         self.verify(item)
         source, destination = self.objects, target.objects
-        if isinstance(source, DirectoryObjects):
+        if isinstance(source, AzureBlobObjects):
+            source.recovery_copy_to(item, destination, check)
+        elif isinstance(source, DirectoryObjects):
             destination.put_file(
                 item["key"],
                 source.path(item["key"]),

@@ -2,18 +2,23 @@
 
 [All guides](README.md) · [Shared artifact setup](shared-artifacts-guide.md) · [PostgreSQL setup](postgresql-guide.md)
 
-Use an operator preview/apply workflow to remove old S3 object versions that are
+Use an operator preview/apply workflow to remove old S3 or Azure blob versions that are
 not needed by the current workspace's model registry or recorded remote imports.
 The collector retains every registered model, including inactive versions, and
 every recorded admission input, including failed or cancelled jobs. It also
 preserves young manifests and the older deduplicated blobs they reference.
 
 This command does not delete projects, dataset history, registered models, local
-caches or cloud training volumes. It does not enumerate all historical S3
+caches or cloud training volumes. It does not enumerate all historical object
 versions. Treat those as separate retention policies rather than assuming this
 collector erases all copies of domain data.
 
 ## Prepare the workspace and operator identity
+
+For Azure, configure [versioned Blob Storage and its dedicated cleanup identity](azure-artifacts-guide.md)
+before using the preview/apply commands below. Azure deletion obeys soft-delete,
+legal-hold and immutability policies; it is not proof of immediate physical erasure
+or removal of storage charges. The S3-specific prerequisites follow.
 
 Use the [PostgreSQL/shared S3 configuration](shared-artifacts-guide.md) with
 **S3 bucket versioning Enabled**. New cleanup plans refuse unversioned or suspended

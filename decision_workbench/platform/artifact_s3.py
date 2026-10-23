@@ -381,6 +381,20 @@ def repository_from_environment(config_prefix="DMT_ARTIFACT_S3_"):
     if config_prefix not in {"DMT_ARTIFACT_S3_", "DMT_BACKUP_S3_"}:
         raise ValueError("Unsupported object storage configuration prefix")
     bucket = os.environ.get(config_prefix + "BUCKET", "").strip()
+    azure_prefix = {
+        "DMT_ARTIFACT_S3_": "DMT_ARTIFACT_AZURE_",
+        "DMT_BACKUP_S3_": "DMT_BACKUP_AZURE_",
+    }[config_prefix]
+    if os.environ.get(azure_prefix + "ACCOUNT_URL") or os.environ.get(
+        azure_prefix + "CONTAINER"
+    ):
+        if bucket:
+            raise ValueError(
+                "Choose one object transport per live or backup configuration"
+            )
+        from .artifact_azure import repository_from_environment as azure_repository
+
+        return azure_repository(azure_prefix)
     if not bucket:
         return None
     try:

@@ -578,7 +578,7 @@ def main():
             vault = repository_from_environment("DMT_BACKUP_S3_")
             if vault is None:
                 raise ValueError(
-                    "Set DMT_BACKUP_S3_BUCKET and an independent recovery prefix"
+                    "Configure independent S3 or Azure backup storage and a recovery prefix"
                 )
             if args.action == "verify-shared-backup":
                 manifest = verify_shared(
@@ -594,7 +594,9 @@ def main():
                 url = os.environ.get("DMT_DATABASE_URL")
                 repository = repository_from_environment()
                 if not url or repository is None:
-                    raise ValueError("Set DMT_DATABASE_URL and DMT_ARTIFACT_S3_BUCKET")
+                    raise ValueError(
+                        "Set DMT_DATABASE_URL and configure shared artifact storage"
+                    )
                 if args.action == "backup-shared":
                     store = Store(
                         args.home,
